@@ -1,0 +1,7 @@
+config.php
+Hasher.php
+Auth.php
+
+logs/*
+
+.idea/*
