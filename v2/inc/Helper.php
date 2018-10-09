@@ -120,6 +120,26 @@ class Helper {
 
 		header("HTTP/1.1 $status $message");
 		
+		$origin_domain = $_SERVER["HTTP_ORIGIN"];
+
+		// Strip the protocol from domain
+		$stripped_domain = str_replace("http://", "", $origin_domain);
+		$stripped_domain = str_replace("https://", "", $stripped_domain);
+
+		$allowed_domains = [
+			"jahidulpabelislam.com",
+			"cms.jahidulpabelislam.com",
+			"staging.jahidulpabelislam.com",
+			"staging.cms.jahidulpabelislam.com",
+			"portfolio.local",
+			"portfolio-cms.local",
+		];
+
+		// If the domain if allowed send correct header response back
+		if (in_array($stripped_domain, $allowed_domains)) {
+			header("Access-Control-Allow-Origin: $origin_domain");
+		}
+
 		// Set cache for 31 days for all GET Requests
 		if ($method == "GET") {
 			$seconds_to_cache = 2678400;
