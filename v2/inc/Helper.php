@@ -140,8 +140,13 @@ class Helper {
 			header("Access-Control-Allow-Origin: $origin_domain");
 		}
 
-		// Set cache for 31 days for all GET Requests
-		if ($method == "GET") {
+		$notCachedURLs = array(
+			"session/",
+			"logout/",
+		);
+
+		// Set cache for 31 days for some GET Requests
+		if ($method == "GET" && !in_array(implode("/", $path), $notCachedURLs)) {
 			$seconds_to_cache = 2678400;
 			$expires_time = gmdate("D, d M Y H:i:s", time() + $seconds_to_cache) . " GMT";
 			header("Cache-Control: max-age=$seconds_to_cache, public");
