@@ -120,7 +120,7 @@ class Helper {
 
 		header("HTTP/1.1 $status $message");
 		
-		$origin_domain = $_SERVER["HTTP_ORIGIN"];
+		$origin_domain = $_SERVER["HTTP_ORIGIN"] ?? "";
 
 		// Strip the protocol from domain
 		$stripped_domain = str_replace("http://", "", $origin_domain);
