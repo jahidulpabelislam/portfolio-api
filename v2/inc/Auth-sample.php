@@ -19,7 +19,7 @@ class Auth {
 
 		//checks if data needed are present and not empty
 		$dataNeeded = array("username", "password");
-		if (checkData($data, $dataNeeded)) {
+		if (Helper::checkData($data, $dataNeeded)) {
 
 			$results["meta"]["ok"] = false;
 			$results["meta"]["status"] = 401;
@@ -48,7 +48,7 @@ class Auth {
 
 		}
 		else {
-			$results["meta"] = dataNotProvided($dataNeeded);
+			$results["meta"] = Helper::dataNotProvided($dataNeeded);
 		}
 
 		return $results;
