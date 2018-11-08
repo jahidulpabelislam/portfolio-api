@@ -5,6 +5,8 @@
  * @author Jahidul Pabel Islam
 */
 
+namespace JPI\API;
+
 class Helper {
 
 	public static function extractFromRequest() {

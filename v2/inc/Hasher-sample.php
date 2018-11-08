@@ -4,7 +4,9 @@
  * @author Jahidul Pabel Islam
 */
 
-class Hasher {
+namespace JPI\API;
+
+class HasherSample {
 
 	/*
 	 * This will generate a hashed value of given string

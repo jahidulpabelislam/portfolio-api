@@ -7,6 +7,8 @@
  * @author Jahidul Pabel Islam
  */
 
+namespace JPI\API;
+
 class Database {
 
 	private $db = null;
@@ -20,12 +22,12 @@ class Database {
 	public function __construct() {
 
 		$dsn = "mysql:host=" . DB_IP . ";dbname=" . DB_NAME . ";charset-UTF-8";
-		$option = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION);
+		$option = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
 
 		try {
-			$this->db = new PDO($dsn, DB_USERNAME, DB_PASSWORD, $option);
+			$this->db = new \PDO($dsn, DB_USERNAME, DB_PASSWORD, $option);
 		}
-		catch (PDOException $failure) {
+		catch (\PDOException $failure) {
 			if (defined("DEBUG") && DEBUG) {
 				echo $failure;
 			}
@@ -69,12 +71,12 @@ class Database {
 
 				//if query was a select, return array of data
 				if (strpos($query, "SELECT") !== false) {
-					$results["rows"] = $result->fetchAll(PDO::FETCH_ASSOC);
+					$results["rows"] = $result->fetchAll(\PDO::FETCH_ASSOC);
 				}
 
 				$results["count"] = $result->rowCount();
 			}
-			catch (PDOException $failure) {
+			catch (\PDOException $failure) {
 
 				if (defined("DEBUG") && DEBUG) {
 					$results["meta"]["error"] = $failure;

@@ -4,6 +4,8 @@
  * @author Jahidul Pabel Islam
 */
 
+namespace JPI\API;
+
 class Router {
 	
 	/**

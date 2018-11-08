@@ -5,7 +5,9 @@
  * @author Jahidul Pabel Islam
 */
 
-class Auth {
+namespace JPI\API;
+
+class AuthSample {
 
 	/**
 	 * Authenticate a user trying to login
