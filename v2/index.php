@@ -6,8 +6,6 @@
 
 use JPI\API;
 
-include $_SERVER['DOCUMENT_ROOT'] . '/config.php';  // Copy config-sample.php and rename to config.php then fill in necessary constant
-
 API\Router::performRequest();
 
 // autoload function

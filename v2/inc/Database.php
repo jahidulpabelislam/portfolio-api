@@ -21,14 +21,14 @@ class Database {
 	 */
 	public function __construct() {
 
-		$dsn = "mysql:host=" . \DB_IP . ";dbname=" . \DB_NAME . ";charset-UTF-8";
+		$dsn = "mysql:host=" . Config::DB_IP . ";dbname=" . Config::DB_NAME . ";charset-UTF-8";
 		$option = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
 
 		try {
-			$this->db = new \PDO($dsn, \DB_USERNAME, \DB_PASSWORD, $option);
+			$this->db = new \PDO($dsn, Config::DB_USERNAME, Config::DB_PASSWORD, $option);
 		}
 		catch (\PDOException $failure) {
-			if (defined("DEBUG") && \DEBUG) {
+			if (Config::DEBUG) {
 				echo $failure;
 			}
 		}
@@ -78,7 +78,7 @@ class Database {
 			}
 			catch (\PDOException $failure) {
 
-				if (defined("DEBUG") && \DEBUG) {
+				if (Config::DEBUG) {
 					$results["meta"]["error"] = $failure;
 				}
 
