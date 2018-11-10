@@ -95,7 +95,7 @@ abstract class Entity {
 		} // Else error inserting
 		else {
 			// Checks if database provided any meta data if so problem with executing query
-			if (!isset($picture["meta"])) {
+			if (!isset($result["meta"])) {
 				$result["meta"]["ok"] = false;
 			}
 		}

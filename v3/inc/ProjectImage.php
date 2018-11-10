@@ -26,7 +26,7 @@ class ProjectImage extends Entity {
 		// Check if the deletion was ok
 		if ($result["count"] > 0 && $fileName) {
 			
-			// Checks if file exists to delete the picture
+			// Checks if file exists to delete the actual Image file from server
 			if (file_exists($_SERVER['DOCUMENT_ROOT'] . $fileName)) {
 				unlink($_SERVER['DOCUMENT_ROOT'] . $fileName);
 			}

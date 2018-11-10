@@ -31,7 +31,7 @@ class Project extends Entity {
 			if ($images) {
 				$projectImage = new ProjectImage();
 				$imagesArray = $projectImage->getByColumn("ProjectID", $id);
-				$result["row"]["Pictures"] = $imagesArray["rows"];
+				$result["row"]["Images"] = $imagesArray["rows"];
 			}
 		}
 
@@ -45,11 +45,11 @@ class Project extends Entity {
 		if (!empty($values["ID"])) {
 			// Checks if update was ok
 			if (!empty($result["row"])) {
-				$pictures = json_decode($values["Pictures"]);
+				$images = json_decode($values["Images"]);
 
-				if (count($pictures) > 0) {
-					foreach ($pictures as $picture) {
-						$imageUpdateData = ['ID' => $picture->ID, 'Number' => $picture->Number,];
+				if (count($images) > 0) {
+					foreach ($images as $image) {
+						$imageUpdateData = ['ID' => $image->ID, 'Number' => $image->Number,];
 						$projectImage = new ProjectImage();
 						$projectImage->save($imageUpdateData);
 					}
@@ -67,12 +67,12 @@ class Project extends Entity {
 
 		// Delete the images linked to the Project
 		$projectImage = new ProjectImage();
-		$picturesResult = $projectImage->getByColumn('ProjectID', $id);
-		$pictures = $picturesResult["rows"];
-		foreach ($pictures as $picture) {
+		$imagesResult = $projectImage->getByColumn('ProjectID', $id);
+		$images = $imagesResult["rows"];
+		foreach ($images as $image) {
 
 			// Delete the image from the database & from file
-			$projectImage->delete($picture["ID"], $picture["File"]);
+			$projectImage->delete($image["ID"], $image["File"]);
 		}
 		
 		return $result;

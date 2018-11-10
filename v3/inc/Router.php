@@ -53,12 +53,12 @@ class Router {
 					case "GET":
 						if (isset($path[1]) && trim($path[1]) !== "") {
 							$projectID = $path[1];
-							if (isset($path[2]) && $path[2] === "pictures") {
+							if (isset($path[2]) && $path[2] === "images") {
 								if (isset($path[3]) && $path[3] !== "") {
-									$results = $api->getProjectPicture($projectID, $path[3]);
+									$results = $api->getProjectImage($projectID, $path[3]);
 								}
 								else {
-									$results = $api->getProjectPictures($projectID);
+									$results = $api->getProjectImages($projectID);
 								}
 							}
 							else {
@@ -70,10 +70,10 @@ class Router {
 						}
 						break;
 					case "POST":
-						if (isset($path[1]) && trim($path[1]) !== "" && isset($path[2]) && $path[2] === "pictures") {
-							if (isset($_FILES["picture"])) {
+						if (isset($path[1]) && trim($path[1]) !== "" && isset($path[2]) && $path[2] === "images") {
+							if (isset($_FILES["image"])) {
 								$data["ProjectID"] = $path[1];
-								$results = $api->addProjectPicture($data);
+								$results = $api->addProjectImage($data);
 							}
 						}
 						else {
@@ -88,10 +88,10 @@ class Router {
 						break;
 					case "DELETE":
 						if (isset($path[1]) && trim($path[1]) !== "") {
-							if (isset($path[2]) && $path[2] === "pictures" && isset($path[3]) && $path[3] !== "") {
+							if (isset($path[2]) && $path[2] === "images" && isset($path[3]) && $path[3] !== "") {
 								$data["ID"] = $path[3];
 								$data["ProjectID"] = $path[1];
-								$results = $api->deletePicture($data);
+								$results = $api->deleteImage($data);
 							}
 							else {
 								$data["ID"] = $path[1];

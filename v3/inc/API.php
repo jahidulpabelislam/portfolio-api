@@ -23,7 +23,7 @@ class API {
 	/**
 	 * Check whether the user is logged or no
 	 *
-	 * @return array The Request response to send back
+	 * @return array The request response to send back
 	 */
 	public function getAuthStatus() {
 
@@ -44,7 +44,7 @@ class API {
 	 *
 	 * @param $projectID int The id of the Project to get
 	 * @param bool $images Whether the images for the roject should should be added
-	 * @return array The Request response to send back
+	 * @return array The request response to send back
 	 */
 	public function getProject($projectID, $images = false) {
 
@@ -59,7 +59,7 @@ class API {
 	 * Gets all projects but paginated, also might include search
 	 *
 	 * @param $data array Any data to aid in the search query
-	 * @return array The Request response to send back
+	 * @return array The request response to send back
 	 */
 	public function getProjects($data) {
 
@@ -128,8 +128,8 @@ class API {
 			for ($i = 0; $i < count($result["rows"]); $i++) {
 
 				// Run the function provided as data exists and is valid
-				$picturesArray = self::getProjectPictures($result["rows"][$i]["ID"]);
-				$result["rows"][$i]["Pictures"] = $picturesArray["rows"];
+				$imagesArray = self::getProjectImages($result["rows"][$i]["ID"]);
+				$result["rows"][$i]["Images"] = $imagesArray["rows"];
 			}
 
 			$result["meta"]["ok"] = true;
@@ -142,7 +142,7 @@ class API {
 	 * Try and add a Project a user has attempted to add
 	 *
 	 * @param $data array The data to insert into the database for this new Project
-	 * @return array The Request response to send back
+	 * @return array The request response to send back
 	 */
 	public function addProject($data) {
 
@@ -174,7 +174,7 @@ class API {
 	 * Try to edit a Project a user has posted before
 	 *
 	 * @param $data array The new data entered to use to update the project with
-	 * @return array The Request response to send back
+	 * @return array The request response to send back
 	 */
 	public function editProject($data) {
 
@@ -210,7 +210,7 @@ class API {
 	 * Try to delete a Project a user has posted before
 	 *
 	 * @param $data array The data sent to aid in the deletion of the Project
-	 * @return array The Request response to send back
+	 * @return array The request response to send back
 	 */
 	public function deleteProject($data) {
 
@@ -241,14 +241,14 @@ class API {
 	}
 	
 	/**
-	 * Get the Pictures attached to a Project
+	 * Get the Images attached to a Project
 	 *
 	 * @param $projectID int The Id of the Project
-	 * @return array The Request response to send back
+	 * @return array The request response to send back
 	 */
-	public function getProjectPictures($projectID) {
+	public function getProjectImages($projectID) {
 
-		//Check the project trying to get pictures
+		// Check the project trying to get Images for
 		$result = self::getProject($projectID);
 		if (!empty($result["row"])) {
 
@@ -262,16 +262,16 @@ class API {
 	/**
 	 * Get a Project Image for a Project by id
 	 *
-	 * @param $projectID int The id of the Project
-	 * @param $pictureID int The id of the Project Image to get
-	 * @return array The Request response to send back
+	 * @param $projectId int The id of the Project trying to get Images for
+	 * @param $imageId int The id of the Project Image to get
+	 * @return array The request response to send back
 	 */
-	public function getProjectPicture($projectID, $pictureID) {
+	public function getProjectImage($projectId, $imageId) {
 
-		// Check the project trying to get pictures
-		$result = self::getProject($projectID);
+		// Check the Project trying to get Images for
+		$result = self::getProject($projectId);
 		if (!empty($result["row"])) {
-			$projectImage = new ProjectImage($pictureID);
+			$projectImage = new ProjectImage($imageId);
 			$result = $projectImage->result;
 		}
 
@@ -279,26 +279,26 @@ class API {
 	}
 
 	/**
-	 * Try to upload a picture user has tried to add as a project image
+	 * Try to upload a Image user has tried to add as a Project Image
 	 *
 	 * @param $data array The data sent to aid in Inserting Project Image
-	 * @return array The Request response to send back
+	 * @return array The request response to send back
 	 */
-	public function addProjectPicture($data) {
+	public function addProjectImage($data) {
 
 		// Checks if user is authored
 		if (Auth::isLoggedIn()) {
 
-			// Checks if requests needed are present and not empty
+			// Checks if the data needed is present and not empty
 			$dataNeeded = ["ProjectID",];
-			if (Helper::checkData($data, $dataNeeded) && isset($_FILES["picture"])) {
+			if (Helper::checkData($data, $dataNeeded) && isset($_FILES["image"])) {
 
 				// Check the project trying to add a a Image for exists
 				$result = self::getProject($data["ProjectID"]);
 				if (!empty($result["row"])) {
 
 					// Get the file type
-					$imageFileType = pathinfo(basename($_FILES["picture"]["name"]), PATHINFO_EXTENSION);
+					$imageFileType = pathinfo(basename($_FILES["image"]["name"]), PATHINFO_EXTENSION);
 
 					// The directory to upload file
 					$directory = "/assets/images/projects/";
@@ -309,13 +309,13 @@ class API {
 					$fullPath = $_SERVER['DOCUMENT_ROOT'] . $fileLocation;
 
 					// Check if file is a actual image
-					$fileType = mime_content_type($_FILES["picture"]["tmp_name"]);
+					$fileType = mime_content_type($_FILES["image"]["tmp_name"]);
 					if ((strpos($fileType, 'image/') !== false)) {
 
 						// Try to uploaded file
-						if (move_uploaded_file($_FILES["picture"]["tmp_name"], $fullPath)) {
+						if (move_uploaded_file($_FILES["image"]["tmp_name"], $fullPath)) {
 
-							// Update database with location of new picture
+							// Update database with location of new Image
 							$values = [
 								"File" => $fileLocation,
 								"ProjectID" => $data["ProjectID"],
@@ -325,7 +325,7 @@ class API {
 							$result = $projectImage->save($values);
 						} // Else there was a problem uploading file to server
 						else {
-							$result["meta"]["feedback"] = "Sorry, there was an error uploading your file.";
+							$result["meta"]["feedback"] = "Sorry, there was an error uploading your Image.";
 						}
 					} // Else bad request as file uploaded is not a image
 					else {
@@ -336,7 +336,7 @@ class API {
 				}
 			} // Else data needed was not provided
 			else {
-				array_push($dataNeeded, "Picture");
+				array_push($dataNeeded, "Image");
 				$result["meta"] = Helper::dataNotProvided($dataNeeded);
 			}
 		}
@@ -350,12 +350,12 @@ class API {
 	}
 
 	/**
-	 * Try to delete a picture linked to a project
+	 * Try to delete a Image linked to a project
 	 *
 	 * @param $data array The data sent to delete the Project Image
-	 * @return array The Request response to send back
+	 * @return array The request response to send back
 	 */
-	public function deletePicture($data) {
+	public function deleteImage($data) {
 
 		// Checks if user is authored
 		if (Auth::isLoggedIn()) {
@@ -364,11 +364,11 @@ class API {
 			$dataNeeded = ["ProjectID", "ID",];
 			if (Helper::checkData($data, $dataNeeded)) {
 
-				// Check the project trying to edit actually exists
+				// Check the Project trying to edit actually exists
 				$result = self::getProject($data["ProjectID"]);
 				if (!empty($result["row"])) {
 
-					$result = $this->getProjectPicture($data["ProjectID"], $data["ID"]);
+					$result = $this->getProjectImage($data["ProjectID"], $data["ID"]);
 
 					if (!empty($result["row"])) {
 
