@@ -12,6 +12,9 @@ namespace JPI\API;
 class Database {
 
 	private $db = null;
+	
+	private $config = null;
+	
 	private static $instance = null;
 
 	/**
@@ -21,6 +24,8 @@ class Database {
 	 */
 	public function __construct() {
 
+		$this->config = Config::get();
+		
 		$dsn = "mysql:host=" . Config::DB_IP . ";dbname=" . Config::DB_NAME . ";charset-UTF-8";
 		$option = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
 
@@ -28,7 +33,7 @@ class Database {
 			$this->db = new \PDO($dsn, Config::DB_USERNAME, Config::DB_PASSWORD, $option);
 		}
 		catch (\PDOException $failure) {
-			if (Config::DEBUG) {
+			if ($this->config->debug) {
 				echo $failure;
 			}
 		}
@@ -78,7 +83,7 @@ class Database {
 			}
 			catch (\PDOException $failure) {
 
-				if (Config::DEBUG) {
+				if ($this->config->debug) {
 					$results["meta"]["error"] = $failure;
 				}
 
