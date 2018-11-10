@@ -30,32 +30,34 @@ class Helper {
 	/**
 	 * Check if all data needed is provided
 	 * And data provided is not empty
-	 * @param $data array array of data provided
-	 * @param $dataNeeded array array of data needed
-	 * @return bool whether data provided is valid and data needed is provided
+	 *
+	 * @param $data array Array of the data provided for the request
+	 * @param $dataNeeded array Array of data needed
+	 * @return bool Whether data provided is valid and data needed is provided or not
 	 */
 	public static function checkData($data, $dataNeeded) {
 
-		//loops through each request needed
+		// Loops through each data needed for the request
 		foreach ($dataNeeded as $aData) {
 
-			//checks if data needed is provided and is not empty
+			// Checks if the data needed is provided and is not empty
 			if (!isset($data[$aData]) || trim($data[$aData]) === "") {
-				//return false as data needed is not provided or empty
+				// Return false as data needed is not provided or empty
 				return false;
 			}
 
 		}
 
-		//otherwise data provided are ok and data needed are provided
+		// Otherwise data provided are ok and data needed are provided
 		return true;
 	}
 
 	/**
-	 * When the method provided is not allowed
-	 * @param $method string the method tried
-	 * @param $path array the path tried
-	 * @return array array of meta data
+	 * Generate meta data to send back when the method provided is not allowed on the URI
+	 *
+	 * @param $method string The method tried
+	 * @param $path array The path (relative) tried
+	 * @return array Array of meta data
 	 */
 	public static function methodNotAllowed($method, $path) {
 
@@ -69,8 +71,9 @@ class Helper {
 
 	/**
 	 * Send necessary meta data back when needed data is not provided
-	 * @param $dataNeeded array array of data needed
-	 * @return array array of meta data
+	 *
+	 * @param $dataNeeded array Array of the data needed
+	 * @return array Array of meta data
 	 */
 	public static function dataNotProvided($dataNeeded) {
 
@@ -85,27 +88,36 @@ class Helper {
 
 	/**
 	 * Send necessary meta data back when user isn't logged in correctly
-	 * @return array array of meta data
+	 *
+	 * @return array Array of meta data
 	 */
 	public static function notAuthorised() {
 
-		$results = [];
-		$results["meta"]["ok"] = false;
-		$results["meta"]["status"] = 401;
-		$results["meta"]["message"] = "Unauthorized";
-		$results["meta"]["feedback"] = "You need to be logged in!";
+		$result = [];
+		$result["meta"]["ok"] = false;
+		$result["meta"]["status"] = 401;
+		$result["meta"]["message"] = "Unauthorized";
+		$result["meta"]["feedback"] = "You need to be logged in!";
 
-		return $results;
+		return $result;
 	}
-
-	public static function sendData($results, $data, $method, $path) {
+	
+	/**
+	 * Send the result back
+	 *
+	 * @param $result array The result generated from the request so far
+	 * @param $data array The data sent with the request
+	 * @param $method string The request method made
+	 * @param $path array The URI (Relative) the request was made to
+	 */
+	public static function sendData(array $result, array $data, $method, array $path) {
 
 		// Send back the data provided
-		$results['meta']["data"] = $data;
+		$result['meta']["data"] = $data;
 		// Send back the method requested
-		$results['meta']["method"] = $method;
+		$result['meta']["method"] = $method;
 		// Send back the path they requested
-		$results['meta']["path"] = $path;
+		$result['meta']["path"] = $path;
 		
 		$origin_domain = $_SERVER["HTTP_ORIGIN"] ?? "";
 		
@@ -129,23 +141,23 @@ class Helper {
 			header("Access-Control-Allow-Headers: Process-Data");
 			
 			if ($method === "OPTIONS") {
-				$results["meta"]["status"] = 200;
-				$results["meta"]["message"] = "OK";
+				$result["meta"]["status"] = 200;
+				$result["meta"]["message"] = "OK";
 			}
 		}
 
 		// Figure out the correct meta responses to return
-		if (isset($results["meta"]["ok"]) && $results["meta"]["ok"] !== false) {
-			$status = isset($results["meta"]["status"]) ? $results["meta"]["status"] : 200;
-			$message = isset($results["meta"]["message"]) ? $results["meta"]["message"] : "OK";
+		if (isset($result["meta"]["ok"]) && $result["meta"]["ok"] !== false) {
+			$status = isset($result["meta"]["status"]) ? $result["meta"]["status"] : 200;
+			$message = isset($result["meta"]["message"]) ? $result["meta"]["message"] : "OK";
 		}
 		else {
-			$status = isset($results["meta"]["status"]) ? $results["meta"]["status"] : 500;
-			$message = isset($results["meta"]["message"]) ? $results["meta"]["message"] : "Internal Server Error";
+			$status = isset($result["meta"]["status"]) ? $result["meta"]["status"] : 500;
+			$message = isset($result["meta"]["message"]) ? $result["meta"]["message"] : "Internal Server Error";
 		}
 
-		$results["meta"]["status"] = $status;
-		$results["meta"]["message"] = $message;
+		$result["meta"]["status"] = $status;
+		$result["meta"]["message"] = $message;
 
 		header("HTTP/1.1 $status $message");
 
@@ -169,12 +181,12 @@ class Helper {
 		// Send the results, send by json if json was requested
 		if ($json) {
 			header("Content-Type: application/json");
-			echo json_encode($results);
+			echo json_encode($result);
 		} // Else send by plain text
 		else {
 			header("Content-Type: text/plain");
 			echo("results: ");
-			var_dump($results);
+			var_dump($result);
 		}
 	}
 }

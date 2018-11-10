@@ -55,9 +55,10 @@ class Database {
 
 	/**
 	 * Executes a sql query
-	 * @param $query string the sql query to run
-	 * @param null $bindings array array of any bindings to do with sql query
-	 * @return array array of data
+	 *
+	 * @param $query string The SQL query to run
+	 * @param null $bindings array Array of any bindings to use with the SQL query
+	 * @return array Array of data or meta feedback
 	 */
 	public function query($query, $bindings = null) {
 
@@ -65,7 +66,7 @@ class Database {
 
 			try {
 
-				//check if any bindings to execute
+				// Check if any bindings to execute
 				if (isset($bindings)) {
 					$result = $this->db->prepare($query);
 					$result->execute($bindings);
@@ -74,11 +75,12 @@ class Database {
 					$result = $this->db->query($query);
 				}
 
-				//if query was a select, return array of data
+				// If query was a select, return array of data
 				if (strpos($query, "SELECT") !== false) {
 					$results["rows"] = $result->fetchAll(\PDO::FETCH_ASSOC);
 				}
 
+				// Add the count of how many rows were effected
 				$results["count"] = $result->rowCount();
 			}
 			catch (\PDOException $failure) {
@@ -99,7 +101,7 @@ class Database {
 	}
 
 	/**
-	 * @return int id of last inserted row of data
+	 * @return int The ID of last inserted row of data
 	 */
 	public function lastInsertId() {
 		return $this->db->lastInsertId();

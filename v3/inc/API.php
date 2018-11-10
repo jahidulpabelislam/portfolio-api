@@ -12,23 +12,31 @@ use JPI\API\Entity\ProjectImage;
 class API {
 
 	private $db = null;
-
+	
+	/**
+	 * API constructor.
+	 */
 	public function __construct() {
 		$this->db = Database::get();
 	}
-
+	
+	/**
+	 * Check whether the user is logged or no
+	 *
+	 * @return array The Request response to send back
+	 */
 	public function getAuthStatus() {
 
 		if (Auth::isLoggedIn()) {
-			$results["meta"]["ok"] = true;
-			$results["meta"]["status"] = 200;
-			$results["meta"]["message"] = "OK";
+			$result["meta"]["ok"] = true;
+			$result["meta"]["status"] = 200;
+			$result["meta"]["message"] = "OK";
 		}
 		else {
-			$results = Helper::notAuthorised();
+			$result = Helper::notAuthorised();
 		}
 
-		return $results;
+		return $result;
 	}
 
 	/**
@@ -36,7 +44,7 @@ class API {
 	 *
 	 * @param $projectID int The id of the Project to get
 	 * @param bool $images Whether the images for the roject should should be added
-	 * @return array
+	 * @return array The Request response to send back
 	 */
 	public function getProject($projectID, $images = false) {
 
@@ -47,22 +55,32 @@ class API {
 		return $result;
 	}
 
-	//gets all projects but limited
+	/**
+	 * Gets all projects but paginated, also might include search
+	 *
+	 * @param $data array Any data to aid in the search query
+	 * @return array The Request response to send back
+	 */
 	public function getProjects($data) {
 
+		// If user added a limit param, use this if valid, unless its bigger than 10
 		if (isset($data["limit"])) {
 			$limit = min(abs(intval($data["limit"])), 10);
 		}
 
+		// Default limit to 10 if not specified or invalid
 		if (!isset($limit) || !is_int($limit) || $limit < 1) {
 			$limit = 10;
 		}
 
 		$offset = 0;
+		// Add a offset to the query, if specified
+		
 		if (isset($data["offset"])) {
-			$offset = min(abs(intval($data["offset"])), 10);
+			$offset = abs(intval($data["offset"]));
 		}
 
+		// Generate a offset to the query, if a page was specified using, page number and limit number
 		if (isset($data["page"])) {
 			$page = intval($data["page"]);
 			if (is_int($page) && $page > 1) {
@@ -71,13 +89,15 @@ class API {
 		}
 
 		$filter = "";
+		
+		// Add a filter if a search was entered
 		if (isset($data["search"])) {
-			//split each word in search
+			// Split each word in search
 			$searches = explode(" ", $data["search"]);
 
 			$search = "%";
 
-			//loop through each search word
+			// Loop through each search word
 			foreach ($searches as $aSearch) {
 				$search .= "${aSearch}%";
 			}
@@ -86,7 +106,7 @@ class API {
 
 			$search2 = "%";
 
-			//loop through each search word
+			// Loop through each search word
 			foreach ($searchesReversed as $aSearch) {
 				$search2 .= "${aSearch}%";
 			}
@@ -95,34 +115,34 @@ class API {
 		}
 
 		$query = "SELECT * FROM PortfolioProject $filter ORDER BY Date DESC LIMIT $limit OFFSET $offset;";
-		$results = $this->db->query($query);
+		$result = $this->db->query($query);
 
-		//check if database provided any meta data if not all ok
-		if (!isset($results["meta"])) {
+		// Check if database provided any meta data if not all ok
+		if (!isset($result["meta"])) {
 
 			$query = "SELECT COUNT(*) AS Count FROM PortfolioProject $filter;";
 			$count = $this->db->query($query);
-			$results["count"] = $count["rows"][0]["Count"];
+			$result["count"] = $count["rows"][0]["Count"];
 
-			//loop through each project and the projects images
-			for ($i = 0; $i < count($results["rows"]); $i++) {
+			// Loop through each project and get the Projects Images
+			for ($i = 0; $i < count($result["rows"]); $i++) {
 
-				//run the function provided as data exists and is valid
-				$picturesArray = self::getProjectPictures($results["rows"][$i]["ID"]);
-				$results["rows"][$i]["Pictures"] = $picturesArray["rows"];
+				// Run the function provided as data exists and is valid
+				$picturesArray = self::getProjectPictures($result["rows"][$i]["ID"]);
+				$result["rows"][$i]["Pictures"] = $picturesArray["rows"];
 			}
 
-			$results["meta"]["ok"] = true;
+			$result["meta"]["ok"] = true;
 		}
 
-		return $results;
+		return $result;
 	}
 
 	/**
 	 * Try and add a Project a user has attempted to add
 	 *
-	 * @param $data array
-	 * @return array
+	 * @param $data array The data to insert into the database for this new Project
+	 * @return array The Request response to send back
 	 */
 	public function addProject($data) {
 
@@ -154,7 +174,7 @@ class API {
 	 * Try to edit a Project a user has posted before
 	 *
 	 * @param $data array The new data entered to use to update the project with
-	 * @return array
+	 * @return array The Request response to send back
 	 */
 	public function editProject($data) {
 
@@ -190,7 +210,7 @@ class API {
 	 * Try to delete a Project a user has posted before
 	 *
 	 * @param $data array The data sent to aid in the deletion of the Project
-	 * @return array
+	 * @return array The Request response to send back
 	 */
 	public function deleteProject($data) {
 
@@ -219,7 +239,13 @@ class API {
 
 		return $result;
 	}
-
+	
+	/**
+	 * Get the Pictures attached to a Project
+	 *
+	 * @param $projectID int The Id of the Project
+	 * @return array The Request response to send back
+	 */
 	public function getProjectPictures($projectID) {
 
 		//Check the project trying to get pictures
@@ -238,7 +264,7 @@ class API {
 	 *
 	 * @param $projectID int The id of the Project
 	 * @param $pictureID int The id of the Project Image to get
-	 * @return array
+	 * @return array The Request response to send back
 	 */
 	public function getProjectPicture($projectID, $pictureID) {
 
@@ -256,7 +282,7 @@ class API {
 	 * Try to upload a picture user has tried to add as a project image
 	 *
 	 * @param $data array The data sent to aid in Inserting Project Image
-	 * @return array
+	 * @return array The Request response to send back
 	 */
 	public function addProjectPicture($data) {
 
@@ -327,7 +353,7 @@ class API {
 	 * Try to delete a picture linked to a project
 	 *
 	 * @param $data array The data sent to delete the Project Image
-	 * @return array
+	 * @return array The Request response to send back
 	 */
 	public function deletePicture($data) {
 
