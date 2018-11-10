@@ -29,7 +29,7 @@ class API {
 	}
 
 	//get a particular project defined by $projectID
-	public function getProject($projectID, $projectOnly = false) {
+	public function getProject($projectID, $pictures = false) {
 
 		$query = "SELECT * FROM PortfolioProject WHERE ID = :projectID;";
 		$bindings = [':projectID' => $projectID,];
@@ -43,7 +43,7 @@ class API {
 			$result["meta"]["message"] = "Not Found";
 		}
 		else {
-			if (!$projectOnly) {
+			if ($pictures) {
 				$picturesArray = self::getProjectPictures($projectID);
 				$result["rows"][0]["Pictures"] = $picturesArray["rows"];
 			}
@@ -155,7 +155,7 @@ class API {
 				if ($results["count"] > 0) {
 
 					$projectID = $this->db->lastInsertId();
-					$results = self::getProject($projectID);
+					$results = self::getProject($projectID, true);
 
 					$results["meta"]["ok"] = true;
 					$results["meta"]["status"] = 201;
@@ -193,8 +193,8 @@ class API {
 			if (Helper::checkData($data, $dataNeeded)) {
 
 				//Check the project trying to edit actually exists
-				$project = self::getProject($data["projectID"]);
-				if ($project["count"] > 0) {
+				$results = self::getProject($data["projectID"]);
+				if ($results["count"] > 0) {
 
 					$data["date"] = date("Y-m-d", strtotime($data["date"]));
 
@@ -225,12 +225,12 @@ class API {
 							}
 						}
 
-						$results = self::getProject($data["projectID"]);
+						$results = self::getProject($data["projectID"], true);
 						$results["meta"]["ok"] = true;
 					} //error updating project
 					else {
 						//check if database provided any meta data if so problem with executing query
-						if (!isset($project["meta"])) {
+						if (!isset($results["meta"])) {
 							$results["meta"]["ok"] = false;
 						}
 					}
@@ -311,7 +311,7 @@ class API {
 	public function getProjectPictures($projectID) {
 
 		//Check the project trying to get pictures
-		$results = self::getProject($projectID, true);
+		$results = self::getProject($projectID);
 		if ($results["count"] > 0) {
 
 			$query = "SELECT * FROM PortfolioProjectImage WHERE ProjectID = :projectID ORDER BY Number;";
@@ -337,7 +337,7 @@ class API {
 	public function getProjectPicture($projectID, $pictureID) {
 
 		//Check the project trying to get pictures
-		$results = self::getProject($projectID, true);
+		$results = self::getProject($projectID);
 		if ($results["count"] > 0) {
 
 			$query = "SELECT * FROM PortfolioProjectImage WHERE ProjectID = :projectID AND ID = :pictureID ORDER BY Number;";
