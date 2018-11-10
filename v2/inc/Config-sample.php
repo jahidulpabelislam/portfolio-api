@@ -6,6 +6,9 @@
 
 namespace JPI\API;
 
+date_default_timezone_set("Europe/London");
+ini_set('display_errors', 0);
+
 class Config {
 	
 	const DEBUG = false;
