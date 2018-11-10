@@ -6,6 +6,9 @@
 
 namespace JPI\API;
 
+use JPI\API\Entity\Project;
+use JPI\API\Entity\ProjectImage;
+
 class API {
 
 	private $db = null;
@@ -28,27 +31,24 @@ class API {
 		return $results;
 	}
 
-	//get a particular project defined by $projectID
+	/**
+	 * Get a particular Project defined by $projectID
+	 *
+	 * @param $projectID int The id of the Project to get
+	 * @param bool $pictures Whether the pictures for project should should be added
+	 * @return array
+	 */
 	public function getProject($projectID, $pictures = false) {
 
-		$query = "SELECT * FROM PortfolioProject WHERE ID = :projectID;";
-		$bindings = [':projectID' => $projectID,];
-		$result = $this->db->query($query, $bindings);
+		$project = new Project($projectID);
+		$result = $project->result;
 
-		//check if database provided any meta data if so no problem with executing query but no project found
-		if ($result["count"] <= 0 && !isset($result["meta"])) {
-			$result["meta"]["ok"] = false;
-			$result["meta"]["status"] = 404;
-			$result["meta"]["feedback"] = "No project found with ${projectID} as ID.";
-			$result["meta"]["message"] = "Not Found";
-		}
-		else {
+		// Check if database provided any meta data if so no problem with executing query but no project found
+		if (!empty($result["row"])) {
 			if ($pictures) {
 				$picturesArray = self::getProjectPictures($projectID);
-				$result["rows"][0]["Pictures"] = $picturesArray["rows"];
+				$result["row"]["Pictures"] = $picturesArray["rows"];
 			}
-
-			$result["meta"]["ok"] = true;
 		}
 
 		return $result;
@@ -312,7 +312,7 @@ class API {
 
 		//Check the project trying to get pictures
 		$results = self::getProject($projectID);
-		if ($results["count"] > 0) {
+		if (!empty($results["row"])) {
 
 			$query = "SELECT * FROM PortfolioProjectImage WHERE ProjectID = :projectID ORDER BY Number;";
 			$bindings[":projectID"] = $projectID;
@@ -333,33 +333,25 @@ class API {
 
 		return $results;
 	}
-
+	
+	/**
+	 * Get a Project Image for a Project by id
+	 *
+	 * @param $projectID int The id of the Project
+	 * @param $pictureID int The id of the Project Image to get
+	 * @return array
+	 */
 	public function getProjectPicture($projectID, $pictureID) {
 
-		//Check the project trying to get pictures
-		$results = self::getProject($projectID);
-		if ($results["count"] > 0) {
-
-			$query = "SELECT * FROM PortfolioProjectImage WHERE ProjectID = :projectID AND ID = :pictureID ORDER BY Number;";
-			$bindings = [
-				":projectID" => $projectID,
-				":pictureID" => $pictureID,
-			];
-			$results = $this->db->query($query, $bindings);
-
-			//check if database provided any meta data if so no problem with executing query but no project pictures found
-			if ($results["count"] <= 0 && !isset($result["meta"])) {
-				$results["meta"]["ok"] = false;
-				$results["meta"]["status"] = 404;
-				$results["meta"]["feedback"] = "No project image found with ${pictureID} as ID for ${projectID} as Project ID.";
-				$results["meta"]["message"] = "Not Found";
-			}
-			else {
-				$results["meta"]["ok"] = true;
-			}
+		// Check the project trying to get pictures
+		$result = self::getProject($projectID);
+		if (!empty($result["row"])) {
+			
+			$projectImage = new ProjectImage($pictureID);
+			$result = $projectImage->result;
 		}
 
-		return $results;
+		return $result;
 	}
 
 	//Tries to upload a picture user has tried to add as a project image
@@ -373,8 +365,8 @@ class API {
 			if (Helper::checkData($data, $dataNeeded) && isset($_FILES["picture"])) {
 
 				//Check the project trying to edit actually exists
-				$project = self::getProject($data["projectID"]);
-				if ($project["count"] > 0) {
+				$results = self::getProject($data["projectID"]);
+				if (!empty($results["row"])) {
 
 					//get the file type
 					$imageFileType = pathinfo(basename($_FILES["picture"]["name"]), PATHINFO_EXTENSION);
@@ -455,7 +447,7 @@ class API {
 
 				//Check the project trying to edit actually exists
 				$results = self::getProject($data["projectID"]);
-				if ($results["count"] > 0) {
+				if (!empty($results["row"])) {
 
 					$query = "SELECT File FROM PortfolioProjectImage WHERE ID = :id;";
 					$bindings = [":id" => $data["id"],];
