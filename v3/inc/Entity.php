@@ -38,7 +38,7 @@ abstract class Entity {
 		if ($result["count"] <= 0 && !isset($result["meta"])) {
 			$result["meta"]["ok"] = false;
 			$result["meta"]["status"] = 404;
-			$result["meta"]["feedback"] = "No $this->displayName found with $value as $column.";
+			$result["meta"]["feedback"] = "No {$this->displayName}s found with $value as $column.";
 			$result["meta"]["message"] = "Not Found";
 		}
 		else {
@@ -53,8 +53,13 @@ abstract class Entity {
 		$result = $this->getByColumn('ID', $id);
 
 		$result["row"] = [];
-		// As this /Should/ return only one, use 'Row' as index
-		if ($result["count"] > 0) {
+		
+		// Check if database provided any meta data if so no problem with executing query but no item found
+		if ($result["count"] <= 0 && !isset($result["meta"])) {
+			$result["meta"]["feedback"] = "No $this->displayName found with $id as ID.";
+		}
+		// Else everything was okay, so as this /Should/ return only one, use 'Row' as index
+		else {
 			$result["row"] = $result["rows"][0];
 		}
 
