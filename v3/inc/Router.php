@@ -72,7 +72,7 @@ class Router {
 					case "POST":
 						if (isset($path[1]) && trim($path[1]) !== "" && isset($path[2]) && $path[2] === "pictures") {
 							if (isset($_FILES["picture"])) {
-								$data["projectID"] = $path[1];
+								$data["ProjectID"] = $path[1];
 								$results = $api->addProjectPicture($data);
 							}
 						}
@@ -82,7 +82,7 @@ class Router {
 						break;
 					case "PUT":
 						if (isset($path[1]) && trim($path[1]) !== "") {
-							$data["projectID"] = $path[1];
+							$data["ID"] = $path[1];
 							$results = $api->editProject($data);
 						}
 						break;
