@@ -62,7 +62,7 @@ class Helper {
 		$meta["ok"] = false;
 		$meta["status"] = 405;
 		$meta["message"] = "Method not allowed.";
-		$meta["feedback"] = "${method} Method Not Allowed on /api/v2/" . implode("/", $path);
+		$meta["feedback"] = "${method} Method Not Allowed on /api/v3/" . implode("/", $path);
 
 		return $meta;
 	}
