@@ -6,7 +6,7 @@
 
 namespace JPI\API;
 
-class HasherSample {
+class Hasher {
 
 	/*
 	 * This will generate a hashed value of given string

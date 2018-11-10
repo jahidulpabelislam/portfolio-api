@@ -7,7 +7,7 @@
 
 namespace JPI\API;
 
-class AuthSample {
+class Auth {
 
 	/**
 	 * Authenticate a user trying to login

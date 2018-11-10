@@ -1,7 +1,7 @@
 <?php
 /*
  * Connects to a database and set up to send and receive data
- * using application constants defined in config.php. file
+ * using application constants defined in Config.php. file
  * a reusable file for other projects
  * MySQL specific
  * @author Jahidul Pabel Islam
@@ -17,7 +17,7 @@ class Database {
 	/**
 	 * Connects to a MySQL engine
 	 * using application constants DB_IP, DB_USERNAME, and DB_PASSWORD
-	 * defined in config.php
+	 * defined in Config.php
 	 */
 	public function __construct() {
 
