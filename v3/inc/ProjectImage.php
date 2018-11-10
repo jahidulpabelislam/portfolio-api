@@ -18,4 +18,20 @@ class ProjectImage extends Entity {
 		'ProjectID',
 		'Number'
 	];
+	
+	public function delete($id, $fileName = '') {
+
+		$result = parent::delete($id);
+
+		// Check if the deletion was ok
+		if ($result["count"] > 0 && $fileName) {
+			
+			// Checks if file exists to delete the picture
+			if (file_exists($_SERVER['DOCUMENT_ROOT'] . $fileName)) {
+				unlink($_SERVER['DOCUMENT_ROOT'] . $fileName);
+			}
+		}
+
+		return $result;
+	}
 }

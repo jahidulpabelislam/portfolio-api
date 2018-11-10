@@ -186,91 +186,51 @@ class API {
 		return $result;
 	}
 
-	//Try's to delete a project user has posted before
+	/**
+	 * Try to delete a Project a user has posted before
+	 *
+	 * @param $data array The data sent to aid in the deletion of the Project
+	 * @return array
+	 */
 	public function deleteProject($data) {
 
-		//checks if user is authored
+		// Checks if user is authored
 		if (Auth::isLoggedIn()) {
 
-			//checks if requests needed are present and not empty
-			$dataNeeded = ["projectID",];
+			// Checks if the data needed is present and not empty
+			$dataNeeded = ["ID",];
 			if (Helper::checkData($data, $dataNeeded)) {
 
-				//Check the project trying to edit actually exists
-				$results = self::getProject($data["projectID"]);
-				if ($results["count"] > 0) {
+				// Check the Project trying to delete actually exists
+				$result = self::getProject($data["ID"]);
+				if (!empty($result["row"])) {
 
-					//Delete the images linked to project
-					$pictures = $results["rows"][0]["Pictures"];
-					foreach ($pictures as $picture) {
-
-						// Delete the image from the database
-						$query = "DELETE FROM PortfolioProjectImage WHERE ID = :ID;";
-						$bindings = [":ID" => $picture["ID"],];
-						$this->db->query($query, $bindings);
-
-
-						// Checks if file exists to delete the picture from server
-						$fileName = $picture["File"];
-						if (file_exists($_SERVER['DOCUMENT_ROOT'] . $fileName)) {
-							unlink($_SERVER['DOCUMENT_ROOT'] . $fileName);
-						}
-					}
-
-					// Finally delete the actual project from database
-					$query = "DELETE FROM PortfolioProject WHERE ID = :projectID;";
-					$bindings = [":projectID" => $data["projectID"],];
-					$results = $this->db->query($query, $bindings);
-
-					//if deletion was ok
-					if ($results["count"] > 0) {
-						$results["meta"]["ok"] = true;
-
-						$results["rows"]["projectID"] = $data["projectID"];
-					} //error deleting project
-					else {
-						//check if database provided any meta data if so problem with executing query
-						if (!isset($results["meta"])) {
-							$results["meta"]["ok"] = false;
-						}
-					}
+					$project = new Project();
+					$result = $project->delete($data["ID"]);
 				}
-			} //else data was not provided
+			} // Else the data needed was not provided
 			else {
-				$results["meta"] = Helper::dataNotProvided($dataNeeded);
+				$result["meta"] = Helper::dataNotProvided($dataNeeded);
 			}
 		}
 		else {
-			$results = Helper::notAuthorised();
+			$result = Helper::notAuthorised();
 		}
 
-		return $results;
+		return $result;
 	}
 
 	public function getProjectPictures($projectID) {
 
 		//Check the project trying to get pictures
-		$results = self::getProject($projectID);
-		if (!empty($results["row"])) {
+		$result = self::getProject($projectID);
+		if (!empty($result["row"])) {
 
-			$query = "SELECT * FROM PortfolioProjectImage WHERE ProjectID = :projectID ORDER BY Number;";
-			$bindings[":projectID"] = $projectID;
-			$results = $this->db->query($query, $bindings);
-
-			//check if database provided any meta data if so no problem with executing query but no project pictures found
-			if ($results["count"] <= 0 && !isset($result["meta"])) {
-				$results["meta"]["ok"] = false;
-				$results["meta"]["status"] = 404;
-				$results["meta"]["feedback"] = "No project images found for ${projectID}.";
-				$results["meta"]["message"] = "Not Found";
-			}
-			else {
-				$results["meta"]["ok"] = true;
-			}
-
+			$projectImage = new ProjectImage();
+			$result = $projectImage->getByColumn('ProjectID', $projectID);
 		}
 
-		return $results;
+		return $result;
 	}
 	
 	/**
@@ -363,63 +323,45 @@ class API {
 		return $result;
 	}
 
-	//Tries to delete a picture linked to a project
+	/**
+	 * Try to delete a picture linked to a project
+	 *
+	 * @param $data array The data sent to delete the Project Image
+	 * @return array
+	 */
 	public function deletePicture($data) {
 
-		//checks if user is authored
+		// Checks if user is authored
 		if (Auth::isLoggedIn()) {
 
-			//checks if requests needed are present and not empty
-			$dataNeeded = ["projectID", "id",];
+			// Checks if data needed is present and not empty
+			$dataNeeded = ["ProjectID", "ID",];
 			if (Helper::checkData($data, $dataNeeded)) {
 
-				//Check the project trying to edit actually exists
-				$results = self::getProject($data["projectID"]);
-				if (!empty($results["row"])) {
+				// Check the project trying to edit actually exists
+				$result = self::getProject($data["ProjectID"]);
+				if (!empty($result["row"])) {
 
-					$query = "SELECT File FROM PortfolioProjectImage WHERE ID = :id;";
-					$bindings = [":id" => $data["id"],];
-					$results = $this->db->query($query, $bindings);
+					$result = $this->getProjectPicture($data["ProjectID"], $data["ID"]);
 
-					if ($results["count"] > 0) {
+					if (!empty($result["row"])) {
 
-						$fileName = $results["rows"][0]["File"];
+						$fileName = $result["row"]["File"];
 
-						//update database to delete row
-						$query = "DELETE FROM PortfolioProjectImage WHERE ID = :id;";
-						$bindings = [":id" => $data["id"],];
-						$results = $this->db->query($query, $bindings);
-
-						//if deletion was ok
-						if ($results["count"] > 0) {
-
-							//checks if file exists to delete the picture
-							if (file_exists($_SERVER['DOCUMENT_ROOT'] . $fileName)) {
-								unlink($_SERVER['DOCUMENT_ROOT'] . $fileName);
-							}
-
-							$results["meta"]["ok"] = true;
-							$results["rows"]["id"] = $data["id"];
-
-						} //else error updating
-						else {
-							//check if database provided any meta data if so problem with executing query
-							if (!isset($results["meta"])) {
-								$results["meta"]["ok"] = false;
-							}
-						}
-
+						// Update database to delete row
+						$projectImage = new ProjectImage();
+						$result = $projectImage->delete($data["ID"], $fileName);
 					}
 				}
-			} //else data was not provided
+			} // Else data was not provided
 			else {
-				$results["meta"] = Helper::dataNotProvided($dataNeeded);
+				$result["meta"] = Helper::dataNotProvided($dataNeeded);
 			}
 		}
 		else {
-			$results = Helper::notAuthorised();
+			$result = Helper::notAuthorised();
 		}
 
-		return $results;
+		return $result;
 	}
 }

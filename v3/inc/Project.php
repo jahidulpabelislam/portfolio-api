@@ -61,4 +61,20 @@ class Project extends Entity {
 
 		return $result;
 	}
+	
+	public function delete($id) {
+		$result = parent::delete($id);
+
+		// Delete the images linked to the Project
+		$projectImage = new ProjectImage();
+		$picturesResult = $projectImage->getByColumn('ProjectID', $id);
+		$pictures = $picturesResult["rows"];
+		foreach ($pictures as $picture) {
+
+			// Delete the image from the database & from file
+			$projectImage->delete($picture["ID"], $picture["File"]);
+		}
+		
+		return $result;
+	}
 }

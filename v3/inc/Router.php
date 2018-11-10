@@ -88,13 +88,13 @@ class Router {
 						break;
 					case "DELETE":
 						if (isset($path[1]) && trim($path[1]) !== "") {
-							$data["projectID"] = $path[1];
-							
 							if (isset($path[2]) && $path[2] === "pictures" && isset($path[3]) && $path[3] !== "") {
-								$data["id"] = $path[3];
+								$data["ID"] = $path[3];
+								$data["ProjectID"] = $path[1];
 								$results = $api->deletePicture($data);
 							}
 							else {
+								$data["ID"] = $path[1];
 								$results = $api->deleteProject($data);
 							}
 						}

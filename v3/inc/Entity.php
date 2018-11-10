@@ -146,4 +146,27 @@ abstract class Entity {
 
 		return [$query, $bindings];
 	}
+	
+	public function delete($id) {
+		
+		$query = "DELETE FROM $this->tableName WHERE ID = :ID;";
+		$bindings = [":ID" => $id,];
+		$result = $this->db->query($query, $bindings);
+		
+		// Check if the deletion was ok
+		if ($result["count"] > 0) {
+			
+			$result["meta"]["ok"] = true;
+			$result["row"]["ID"] = $id;
+			
+		} //Else there was an error deleting
+		else {
+			// Check if database provided any meta data if so problem with executing query
+			if (!isset($result["meta"])) {
+				$result["meta"]["ok"] = false;
+			}
+		}
+		
+		return $result;
+	}
 }
