@@ -62,7 +62,7 @@ class Router {
 								}
 							}
 							else {
-								$results = $api->getProject($projectID);
+								$results = $api->getProject($projectID, true);
 							}
 						}
 						else {
