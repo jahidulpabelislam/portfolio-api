@@ -32,7 +32,7 @@ class API {
 	public function getProject($projectID, $projectOnly = false) {
 
 		$query = "SELECT * FROM PortfolioProject WHERE ID = :projectID;";
-		$bindings = array(':projectID' => $projectID);
+		$bindings = [':projectID' => $projectID,];
 		$result = $this->db->query($query, $bindings);
 
 		//check if database provided any meta data if so no problem with executing query but no project found
@@ -132,13 +132,23 @@ class API {
 		if (Auth::isLoggedIn()) {
 
 			//checks if requests needed are present and not empty
-			$dataNeeded = array("projectName", "skills", "longDescription", "shortDescription", "github", "date");
+			$dataNeeded = ["projectName", "skills", "longDescription", "shortDescription", "github", "date",];
 			if (Helper::checkData($data, $dataNeeded)) {
 
 				$data["date"] = date("Y-m-d", strtotime($data["date"]));
 
 				$query = "INSERT INTO PortfolioProject (Name, Skills, LongDescription, ShortDescription, Link, GitHub, Download, Date, Colour) VALUES (:projectName, :skills, :longDescription, :shortDescription, :link, :github, :download, :date, :colour);";
-				$bindings = array(":projectName" => $data["projectName"], ":skills" => $data["skills"], ":longDescription" => $data["longDescription"], ":shortDescription" => $data["shortDescription"], ":link" => $data["link"], ":github" => $data["github"], ":download" => $data["download"], ":date" => $data["date"], ":colour" => $data["colour"]);
+				$bindings = [
+					":projectName" => $data["projectName"],
+					":skills" => $data["skills"],
+					":longDescription" => $data["longDescription"],
+					":shortDescription" => $data["shortDescription"],
+					":link" => $data["link"],
+					":github" => $data["github"],
+					":download" => $data["download"],
+					":date" => $data["date"],
+					":colour" => $data["colour"],
+				];
 				$results = $this->db->query($query, $bindings);
 
 				//if add was ok
@@ -179,7 +189,7 @@ class API {
 		if (Auth::isLoggedIn()) {
 
 			//checks if requests needed are present and not empty
-			$dataNeeded = array("projectID", "projectName", "skills", "longDescription", "shortDescription", "github", "date");
+			$dataNeeded = ["projectID", "projectName", "skills", "longDescription", "shortDescription", "github", "date",];
 			if (Helper::checkData($data, $dataNeeded)) {
 
 				//Check the project trying to edit actually exists
@@ -189,7 +199,18 @@ class API {
 					$data["date"] = date("Y-m-d", strtotime($data["date"]));
 
 					$query = "UPDATE PortfolioProject SET Name = :projectName, Skills = :skills, LongDescription = :longDescription, Link = :link, ShortDescription = :shortDescription, GitHub = :github, Download = :download, Date = :date, Colour = :colour WHERE ID = :projectID;";
-					$bindings = array(":projectID" => $data["projectID"], ":projectName" => $data["projectName"], ":skills" => $data["skills"], ":longDescription" => $data["longDescription"], ":shortDescription" => $data["shortDescription"], ":link" => $data["link"], ":github" => $data["github"], ":download" => $data["download"], ":date" => $data["date"], ":colour" => $data["colour"]);
+					$bindings = [
+						":projectID" => $data["projectID"],
+						":projectName" => $data["projectName"],
+						":skills" => $data["skills"],
+						":longDescription" => $data["longDescription"],
+						":shortDescription" => $data["shortDescription"],
+						":link" => $data["link"],
+						":github" => $data["github"],
+						":download" => $data["download"],
+						":date" => $data["date"],
+						":colour" => $data["colour"],
+					];
 					$results = $this->db->query($query, $bindings);
 
 					//if update was ok
@@ -199,7 +220,7 @@ class API {
 						if (count($pictures) > 0) {
 							foreach ($pictures as $picture) {
 								$query = "UPDATE PortfolioProjectImage SET Number = :Number WHERE ID = :ID;";
-								$bindings = array(":ID" => $picture->ID, ":Number" => $picture->Number);
+								$bindings = [":ID" => $picture->ID, ":Number" => $picture->Number,];
 								$this->db->query($query, $bindings);
 							}
 						}
@@ -233,7 +254,7 @@ class API {
 		if (Auth::isLoggedIn()) {
 
 			//checks if requests needed are present and not empty
-			$dataNeeded = array("projectID");
+			$dataNeeded = ["projectID",];
 			if (Helper::checkData($data, $dataNeeded)) {
 
 				//Check the project trying to edit actually exists
@@ -246,7 +267,7 @@ class API {
 
 						// Delete the image from the database
 						$query = "DELETE FROM PortfolioProjectImage WHERE ID = :ID;";
-						$bindings = array(":ID" => $picture["ID"]);
+						$bindings = [":ID" => $picture["ID"],];
 						$this->db->query($query, $bindings);
 
 
@@ -259,7 +280,7 @@ class API {
 
 					// Finally delete the actual project from database
 					$query = "DELETE FROM PortfolioProject WHERE ID = :projectID;";
-					$bindings = array(":projectID" => $data["projectID"]);
+					$bindings = [":projectID" => $data["projectID"],];
 					$results = $this->db->query($query, $bindings);
 
 					//if deletion was ok
@@ -320,8 +341,10 @@ class API {
 		if ($results["count"] > 0) {
 
 			$query = "SELECT * FROM PortfolioProjectImage WHERE ProjectID = :projectID AND ID = :pictureID ORDER BY Number;";
-			$bindings[":projectID"] = $projectID;
-			$bindings[":pictureID"] = $pictureID;
+			$bindings = [
+				":projectID" => $projectID,
+				":pictureID" => $pictureID,
+			];
 			$results = $this->db->query($query, $bindings);
 
 			//check if database provided any meta data if so no problem with executing query but no project pictures found
@@ -334,7 +357,6 @@ class API {
 			else {
 				$results["meta"]["ok"] = true;
 			}
-
 		}
 
 		return $results;
@@ -347,7 +369,7 @@ class API {
 		if (Auth::isLoggedIn()) {
 
 			//checks if requests needed are present and not empty
-			$dataNeeded = array("projectID");
+			$dataNeeded = ["projectID",];
 			if (Helper::checkData($data, $dataNeeded) && isset($_FILES["picture"])) {
 
 				//Check the project trying to edit actually exists
@@ -374,7 +396,7 @@ class API {
 
 							//update database with location of new picture
 							$query = "INSERT INTO PortfolioProjectImage (File, ProjectID, Number) VALUES (:file, :projectID, 0);";
-							$bindings = array(":file" => $fileLocation, ":projectID" => $data["projectID"]);
+							$bindings = [":file" => $fileLocation, ":projectID" => $data["projectID"],];
 							$results = $this->db->query($query, $bindings);
 
 							//if update of user was ok
@@ -428,7 +450,7 @@ class API {
 		if (Auth::isLoggedIn()) {
 
 			//checks if requests needed are present and not empty
-			$dataNeeded = array("projectID", "id");
+			$dataNeeded = ["projectID", "id",];
 			if (Helper::checkData($data, $dataNeeded)) {
 
 				//Check the project trying to edit actually exists
@@ -436,7 +458,7 @@ class API {
 				if ($results["count"] > 0) {
 
 					$query = "SELECT File FROM PortfolioProjectImage WHERE ID = :id;";
-					$bindings = array(":id" => $data["id"]);
+					$bindings = [":id" => $data["id"],];
 					$results = $this->db->query($query, $bindings);
 
 					if ($results["count"] > 0) {
@@ -445,7 +467,7 @@ class API {
 
 						//update database to delete row
 						$query = "DELETE FROM PortfolioProjectImage WHERE ID = :id;";
-						$bindings = array(":id" => $data["id"]);
+						$bindings = [":id" => $data["id"],];
 						$results = $this->db->query($query, $bindings);
 
 						//if deletion was ok
