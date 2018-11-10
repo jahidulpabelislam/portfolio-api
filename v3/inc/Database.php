@@ -54,7 +54,7 @@ class Database {
 	}
 
 	/**
-	 * Executes a sql query
+	 * Executes a SQL query
 	 *
 	 * @param $query string The SQL query to run
 	 * @param null $bindings array Array of any bindings to use with the SQL query
