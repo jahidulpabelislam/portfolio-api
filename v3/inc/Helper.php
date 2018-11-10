@@ -106,6 +106,33 @@ class Helper {
 		$results['meta']["method"] = $method;
 		// Send back the path they requested
 		$results['meta']["path"] = $path;
+		
+		$origin_domain = $_SERVER["HTTP_ORIGIN"] ?? "";
+		
+		// Strip the protocol from domain
+		$stripped_domain = str_replace("http://", "", $origin_domain);
+		$stripped_domain = str_replace("https://", "", $stripped_domain);
+		
+		$allowed_domains = [
+			"jahidulpabelislam.com",
+			"cms.jahidulpabelislam.com",
+			"staging.jahidulpabelislam.com",
+			"staging.cms.jahidulpabelislam.com",
+			"portfolio.local",
+			"portfolio-cms.local",
+		];
+		
+		// If the domain if allowed send correct header response back
+		if (in_array($stripped_domain, $allowed_domains)) {
+			header("Access-Control-Allow-Origin: $origin_domain");
+			header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+			header("Access-Control-Allow-Headers: Process-Data");
+			
+			if ($method === "OPTIONS") {
+				$results["meta"]["status"] = 200;
+				$results["meta"]["message"] = "OK";
+			}
+		}
 
 		// Figure out the correct meta responses to return
 		if (isset($results["meta"]["ok"]) && $results["meta"]["ok"] !== false) {
@@ -121,26 +148,6 @@ class Helper {
 		$results["meta"]["message"] = $message;
 
 		header("HTTP/1.1 $status $message");
-		
-		$origin_domain = $_SERVER["HTTP_ORIGIN"] ?? "";
-
-		// Strip the protocol from domain
-		$stripped_domain = str_replace("http://", "", $origin_domain);
-		$stripped_domain = str_replace("https://", "", $stripped_domain);
-
-		$allowed_domains = [
-			"jahidulpabelislam.com",
-			"cms.jahidulpabelislam.com",
-			"staging.jahidulpabelislam.com",
-			"staging.cms.jahidulpabelislam.com",
-			"portfolio.local",
-			"portfolio-cms.local",
-		];
-
-		// If the domain if allowed send correct header response back
-		if (in_array($stripped_domain, $allowed_domains)) {
-			header("Access-Control-Allow-Origin: $origin_domain");
-		}
 
 		$notCachedURLs = array(
 			"session/",
