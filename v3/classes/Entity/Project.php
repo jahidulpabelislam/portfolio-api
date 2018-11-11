@@ -63,6 +63,9 @@ class Project extends Entity {
 	 * @return array Either an array with successful meta data or an array of error feedback meta
 	 */
 	public function save($values) {
+		
+		$values["Date"] = date("Y-m-d", strtotime($values["Date"]));
+		
 		$result = parent::save($values);
 
 		// Checks if the save was a update

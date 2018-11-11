@@ -49,7 +49,6 @@ class API {
 	public function getProject($projectID, $images = false) {
 
 		$project = new Project();
-
 		$result = $project->getById($projectID, $images);
 
 		return $result;
@@ -74,8 +73,8 @@ class API {
 		}
 
 		$offset = 0;
+
 		// Add a offset to the query, if specified
-		
 		if (isset($data["offset"])) {
 			$offset = abs(intval($data["offset"]));
 		}
@@ -153,8 +152,6 @@ class API {
 			$dataNeeded = ["Name", "Skills", "LongDescription", "ShortDescription", "GitHub", "Date",];
 			if (Helper::checkData($data, $dataNeeded)) {
 
-				$data["Date"] = date("Y-m-d", strtotime($data["Date"]));
-
 				$project = new Project();
 				$result = $project->save($data);
 
@@ -188,8 +185,6 @@ class API {
 				// Check the Project trying to edit actually exists
 				$result = self::getProject($data["ID"]);
 				if (!empty($result["row"])) {
-
-					$data["Date"] = date("Y-m-d", strtotime($data["Date"]));
 
 					$project = new Project();
 					$result = $project->save($data);
