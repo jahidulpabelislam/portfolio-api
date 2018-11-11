@@ -19,6 +19,17 @@ class ProjectImage extends Entity {
 		'Number'
 	];
 	
+	/**
+	 * Delete an Entity from the Database
+	 *
+	 * Add extra functionality on top of default delete function
+	 * As these Entities are linked to a file on the server
+	 * Here actually delete the file from the server
+	 *
+	 * @param $id int The ID of the Entity to delete
+	 * @param string $fileName string The filename of the file to delete
+	 * @return array Either an array with successful meta data or a array of error feedback meta
+	 */
 	public function delete($id, $fileName = '') {
 
 		$result = parent::delete($id);

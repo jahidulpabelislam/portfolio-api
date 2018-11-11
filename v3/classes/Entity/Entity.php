@@ -20,6 +20,13 @@ abstract class Entity {
 
 	public $result = [];
 
+	/**
+	 * Entity constructor.
+	 *
+	 * If $id is passed, load up the Entity from Database where ID = $id
+	 *
+	 * @param null $id int The ID of a Entity in the Database to load
+	 */
 	public function __construct($id = null) {
 		$this->db = Database::get();
 
@@ -27,7 +34,15 @@ abstract class Entity {
 			$this->result = $this->getById($id);
 		}
 	}
-	
+
+	/**
+	 * Load Entities from the Database where a column ($column) = a value ($value)
+	 * Either return Entities with success meta data, or failed meta data
+	 *
+	 * @param $column string
+	 * @param $value string
+	 * @return array The result from the SQL query
+	 */
 	public function getByColumn($column, $value) {
 
 		$query = "SELECT * FROM $this->tableName WHERE $column = :value ORDER BY $this->defaultOrderingByColumn $this->defaultOrderingByDirection;";
@@ -48,12 +63,20 @@ abstract class Entity {
 		return $result;
 	}
 
+	/**
+	 * Load a single Entity from the Database where a ID column = a value ($id)
+	 * Either return Entity with success meta data, or failed meta data
+	 * Uses helper function getByColumn();
+	 *
+	 * @param $id int The ID of the Entity to get
+	 * @return array The result from the SQL query
+	 */
 	public function getById($id) {
 
 		$result = $this->getByColumn('ID', $id);
 
 		$result["row"] = [];
-		
+
 		// Check if database provided any meta data if so no problem with executing query but no item found
 		if ($result["count"] <= 0 && !isset($result["meta"])) {
 			$result["meta"]["feedback"] = "No $this->displayName found with $id as ID.";
@@ -68,7 +91,14 @@ abstract class Entity {
 
 		return $result;
 	}
-	
+
+	/**
+	 * Save values to the Entity Table in the Database
+	 * Will either be a new insert or a update to an existing Entity
+	 *
+	 * @param $values array The values as an array to use for the Entity
+	 * @return array Either an array with successful meta data or an array of error feedback meta
+	 */
 	public function save($values) {
 
 		if (empty($values["ID"])) {
@@ -102,7 +132,13 @@ abstract class Entity {
 
 		return $result;
 	}
-	
+
+	/**
+	 * Helper function to generate a INSERT SQL query using the Entity's columns and provided data
+	 *
+	 * @param $values array The values as an array to use for the new Entity
+	 * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
+	 */
 	private function generateInsertQuery($values) {
 		$columnsQuery = '(';
 		$valuesQuery = '(';
@@ -126,6 +162,12 @@ abstract class Entity {
 		return [$query, $bindings];
 	}
 	
+	/**
+	 * Helper function to generate a UPDATE SQL query using the Entity's columns and provided data
+	 *
+	 * @param $values array The new values as an array to use for the Entity's update
+	 * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
+	 */
 	private function generateUpdateQuery($values) {
 		$valuesQuery = 'SET ';
 		$bindings = [];
@@ -147,12 +189,18 @@ abstract class Entity {
 		return [$query, $bindings];
 	}
 	
+	/**
+	 * Delete an Entity from the Database
+	 *
+	 * @param $id int The ID of the Entity to delete
+	 * @return array Either an array with successful meta data or a array of error feedback meta
+	 */
 	public function delete($id) {
-		
+
 		$query = "DELETE FROM $this->tableName WHERE ID = :ID;";
 		$bindings = [":ID" => $id,];
 		$result = $this->db->query($query, $bindings);
-		
+
 		// Check if the deletion was ok
 		if ($result["count"] > 0) {
 			
@@ -166,7 +214,7 @@ abstract class Entity {
 				$result["meta"]["ok"] = false;
 			}
 		}
-		
+
 		return $result;
 	}
 }

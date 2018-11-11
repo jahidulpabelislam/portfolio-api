@@ -23,6 +23,19 @@ class Project extends Entity {
 		'Colour',
 	];
 
+	/**
+	 * Load a single Entity from the Database where a ID column = a value ($id)
+	 * Either return Entity with success meta data, or failed meta data
+	 * Uses helper function getByColumn();
+	 *
+	 * As extra functionality on top of default function
+	 * As Project is linked to Multiple Project Images
+	 * Add these to the result unless specified
+	 *
+	 * @param $id int The ID of the Entity to get
+	 * @param bool $images bool Whether of not to also get and output the Project Images linked to this Project
+	 * @return array The result from the SQL query
+	 */
 	public function getById($id, $images = true) {
 		$result = parent::getById($id);
 
@@ -38,6 +51,17 @@ class Project extends Entity {
 		return $result;
 	}
 
+	/**
+	 * Save values to the Entity Table in the Database
+	 * Will either be a new insert or a update to an existing Entity
+	 *
+	 * Add extra functionality on top of default save
+	 * If the save was a update, update the Order 'Number' on its Project Images
+	 * The Order Number is based on to order the items are in
+	 *
+	 * @param $values array The values as an array to use for the Entity
+	 * @return array Either an array with successful meta data or an array of error feedback meta
+	 */
 	public function save($values) {
 		$result = parent::save($values);
 
@@ -61,7 +85,16 @@ class Project extends Entity {
 
 		return $result;
 	}
-	
+
+	/**
+	 * Delete an Entity from the Database
+	 *
+	 * Add extra functionality on top of default delete function
+	 * As these Entities are linked to many Project Images, so delete these also
+	 *
+	 * @param $id int The ID of the Entity to delete
+	 * @return array Either an array with successful meta data or a array of error feedback meta
+	 */
 	public function delete($id) {
 		$result = parent::delete($id);
 
