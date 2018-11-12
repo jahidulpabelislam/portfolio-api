@@ -27,8 +27,6 @@ class Config {
 	const PORTFOLIO_ADMIN_PASSWORD = 'root';
 
 	public function __construct() {
-		date_default_timezone_set("Europe/London");
-
 		$environment = !empty(getenv('APPLICATION_ENV')) ? getenv('APPLICATION_ENV') : 'development';
 		// Don't want debugging on live/production site
 		if ($environment === 'production') {
