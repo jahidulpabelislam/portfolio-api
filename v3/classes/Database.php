@@ -33,6 +33,7 @@ class Database {
 			$this->db = new \PDO($dsn, Config::DB_USERNAME, Config::DB_PASSWORD, $option);
 		}
 		catch (\PDOException $failure) {
+			error_log("Error creating a connection to database: " . $failure->getMessage());
 			if ($this->config->debug) {
 				echo $failure;
 			}
@@ -84,7 +85,8 @@ class Database {
 				$results["count"] = $result->rowCount();
 			}
 			catch (\PDOException $failure) {
-
+				error_log("Error executing query on database: " . $failure->getMessage() . " using query: $query and bindings" . print_r($bindings, true) . ", full error: " . $failure);
+				
 				if ($this->config->debug) {
 					$results["meta"]["error"] = $failure;
 				}
