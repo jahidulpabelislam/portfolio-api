@@ -87,13 +87,13 @@ class Database {
 				$results["count"] = $result->rowCount();
 			}
 			catch (\PDOException $error) {
-				error_log("Error executing query on database: " . $error->getMessage() . " using query: $query and bindings" . print_r($bindings, true) . ", full error: " . $error);
+				error_log("Error executing query on database: " . $error->getMessage() . " using query: $query and bindings: " . print_r($bindings, true) . ", full error: " . $error);
 
 				$results["meta"]["ok"] = false;
 				$results["meta"]["feedback"] = "Problem with Server.";
 
 				if ($this->config->debug) {
-					$results["meta"]["feedback"] = $error;
+					$results["meta"]["feedback"] = $error->getMessage();
 				}
 			}
 		}
