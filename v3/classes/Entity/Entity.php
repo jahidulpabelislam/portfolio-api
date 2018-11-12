@@ -43,7 +43,7 @@ abstract class Entity {
 	 * @param $value string
 	 * @return array The result from the SQL query
 	 */
-	public function getByColumn($column, $value) {
+	public function getByColumn($column, $value) : array {
 
 		$query = "SELECT * FROM $this->tableName WHERE $column = :value ORDER BY $this->defaultOrderingByColumn $this->defaultOrderingByDirection;";
 		$bindings = array(':value' => $value);
@@ -71,7 +71,7 @@ abstract class Entity {
 	 * @param $id int The ID of the Entity to get
 	 * @return array The result from the SQL query
 	 */
-	public function getById($id) {
+	public function getById($id) : array {
 
 		$result = $this->getByColumn('ID', $id);
 
@@ -99,7 +99,7 @@ abstract class Entity {
 	 * @param $values array The values as an array to use for the Entity
 	 * @return array Either an array with successful meta data or an array of error feedback meta
 	 */
-	public function save($values) {
+	public function save(array $values) : array {
 
 		$id = $values["ID"] ?? null;
 
@@ -146,7 +146,7 @@ abstract class Entity {
 	 * @param $values array The values as an array to use for the new Entity
 	 * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
 	 */
-	private function generateInsertQuery($values) {
+	private function generateInsertQuery(array $values) : array {
 		$columnsQuery = '(';
 		$valuesQuery = '(';
 		$bindings = [];
@@ -175,7 +175,7 @@ abstract class Entity {
 	 * @param $values array The new values as an array to use for the Entity's update
 	 * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
 	 */
-	private function generateUpdateQuery($values) {
+	private function generateUpdateQuery(array $values) : array {
 		$valuesQuery = 'SET ';
 		$bindings = [];
 
@@ -202,7 +202,7 @@ abstract class Entity {
 	 * @param $id int The ID of the Entity to delete
 	 * @return array Either an array with successful meta data or a array of error feedback meta
 	 */
-	public function delete($id) {
+	public function delete($id) : array {
 
 		// Check the Entity trying to delete actually exists
 		$result = $this->getById($id);

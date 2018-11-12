@@ -43,7 +43,7 @@ class API {
 	 * Get a particular Project defined by $projectID
 	 *
 	 * @param $projectID int The id of the Project to get
-	 * @param bool $images Whether the images for the roject should should be added
+	 * @param bool $images bool Whether the images for the Project should should be added
 	 * @return array The request response to send back
 	 */
 	public function getProject($projectID, $images = false) {

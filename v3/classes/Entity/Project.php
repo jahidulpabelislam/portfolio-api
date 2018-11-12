@@ -36,7 +36,7 @@ class Project extends Entity {
 	 * @param bool $images bool Whether of not to also get and output the Project Images linked to this Project
 	 * @return array The result from the SQL query
 	 */
-	public function getById($id, $images = true) {
+	public function getById($id, $images = true) : array {
 		$result = parent::getById($id);
 
 		// Check if database provided any meta data if so no problem with executing query but no project found
@@ -62,7 +62,7 @@ class Project extends Entity {
 	 * @param $values array The values as an array to use for the Entity
 	 * @return array Either an array with successful meta data or an array of error feedback meta
 	 */
-	public function save($values) {
+	public function save(array $values) : array {
 		
 		$values["Date"] = date("Y-m-d", strtotime($values["Date"]));
 		
@@ -98,7 +98,7 @@ class Project extends Entity {
 	 * @param $id int The ID of the Entity to delete
 	 * @return array Either an array with successful meta data or a array of error feedback meta
 	 */
-	public function delete($id) {
+	public function delete($id) : array {
 		$result = parent::delete($id);
 
 		// Delete the images linked to the Project
