@@ -15,6 +15,8 @@ class Database {
 	
 	private $config = null;
 	
+	private $error = null;
+	
 	private static $instance = null;
 
 	/**
@@ -32,10 +34,10 @@ class Database {
 		try {
 			$this->db = new \PDO($dsn, Config::DB_USERNAME, Config::DB_PASSWORD, $option);
 		}
-		catch (\PDOException $failure) {
-			error_log("Error creating a connection to database: " . $failure->getMessage());
+		catch (\PDOException $error) {
+			error_log("Error creating a connection to database: " . $error->getMessage());
 			if ($this->config->debug) {
-				echo $failure;
+				$this->error = $error->getMessage();
 			}
 		}
 	}
@@ -84,20 +86,24 @@ class Database {
 				// Add the count of how many rows were effected
 				$results["count"] = $result->rowCount();
 			}
-			catch (\PDOException $failure) {
-				error_log("Error executing query on database: " . $failure->getMessage() . " using query: $query and bindings" . print_r($bindings, true) . ", full error: " . $failure);
-				
-				if ($this->config->debug) {
-					$results["meta"]["error"] = $failure;
-				}
+			catch (\PDOException $error) {
+				error_log("Error executing query on database: " . $error->getMessage() . " using query: $query and bindings" . print_r($bindings, true) . ", full error: " . $error);
 
 				$results["meta"]["ok"] = false;
 				$results["meta"]["feedback"] = "Problem with Server.";
+
+				if ($this->config->debug) {
+					$results["meta"]["feedback"] = $error;
+				}
 			}
 		}
 		else {
 			$results["meta"]["ok"] = false;
 			$results["meta"]["feedback"] = "Problem with Server.";
+
+			if ($this->config->debug) {
+				$results["meta"]["feedback"] = $this->error;
+			}
 		}
 		
 		$results = $this->appendDefaultMetaResults($results);
