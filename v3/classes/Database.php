@@ -35,7 +35,7 @@ class Database {
 			$this->db = new \PDO($dsn, Config::DB_USERNAME, Config::DB_PASSWORD, $option);
 		}
 		catch (\PDOException $error) {
-			error_log("Error creating a connection to database: " . $error->getMessage());
+			error_log("Error creating a connection to database: " . $error->getMessage(). ", full error: " . $error);
 			if ($this->config->debug) {
 				$this->error = $error->getMessage();
 			}
