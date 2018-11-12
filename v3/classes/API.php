@@ -212,13 +212,9 @@ class API {
 			$dataNeeded = ["ID",];
 			if (Helper::checkData($data, $dataNeeded)) {
 
-				// Check the Project trying to delete actually exists
-				$result = self::getProject($data["ID"]);
-				if (!empty($result["row"])) {
+				$project = new Project();
+				$result = $project->delete($data["ID"]);
 
-					$project = new Project();
-					$result = $project->delete($data["ID"]);
-				}
 			} // Else the data needed was not provided
 			else {
 				$result["meta"] = Helper::dataNotProvided($dataNeeded);
