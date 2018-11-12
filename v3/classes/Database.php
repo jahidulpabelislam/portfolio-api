@@ -99,6 +99,9 @@ class Database {
 			$results["meta"]["ok"] = false;
 			$results["meta"]["feedback"] = "Problem with Server.";
 		}
+		
+		$results = $this->appendDefaultMetaResults($results);
+
 		return $results;
 	}
 
@@ -107,6 +110,25 @@ class Database {
 	 */
 	public function lastInsertId() {
 		return $this->db->lastInsertId();
+	}
+	
+	/**
+	 * Add default data to the result array if not already there
+	 *
+	 * @param $result array
+	 * @return array
+	 */
+	public function appendDefaultMetaResults($result) : array {
+		
+		$defaults = [
+			'count' => 0,
+			'rows' => [],
+			'meta' => [],
+		];
+
+		$result = array_merge($defaults, $result);
+
+		return $result;
 	}
 }
 
