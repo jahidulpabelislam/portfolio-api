@@ -117,7 +117,7 @@ class API {
 		$result = $this->db->query($query);
 
 		// Check if database provided any meta data if not all ok
-		if (!isset($result["meta"])) {
+		if (count($result["rows"]) > 0 && !isset($result["meta"])) {
 
 			$query = "SELECT COUNT(*) AS Count FROM PortfolioProject $filter;";
 			$count = $this->db->query($query);
