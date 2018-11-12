@@ -123,7 +123,6 @@ class Database {
 		$defaults = [
 			'count' => 0,
 			'rows' => [],
-			'meta' => [],
 		];
 
 		$result = array_merge($defaults, $result);

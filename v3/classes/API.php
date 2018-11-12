@@ -115,20 +115,25 @@ class API {
 
 		$query = "SELECT * FROM PortfolioProject $filter ORDER BY Date DESC LIMIT $limit OFFSET $offset;";
 		$result = $this->db->query($query);
+		
+		error_log(print_r($result, true));
 
 		// Check if database provided any meta data if not all ok
 		if (!isset($result["meta"])) {
 
 			$query = "SELECT COUNT(*) AS Count FROM PortfolioProject $filter;";
 			$count = $this->db->query($query);
-			$result["count"] = $count["rows"][0]["Count"];
+			
+			if ($count && count($count["rows"]) > 0) {
+				$result["count"] = $count["rows"][0]["Count"];
+			}
 
 			// Loop through each project and get the Projects Images
 			for ($i = 0; $i < count($result["rows"]); $i++) {
 
 				// Run the function provided as data exists and is valid
 				$imagesArray = self::getProjectImages($result["rows"][$i]["ID"]);
-				$result["rows"][$i]["Images"] = $imagesArray["rows"];
+				$result["rows"][$i]["Images"] = $imagesArray["rows"] ?? [];
 			}
 
 			$result["meta"]["ok"] = true;
