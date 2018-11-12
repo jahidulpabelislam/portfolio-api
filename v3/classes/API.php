@@ -115,8 +115,6 @@ class API {
 
 		$query = "SELECT * FROM PortfolioProject $filter ORDER BY Date DESC LIMIT $limit OFFSET $offset;";
 		$result = $this->db->query($query);
-		
-		error_log(print_r($result, true));
 
 		// Check if database provided any meta data if not all ok
 		if (!isset($result["meta"])) {
