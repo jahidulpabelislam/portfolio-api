@@ -182,13 +182,9 @@ class API {
 			$dataNeeded = ["ID", "Name", "Skills", "LongDescription", "ShortDescription", "GitHub", "Date",];
 			if (Helper::checkData($data, $dataNeeded)) {
 
-				// Check the Project trying to edit actually exists
-				$result = self::getProject($data["ID"]);
-				if (!empty($result["row"])) {
+				$project = new Project();
+				$result = $project->save($data);
 
-					$project = new Project();
-					$result = $project->save($data);
-				}
 			} // Else the data was not provided
 			else {
 				$result["meta"] = Helper::dataNotProvided($dataNeeded);

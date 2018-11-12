@@ -77,13 +77,13 @@ abstract class Entity {
 
 		$result["row"] = [];
 
-		// Check if database provided any meta data if so no problem with executing query but no item found
-		if ($result["count"] <= 0 && !isset($result["meta"])) {
-			$result["meta"]["feedback"] = "No $this->displayName found with $id as ID.";
-		}
-		// Else everything was okay, so as this /Should/ return only one, use 'Row' as index
-		else {
+		// Check everything was okay, so as this /Should/ return only one, use 'Row' as index
+		if ($result["count"] > 0) {
 			$result["row"] = $result["rows"][0];
+		}
+		// Check if database provided any meta data if so no problem with executing query but no item found
+		else if ($result["meta"]["status"] === 404) {
+			$result["meta"]["feedback"] = "No $this->displayName found with $id as ID.";
 		}
 
 		unset($result["rows"]);
@@ -101,10 +101,17 @@ abstract class Entity {
 	 */
 	public function save($values) {
 
-		if (empty($values["ID"])) {
+		$id = $values["ID"] ?? null;
+
+		if (empty($id)) {
 			list($query, $bindings) = $this->generateInsertQuery($values);
 		}
 		else {
+			// Check the Entity trying to edit actually exists
+			$result = $this->getById($id);
+			if (empty($result["row"])) {
+				return $result;
+			}
 			list($query, $bindings) = $this->generateUpdateQuery($values);
 		}
 
@@ -113,7 +120,7 @@ abstract class Entity {
 		// Checks if insert was ok
 		if ($result["count"] > 0) {
 
-			$id = (empty($values["ID"])) ? $this->db->lastInsertId() : $values["ID"];
+			$id = (empty($id)) ? $this->db->lastInsertId() : $id;
 
 			$result = $this->getById($id);
 
