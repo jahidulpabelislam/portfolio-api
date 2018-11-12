@@ -120,7 +120,7 @@ abstract class Entity {
 		// Checks if insert was ok
 		if ($result["count"] > 0) {
 
-			$id = (empty($id)) ? $this->db->lastInsertId() : $id;
+			$id = (empty($id)) ? $this->db->getLastInsertedId() : $id;
 
 			$result = $this->getById($id);
 
