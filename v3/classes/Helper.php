@@ -14,10 +14,10 @@ class Helper {
 		// Get the method
 		$method = strtoupper($_SERVER['REQUEST_METHOD']);
 		
-		$requested_path = !empty($_SERVER['PATH_INFO']) ? ltrim($_SERVER['PATH_INFO'], "/") : '';
+		$requestedPath = !empty($_SERVER['PATH_INFO']) ? ltrim($_SERVER['PATH_INFO'], "/") : '';
 
 		// Get the path to decide what happens
-		$path = explode('/', $requested_path);
+		$path = explode('/', $requestedPath);
 
 		$data = [];
 		foreach ($_REQUEST as $key => $value) {
@@ -119,13 +119,13 @@ class Helper {
 		// Send back the path they requested
 		$result['meta']["path"] = $path;
 		
-		$origin_domain = $_SERVER["HTTP_ORIGIN"] ?? "";
+		$originURL = $_SERVER["HTTP_ORIGIN"] ?? "";
 		
 		// Strip the protocol from domain
-		$stripped_domain = str_replace("http://", "", $origin_domain);
-		$stripped_domain = str_replace("https://", "", $stripped_domain);
+		$originDomain = str_replace("http://", "", $originURL);
+		$originDomain = str_replace("https://", "", $originDomain);
 		
-		$allowed_domains = [
+		$allowedDomains = [
 			"jahidulpabelislam.com",
 			"cms.jahidulpabelislam.com",
 			"staging.jahidulpabelislam.com",
@@ -135,8 +135,8 @@ class Helper {
 		];
 		
 		// If the domain if allowed send correct header response back
-		if (in_array($stripped_domain, $allowed_domains)) {
-			header("Access-Control-Allow-Origin: $origin_domain");
+		if (in_array($originDomain, $allowedDomains)) {
+			header("Access-Control-Allow-Origin: $originURL");
 			header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 			header("Access-Control-Allow-Headers: Process-Data");
 			
@@ -168,10 +168,10 @@ class Helper {
 
 		// Set cache for 31 days for some GET Requests
 		if ($method == "GET" && !in_array(implode("/", $path), $notCachedURLs)) {
-			$seconds_to_cache = 2678400;
-			$expires_time = gmdate("D, d M Y H:i:s", time() + $seconds_to_cache) . " GMT";
-			header("Cache-Control: max-age=$seconds_to_cache, public");
-			header("Expires: $expires_time");
+			$secondsToCache = 2678400;
+			$expiresTime = gmdate("D, d M Y H:i:s", time() + $secondsToCache) . " GMT";
+			header("Cache-Control: max-age=$secondsToCache, public");
+			header("Expires: $expiresTime");
 			header("Pragma: cache");
 		}
 		
