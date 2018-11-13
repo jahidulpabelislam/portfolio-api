@@ -9,22 +9,25 @@ namespace JPI\API;
 
 class Helper {
 
-	public static function extractFromRequest() {
+	/**
+	 * @return array Return an array with data extracted from the request
+	 */
+	public static function extractFromRequest() : array {
 
-		// Get the method
+		// Get the requested method
 		$method = strtoupper($_SERVER['REQUEST_METHOD']);
 		
-		$requestedPath = !empty($_SERVER['PATH_INFO']) ? ltrim($_SERVER['PATH_INFO'], "/") : '';
+		$requestedURI = !empty($_SERVER['PATH_INFO']) ? ltrim($_SERVER['PATH_INFO'], "/") : '';
 
-		// Get the path to decide what happens
-		$path = explode('/', $requestedPath);
+		// Get the individual parts of the request URI as an array
+		$requestedURIArray = explode('/', $requestedURI);
 
 		$data = [];
 		foreach ($_REQUEST as $key => $value) {
 			$data[$key] = stripslashes(urldecode($_REQUEST[$key]));
 		}
 
-		return [$method, $path, $data];
+		return [$method, $requestedURIArray, $data];
 	}
 
 	/**
@@ -35,7 +38,7 @@ class Helper {
 	 * @param $dataNeeded array Array of data needed
 	 * @return bool Whether data provided is valid and data needed is provided or not
 	 */
-	public static function checkData($data, $dataNeeded) {
+	public static function checkData($data, $dataNeeded) : bool {
 
 		// Loops through each data needed for the request
 		foreach ($dataNeeded as $aData) {
@@ -59,7 +62,7 @@ class Helper {
 	 * @param $path array The path (relative) tried
 	 * @return array Array of meta data
 	 */
-	public static function methodNotAllowed($method, $path) {
+	public static function methodNotAllowed($method, $path) : array {
 
 		$meta["ok"] = false;
 		$meta["status"] = 405;
@@ -75,7 +78,7 @@ class Helper {
 	 * @param $dataNeeded array Array of the data needed
 	 * @return array Array of meta data
 	 */
-	public static function dataNotProvided($dataNeeded) {
+	public static function dataNotProvided($dataNeeded) : array {
 
 		$meta["ok"] = false;
 		$meta["status"] = 400;
@@ -91,7 +94,7 @@ class Helper {
 	 *
 	 * @return array Array of meta data
 	 */
-	public static function notAuthorised() {
+	public static function notAuthorised() : array {
 
 		$result = [];
 		$result["meta"]["ok"] = false;
