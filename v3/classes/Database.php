@@ -64,6 +64,11 @@ class Database {
 	 * @return array Array of data or meta feedback
 	 */
 	public function query($query, $bindings = null) {
+		
+		$result = [
+			'count' => 0,
+			'rows' => [],
+		];
 
 		if ($this->db) {
 
@@ -71,44 +76,42 @@ class Database {
 
 				// Check if any bindings to execute
 				if (isset($bindings)) {
-					$result = $this->db->prepare($query);
-					$result->execute($bindings);
+					$executedQuery = $this->db->prepare($query);
+					$executedQuery->execute($bindings);
 				}
 				else {
-					$result = $this->db->query($query);
+					$executedQuery = $this->db->query($query);
 				}
 
 				// If query was a select, return array of data
 				if (strpos($query, "SELECT") !== false) {
-					$results["rows"] = $result->fetchAll(\PDO::FETCH_ASSOC);
+					$result["rows"] = $executedQuery->fetchAll(\PDO::FETCH_ASSOC);
 				}
 
 				// Add the count of how many rows were effected
-				$results["count"] = $result->rowCount();
+				$result["count"] = $executedQuery->rowCount();
 			}
 			catch (\PDOException $error) {
 				error_log("Error executing query on database: " . $error->getMessage() . " using query: $query and bindings: " . print_r($bindings, true) . ", full error: " . $error);
-
-				$results["meta"]["ok"] = false;
-				$results["meta"]["feedback"] = "Problem with Server.";
+				
+				$result["meta"]["ok"] = false;
+				$result["meta"]["feedback"] = "Problem with Server.";
 
 				if ($this->config->debug) {
-					$results["meta"]["feedback"] = $error->getMessage();
+					$result["meta"]["feedback"] = $error->getMessage();
 				}
 			}
 		}
 		else {
-			$results["meta"]["ok"] = false;
-			$results["meta"]["feedback"] = "Problem with Server.";
+			$result["meta"]["ok"] = false;
+			$result["meta"]["feedback"] = "Problem with Server.";
 
 			if ($this->config->debug) {
-				$results["meta"]["feedback"] = $this->error;
+				$result["meta"]["feedback"] = $this->error;
 			}
 		}
-		
-		$results = $this->appendDefaultMetaResults($results);
 
-		return $results;
+		return $result;
 	}
 
 	/**
@@ -120,24 +123,6 @@ class Database {
 		}
 
 		return null;
-	}
-	
-	/**
-	 * Add default data to the result array if not already there
-	 *
-	 * @param $result array
-	 * @return array
-	 */
-	public function appendDefaultMetaResults($result) : array {
-		
-		$defaults = [
-			'count' => 0,
-			'rows' => [],
-		];
-
-		$result = array_merge($defaults, $result);
-
-		return $result;
 	}
 }
 
