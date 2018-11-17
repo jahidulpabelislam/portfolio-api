@@ -8,7 +8,28 @@
 namespace JPI\API;
 
 class Helper {
-
+	
+	/**
+	 * Generates a full url from the URI user requested
+	 *
+	 * @param array $path array The URI user request as an array
+	 * @return string The Full URI user requested
+	 */
+	public static function getAPIURL(array $path) : string {
+		$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https' : 'http';
+		$url = $protocol . '://' . $_SERVER["SERVER_NAME"];
+		
+		$explodedPath = implode('/', $path);
+		
+		if ($explodedPath) {
+			$explodedPath .= '/';
+		}
+		
+		$url .= '/v3/' . $explodedPath;
+		
+		return $url;
+	}
+	
 	/**
 	 * @return array Return an array with data extracted from the request
 	 */
@@ -68,7 +89,7 @@ class Helper {
 				'ok'       => false,
 				'status'   => 405,
 				'message'  => 'Method not allowed.',
-				'feedback' => "$method Method Not Allowed on /api/v3/" . implode("/", $path),
+				'feedback' => "$method Method Not Allowed on " .  self::getAPIURL($path),
 			],
 		];
 
