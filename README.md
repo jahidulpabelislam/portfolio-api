@@ -1,7 +1,12 @@
 # Portfolio API
 
 ### Setup
-Copy /set-up/Config-sample.php and move to /v3/classes/Config.php then fill in necessary constants.
+
+Create Database.
+
+Import /set-up/base-structure.sql into newly created database.
+
+Copy /set-up/Config-sample.php and move to /v3/classes/Config.php then fill in the 6 necessary constants.
 
 Copy /set-up/Hasher-sample.php and move to /v3/classes/Hasher.php then update both the functions with your Hashing functionality.
 
