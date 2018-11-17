@@ -271,42 +271,7 @@ class API {
 				$result = $this->getProject($data["ProjectID"]);
 				if (!empty($result["row"])) {
 
-					// Get the file type
-					$imageFileType = pathinfo(basename($_FILES["image"]["name"]), PATHINFO_EXTENSION);
-
-					// The directory to upload file
-					$directory = "/assets/images/projects/";
-
-					// The full path for new file on the server
-					$filename = date('YmdHis', time()) . mt_rand() . "." . $imageFileType;
-					$fileLocation = $directory . $filename;
-					$fullPath = $_SERVER['DOCUMENT_ROOT'] . $fileLocation;
-
-					// Check if file is a actual image
-					$fileType = mime_content_type($_FILES["image"]["tmp_name"]);
-					if ((strpos($fileType, 'image/') !== false)) {
-
-						// Try to uploaded file
-						if (move_uploaded_file($_FILES["image"]["tmp_name"], $fullPath)) {
-
-							// Update database with location of new Image
-							$values = [
-								"File" => $fileLocation,
-								"ProjectID" => $data["ProjectID"],
-								"Number" => 999, // High enough number
-							];
-							$projectImage = new ProjectImage();
-							$result = $projectImage->save($values);
-						} // Else there was a problem uploading file to server
-						else {
-							$result["meta"]["feedback"] = "Sorry, there was an error uploading your Image.";
-						}
-					} // Else bad request as file uploaded is not a image
-					else {
-						$result["meta"]["status"] = 400;
-						$result["meta"]["message"] = "Bad Request";
-						$result["meta"]["feedback"] = "File is not an image.";
-					}
+					$result = $this->uploadProjectImage($data["ProjectID"]);
 				}
 			} // Else data needed was not provided
 			else {
@@ -319,6 +284,62 @@ class API {
 		}
 
 		$result["meta"]["files"] = $_FILES;
+
+		return $result;
+	}
+	
+	/**
+	 * Try and upload the added image
+	 * 
+	 * @param $projectId int The Id of the Project trying to upload image for
+	 * @return array The request response to send back
+	 */
+	private function uploadProjectImage($projectId) : array {
+
+		$result = [];
+
+		$image = $_FILES["image"];
+
+		// Get the file ext
+		$imageFileExt = pathinfo(basename($image["name"]), PATHINFO_EXTENSION);
+
+		// The directory to upload file
+		$directory = "/assets/images/projects/";
+
+		// The full path for new file on the server
+		$newFilename = date('YmdHis', time()) . mt_rand() . "." . $imageFileExt;
+		$newFileLocation = $directory . $newFilename;
+		$newImageFullPath = $_SERVER['DOCUMENT_ROOT'] . $newFileLocation;
+
+		// Check if file is a actual image
+		$fileType = mime_content_type($image["tmp_name"]);
+		if ((strpos($fileType, 'image/') !== false)) {
+
+			// Try to uploaded file
+			if (move_uploaded_file($image["tmp_name"], $newImageFullPath)) {
+
+				// Update database with location of new Image
+				$values = [
+					"File" => $newFileLocation,
+					"ProjectID" => $projectId,
+					"Number" => 999, // High enough number
+				];
+				$projectImage = new ProjectImage();
+				$result = $projectImage->save($values);
+			} // Else there was a problem uploading file to server
+			else {
+				$result["meta"]["feedback"] = "Sorry, there was an error uploading your Image.";
+			}
+		} // Else bad request as file uploaded is not a image
+		else {
+			$result = [
+				'meta' => [
+					'status' => 400,
+					'message' => 'Bad Request',
+					'feedback' => 'File is not an image.',
+				],
+			];
+		}
 
 		return $result;
 	}
