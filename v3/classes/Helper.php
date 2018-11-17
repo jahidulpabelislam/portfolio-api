@@ -8,7 +8,7 @@
 namespace JPI\API;
 
 class Helper {
-	
+
 	/**
 	 * Generates a full url from the URI user requested
 	 *
@@ -18,18 +18,18 @@ class Helper {
 	public static function getAPIURL(array $path) : string {
 		$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https' : 'http';
 		$url = $protocol . '://' . $_SERVER["SERVER_NAME"];
-		
+
 		$explodedPath = implode('/', $path);
-		
+
 		if ($explodedPath) {
 			$explodedPath .= '/';
 		}
-		
+
 		$url .= '/v3/' . $explodedPath;
-		
+
 		return $url;
 	}
-	
+
 	/**
 	 * @return array Return an array with data extracted from the request
 	 */
@@ -37,7 +37,7 @@ class Helper {
 
 		// Get the requested method
 		$method = strtoupper($_SERVER['REQUEST_METHOD']);
-		
+
 		$requestedURI = !empty($_SERVER['PATH_INFO']) ? trim($_SERVER['PATH_INFO'], "/") : '';
 
 		// Get the individual parts of the request URI as an array
@@ -62,10 +62,10 @@ class Helper {
 	public static function checkData(array $data, array $dataNeeded) : bool {
 
 		// Loops through each data needed for the request
-		foreach ($dataNeeded as $aData) {
+		foreach ($dataNeeded as $dataKey) {
 
 			// Checks if the data needed is provided and is not empty
-			if (!isset($data[$aData]) || trim($data[$aData]) === "") {
+			if (!isset($data[$dataKey]) || trim($data[$dataKey]) === "") {
 				// Return false as data needed is not provided or empty
 				return false;
 			}
@@ -135,7 +135,7 @@ class Helper {
 
 		return $result;
 	}
-	
+
 	/**
 	 * Generate response data to send back when the URI provided is not recognised
 	 *
@@ -143,7 +143,7 @@ class Helper {
 	 * @return array Array of meta data
 	 */
 	public static function getUnrecognisedURIResult(array $path) : array {
-		
+
 		$result = [
 			'meta' => [
 				'ok' => false,
@@ -152,10 +152,10 @@ class Helper {
 				'message' => 'Not Found',
 			],
 		];
-		
+
 		return $result;
 	}
-	
+
 	/**
 	 * Send the result response back
 	 *
@@ -172,13 +172,13 @@ class Helper {
 		$result['meta']["method"] = $method;
 		// Send back the path they requested
 		$result['meta']["path"] = $path;
-		
+
 		$originURL = $_SERVER["HTTP_ORIGIN"] ?? "";
-		
+
 		// Strip the protocol from domain
 		$originDomain = str_replace("http://", "", $originURL);
 		$originDomain = str_replace("https://", "", $originDomain);
-		
+
 		$allowedDomains = [
 			"jahidulpabelislam.com",
 			"cms.jahidulpabelislam.com",
@@ -187,13 +187,13 @@ class Helper {
 			"portfolio.local",
 			"portfolio-cms.local",
 		];
-		
+
 		// If the domain if allowed send correct header response back
 		if (in_array($originDomain, $allowedDomains)) {
 			header("Access-Control-Allow-Origin: $originURL");
 			header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 			header("Access-Control-Allow-Headers: Process-Data");
-			
+
 			if ($method === "OPTIONS") {
 				$result["meta"]["status"] = 200;
 				$result["meta"]["message"] = "OK";
@@ -228,7 +228,7 @@ class Helper {
 			header("Expires: $expiresTime");
 			header("Pragma: cache");
 		}
-		
+
 		// Check if requested to send json
 		$json = (stripos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false);
 

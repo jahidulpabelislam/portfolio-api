@@ -16,7 +16,7 @@ function __autoload($class) {
 
 	// Remove any strings that are in the namespace but isn't actually a folder
 	$folders = str_replace($namespaceNotInFile, '', $class);
-	
+
 	// Replace the namespaces back slashes into forward slashes for folder/file paths
 	$folders = str_replace('\\', '/', $folders);
 

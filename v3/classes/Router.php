@@ -7,7 +7,7 @@
 namespace JPI\API;
 
 class Router {
-	
+
 	/**
 	 * Try and perform the necessary actions needed to fulfil the request that a user made
 	 */

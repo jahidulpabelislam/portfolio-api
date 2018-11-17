@@ -18,7 +18,7 @@ class ProjectImage extends Entity {
 		'ProjectID',
 		'Number'
 	];
-	
+
 	/**
 	 * Delete an Entity from the Database
 	 *
@@ -36,7 +36,7 @@ class ProjectImage extends Entity {
 
 		// Check if the deletion was ok
 		if ($result["count"] > 0 && $fileName) {
-			
+
 			// Checks if file exists to delete the actual Image file from server
 			if (file_exists($_SERVER['DOCUMENT_ROOT'] . $fileName)) {
 				unlink($_SERVER['DOCUMENT_ROOT'] . $fileName);
@@ -45,7 +45,7 @@ class ProjectImage extends Entity {
 
 		return $result;
 	}
-	
+
 	/**
 	 * Check if a ProjectImage is a child of a Project.
 	 * Use in conjunction with ProjectImage::getById()
@@ -53,9 +53,9 @@ class ProjectImage extends Entity {
 	 * @param $projectId int The id of a Project it should check against
 	 */
 	public function checkProjectImageIsChildOfProject($projectId) {
-		
+
 		$result = $this->result;
-		
+
 		if (!empty($result['row']) && $result['row']['ProjectID'] !== $projectId) {
 			$imageId = $result['row']['ID'];
 			$result = [
@@ -67,7 +67,7 @@ class ProjectImage extends Entity {
 					'message' => 'Not Found',
 				],
 			];
-			
+
 			$this->result = $result;
 		}
 	}

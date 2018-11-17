@@ -93,14 +93,14 @@ class Auth {
 
 		return false;
 	}
-	
+
 	/**
 	 * Check whether the user is logged or not
 	 *
 	 * @return array The request response to send back
 	 */
 	public static function getAuthStatus() {
-		
+
 		if (self::isLoggedIn()) {
 			$result = [
 				'meta' => [
@@ -113,7 +113,7 @@ class Auth {
 		else {
 			$result = Helper::getNotAuthorisedResult();
 		}
-		
+
 		return $result;
 	}
 }

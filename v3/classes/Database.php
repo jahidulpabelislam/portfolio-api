@@ -12,11 +12,11 @@ namespace JPI\API;
 class Database {
 
 	private $db = null;
-	
+
 	private $config = null;
-	
+
 	private $error = null;
-	
+
 	private static $instance = null;
 
 	/**
@@ -27,7 +27,7 @@ class Database {
 	public function __construct() {
 
 		$this->config = Config::get();
-		
+
 		$dsn = "mysql:host=" . Config::DB_IP . ";dbname=" . Config::DB_NAME . ";charset-UTF-8";
 		$option = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
 
@@ -64,7 +64,7 @@ class Database {
 	 * @return array Array of data or meta feedback
 	 */
 	public function query($query, $bindings = null) {
-		
+
 		$result = [
 			'count' => 0,
 			'rows' => [],
@@ -93,7 +93,7 @@ class Database {
 			}
 			catch (\PDOException $error) {
 				error_log("Error executing query on database: " . $error->getMessage() . " using query: $query and bindings: " . print_r($bindings, true) . ", full error: " . $error);
-				
+
 				$result["meta"]["ok"] = false;
 				$result["meta"]["feedback"] = "Problem with Server.";
 
