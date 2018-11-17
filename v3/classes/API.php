@@ -243,6 +243,9 @@ class API {
 		$result = self::getProject($projectId);
 		if (!empty($result["row"])) {
 			$projectImage = new ProjectImage($imageId);
+			
+			$projectImage->checkProjectImageIsChildOfProject($projectId);
+			
 			$result = $projectImage->result;
 		}
 
