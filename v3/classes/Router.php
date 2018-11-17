@@ -44,7 +44,7 @@ class Router {
 			case "session":
 				switch ($method) {
 					case "GET":
-						$result = $api->getAuthStatus();
+						$result = Auth::getAuthStatus();
 						break;
 					default:
 						$result = Helper::getMethodNotAllowedResult($method, $path);

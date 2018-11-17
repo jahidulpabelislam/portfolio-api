@@ -19,29 +19,6 @@ class API {
 	public function __construct() {
 		$this->db = Database::get();
 	}
-	
-	/**
-	 * Check whether the user is logged or no
-	 *
-	 * @return array The request response to send back
-	 */
-	public function getAuthStatus() {
-
-		if (Auth::isLoggedIn()) {
-			$result = [
-				'meta' => [
-					'ok' => true,
-					'status' => 200,
-					'message' => 'OK',
-				],
-			];
-		}
-		else {
-			$result = Helper::getNotAuthorisedResult();
-		}
-
-		return $result;
-	}
 
 	/**
 	 * Get a particular Project defined by $projectID
