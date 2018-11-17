@@ -106,11 +106,11 @@ class API {
 		// Check if database provided any meta data if not all ok
 		if (count($result["rows"]) > 0 && !isset($result["meta"])) {
 
-			$query = "SELECT COUNT(*) AS Count FROM PortfolioProject $filter;";
-			$count = $this->db->query($query, $bindings);
+			$query = "SELECT COUNT(*) AS total_count FROM PortfolioProject $filter;";
+			$totalCount = $this->db->query($query, $bindings);
 			
-			if ($count && count($count["rows"]) > 0) {
-				$result["count"] = $count["rows"][0]["Count"];
+			if ($totalCount && count($totalCount["rows"]) > 0) {
+				$result["total_count"] = $totalCount["rows"][0]["total_count"];
 			}
 
 			// Loop through each project and get the Projects Images
