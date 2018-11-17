@@ -29,9 +29,9 @@ class Auth {
 			$result["meta"]["status"] = 401;
 			$result["meta"]["message"] = "Unauthorized";
 
-			if ($data["username"] === PORTFOLIO_ADMIN_USERNAME) {
+			if ($data["username"] === Config::PORTFOLIO_ADMIN_USERNAME) {
 
-				if (Hasher::check($data["password"], PORTFOLIO_ADMIN_PASSWORD)) {
+				if (Hasher::check($data["password"], Config::PORTFOLIO_ADMIN_PASSWORD)) {
 
 					$result["meta"]["ok"] = true;
 					$result["meta"]["status"] = 200;
