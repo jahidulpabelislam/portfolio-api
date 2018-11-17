@@ -4,12 +4,12 @@
 
 ### Entities
  
-| URI | <code>GET</code> | <code>POST</code> | <code>DELETE</code> | <code>PUT</code>|
-| --- | :----: |:----:|:----:|:----:|
-| [/projects/](https://api.jahidulpabelislam.com/v3/projects/) | &#10004; | &#10004; |  |  |
-| [/projects/:id/](https://api.jahidulpabelislam.com/v3/projects/13/)| &#10004; |  | &#10004; | &#10004; |
-| [/projects/:id/images/](https://api.jahidulpabelislam.com/v3/projects/13/images/) | &#10004; | &#10004; |  |  |
-| [/projects/:id/images/:id/](https://api.jahidulpabelislam.com/v3/projects/13/images/72/) | &#10004; |  | &#10004; | &#10004; |
+| URI | Description | <code>GET</code> | <code>POST</code> | <code>DELETE</code> | <code>PUT</code>|
+| --- | :----: | :----: |:----:|:----:|:----:|
+| [/projects/](https://api.jahidulpabelislam.com/v3/projects/) | All Projects | &#10004; | &#10004; |  |  |
+| [/projects/{project_id}/](https://api.jahidulpabelislam.com/v3/projects/13/) | A Single Project | &#10004; |  | &#10004; | &#10004; |
+| [/projects/{project_id}/images/](https://api.jahidulpabelislam.com/v3/projects/13/images/) | Images Attached To a Single Project | &#10004; | &#10004; |  |  |
+| [/projects/{project_id}/images/{image_id}/](https://api.jahidulpabelislam.com/v3/projects/13/images/72/) | A Single Image Attached to a Single Project | &#10004; |  | &#10004; | &#10004; |
 
 ## Setup
 
