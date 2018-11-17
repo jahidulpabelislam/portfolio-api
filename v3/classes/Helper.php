@@ -137,6 +137,26 @@ class Helper {
 	}
 	
 	/**
+	 * Generate response data to send back when the URI provided is not recognised
+	 *
+	 * @param $path array The path (relative) tried
+	 * @return array Array of meta data
+	 */
+	public static function getUnrecognisedURIResult(array $path) : array {
+		
+		$result = [
+			'meta' => [
+				'ok' => false,
+				'status' => 404,
+				'feedback' => 'Unrecognised URI (' . self::getAPIURL($path) . ')',
+				'message' => 'Not Found',
+			],
+		];
+		
+		return $result;
+	}
+	
+	/**
 	 * Send the result response back
 	 *
 	 * @param $result array The result generated from the request so far

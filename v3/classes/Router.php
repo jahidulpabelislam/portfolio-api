@@ -56,46 +56,46 @@ class Router {
 						if (isset($path[1]) && trim($path[1]) !== "") {
 							$projectID = $path[1];
 							if (isset($path[2]) && $path[2] === "images") {
-								if (isset($path[3]) && $path[3] !== "") {
+								if (isset($path[3]) && $path[3] !== "" && !isset($path[4])) {
 									$result = $api->getProjectImage($projectID, $path[3]);
 								}
-								else {
+								else if (!isset($path[3])) {
 									$result = $api->getProjectImages($projectID);
 								}
 							}
-							else {
+							else if (!isset($path[2])) {
 								$result = $api->getProject($projectID, true);
 							}
 						}
-						else {
+						else if (!isset($path[1])) {
 							$result = $api->getProjects($data);
 						}
 						break;
 					case "POST":
-						if (isset($path[1]) && trim($path[1]) !== "" && isset($path[2]) && $path[2] === "images") {
-							if (isset($_FILES["image"])) {
+						if (isset($path[1]) && trim($path[1]) !== '' &&
+							isset($path[2]) && $path[2] === 'images' && !isset($path[3])) {
 								$data["ProjectID"] = $path[1];
 								$result = $api->addProjectImage($data);
-							}
 						}
-						else {
+						else if (!isset($path[1])) {
 							$result = $api->addProject($data);
 						}
 						break;
 					case "PUT":
-						if (isset($path[1]) && trim($path[1]) !== "") {
-							$data["ID"] = $path[1];
+						if (isset($path[1]) && trim($path[1]) !== '' && !isset($path[2])) {
+							$data['ID'] = $path[1];
 							$result = $api->editProject($data);
 						}
 						break;
 					case "DELETE":
 						if (isset($path[1]) && trim($path[1]) !== "") {
-							if (isset($path[2]) && $path[2] === "images" && isset($path[3]) && $path[3] !== "") {
+							if (isset($path[2]) && $path[2] === "images"
+								&& isset($path[3]) && $path[3] !== "" && !isset($path[4])) {
 								$data["ID"] = $path[3];
 								$data["ProjectID"] = $path[1];
 								$result = $api->deleteImage($data);
 							}
-							else {
+							else if (!isset($path[2])) {
 								$data["ID"] = $path[1];
 								$result = $api->deleteProject($data);
 							}
@@ -103,21 +103,13 @@ class Router {
 						break;
 					default:
 						$result = Helper::getMethodNotAllowedResult($method, $path);
+						break;
 				}
 				break;
-			default:
-				$result = [
-					'meta' => [
-						'ok' => false,
-						'status' => 404,
-						'feedback' => 'Unrecognised URI (/api/v3/' . implode('/', $path) . ')',
-						'message' => 'Not Found',
-					],
-				];
 		}
 
 		if (empty($result)) {
-			$result = Helper::getMethodNotAllowedResult($method, $path);
+			$result = Helper::getUnrecognisedURIResult($path);
 		}
 
 		Helper::sendResponse($result, $data, $method, $path);
