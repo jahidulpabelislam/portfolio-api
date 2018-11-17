@@ -2,7 +2,9 @@
 
 ## API
 
-### Entities
+### Endpoints
+
+#### Resources
  
 | URI | Description | <code>GET</code> | <code>POST</code> | <code>DELETE</code> | <code>PUT</code>|
 | --- | :----: | :----: |:----:|:----:|:----:|
