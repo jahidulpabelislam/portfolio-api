@@ -34,7 +34,7 @@ class Router {
 				break;
 			case "logout":
 				switch ($method) {
-					case "GET":
+					case "DELETE":
 						$result = Auth::logout();
 						break;
 					default:
