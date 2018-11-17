@@ -30,7 +30,7 @@ abstract class Entity {
 	public function __construct($id = null) {
 		$this->db = Database::get();
 
-		if ($id && is_numeric($id)) {
+		if ($id) {
 			$this->result = $this->getById($id);
 		}
 	}
@@ -55,10 +55,12 @@ abstract class Entity {
 		}
 		// Check if database provided any meta data if not no problem with executing query but no item found
 		else if ($result["count"] <= 0 && !isset($result["meta"])){
-			$result["meta"]["ok"] = false;
-			$result["meta"]["status"] = 404;
-			$result["meta"]["feedback"] = "No {$this->displayName}s found with $value as $column.";
-			$result["meta"]["message"] = "Not Found";
+			$result['meta'] = [
+				'ok' => false,
+				'status' => 404,
+				'feedback' => "No {$this->displayName}s found with $value as $column.",
+				'message' => 'Not Found',
+			];
 		}
 
 		return $result;
@@ -74,21 +76,30 @@ abstract class Entity {
 	 */
 	public function getById($id) : array {
 
-		$result = $this->getByColumn('ID', $id);
-
-		$result["row"] = [];
-
-		// Check everything was okay, so as this /Should/ return only one, use 'Row' as index
-		if ($result["count"] > 0) {
-			$result["row"] = $result["rows"][0];
+		if (is_numeric($id)) {
+			$result = $this->getByColumn('ID', (int) $id);
+			
+			$result['row'] = [];
+			
+			// Check everything was okay, so as this /Should/ return only one, use 'Row' as index
+			if ($result['count'] > 0) {
+				$result['row'] = $result['rows'][0];
+			}
+			// Check if database provided any meta data if so no problem with executing query but no item found
+			else if (isset($result['meta']) && isset($result['meta']['status']) && $result['meta']['status'] === 404) {
+				$result['meta']['feedback'] = "No $this->displayName found with $id as ID.";
+			}
+			
+			unset($result['rows']);
+			unset($result['count']);
+		} else {
+			$result = [
+				'row' => [],
+				'meta' => [
+					'feedback' => "No $this->displayName found with $id as ID (Please note ID must be a numeric value).",
+				],
+			];
 		}
-		// Check if database provided any meta data if so no problem with executing query but no item found
-		else if (isset($result["meta"]) && isset($result["meta"]["status"]) && $result["meta"]["status"] === 404) {
-			$result["meta"]["feedback"] = "No $this->displayName found with $id as ID.";
-		}
-
-		unset($result["rows"]);
-		unset($result["count"]);
 
 		return $result;
 	}
