@@ -19,6 +19,8 @@ class Router {
 
 		$object = !empty($path[0]) ? $path[0] : '';
 
+		$result = [];
+
 		// Figure out what action on what object request is for & perform necessary action(s)
 		switch ($object) {
 			case "login":
