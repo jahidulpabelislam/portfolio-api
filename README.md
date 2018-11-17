@@ -13,6 +13,14 @@
 | [/projects/{project_id}/images/](https://api.jahidulpabelislam.com/v3/projects/13/images/) | Images Attached To a Single Project | &#10004; | &#10004; | &#10006; | &#10006; |
 | [/projects/{project_id}/images/{image_id}/](https://api.jahidulpabelislam.com/v3/projects/13/images/72/) | A Single Image Attached to a Single Project | &#10004; | &#10006; | &#10004; | &#10004; |
 
+#### Auth
+
+| URI | Description | <code>GET</code> | <code>POST</code> | <code>DELETE</code> | <code>PUT</code>|
+| --- | :----: | :----: |:----:|:----:|:----:|
+| [/login/](https://api.jahidulpabelislam.com/v3/login/) | Log In A User | &#10006; | &#10004; | &#10006; | &#10006; |
+| [/logout/](https://api.jahidulpabelislam.com/v3/logout/) | Log Current User Out | &#10006; | &#10006; | &#10004; | &#10006; |
+| [/session/](https://api.jahidulpabelislam.com/v3/session/) | Get Current Auth Status | &#10004; | &#10006; | &#10006; | &#10006; |
+
 ## Setup
 
 Create Database.
