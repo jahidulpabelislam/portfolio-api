@@ -20,6 +20,8 @@ abstract class Entity {
 	
 	public $searchableColumns = [];
 
+	public $defaultLimit = 10;
+
 	public $result = [];
 
 	/**
@@ -80,9 +82,9 @@ abstract class Entity {
 
 		if (is_numeric($id)) {
 			$result = $this->getByColumn('ID', (int) $id);
-			
+
 			$result['row'] = [];
-			
+
 			// Check everything was okay, so as this /Should/ return only one, use 'Row' as index
 			if ($result['count'] > 0) {
 				$result['row'] = $result['rows'][0];
@@ -91,7 +93,7 @@ abstract class Entity {
 			else if (isset($result['meta']) && isset($result['meta']['status']) && $result['meta']['status'] === 404) {
 				$result['meta']['feedback'] = "No $this->displayName found with $id as ID.";
 			}
-			
+
 			unset($result['rows']);
 			unset($result['count']);
 		} else {
@@ -182,7 +184,7 @@ abstract class Entity {
 
 		return [$query, $bindings];
 	}
-	
+
 	/**
 	 * Helper function to generate a UPDATE SQL query using the Entity's columns and provided data
 	 *
@@ -209,7 +211,7 @@ abstract class Entity {
 
 		return [$query, $bindings];
 	}
-	
+
 	/**
 	 * Delete an Entity from the Database
 	 *
@@ -231,7 +233,7 @@ abstract class Entity {
 
 				$result["meta"]["ok"] = true;
 				$result["row"]["ID"] = $id;
-				
+
 			} //Else there was an error deleting
 			else {
 				// Check if database provided any meta data if so problem with executing query
@@ -243,8 +245,93 @@ abstract class Entity {
 
 		return $result;
 	}
+
+	/**
+	 * Used to get a total count of Entities using a where clause
+	 * Used together with Entity::doSearch, as this return a limited Entities
+	 * but we want to get a number of total items without limit
+	 *
+	 * @param $whereClause string
+	 * @param array $bindings array Any data to aid in the database querying
+	 * @return int
+	 */
+	public function getTotalCountByWhereClause($whereClause, array $bindings) : int {
+		$query = "SELECT COUNT(*) AS total_count FROM $this->tableName $whereClause;";
+		$totalCount = $this->db->query($query, $bindings);
+
+		if ($totalCount && count($totalCount["rows"]) > 0) {
+			return  $totalCount["rows"][0]["total_count"];
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Gets all Entities but paginated, also might include search
+	 *
+	 * @param array $params array Any data to aid in the search query
+	 * @return array The request response to send back
+	 */
+	public function doSearch(array $params) : array {
+
+		// If user added a limit param, use this if valid, unless its bigger than 10
+		if (isset($params["limit"])) {
+			$limit = min(abs(intval($params["limit"])), $this->defaultLimit);
+		}
+
+		// Default limit to 10 if not specified or invalid
+		if (!isset($limit) || !is_int($limit) || $limit < 1) {
+			$limit = $this->defaultLimit;
+		}
+
+		$offset = 0;
+
+		// Add a offset to the query, if specified
+		if (isset($params["offset"])) {
+			$offset = abs(intval($params["offset"]));
+		}
+
+		// Generate a offset to the query, if a page was specified using, page number and limit number
+		if (isset($params["page"])) {
+			$page = abs(intval($params["page"]));
+			if (is_int($page) && $page > 1) {
+				$offset = $limit * ($page - 1);
+			}
+		}
+
+		$bindings = [];
+
+		$whereClause = "";
+
+		// Add a filter if a search was entered
+		if (!empty($params["search"])) {
+
+			list($whereClause, $bindings) = $this->generateSearchWhereQuery($params["search"]);
+		}
+
+		$query = "SELECT * FROM $this->tableName $whereClause ORDER BY Date DESC LIMIT $limit OFFSET $offset;";
+		$result = $this->db->query($query, $bindings);
+
+		// Check if database provided any meta data if not all ok
+		if (count($result["rows"]) > 0 && !isset($result["meta"])) {
+
+			$result["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
+
+			$result["meta"]["ok"] = true;
+		}
+
+		return $result;
+	}
 	
-	public function generateSearchWhereQuery($search) : array {
+	/**
+	 * Helper function
+	 * Used to generate a where clause for a search on a entity along with any binding needed
+	 * Used with Entity::doSearch();
+	 *
+	 * @param $search string The string to search for within searchable columns (if any)
+	 * @return array An array consisting of the generated where clause and an associative array containing any bindings to aid the Database querying
+	 */
+	private function generateSearchWhereQuery($search) : array {
 
 		if ($this->searchableColumns) {
 			// Split each word in search
@@ -273,10 +360,15 @@ abstract class Entity {
 
 			$whereClause = rtrim($whereClause, 'OR');
 
-			return [$whereClause, $searchString, $searchStringReversed];
+			$bindings = [
+				'searchString' => $searchString,
+				'searchStringReversed' => $searchStringReversed,
+			];
+
+			return [$whereClause, $bindings];
 		}
 		else {
-			return ['', '', ''];
+			return ['', []];
 		}
 	}
 }

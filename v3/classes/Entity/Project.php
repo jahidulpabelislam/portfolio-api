@@ -22,7 +22,7 @@ class Project extends Entity {
 		'Colour',
 		'Date',
 	];
-	
+
 	public $searchableColumns = [
 		'Name',
 		'Skills',
@@ -49,9 +49,8 @@ class Project extends Entity {
 		// Check if database provided any meta data if so no problem with executing query but no project found
 		if (!empty($result["row"])) {
 			if ($images) {
-				$projectImage = new ProjectImage();
-				$imagesArray = $projectImage->getByColumn("ProjectID", $id);
-				$result["row"]["Images"] = $imagesArray["rows"];
+				$images = $this->getProjectImages($id);
+				$result["row"]["Images"] = $images;
 			}
 		}
 
@@ -70,9 +69,9 @@ class Project extends Entity {
 	 * @return array Either an array with successful meta data or an array of error feedback meta
 	 */
 	public function save(array $values) : array {
-		
+
 		$values["Date"] = date("Y-m-d", strtotime($values["Date"]));
-		
+
 		$result = parent::save($values);
 
 		// Checks if the save was a update
@@ -110,14 +109,50 @@ class Project extends Entity {
 
 		// Delete the images linked to the Project
 		$projectImage = new ProjectImage();
-		$imagesResult = $projectImage->getByColumn('ProjectID', $id);
-		$images = $imagesResult["rows"];
+		$images = $this->getProjectImages($id);
 		foreach ($images as $image) {
 
 			// Delete the image from the database & from file
 			$projectImage->delete($image["ID"], $image["File"]);
 		}
-		
+
 		return $result;
+	}
+
+	/**
+	 * Gets all Entities but paginated, also might include search
+	 *
+	 * Adds extra functionality to include any Images linked to all Projects found in search
+	 *
+	 * @param array $params array Any data to aid in the search query
+	 * @return array The request response to send back
+	 */
+	public function doSearch(array $params) : array {
+
+		$result = parent::doSearch($params);
+
+		// Loop through each project and get the Projects Images
+		for ($i = 0; $i < count($result["rows"]); $i++) {
+
+			$images = $this->getProjectImages($result["rows"][$i]["ID"]);
+			$result["rows"][$i]["Images"] = $images;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Helper function to get all Project Image Entities linked to this project
+	 *
+	 * @param $id int The Project Image to find Images for
+	 * @return array An array of ProjectImage's (if any found)
+	 */
+	public function getProjectImages($id) : array {
+		// Get all the images linked to the Project
+		$projectImage = new ProjectImage();
+		$imagesResult = $projectImage->getByColumn('ProjectID', $id);
+		$images = $imagesResult["rows"];
+
+		return $images;
 	}
 }

@@ -12,7 +12,7 @@ use JPI\API\Entity\ProjectImage;
 class API {
 
 	private $db = null;
-	
+
 	/**
 	 * API constructor.
 	 */
@@ -43,68 +43,8 @@ class API {
 	 */
 	public function getProjects($data) {
 
-		// If user added a limit param, use this if valid, unless its bigger than 10
-		if (isset($data["limit"])) {
-			$limit = min(abs(intval($data["limit"])), 10);
-		}
-
-		// Default limit to 10 if not specified or invalid
-		if (!isset($limit) || !is_int($limit) || $limit < 1) {
-			$limit = 10;
-		}
-
-		$offset = 0;
-
-		// Add a offset to the query, if specified
-		if (isset($data["offset"])) {
-			$offset = abs(intval($data["offset"]));
-		}
-
-		// Generate a offset to the query, if a page was specified using, page number and limit number
-		if (isset($data["page"])) {
-			$page = intval($data["page"]);
-			if (is_int($page) && $page > 1) {
-				$offset = $limit * ($data["page"] - 1);
-			}
-		}
-		
-		$bindings = [];
-
-		$whereClause = "";
-		
-		// Add a filter if a search was entered
-		if (!empty($data["search"])) {
-
-			$project = new Project();
-			list($whereClause, $searchString, $searchStringReversed) = $project->generateSearchWhereQuery($data["search"]);
-
-			$bindings['searchString'] = $searchString;
-			$bindings['searchStringReversed'] = $searchStringReversed;
-		}
-
-		$query = "SELECT * FROM PortfolioProject $whereClause ORDER BY Date DESC LIMIT $limit OFFSET $offset;";
-		$result = $this->db->query($query, $bindings);
-
-		// Check if database provided any meta data if not all ok
-		if (count($result["rows"]) > 0 && !isset($result["meta"])) {
-
-			$query = "SELECT COUNT(*) AS total_count FROM PortfolioProject $whereClause;";
-			$totalCount = $this->db->query($query, $bindings);
-			
-			if ($totalCount && count($totalCount["rows"]) > 0) {
-				$result["total_count"] = $totalCount["rows"][0]["total_count"];
-			}
-
-			// Loop through each project and get the Projects Images
-			for ($i = 0; $i < count($result["rows"]); $i++) {
-
-				// Run the function provided as data exists and is valid
-				$imagesArray = $this->getProjectImages($result["rows"][$i]["ID"]);
-				$result["rows"][$i]["Images"] = $imagesArray["rows"] ?? [];
-			}
-
-			$result["meta"]["ok"] = true;
-		}
+		$projects = new Project();
+		$result = $projects->doSearch($data);
 
 		return $result;
 	}
@@ -198,7 +138,7 @@ class API {
 
 		return $result;
 	}
-	
+
 	/**
 	 * Get the Images attached to a Project
 	 *
@@ -217,7 +157,7 @@ class API {
 
 		return $result;
 	}
-	
+
 	/**
 	 * Get a Project Image for a Project by id
 	 *
@@ -231,9 +171,9 @@ class API {
 		$result = $this->getProject($projectId);
 		if (!empty($result["row"])) {
 			$projectImage = new ProjectImage($imageId);
-			
+
 			$projectImage->checkProjectImageIsChildOfProject($projectId);
-			
+
 			$result = $projectImage->result;
 		}
 
@@ -275,7 +215,7 @@ class API {
 
 		return $result;
 	}
-	
+
 	/**
 	 * Try and upload the added image
 	 * 
