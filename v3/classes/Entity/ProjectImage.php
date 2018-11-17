@@ -51,7 +51,6 @@ class ProjectImage extends Entity {
 	 * Use in conjunction with ProjectImage::getById()
 	 *
 	 * @param $projectId int The id of a Project it should check against
-	 * @param $imageId int
 	 */
 	public function checkProjectImageIsChildOfProject($projectId) {
 		
