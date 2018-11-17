@@ -111,7 +111,7 @@ class API {
 			for ($i = 0; $i < count($result["rows"]); $i++) {
 
 				// Run the function provided as data exists and is valid
-				$imagesArray = self::getProjectImages($result["rows"][$i]["ID"]);
+				$imagesArray = $this->getProjectImages($result["rows"][$i]["ID"]);
 				$result["rows"][$i]["Images"] = $imagesArray["rows"] ?? [];
 			}
 
@@ -220,7 +220,7 @@ class API {
 	public function getProjectImages($projectID) {
 
 		// Check the project trying to get Images for
-		$result = self::getProject($projectID);
+		$result = $this->getProject($projectID);
 		if (!empty($result["row"])) {
 
 			$projectImage = new ProjectImage();
@@ -240,7 +240,7 @@ class API {
 	public function getProjectImage($projectId, $imageId) {
 
 		// Check the Project trying to get Images for
-		$result = self::getProject($projectId);
+		$result = $this->getProject($projectId);
 		if (!empty($result["row"])) {
 			$projectImage = new ProjectImage($imageId);
 			
@@ -268,7 +268,7 @@ class API {
 			if (Helper::checkData($data, $dataNeeded) && isset($_FILES["image"])) {
 
 				// Check the project trying to add a a Image for exists
-				$result = self::getProject($data["ProjectID"]);
+				$result = $this->getProject($data["ProjectID"]);
 				if (!empty($result["row"])) {
 
 					// Get the file type
@@ -339,7 +339,7 @@ class API {
 			if (Helper::checkData($data, $dataNeeded)) {
 
 				// Check the Project trying to edit actually exists
-				$result = self::getProject($data["ProjectID"]);
+				$result = $this->getProject($data["ProjectID"]);
 				if (!empty($result["row"])) {
 
 					$result = $this->getProjectImage($data["ProjectID"], $data["ID"]);
