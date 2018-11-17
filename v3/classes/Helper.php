@@ -48,7 +48,6 @@ class Helper {
 				// Return false as data needed is not provided or empty
 				return false;
 			}
-
 		}
 
 		// Otherwise data provided are ok and data needed are provided
@@ -64,10 +63,12 @@ class Helper {
 	 */
 	public static function methodNotAllowed($method, $path) : array {
 
-		$meta["ok"] = false;
-		$meta["status"] = 405;
-		$meta["message"] = "Method not allowed.";
-		$meta["feedback"] = "${method} Method Not Allowed on /api/v3/" . implode("/", $path);
+		$meta = [
+			'ok' => false,
+			'status' => 405,
+			'message' => 'Method not allowed.',
+			'feedback' => "$method Method Not Allowed on /api/v3/" . implode("/", $path),
+		];
 
 		return $meta;
 	}
@@ -80,11 +81,13 @@ class Helper {
 	 */
 	public static function dataNotProvided($dataNeeded) : array {
 
-		$meta["ok"] = false;
-		$meta["status"] = 400;
-		$meta["message"] = "Bad Request";
-		$meta["requestsNeeded"] = $dataNeeded;
-		$meta["feedback"] = "The necessary data was not provided.";
+		$meta = [
+			'ok' => false,
+			'status' => 400,
+			'message' => 'Bad Request',
+			'dataNeeded' => $dataNeeded,
+			'feedback' => 'The necessary data was not provided.',
+		];
 
 		return $meta;
 	}
@@ -96,11 +99,14 @@ class Helper {
 	 */
 	public static function notAuthorised() : array {
 
-		$result = [];
-		$result["meta"]["ok"] = false;
-		$result["meta"]["status"] = 401;
-		$result["meta"]["message"] = "Unauthorized";
-		$result["meta"]["feedback"] = "You need to be logged in!";
+		$result = [
+			'meta' => [
+				'ok' => false,
+				'status' => 401,
+				'message' => 'Unauthorized',
+				'feedback' => 'You need to be logged in!',
+			],
+		];
 
 		return $result;
 	}
