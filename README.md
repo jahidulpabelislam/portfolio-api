@@ -1,6 +1,17 @@
 # Portfolio API
 
-### Setup
+## API
+
+### Entities
+ 
+| URI | <code>GET</code> | <code>POST</code> | <code>DELETE</code> | <code>PUT</code>|
+| --- | :----: |:----:|:----:|:----:|
+| [/projects/](https://api.jahidulpabelislam.com/v3/projects/) | - [ x ] | - [ x ] |  |  |
+| [/projects/:id/](https://api.jahidulpabelislam.com/v3/projects/13/)| - [ x ] |  | - [ x ] | - [ x ] |
+| [/projects/:id/images/](https://api.jahidulpabelislam.com/v3/projects/13/images/) | - [ x ] | - [ x ] |  |  |
+| [/projects/:id/images/:id/](https://api.jahidulpabelislam.com/v3/projects/13/images/72) | - [ x ] |  | - [ x ] | - [ x ] |
+
+## Setup
 
 Create Database.
 
