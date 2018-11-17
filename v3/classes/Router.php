@@ -29,7 +29,7 @@ class Router {
 						$result = Auth::login($data);
 						break;
 					default:
-						$result["meta"] = Helper::methodNotAllowed($method, $path);
+						$result = Helper::getMethodNotAllowedResult($method, $path);
 				}
 				break;
 			case "logout":
@@ -38,7 +38,7 @@ class Router {
 						$result = Auth::logout();
 						break;
 					default:
-						$result["meta"] = Helper::methodNotAllowed($method, $path);
+						$result = Helper::getMethodNotAllowedResult($method, $path);
 				}
 				break;
 			case "session":
@@ -47,7 +47,7 @@ class Router {
 						$result = $api->getAuthStatus();
 						break;
 					default:
-						$result["meta"] = Helper::methodNotAllowed($method, $path);
+						$result = Helper::getMethodNotAllowedResult($method, $path);
 				}
 				break;
 			case "projects":
@@ -102,20 +102,24 @@ class Router {
 						}
 						break;
 					default:
-						$result["meta"] = Helper::methodNotAllowed($method, $path);
+						$result = Helper::getMethodNotAllowedResult($method, $path);
 				}
 				break;
 			default:
-				$result["meta"]["ok"] = false;
-				$result["meta"]["status"] = 404;
-				$result["meta"]["feedback"] = "Unrecognised URI (/api/v3/" . implode("/", $path) . ")";
-				$result["meta"]["message"] = "Not Found";
+				$result = [
+					'meta' => [
+						'ok' => false,
+						'status' => 404,
+						'feedback' => 'Unrecognised URI (/api/v3/' . implode('/', $path) . ')',
+						'message' => 'Not Found',
+					],
+				];
 		}
 
 		if (empty($result)) {
-			$result["meta"] = Helper::methodNotAllowed($method, $path);
+			$result = Helper::getMethodNotAllowedResult($method, $path);
 		}
 
-		Helper::sendData($result, $data, $method, $path);
+		Helper::sendResponse($result, $data, $method, $path);
 	}
 }

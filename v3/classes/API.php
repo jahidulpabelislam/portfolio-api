@@ -27,15 +27,17 @@ class API {
 	 */
 	public function getAuthStatus() {
 
-		$result = [];
-
 		if (Auth::isLoggedIn()) {
-			$result["meta"]["ok"] = true;
-			$result["meta"]["status"] = 200;
-			$result["meta"]["message"] = "OK";
+			$result = [
+				'meta' => [
+					'ok' => true,
+					'status' => 200,
+					'message' => 'OK',
+				],
+			];
 		}
 		else {
-			$result = Helper::notAuthorised();
+			$result = Helper::getNotAuthorisedResult();
 		}
 
 		return $result;
@@ -150,8 +152,6 @@ class API {
 	 */
 	public function addProject($data) {
 
-		$result = [];
-
 		// Checks if user is authored
 		if (Auth::isLoggedIn()) {
 
@@ -164,11 +164,11 @@ class API {
 
 			} // Else the data needed was not provided
 			else {
-				$result["meta"] = Helper::dataNotProvided($dataNeeded);
+				$result = Helper::getDataNotProvidedResult($dataNeeded);
 			}
 		}
 		else {
-			$result = Helper::notAuthorised();
+			$result = Helper::getNotAuthorisedResult();
 		}
 
 		return $result;
@@ -182,8 +182,6 @@ class API {
 	 */
 	public function editProject($data) {
 
-		$result = [];
-
 		// Checks if user is authored
 		if (Auth::isLoggedIn()) {
 
@@ -196,11 +194,11 @@ class API {
 
 			} // Else the data was not provided
 			else {
-				$result["meta"] = Helper::dataNotProvided($dataNeeded);
+				$result = Helper::getDataNotProvidedResult($dataNeeded);
 			}
 		}
 		else {
-			$result = Helper::notAuthorised();
+			$result = Helper::getNotAuthorisedResult();
 		}
 
 		return $result;
@@ -214,8 +212,6 @@ class API {
 	 */
 	public function deleteProject($data) {
 
-		$result = [];
-
 		// Checks if user is authored
 		if (Auth::isLoggedIn()) {
 
@@ -228,11 +224,11 @@ class API {
 
 			} // Else the data needed was not provided
 			else {
-				$result["meta"] = Helper::dataNotProvided($dataNeeded);
+				$result = Helper::getDataNotProvidedResult($dataNeeded);
 			}
 		}
 		else {
-			$result = Helper::notAuthorised();
+			$result = Helper::getNotAuthorisedResult();
 		}
 
 		return $result;
@@ -283,8 +279,6 @@ class API {
 	 * @return array The request response to send back
 	 */
 	public function addProjectImage($data) {
-
-		$result = [];
 
 		// Checks if user is authored
 		if (Auth::isLoggedIn()) {
@@ -337,11 +331,11 @@ class API {
 			} // Else data needed was not provided
 			else {
 				array_push($dataNeeded, "Image");
-				$result["meta"] = Helper::dataNotProvided($dataNeeded);
+				$result = Helper::getDataNotProvidedResult($dataNeeded);
 			}
 		}
 		else {
-			$result = Helper::notAuthorised();
+			$result = Helper::getNotAuthorisedResult();
 		}
 
 		$result["meta"]["files"] = $_FILES;
@@ -356,8 +350,6 @@ class API {
 	 * @return array The request response to send back
 	 */
 	public function deleteImage($data) {
-
-		$result = [];
 
 		// Checks if user is authored
 		if (Auth::isLoggedIn()) {
@@ -383,11 +375,11 @@ class API {
 				}
 			} // Else data was not provided
 			else {
-				$result["meta"] = Helper::dataNotProvided($dataNeeded);
+				$result = Helper::getDataNotProvidedResult($dataNeeded);
 			}
 		}
 		else {
-			$result = Helper::notAuthorised();
+			$result = Helper::getNotAuthorisedResult();
 		}
 
 		return $result;

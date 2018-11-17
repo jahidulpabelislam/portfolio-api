@@ -52,7 +52,7 @@ class Auth {
 
 		}
 		else {
-			$result["meta"] = Helper::dataNotProvided($dataNeeded);
+			$result = Helper::getDataNotProvidedResult($dataNeeded);
 		}
 
 		return $result;

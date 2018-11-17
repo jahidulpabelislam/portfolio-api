@@ -38,7 +38,7 @@ class Helper {
 	 * @param $dataNeeded array Array of data needed
 	 * @return bool Whether data provided is valid and data needed is provided or not
 	 */
-	public static function checkData($data, $dataNeeded) : bool {
+	public static function checkData(array $data, array $dataNeeded) : bool {
 
 		// Loops through each data needed for the request
 		foreach ($dataNeeded as $aData) {
@@ -61,16 +61,18 @@ class Helper {
 	 * @param $path array The path (relative) tried
 	 * @return array Array of meta data
 	 */
-	public static function methodNotAllowed($method, $path) : array {
+	public static function getMethodNotAllowedResult($method, array $path) : array {
 
-		$meta = [
-			'ok' => false,
-			'status' => 405,
-			'message' => 'Method not allowed.',
-			'feedback' => "$method Method Not Allowed on /api/v3/" . implode("/", $path),
+		$result = [
+			'meta' => [
+				'ok'       => false,
+				'status'   => 405,
+				'message'  => 'Method not allowed.',
+				'feedback' => "$method Method Not Allowed on /api/v3/" . implode("/", $path),
+			],
 		];
 
-		return $meta;
+		return $result;
 	}
 
 	/**
@@ -79,17 +81,19 @@ class Helper {
 	 * @param $dataNeeded array Array of the data needed
 	 * @return array Array of meta data
 	 */
-	public static function dataNotProvided($dataNeeded) : array {
+	public static function getDataNotProvidedResult(array $dataNeeded) : array {
 
-		$meta = [
-			'ok' => false,
-			'status' => 400,
-			'message' => 'Bad Request',
-			'dataNeeded' => $dataNeeded,
-			'feedback' => 'The necessary data was not provided.',
+		$result = [
+			'meta' => [
+				'ok' => false,
+				'status' => 400,
+				'message' => 'Bad Request',
+				'dataNeeded' => $dataNeeded,
+				'feedback' => 'The necessary data was not provided.',
+			],
 		];
 
-		return $meta;
+		return $result;
 	}
 
 	/**
@@ -97,7 +101,7 @@ class Helper {
 	 *
 	 * @return array Array of meta data
 	 */
-	public static function notAuthorised() : array {
+	public static function getNotAuthorisedResult() : array {
 
 		$result = [
 			'meta' => [
@@ -112,14 +116,14 @@ class Helper {
 	}
 	
 	/**
-	 * Send the result back
+	 * Send the result response back
 	 *
 	 * @param $result array The result generated from the request so far
 	 * @param $data array The data sent with the request
 	 * @param $method string The request method made
 	 * @param $path array The URI (Relative) the request was made to
 	 */
-	public static function sendData(array $result, array $data, $method, array $path) {
+	public static function sendResponse(array $result, array $data, $method, array $path) {
 
 		// Send back the data provided
 		$result['meta']["data"] = $data;
