@@ -19,6 +19,8 @@ class Auth {
 	 */
 	public static function login($data) {
 
+		$result = [];
+
 		// Checks if data needed are present and not empty
 		$dataNeeded = array("username", "password");
 		if (Helper::checkData($data, $dataNeeded)) {
@@ -68,9 +70,12 @@ class Auth {
 		 * Actually do the log out here (e.g removing cookie, session or database etc.)
 		 */
 
-
-		$result["meta"]["ok"] = true;
-		$result["meta"]["feedback"] = "Successfully Logged Out.";
+		$result = [
+			'meta' => [
+				'ok' => true,
+				'feedback' => 'Successfully Logged Out.',
+			],
+		];
 
 		return $result;
 	}
