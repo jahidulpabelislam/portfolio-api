@@ -9,7 +9,7 @@
 | [/projects/](https://api.jahidulpabelislam.com/v3/projects/) | &#10004; | &#10004; |  |  |
 | [/projects/:id/](https://api.jahidulpabelislam.com/v3/projects/13/)| &#10004; |  | &#10004; | &#10004; |
 | [/projects/:id/images/](https://api.jahidulpabelislam.com/v3/projects/13/images/) | &#10004; | &#10004; |  |  |
-| [/projects/:id/images/:id/](https://api.jahidulpabelislam.com/v3/projects/13/images/72) | &#10004; |  | &#10004; | &#10004; |
+| [/projects/:id/images/:id/](https://api.jahidulpabelislam.com/v3/projects/13/images/72/) | &#10004; |  | &#10004; | &#10004; |
 
 ## Setup
 
