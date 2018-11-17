@@ -17,6 +17,8 @@ abstract class Entity {
 	public $defaultOrderingByDirection = 'DESC';
 
 	public $columns = [];
+	
+	public $searchableColumns = [];
 
 	public $result = [];
 
@@ -240,5 +242,41 @@ abstract class Entity {
 		}
 
 		return $result;
+	}
+	
+	public function generateSearchWhereQuery($search) : array {
+
+		if ($this->searchableColumns) {
+			// Split each word in search
+			$searchWords = explode(' ', $search);
+
+			$searchString = $searchStringReversed = '%';
+
+			// Loop through each search word
+			foreach ($searchWords as $word) {
+				$searchString .= "$word%";
+			}
+
+			$searchesReversed = array_reverse($searchWords);
+
+			// Loop through each search word
+			foreach ($searchesReversed as $word) {
+				$searchStringReversed .= "$word%";
+			}
+
+			$whereClause = 'WHERE';
+
+			// Loop through each search word
+			foreach ($this->searchableColumns as $column) {
+				$whereClause .= " $column LIKE :searchString OR $column LIKE :searchStringReversed OR";
+			}
+
+			$whereClause = rtrim($whereClause, 'OR');
+
+			return [$whereClause, $searchString, $searchStringReversed];
+		}
+		else {
+			return ['', '', ''];
+		}
 	}
 }

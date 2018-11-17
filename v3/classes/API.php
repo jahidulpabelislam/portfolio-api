@@ -70,43 +70,25 @@ class API {
 		
 		$bindings = [];
 
-		$filter = "";
+		$whereClause = "";
 		
 		// Add a filter if a search was entered
 		if (!empty($data["search"])) {
 
-			// Split each word in search
-			$searchWords = explode(" ", $data["search"]);
+			$project = new Project();
+			list($whereClause, $searchString, $searchStringReversed) = $project->generateSearchWhereQuery($data["search"]);
 
-			$searchString = "%";
-
-			// Loop through each search word
-			foreach ($searchWords as $word) {
-				$searchString .= "$word%";
-			}
-
-			$searchesReversed = array_reverse($searchWords);
-
-			$searchStringReversed = "%";
-
-			// Loop through each search word
-			foreach ($searchesReversed as $word) {
-				$searchStringReversed .= "$word%";
-			}
-
-			$filter = "WHERE Name LIKE :searchString OR Name LIKE :searchStringReversed OR LongDescription LIKE :searchString OR LongDescription LIKE :searchStringReversed OR ShortDescription LIKE :searchString OR ShortDescription LIKE :searchStringReversed OR Skills LIKE :searchString OR Skills LIKE :searchStringReversed";
-			
 			$bindings['searchString'] = $searchString;
 			$bindings['searchStringReversed'] = $searchStringReversed;
 		}
 
-		$query = "SELECT * FROM PortfolioProject $filter ORDER BY Date DESC LIMIT $limit OFFSET $offset;";
+		$query = "SELECT * FROM PortfolioProject $whereClause ORDER BY Date DESC LIMIT $limit OFFSET $offset;";
 		$result = $this->db->query($query, $bindings);
 
 		// Check if database provided any meta data if not all ok
 		if (count($result["rows"]) > 0 && !isset($result["meta"])) {
 
-			$query = "SELECT COUNT(*) AS total_count FROM PortfolioProject $filter;";
+			$query = "SELECT COUNT(*) AS total_count FROM PortfolioProject $whereClause;";
 			$totalCount = $this->db->query($query, $bindings);
 			
 			if ($totalCount && count($totalCount["rows"]) > 0) {

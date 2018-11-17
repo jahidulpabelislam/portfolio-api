@@ -19,8 +19,15 @@ class Project extends Entity {
 		'Link',
 		'GitHub',
 		'Download',
-		'Date',
 		'Colour',
+		'Date',
+	];
+	
+	public $searchableColumns = [
+		'Name',
+		'Skills',
+		'LongDescription',
+		'ShortDescription',
 	];
 
 	/**
