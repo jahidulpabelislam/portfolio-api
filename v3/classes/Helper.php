@@ -187,14 +187,14 @@ class Helper {
 		// Check if requested to send json
 		$json = (stripos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false);
 
-		// Send the results, send by json if json was requested
+		// Send the result, send by json if json was requested
 		if ($json) {
 			header("Content-Type: application/json");
 			echo json_encode($result);
 		} // Else send by plain text
 		else {
 			header("Content-Type: text/plain");
-			echo("results: ");
+			echo("result: ");
 			var_dump($result);
 		}
 	}
