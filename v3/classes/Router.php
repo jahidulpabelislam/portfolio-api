@@ -24,28 +24,28 @@ class Router {
 			case "login":
 				switch ($method) {
 					case "POST":
-						$results = Auth::login($data);
+						$result = Auth::login($data);
 						break;
 					default:
-						$results["meta"] = Helper::methodNotAllowed($method, $path);
+						$result["meta"] = Helper::methodNotAllowed($method, $path);
 				}
 				break;
 			case "logout":
 				switch ($method) {
 					case "GET":
-						$results = Auth::logout();
+						$result = Auth::logout();
 						break;
 					default:
-						$results["meta"] = Helper::methodNotAllowed($method, $path);
+						$result["meta"] = Helper::methodNotAllowed($method, $path);
 				}
 				break;
 			case "session":
 				switch ($method) {
 					case "GET":
-						$results = $api->getAuthStatus();
+						$result = $api->getAuthStatus();
 						break;
 					default:
-						$results["meta"] = Helper::methodNotAllowed($method, $path);
+						$result["meta"] = Helper::methodNotAllowed($method, $path);
 				}
 				break;
 			case "projects":
@@ -55,35 +55,35 @@ class Router {
 							$projectID = $path[1];
 							if (isset($path[2]) && $path[2] === "images") {
 								if (isset($path[3]) && $path[3] !== "") {
-									$results = $api->getProjectImage($projectID, $path[3]);
+									$result = $api->getProjectImage($projectID, $path[3]);
 								}
 								else {
-									$results = $api->getProjectImages($projectID);
+									$result = $api->getProjectImages($projectID);
 								}
 							}
 							else {
-								$results = $api->getProject($projectID, true);
+								$result = $api->getProject($projectID, true);
 							}
 						}
 						else {
-							$results = $api->getProjects($data);
+							$result = $api->getProjects($data);
 						}
 						break;
 					case "POST":
 						if (isset($path[1]) && trim($path[1]) !== "" && isset($path[2]) && $path[2] === "images") {
 							if (isset($_FILES["image"])) {
 								$data["ProjectID"] = $path[1];
-								$results = $api->addProjectImage($data);
+								$result = $api->addProjectImage($data);
 							}
 						}
 						else {
-							$results = $api->addProject($data);
+							$result = $api->addProject($data);
 						}
 						break;
 					case "PUT":
 						if (isset($path[1]) && trim($path[1]) !== "") {
 							$data["ID"] = $path[1];
-							$results = $api->editProject($data);
+							$result = $api->editProject($data);
 						}
 						break;
 					case "DELETE":
@@ -91,29 +91,29 @@ class Router {
 							if (isset($path[2]) && $path[2] === "images" && isset($path[3]) && $path[3] !== "") {
 								$data["ID"] = $path[3];
 								$data["ProjectID"] = $path[1];
-								$results = $api->deleteImage($data);
+								$result = $api->deleteImage($data);
 							}
 							else {
 								$data["ID"] = $path[1];
-								$results = $api->deleteProject($data);
+								$result = $api->deleteProject($data);
 							}
 						}
 						break;
 					default:
-						$results["meta"] = Helper::methodNotAllowed($method, $path);
+						$result["meta"] = Helper::methodNotAllowed($method, $path);
 				}
 				break;
 			default:
-				$results["meta"]["ok"] = false;
-				$results["meta"]["status"] = 404;
-				$results["meta"]["feedback"] = "Unrecognised URI (/api/v3/" . implode("/", $path) . ")";
-				$results["meta"]["message"] = "Not Found";
+				$result["meta"]["ok"] = false;
+				$result["meta"]["status"] = 404;
+				$result["meta"]["feedback"] = "Unrecognised URI (/api/v3/" . implode("/", $path) . ")";
+				$result["meta"]["message"] = "Not Found";
 		}
 
-		if (empty($results)) {
-			$results["meta"] = Helper::methodNotAllowed($method, $path);
+		if (empty($result)) {
+			$result["meta"] = Helper::methodNotAllowed($method, $path);
 		}
 
-		Helper::sendData($results, $data, $method, $path);
+		Helper::sendData($result, $data, $method, $path);
 	}
 }

@@ -19,21 +19,21 @@ class Auth {
 	 */
 	public static function login($data) {
 
-		//checks if data needed are present and not empty
+		// Checks if data needed are present and not empty
 		$dataNeeded = array("username", "password");
 		if (Helper::checkData($data, $dataNeeded)) {
 
-			$results["meta"]["ok"] = false;
-			$results["meta"]["status"] = 401;
-			$results["meta"]["message"] = "Unauthorized";
+			$result["meta"]["ok"] = false;
+			$result["meta"]["status"] = 401;
+			$result["meta"]["message"] = "Unauthorized";
 
 			if ($data["username"] === PORTFOLIO_ADMIN_USERNAME) {
 
 				if (Hasher::check($data["password"], PORTFOLIO_ADMIN_PASSWORD)) {
 
-					$results["meta"]["ok"] = true;
-					$results["meta"]["status"] = 200;
-					$results["meta"]["message"] = "OK";
+					$result["meta"]["ok"] = true;
+					$result["meta"]["status"] = 200;
+					$result["meta"]["message"] = "OK";
 
 					/*
 					 * Actually do the logging in here (e.g store in cookie, session or database etc.)
@@ -41,19 +41,19 @@ class Auth {
 
 				}
 				else {
-					$results["meta"]["feedback"] = "Wrong Password.";
+					$result["meta"]["feedback"] = "Wrong Password.";
 				}
 			}
 			else {
-				$results["meta"]["feedback"] = "Wrong Username and/or Password.";
+				$result["meta"]["feedback"] = "Wrong Username and/or Password.";
 			}
 
 		}
 		else {
-			$results["meta"] = Helper::dataNotProvided($dataNeeded);
+			$result["meta"] = Helper::dataNotProvided($dataNeeded);
 		}
 
-		return $results;
+		return $result;
 	}
 
 	/**
@@ -69,10 +69,10 @@ class Auth {
 		 */
 
 
-		$results["meta"]["ok"] = true;
-		$results["meta"]["feedback"] = "Successfully Logged Out.";
+		$result["meta"]["ok"] = true;
+		$result["meta"]["feedback"] = "Successfully Logged Out.";
 
-		return $results;
+		return $result;
 	}
 
 	/**
