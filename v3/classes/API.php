@@ -67,41 +67,47 @@ class API {
 				$offset = $limit * ($data["page"] - 1);
 			}
 		}
+		
+		$bindings = [];
 
 		$filter = "";
 		
 		// Add a filter if a search was entered
-		if (isset($data["search"])) {
+		if (!empty($data["search"])) {
+
 			// Split each word in search
-			$searches = explode(" ", $data["search"]);
+			$searchWords = explode(" ", $data["search"]);
 
-			$search = "%";
-
-			// Loop through each search word
-			foreach ($searches as $aSearch) {
-				$search .= "${aSearch}%";
-			}
-
-			$searchesReversed = array_reverse($searches);
-
-			$search2 = "%";
+			$searchString = "%";
 
 			// Loop through each search word
-			foreach ($searchesReversed as $aSearch) {
-				$search2 .= "${aSearch}%";
+			foreach ($searchWords as $word) {
+				$searchString .= "$word%";
 			}
 
-			$filter = "WHERE Name LIKE '" . $search . "' OR Name LIKE '" . $search2 . "' OR LongDescription LIKE '" . $search . "' OR LongDescription LIKE '" . $search2 . "' OR ShortDescription LIKE '" . $search . "' OR ShortDescription LIKE '" . $search2 . "' OR Skills LIKE '" . $search . "' OR Skills LIKE '" . $search2 . "'";
+			$searchesReversed = array_reverse($searchWords);
+
+			$searchStringReversed = "%";
+
+			// Loop through each search word
+			foreach ($searchesReversed as $word) {
+				$searchStringReversed .= "$word%";
+			}
+
+			$filter = "WHERE Name LIKE :searchString OR Name LIKE :searchStringReversed OR LongDescription LIKE :searchString OR LongDescription LIKE :searchStringReversed OR ShortDescription LIKE :searchString OR ShortDescription LIKE :searchStringReversed OR Skills LIKE :searchString OR Skills LIKE :searchStringReversed";
+			
+			$bindings['searchString'] = $searchString;
+			$bindings['searchStringReversed'] = $searchStringReversed;
 		}
 
 		$query = "SELECT * FROM PortfolioProject $filter ORDER BY Date DESC LIMIT $limit OFFSET $offset;";
-		$result = $this->db->query($query);
+		$result = $this->db->query($query, $bindings);
 
 		// Check if database provided any meta data if not all ok
 		if (count($result["rows"]) > 0 && !isset($result["meta"])) {
 
 			$query = "SELECT COUNT(*) AS Count FROM PortfolioProject $filter;";
-			$count = $this->db->query($query);
+			$count = $this->db->query($query, $bindings);
 			
 			if ($count && count($count["rows"]) > 0) {
 				$result["count"] = $count["rows"][0]["Count"];
