@@ -1,4 +1,16 @@
 <?php
+/*
+ * The base Entity object class for Project & Projects Images.
+ * Holds all ORM style functions.
+ *
+ * PHP version 7
+ *
+ * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
+ * @version 1
+ * @link https://github.com/jahidulpabelislam/portfolio-api/
+ * @since Class available since Release: v3
+ * @copyright 2014-2018 JPI
+*/
 
 namespace JPI\API\Entity;
 
@@ -12,15 +24,15 @@ abstract class Entity {
 
 	public $displayName = null;
 
-	public $defaultOrderingByColumn = 'ID';
+	protected $defaultOrderingByColumn = 'ID';
 
-	public $defaultOrderingByDirection = 'DESC';
+	protected $defaultOrderingByDirection = 'DESC';
 
 	public $columns = [];
 	
-	public $searchableColumns = [];
+	protected $searchableColumns = [];
 
-	public $defaultLimit = 10;
+	protected $defaultLimit = 10;
 
 	public $result = [];
 

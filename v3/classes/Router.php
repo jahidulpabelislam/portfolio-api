@@ -1,7 +1,14 @@
 <?php
 /*
  * A RESTful API router.
- * @author Jahidul Pabel Islam
+ *
+ * PHP version 7
+ *
+ * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
+ * @version 2
+ * @link https://github.com/jahidulpabelislam/portfolio-api/
+ * @since Class available since Release: v2
+ * @copyright 2014-2018 JPI
 */
 
 namespace JPI\API;

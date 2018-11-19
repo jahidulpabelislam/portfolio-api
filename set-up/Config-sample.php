@@ -1,7 +1,15 @@
 <?php
 /*
- * Sets Constants for Connection to the Database
- * @author Jahidul Pabel Islam
+ * Sets Constants for Connection to the Database & API's Auth
+ * as well as other settings.
+ *
+ * PHP version 7
+ *
+ * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
+ * @version 1
+ * @link https://github.com/jahidulpabelislam/portfolio-api/
+ * @since Class available since Release: v3
+ * @copyright 2014-2018 JPI
 */
 
 namespace JPI\API;

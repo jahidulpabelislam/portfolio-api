@@ -1,7 +1,13 @@
 <?php
 /*
- * The base endpoint for all request for this API.
- * @author Jahidul Pabel Islam
+ * The base endpoint for all requests for this API.
+ *
+ * PHP version 7
+ *
+ * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
+ * @version 3
+ * @link https://github.com/jahidulpabelislam/portfolio-api/
+ * @copyright 2014-2018 JPI
 */
 
 use JPI\API\Router;

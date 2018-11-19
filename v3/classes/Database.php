@@ -1,11 +1,19 @@
 <?php
 /*
  * Connects to a database and set up to send and receive data
- * using application constants defined in Config.php. file
- * a reusable file for other projects
- * MySQL specific
- * @author Jahidul Pabel Islam
- */
+ * using application specific constants defined in the Config.php file.
+ *
+ * A reusable file for other projects.
+ *
+ * MySQL & PDO specific.
+ *
+ * PHP version 7
+ *
+ * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
+ * @version 3
+ * @link https://github.com/jahidulpabelislam/portfolio-api/
+ * @copyright 2014-2018 JPI
+*/
 
 namespace JPI\API;
 

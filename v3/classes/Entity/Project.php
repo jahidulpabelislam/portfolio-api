@@ -1,4 +1,17 @@
 <?php
+/*
+ * The Project Entity object class (extends the base Entity class, where most of the ORM functionality lies).
+ * Within this holds and methods where it overwrites or add extra custom functionality from the base Entity class.
+ * Also holds any method only custom to Project entities.
+ *
+ * PHP version 7
+ *
+ * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
+ * @version 1
+ * @link https://github.com/jahidulpabelislam/portfolio-api/
+ * @since Class available since Release: v3
+ * @copyright 2014-2018 JPI
+*/
 
 namespace JPI\API\Entity;
 
@@ -8,7 +21,7 @@ class Project extends Entity {
 
 	public $displayName = 'Project';
 
-	public $defaultOrderingByColumn = 'Date';
+	protected $defaultOrderingByColumn = 'Date';
 
 	public $columns = [
 		'ID',
@@ -23,7 +36,7 @@ class Project extends Entity {
 		'Date',
 	];
 
-	public $searchableColumns = [
+	protected $searchableColumns = [
 		'Name',
 		'Skills',
 		'LongDescription',

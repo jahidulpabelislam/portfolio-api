@@ -1,8 +1,15 @@
 <?php
 /*
- * All the general functions for API
- * Used by multiple API's
- * @author Jahidul Pabel Islam
+ * All the general functions for the API.
+ *
+ * Can be used by multiple API's.
+ *
+ * PHP version 7
+ *
+ * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
+ * @version 3
+ * @link https://github.com/jahidulpabelislam/portfolio-api/
+ * @copyright 2014-2018 JPI
 */
 
 namespace JPI\API;

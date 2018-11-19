@@ -1,7 +1,13 @@
 <?php
 /*
- * All the functions for this API
- * @author Jahidul Pabel Islam
+ * All the custom functions for this API that allow to perform all user requests.
+ *
+ * PHP version 7
+ *
+ * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
+ * @version 3
+ * @link https://github.com/jahidulpabelislam/portfolio-api/
+ * @copyright 2014-2018 JPI
 */
 
 namespace JPI\API;
