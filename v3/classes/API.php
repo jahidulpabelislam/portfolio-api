@@ -245,7 +245,7 @@ class API {
 		$imageFileExt = pathinfo(basename($image["name"]), PATHINFO_EXTENSION);
 
 		// The directory to upload file
-		$directory = "/assets/images/projects/";
+		$directory = "/project-images/";
 
 		// The full path for new file on the server
 		$newFilename = $projectNameFormatted;
