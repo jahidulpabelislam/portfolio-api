@@ -205,7 +205,7 @@ class API {
 				$result = $this->getProject($data["ProjectID"]);
 				if (!empty($result["row"])) {
 
-					$result = $this->uploadProjectImage($data["ProjectID"]);
+					$result = $this->uploadProjectImage($result["row"]);
 				}
 			} // Else data needed was not provided
 			else {
@@ -225,12 +225,19 @@ class API {
 	/**
 	 * Try and upload the added image
 	 * 
-	 * @param $projectId int The Id of the Project trying to upload image for
+	 * @param $project array The Project trying to upload image for
 	 * @return array The request response to send back
 	 */
-	private function uploadProjectImage($projectId) : array {
+	private function uploadProjectImage($project) : array {
 
 		$result = [];
+		
+		$projectId = $project['ID'];
+		
+		$projectName = $project['Name'];
+		
+		$projectNameFormatted = strtolower($projectName);
+		$projectNameFormatted = preg_replace('/[^a-z0-9]+/', '-', $projectNameFormatted);
 
 		$image = $_FILES["image"];
 
@@ -241,8 +248,13 @@ class API {
 		$directory = "/assets/images/projects/";
 
 		// The full path for new file on the server
-		$newFilename = date('YmdHis', time()) . mt_rand() . "." . $imageFileExt;
+		$newFilename = $projectNameFormatted;
+		$newFilename .=  '-' . date('YmdHis', time());
+		$newFilename .= '-' . mt_rand();
+		$newFilename .= "." . $imageFileExt;
+
 		$newFileLocation = $directory . $newFilename;
+
 		$newImageFullPath = $_SERVER['DOCUMENT_ROOT'] . $newFileLocation;
 
 		// Check if file is a actual image
