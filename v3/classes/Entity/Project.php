@@ -94,8 +94,8 @@ class Project extends Entity {
 				$images = json_decode($values["Images"]);
 
 				if (count($images) > 0) {
-					foreach ($images as $image) {
-						$imageUpdateData = ['ID' => $image->ID, 'Number' => $image->Number,];
+					foreach ($images as $sortOrder => $image) {
+						$imageUpdateData = ['ID' => $image->ID, 'Number' => $sortOrder,];
 						$projectImage = new ProjectImage();
 						$projectImage->save($imageUpdateData);
 					}
