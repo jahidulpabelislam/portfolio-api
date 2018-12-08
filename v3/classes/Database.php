@@ -125,7 +125,7 @@ class Database {
 	/**
 	 * @return int The ID of last inserted row of data
 	 */
-	public function getLastInsertedId() :? int {
+	public function getLastInsertedId() {
 		if ($this->db) {
 			return $this->db->lastInsertId();
 		}
