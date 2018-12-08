@@ -75,8 +75,8 @@ class Project extends Entity {
 	 * Will either be a new insert or a update to an existing Entity
 	 *
 	 * Add extra functionality on top of default save
-	 * If the save was a update, update the Order 'Number' on its Project Images
-	 * The Order Number is based on to order the items are in
+	 * If the save was a update, update the Order 'SortOrderNumber' on its Project Images
+	 * The SortOrderNumber is based on to order the items are in
 	 *
 	 * @param $values array The values as an array to use for the Entity
 	 * @return array Either an array with successful meta data or an array of error feedback meta
@@ -95,7 +95,7 @@ class Project extends Entity {
 
 				if (count($images) > 0) {
 					foreach ($images as $sortOrder => $image) {
-						$imageUpdateData = ['ID' => $image->ID, 'Number' => $sortOrder,];
+						$imageUpdateData = ['ID' => $image->ID, 'SortOrderNumber' => $sortOrder,];
 						$projectImage = new ProjectImage();
 						$projectImage->save($imageUpdateData);
 					}

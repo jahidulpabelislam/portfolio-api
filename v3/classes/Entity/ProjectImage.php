@@ -20,7 +20,7 @@ class ProjectImage extends Entity {
 
 	public $displayName = 'Project Image';
 
-	protected $defaultOrderingByColumn = 'NUMBER';
+	protected $defaultOrderingByColumn = 'SortOrderNumber';
 
 	protected $defaultOrderingByDirection = 'ASC';
 
@@ -28,7 +28,7 @@ class ProjectImage extends Entity {
 		'ID',
 		'File',
 		'ProjectID',
-		'Number'
+		'SortOrderNumber'
 	];
 
 	/**

@@ -268,7 +268,7 @@ class API {
 				$values = [
 					"File" => $newFileLocation,
 					"ProjectID" => $projectId,
-					"Number" => 999, // High enough number
+					"SortOrderNumber" => 999, // High enough number
 				];
 				$projectImage = new ProjectImage();
 				$result = $projectImage->save($values);
