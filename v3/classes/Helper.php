@@ -199,7 +199,7 @@ class Helper {
 		if (in_array($originDomain, $allowedDomains)) {
 			header("Access-Control-Allow-Origin: $originURL");
 			header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-			header("Access-Control-Allow-Headers: Process-Data");
+			header("Access-Control-Allow-Headers: Process-Data, Authorization");
 
 			if ($method === "OPTIONS") {
 				$result["meta"]["status"] = 200;
