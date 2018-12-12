@@ -22,7 +22,7 @@ class Router {
 
 		list($method, $path, $data) = Helper::extractFromRequest();
 
-		$api = new API();
+		$api = new Core();
 
 		$entity = !empty($path[0]) ? $path[0] : '';
 

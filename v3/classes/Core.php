@@ -15,7 +15,7 @@ namespace JPI\API;
 use JPI\API\Entity\Project;
 use JPI\API\Entity\ProjectImage;
 
-class API {
+class Core {
 
 	private $db = null;
 
