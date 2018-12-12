@@ -7,3 +7,6 @@ logs/*
 .idea/*
 
 /project-images/*
+
+/vendor/*
+composer.lock
