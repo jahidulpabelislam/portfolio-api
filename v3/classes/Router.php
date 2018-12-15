@@ -24,7 +24,7 @@ class Router {
 
 		$api = new Core();
 
-		$entity = !empty($path[0]) ? $path[0] : '';
+		$entity = !empty($path[0]) ? $path[0] : "";
 
 		$result = [];
 
@@ -79,8 +79,8 @@ class Router {
 						}
 						break;
 					case "POST":
-						if (isset($path[1]) && trim($path[1]) !== '' &&
-							isset($path[2]) && $path[2] === 'images' && !isset($path[3])) {
+						if (isset($path[1]) && trim($path[1]) !== "" &&
+							isset($path[2]) && $path[2] === "images" && !isset($path[3])) {
 								$data["ProjectID"] = $path[1];
 								$result = $api->addProjectImage($data);
 						}
@@ -89,8 +89,8 @@ class Router {
 						}
 						break;
 					case "PUT":
-						if (isset($path[1]) && trim($path[1]) !== '' && !isset($path[2])) {
-							$data['ID'] = $path[1];
+						if (isset($path[1]) && trim($path[1]) !== "" && !isset($path[2])) {
+							$data["ID"] = $path[1];
 							$result = $api->editProject($data);
 						}
 						break;

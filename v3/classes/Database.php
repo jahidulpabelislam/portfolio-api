@@ -74,8 +74,8 @@ class Database {
 	public function query($query, $bindings = null) {
 
 		$result = [
-			'count' => 0,
-			'rows' => [],
+			"count" => 0,
+			"rows" => [],
 		];
 
 		if ($this->db) {

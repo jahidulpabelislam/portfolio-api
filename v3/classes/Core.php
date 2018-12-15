@@ -158,7 +158,7 @@ class Core {
 		if (!empty($result["row"])) {
 
 			$projectImage = new ProjectImage();
-			$result = $projectImage->getByColumn('ProjectID', $projectID);
+			$result = $projectImage->getByColumn("ProjectID", $projectID);
 		}
 
 		return $result;
@@ -232,12 +232,12 @@ class Core {
 
 		$result = [];
 		
-		$projectId = $project['ID'];
+		$projectId = $project["ID"];
 		
-		$projectName = $project['Name'];
+		$projectName = $project["Name"];
 		
 		$projectNameFormatted = strtolower($projectName);
-		$projectNameFormatted = preg_replace('/[^a-z0-9]+/', '-', $projectNameFormatted);
+		$projectNameFormatted = preg_replace("/[^a-z0-9]+/", "-", $projectNameFormatted);
 
 		$image = $_FILES["image"];
 
@@ -249,17 +249,17 @@ class Core {
 
 		// The full path for new file on the server
 		$newFilename = $projectNameFormatted;
-		$newFilename .=  '-' . date('YmdHis', time());
-		$newFilename .= '-' . mt_rand();
+		$newFilename .=  "-" . date("YmdHis", time());
+		$newFilename .= "-" . mt_rand();
 		$newFilename .= "." . $imageFileExt;
 
 		$newFileLocation = $directory . $newFilename;
 
-		$newImageFullPath = $_SERVER['DOCUMENT_ROOT'] . $newFileLocation;
+		$newImageFullPath = $_SERVER["DOCUMENT_ROOT"] . $newFileLocation;
 
 		// Check if file is a actual image
 		$fileType = mime_content_type($image["tmp_name"]);
-		if ((strpos($fileType, 'image/') !== false)) {
+		if ((strpos($fileType, "image/") !== false)) {
 
 			// Try to uploaded file
 			if (move_uploaded_file($image["tmp_name"], $newImageFullPath)) {
@@ -279,10 +279,10 @@ class Core {
 		} // Else bad request as file uploaded is not a image
 		else {
 			$result = [
-				'meta' => [
-					'status' => 400,
-					'message' => 'Bad Request',
-					'feedback' => 'File is not an image.',
+				"meta" => [
+					"status" => 400,
+					"message" => "Bad Request",
+					"feedback" => "File is not an image.",
 				],
 			];
 		}

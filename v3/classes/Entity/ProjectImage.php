@@ -16,19 +16,19 @@ namespace JPI\API\Entity;
 
 class ProjectImage extends Entity {
 
-	public $tableName = 'PortfolioProjectImage';
+	public $tableName = "PortfolioProjectImage";
 
-	public $displayName = 'Project Image';
+	public $displayName = "Project Image";
 
-	protected $defaultOrderingByColumn = 'SortOrderNumber';
+	protected $defaultOrderingByColumn = "SortOrderNumber";
 
-	protected $defaultOrderingByDirection = 'ASC';
+	protected $defaultOrderingByDirection = "ASC";
 
 	public $columns = [
-		'ID',
-		'File',
-		'ProjectID',
-		'SortOrderNumber'
+		"ID",
+		"File",
+		"ProjectID",
+		"SortOrderNumber"
 	];
 
 	/**
@@ -42,7 +42,7 @@ class ProjectImage extends Entity {
 	 * @param string $fileName string The filename of the file to delete
 	 * @return array Either an array with successful meta data or a array of error feedback meta
 	 */
-	public function delete($id, $fileName = '') : array {
+	public function delete($id, $fileName = "") : array {
 
 		$result = parent::delete($id);
 
@@ -50,8 +50,8 @@ class ProjectImage extends Entity {
 		if ($result["count"] > 0 && $fileName) {
 
 			// Checks if file exists to delete the actual Image file from server
-			if (file_exists($_SERVER['DOCUMENT_ROOT'] . $fileName)) {
-				unlink($_SERVER['DOCUMENT_ROOT'] . $fileName);
+			if (file_exists($_SERVER["DOCUMENT_ROOT"] . $fileName)) {
+				unlink($_SERVER["DOCUMENT_ROOT"] . $fileName);
 			}
 		}
 
@@ -68,15 +68,15 @@ class ProjectImage extends Entity {
 
 		$result = $this->result;
 
-		if (!empty($result['row']) && $result['row']['ProjectID'] !== $projectId) {
-			$imageId = $result['row']['ID'];
+		if (!empty($result["row"]) && $result["row"]["ProjectID"] !== $projectId) {
+			$imageId = $result["row"]["ID"];
 			$result = [
-				'row' => [],
-				'meta' => [
-					'ok' => false,
-					'status' => 404,
-					'feedback' => "No $this->displayName found with $imageId as ID for Project: $projectId.",
-					'message' => 'Not Found',
+				"row" => [],
+				"meta" => [
+					"ok" => false,
+					"status" => 404,
+					"feedback" => "No $this->displayName found with $imageId as ID for Project: $projectId.",
+					"message" => "Not Found",
 				],
 			];
 

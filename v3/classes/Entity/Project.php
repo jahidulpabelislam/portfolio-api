@@ -17,30 +17,30 @@ namespace JPI\API\Entity;
 
 class Project extends Entity {
 
-	public $tableName = 'PortfolioProject';
+	public $tableName = "PortfolioProject";
 
-	public $displayName = 'Project';
+	public $displayName = "Project";
 
-	protected $defaultOrderingByColumn = 'Date';
+	protected $defaultOrderingByColumn = "Date";
 
 	public $columns = [
-		'ID',
-		'Name',
-		'Skills',
-		'LongDescription',
-		'ShortDescription',
-		'Link',
-		'GitHub',
-		'Download',
-		'Colour',
-		'Date',
+		"ID",
+		"Name",
+		"Skills",
+		"LongDescription",
+		"ShortDescription",
+		"Link",
+		"GitHub",
+		"Download",
+		"Colour",
+		"Date",
 	];
 
 	protected $searchableColumns = [
-		'Name',
-		'Skills',
-		'LongDescription',
-		'ShortDescription',
+		"Name",
+		"Skills",
+		"LongDescription",
+		"ShortDescription",
 	];
 
 	/**
@@ -95,7 +95,7 @@ class Project extends Entity {
 
 				if (count($images) > 0) {
 					foreach ($images as $sortOrder => $image) {
-						$imageUpdateData = ['ID' => $image->ID, 'SortOrderNumber' => $sortOrder,];
+						$imageUpdateData = ["ID" => $image->ID, "SortOrderNumber" => $sortOrder,];
 						$projectImage = new ProjectImage();
 						$projectImage->save($imageUpdateData);
 					}
@@ -163,7 +163,7 @@ class Project extends Entity {
 	public function getProjectImages($id) : array {
 		// Get all the images linked to the Project
 		$projectImage = new ProjectImage();
-		$imagesResult = $projectImage->getByColumn('ProjectID', $id);
+		$imagesResult = $projectImage->getByColumn("ProjectID", $id);
 		$images = $imagesResult["rows"];
 
 		return $images;

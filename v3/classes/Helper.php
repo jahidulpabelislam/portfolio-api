@@ -23,16 +23,16 @@ class Helper {
 	 * @return string The Full URI user requested
 	 */
 	public static function getAPIURL(array $path) : string {
-		$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https' : 'http';
-		$url = $protocol . '://' . $_SERVER["SERVER_NAME"];
+		$protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] != "off") ? "https" : "http";
+		$url = $protocol . "://" . $_SERVER["SERVER_NAME"];
 
-		$explodedPath = implode('/', $path);
+		$explodedPath = implode("/", $path);
 
 		if ($explodedPath) {
-			$explodedPath .= '/';
+			$explodedPath .= "/";
 		}
 
-		$url .= '/v3/' . $explodedPath;
+		$url .= "/v3/" . $explodedPath;
 
 		return $url;
 	}
@@ -43,12 +43,12 @@ class Helper {
 	public static function extractFromRequest() : array {
 
 		// Get the requested method
-		$method = strtoupper($_SERVER['REQUEST_METHOD']);
+		$method = strtoupper($_SERVER["REQUEST_METHOD"]);
 
-		$requestedURI = !empty($_SERVER['PATH_INFO']) ? trim($_SERVER['PATH_INFO'], "/") : '';
+		$requestedURI = !empty($_SERVER["PATH_INFO"]) ? trim($_SERVER["PATH_INFO"], "/") : "";
 
 		// Get the individual parts of the request URI as an array
-		$requestedURIArray = explode('/', $requestedURI);
+		$requestedURIArray = explode("/", $requestedURI);
 
 		$data = [];
 		foreach ($_REQUEST as $key => $value) {
@@ -92,11 +92,11 @@ class Helper {
 	public static function getMethodNotAllowedResult($method, array $path) : array {
 
 		$result = [
-			'meta' => [
-				'ok'       => false,
-				'status'   => 405,
-				'message'  => 'Method not allowed.',
-				'feedback' => "$method Method Not Allowed on " .  self::getAPIURL($path),
+			"meta" => [
+				"ok"       => false,
+				"status"   => 405,
+				"message"  => "Method not allowed.",
+				"feedback" => "$method Method Not Allowed on " .  self::getAPIURL($path),
 			],
 		];
 
@@ -112,12 +112,12 @@ class Helper {
 	public static function getDataNotProvidedResult(array $dataNeeded) : array {
 
 		$result = [
-			'meta' => [
-				'ok' => false,
-				'status' => 400,
-				'message' => 'Bad Request',
-				'dataNeeded' => $dataNeeded,
-				'feedback' => 'The necessary data was not provided.',
+			"meta" => [
+				"ok" => false,
+				"status" => 400,
+				"message" => "Bad Request",
+				"dataNeeded" => $dataNeeded,
+				"feedback" => "The necessary data was not provided.",
 			],
 		];
 
@@ -132,11 +132,11 @@ class Helper {
 	public static function getNotAuthorisedResult() : array {
 
 		$result = [
-			'meta' => [
-				'ok' => false,
-				'status' => 401,
-				'message' => 'Unauthorized',
-				'feedback' => 'You need to be logged in!',
+			"meta" => [
+				"ok" => false,
+				"status" => 401,
+				"message" => "Unauthorized",
+				"feedback" => "You need to be logged in!",
 			],
 		];
 
@@ -152,11 +152,11 @@ class Helper {
 	public static function getUnrecognisedURIResult(array $path) : array {
 
 		$result = [
-			'meta' => [
-				'ok' => false,
-				'status' => 404,
-				'feedback' => 'Unrecognised URI (' . self::getAPIURL($path) . ')',
-				'message' => 'Not Found',
+			"meta" => [
+				"ok" => false,
+				"status" => 404,
+				"feedback" => "Unrecognised URI (" . self::getAPIURL($path) . ")",
+				"message" => "Not Found",
 			],
 		];
 
@@ -174,11 +174,11 @@ class Helper {
 	public static function sendResponse(array $result, array $data, $method, array $path) {
 
 		// Send back the data provided
-		$result['meta']["data"] = $data;
+		$result["meta"]["data"] = $data;
 		// Send back the method requested
-		$result['meta']["method"] = $method;
+		$result["meta"]["method"] = $method;
 		// Send back the path they requested
-		$result['meta']["path"] = $path;
+		$result["meta"]["path"] = $path;
 
 		$originURL = $_SERVER["HTTP_ORIGIN"] ?? "";
 
@@ -237,7 +237,7 @@ class Helper {
 		}
 
 		// Check if requested to send json
-		$json = (stripos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false);
+		$json = (stripos($_SERVER["HTTP_ACCEPT"], "application/json") !== false);
 
 		// Send the result, send by json if json was requested
 		if ($json) {

@@ -74,7 +74,7 @@ class Auth {
 					$secretKey = Config::PORTFOLIO_ADMIN_SECRET_KEY;
 
 					$jwt = JWT::encode($jwtData, $secretKey, self::$JWT_ALG);
-					
+
 					$result["meta"]["jwt"] = $jwt;
 				}
 				else {

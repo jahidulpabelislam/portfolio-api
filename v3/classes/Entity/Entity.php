@@ -24,9 +24,9 @@ abstract class Entity {
 
 	public $displayName = null;
 
-	protected $defaultOrderingByColumn = 'ID';
+	protected $defaultOrderingByColumn = "ID";
 
-	protected $defaultOrderingByDirection = 'DESC';
+	protected $defaultOrderingByDirection = "DESC";
 
 	public $columns = [];
 	
@@ -62,7 +62,7 @@ abstract class Entity {
 	public function getByColumn($column, $value) : array {
 
 		$query = "SELECT * FROM $this->tableName WHERE $column = :value ORDER BY $this->defaultOrderingByColumn $this->defaultOrderingByDirection;";
-		$bindings = array(':value' => $value);
+		$bindings = array(":value" => $value);
 		$result = $this->db->query($query, $bindings);
 
 		// Check everything was okay
@@ -71,11 +71,11 @@ abstract class Entity {
 		}
 		// Check if database provided any meta data if not no problem with executing query but no item found
 		else if ($result["count"] <= 0 && !isset($result["meta"])){
-			$result['meta'] = [
-				'ok' => false,
-				'status' => 404,
-				'feedback' => "No {$this->displayName}s found with $value as $column.",
-				'message' => 'Not Found',
+			$result["meta"] = [
+				"ok" => false,
+				"status" => 404,
+				"feedback" => "No {$this->displayName}s found with $value as $column.",
+				"message" => "Not Found",
 			];
 		}
 
@@ -93,26 +93,26 @@ abstract class Entity {
 	public function getById($id) : array {
 
 		if (is_numeric($id)) {
-			$result = $this->getByColumn('ID', (int) $id);
+			$result = $this->getByColumn("ID", (int) $id);
 
-			$result['row'] = [];
+			$result["row"] = [];
 
 			// Check everything was okay, so as this /Should/ return only one, use 'Row' as index
-			if ($result['count'] > 0) {
-				$result['row'] = $result['rows'][0];
+			if ($result["count"] > 0) {
+				$result["row"] = $result["rows"][0];
 			}
 			// Check if database provided any meta data if so no problem with executing query but no item found
-			else if (isset($result['meta']) && isset($result['meta']['status']) && $result['meta']['status'] === 404) {
-				$result['meta']['feedback'] = "No $this->displayName found with $id as ID.";
+			else if (isset($result["meta"]) && isset($result["meta"]["status"]) && $result["meta"]["status"] === 404) {
+				$result["meta"]["feedback"] = "No $this->displayName found with $id as ID.";
 			}
 
-			unset($result['rows']);
-			unset($result['count']);
+			unset($result["rows"]);
+			unset($result["count"]);
 		} else {
 			$result = [
-				'row' => [],
-				'meta' => [
-					'feedback' => "No $this->displayName found with $id as ID (Please note ID must be a numeric value).",
+				"row" => [],
+				"meta" => [
+					"feedback" => "No $this->displayName found with $id as ID (Please note ID must be a numeric value).",
 				],
 			];
 		}
@@ -175,22 +175,22 @@ abstract class Entity {
 	 * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
 	 */
 	private function generateInsertQuery(array $values) : array {
-		$columnsQuery = '(';
-		$valuesQuery = '(';
+		$columnsQuery = "(";
+		$valuesQuery = "(";
 		$bindings = [];
 
 		foreach ($this->columns as $column) {
-			if ($column !== 'ID' && !empty($values[$column])) {
-				$columnsQuery .= $column . ', ';
-				$valuesQuery .= ':' .$column . ', ';
+			if ($column !== "ID" && !empty($values[$column])) {
+				$columnsQuery .= $column . ", ";
+				$valuesQuery .= ":" .$column . ", ";
 				$bindings[":$column"] = $values[$column];
 			}
 		}
-		$columnsQuery = rtrim($columnsQuery, ', ');
-		$columnsQuery .= ')';
+		$columnsQuery = rtrim($columnsQuery, ", ");
+		$columnsQuery .= ")";
 
-		$valuesQuery = rtrim($valuesQuery, ', ');
-		$valuesQuery .= ')';
+		$valuesQuery = rtrim($valuesQuery, ", ");
+		$valuesQuery .= ")";
 
 		$query = "INSERT INTO $this->tableName $columnsQuery VALUES $valuesQuery;";
 
@@ -204,20 +204,20 @@ abstract class Entity {
 	 * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
 	 */
 	private function generateUpdateQuery(array $values) : array {
-		$valuesQuery = 'SET ';
+		$valuesQuery = "SET ";
 		$bindings = [];
 
 		foreach ($this->columns as $column) {
 			if (isset($values[$column])) {
 				$bindings[":$column"] = $values[$column];
 
-				if ($column !== 'ID') {
-					$valuesQuery .= $column . ' = :' .$column . ', ';
+				if ($column !== "ID") {
+					$valuesQuery .= $column . " = :" .$column . ", ";
 				}
 			}
 		}
 
-		$valuesQuery = rtrim($valuesQuery, ', ');
+		$valuesQuery = rtrim($valuesQuery, ", ");
 
 		$query = "UPDATE $this->tableName $valuesQuery WHERE ID = :ID;";
 
@@ -347,9 +347,9 @@ abstract class Entity {
 
 		if ($this->searchableColumns) {
 			// Split each word in search
-			$searchWords = explode(' ', $search);
+			$searchWords = explode(" ", $search);
 
-			$searchString = $searchStringReversed = '%';
+			$searchString = $searchStringReversed = "%";
 
 			// Loop through each search word
 			foreach ($searchWords as $word) {
@@ -363,24 +363,24 @@ abstract class Entity {
 				$searchStringReversed .= "$word%";
 			}
 
-			$whereClause = 'WHERE';
+			$whereClause = "WHERE";
 
 			// Loop through each search word
 			foreach ($this->searchableColumns as $column) {
 				$whereClause .= " $column LIKE :searchString OR $column LIKE :searchStringReversed OR";
 			}
 
-			$whereClause = rtrim($whereClause, 'OR');
+			$whereClause = rtrim($whereClause, "OR");
 
 			$bindings = [
-				'searchString' => $searchString,
-				'searchStringReversed' => $searchStringReversed,
+				"searchString" => $searchString,
+				"searchStringReversed" => $searchStringReversed,
 			];
 
 			return [$whereClause, $bindings];
 		}
 		else {
-			return ['', []];
+			return ["", []];
 		}
 	}
 }
