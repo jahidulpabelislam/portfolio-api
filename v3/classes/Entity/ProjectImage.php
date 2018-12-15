@@ -14,6 +14,10 @@
 */
 namespace JPI\API\Entity;
 
+if (!defined("ROOT")) {
+	die();
+}
+
 class ProjectImage extends Entity {
 
 	public $tableName = "PortfolioProjectImage";

@@ -14,6 +14,10 @@
 
 namespace JPI\API\Entity;
 
+if (!defined("ROOT")) {
+	die();
+}
+
 use JPI\API\Database;
 
 abstract class Entity {

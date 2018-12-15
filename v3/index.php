@@ -10,7 +10,11 @@
  * @copyright 2014-2018 JPI
 */
 
-require_once($_SERVER["DOCUMENT_ROOT"] .  "/vendor/autoload.php");
+if (!defined("ROOT")) {
+	define("ROOT", $_SERVER["DOCUMENT_ROOT"]);
+}
+
+require_once(ROOT . "/vendor/autoload.php");
 
 use JPI\API\Router;
 

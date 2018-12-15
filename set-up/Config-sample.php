@@ -14,6 +14,10 @@
 
 namespace JPI\API;
 
+if (!defined("ROOT")) {
+	die();
+}
+
 class Config {
 
 	public $debug = false;

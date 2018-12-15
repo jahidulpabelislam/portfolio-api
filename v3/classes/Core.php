@@ -12,6 +12,10 @@
 
 namespace JPI\API;
 
+if (!defined("ROOT")) {
+	die();
+}
+
 use JPI\API\Entity\Project;
 use JPI\API\Entity\ProjectImage;
 

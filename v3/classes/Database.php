@@ -17,6 +17,10 @@
 
 namespace JPI\API;
 
+if (!defined("ROOT")) {
+	die();
+}
+
 class Database {
 
 	private $db = null;

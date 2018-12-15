@@ -13,6 +13,10 @@
 
 namespace JPI\API;
 
+if (!defined("ROOT")) {
+	die();
+}
+
 class Router {
 
 	/**
