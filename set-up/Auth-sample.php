@@ -13,7 +13,12 @@
 
 namespace JPI\API;
 
+use Firebase\JWT\JWT;
+
 class Auth {
+
+	private static $JWT_ALG = "HS512";
+	private static $JWT_EXPIRATION_HOURS = 1;
 
 	/**
 	 * Authenticate a user trying to login
@@ -35,7 +40,7 @@ class Auth {
 			$result["meta"]["status"] = 401;
 			$result["meta"]["message"] = "Unauthorized";
 
-			if ($data["username"] === Config::PORTFOLIO_ADMIN_USERNAME) {
+			if (Hasher::check($data["username"], Config::PORTFOLIO_ADMIN_USERNAME)) {
 
 				if (Hasher::check($data["password"], Config::PORTFOLIO_ADMIN_PASSWORD)) {
 
@@ -47,6 +52,30 @@ class Auth {
 					 * TODO Actually do the logging in here (e.g store in cookie, session or database etc.)
 					 */
 
+					/*
+					 * SAMPLE!!
+					 */
+					$tokenId = 1; // Json Token Id: an unique identifier for the token
+					$issuedAt = time(); // Issued at: time when the token was generated
+					$expire = $issuedAt + (60 * 60 * 1000) * self::$JWT_EXPIRATION_HOURS; // Token expiration time
+					$serverName = "https://jahidulpabelislam.com/"; // Issuer
+
+					$jwtData = [
+						"jti" => $tokenId,
+						"iss" => $serverName,
+						"iat" => $issuedAt,
+						"nbf" => $issuedAt,
+						"exp" => $expire,
+						"data" => [
+							// Any extra API secific data
+						]
+					];
+
+					$secretKey = Config::PORTFOLIO_ADMIN_SECRET_KEY;
+
+					$jwt = JWT::encode($jwtData, $secretKey, self::$JWT_ALG);
+					
+					$result["meta"]["jwt"] = $jwt;
 				}
 				else {
 					$result["meta"]["feedback"] = "Wrong Password.";
@@ -77,9 +106,9 @@ class Auth {
 		 */
 
 		$result = [
-			'meta' => [
-				'ok' => true,
-				'feedback' => 'Successfully Logged Out.',
+			"meta" => [
+				"ok" => true,
+				"feedback" => "Successfully Logged Out.",
 			],
 		];
 
@@ -97,6 +126,30 @@ class Auth {
 		 * TODO Actually do the check of logged in status (e.g check against stored cookie, session or database etc.)
 		 */
 
+		/*
+		 * SAMPLE!!
+		 */
+		$headers = apache_request_headers();
+
+		$auth = $headers["Authorization"] ?? "";
+		list($jwt) = sscanf($auth, "Bearer %s");
+
+		if (!empty($jwt)) {
+			
+			try {
+				$secretKey = Config::PORTFOLIO_ADMIN_SECRET_KEY;
+
+				$token = JWT::decode($jwt, $secretKey, array(self::$JWT_ALG));
+
+				// An exception is thrown if auth bearer token provided isn't valid
+				// So assume all is valid here
+				return true;
+			}
+			catch (\Exception $e) {
+				error_log("Failed auth check with error: " . $e->getMessage());
+			}
+		}
+
 		return false;
 	}
 
@@ -109,10 +162,10 @@ class Auth {
 
 		if (self::isLoggedIn()) {
 			$result = [
-				'meta' => [
-					'ok' => true,
-					'status' => 200,
-					'message' => 'OK',
+				"meta" => [
+					"ok" => true,
+					"status" => 200,
+					"message" => "OK",
 				],
 			];
 		}
