@@ -272,11 +272,11 @@ abstract class Entity {
 	 * @return int
 	 */
 	public function getTotalCountByWhereClause($whereClause, array $bindings) : int {
-		$query = "SELECT COUNT(*) AS total_count FROM $this->tableName $whereClause;";
+		$query = "SELECT COUNT(*) AS TotalCount FROM $this->tableName $whereClause;";
 		$totalCount = $this->db->query($query, $bindings);
 
 		if ($totalCount && count($totalCount["rows"]) > 0) {
-			return  $totalCount["rows"][0]["total_count"];
+			return  $totalCount["rows"][0]["TotalCount"];
 		}
 
 		return 0;
@@ -331,7 +331,7 @@ abstract class Entity {
 		// Check if database provided any meta data if not all ok
 		if (count($response["rows"]) > 0 && !isset($response["meta"])) {
 
-			$response["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
+			$response["meta"]["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
 
 			$response["meta"]["ok"] = true;
 		}
