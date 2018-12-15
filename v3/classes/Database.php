@@ -73,7 +73,7 @@ class Database {
 	 */
 	public function query($query, $bindings = null) {
 
-		$result = [
+		$response = [
 			"count" => 0,
 			"rows" => [],
 		];
@@ -93,33 +93,33 @@ class Database {
 
 				// If query was a select, return array of data
 				if (strpos($query, "SELECT") !== false) {
-					$result["rows"] = $executedQuery->fetchAll(\PDO::FETCH_ASSOC);
+					$response["rows"] = $executedQuery->fetchAll(\PDO::FETCH_ASSOC);
 				}
 
 				// Add the count of how many rows were effected
-				$result["count"] = $executedQuery->rowCount();
+				$response["count"] = $executedQuery->rowCount();
 			}
 			catch (\PDOException $error) {
 				error_log("Error executing query on database: " . $error->getMessage() . " using query: $query and bindings: " . print_r($bindings, true) . ", full error: " . $error);
 
-				$result["meta"]["ok"] = false;
-				$result["meta"]["feedback"] = "Problem with Server.";
+				$response["meta"]["ok"] = false;
+				$response["meta"]["feedback"] = "Problem with Server.";
 
 				if ($this->config->debug) {
-					$result["meta"]["feedback"] = $error->getMessage();
+					$response["meta"]["feedback"] = $error->getMessage();
 				}
 			}
 		}
 		else {
-			$result["meta"]["ok"] = false;
-			$result["meta"]["feedback"] = "Problem with Server.";
+			$response["meta"]["ok"] = false;
+			$response["meta"]["feedback"] = "Problem with Server.";
 
 			if ($this->config->debug) {
-				$result["meta"]["feedback"] = $this->error;
+				$response["meta"]["feedback"] = $this->error;
 			}
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**

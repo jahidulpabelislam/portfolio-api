@@ -44,10 +44,10 @@ class ProjectImage extends Entity {
 	 */
 	public function delete($id, $fileName = "") : array {
 
-		$result = parent::delete($id);
+		$response = parent::delete($id);
 
 		// Check if the deletion was ok
-		if ($result["count"] > 0 && $fileName) {
+		if ($response["count"] > 0 && $fileName) {
 
 			// Checks if file exists to delete the actual Image file from server
 			if (file_exists($_SERVER["DOCUMENT_ROOT"] . $fileName)) {
@@ -55,7 +55,7 @@ class ProjectImage extends Entity {
 			}
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -66,11 +66,11 @@ class ProjectImage extends Entity {
 	 */
 	public function checkProjectImageIsChildOfProject($projectId) {
 
-		$result = $this->result;
+		$response = $this->response;
 
-		if (!empty($result["row"]) && $result["row"]["ProjectID"] !== $projectId) {
-			$imageId = $result["row"]["ID"];
-			$result = [
+		if (!empty($response["row"]) && $response["row"]["ProjectID"] !== $projectId) {
+			$imageId = $response["row"]["ID"];
+			$response = [
 				"row" => [],
 				"meta" => [
 					"ok" => false,
@@ -80,7 +80,7 @@ class ProjectImage extends Entity {
 				],
 			];
 
-			$this->result = $result;
+			$this->response = $response;
 		}
 	}
 }

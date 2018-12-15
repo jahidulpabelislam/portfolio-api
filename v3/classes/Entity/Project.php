@@ -50,24 +50,24 @@ class Project extends Entity {
 	 *
 	 * As extra functionality on top of default function
 	 * As Project is linked to Multiple Project Images
-	 * Add these to the result unless specified
+	 * Add these to the response unless specified
 	 *
 	 * @param $id int The ID of the Entity to get
 	 * @param bool $images bool Whether of not to also get and output the Project Images linked to this Project
-	 * @return array The result from the SQL query
+	 * @return array The response from the SQL query
 	 */
 	public function getById($id, $images = true) : array {
-		$result = parent::getById($id);
+		$response = parent::getById($id);
 
 		// Check if database provided any meta data if so no problem with executing query but no project found
-		if (!empty($result["row"])) {
+		if (!empty($response["row"])) {
 			if ($images) {
 				$images = $this->getProjectImages($id);
-				$result["row"]["Images"] = $images;
+				$response["row"]["Images"] = $images;
 			}
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -85,12 +85,12 @@ class Project extends Entity {
 
 		$values["Date"] = date("Y-m-d", strtotime($values["Date"]));
 
-		$result = parent::save($values);
+		$response = parent::save($values);
 
 		// Checks if the save was a update
 		if (!empty($values["ID"])) {
 			// Checks if update was ok
-			if (!empty($result["row"])) {
+			if (!empty($response["row"])) {
 				$images = json_decode($values["Images"]);
 
 				if (count($images) > 0) {
@@ -100,12 +100,12 @@ class Project extends Entity {
 						$projectImage->save($imageUpdateData);
 					}
 
-					$result = $this->getById($values["ID"]);
+					$response = $this->getById($values["ID"]);
 				}
 			}
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -118,7 +118,7 @@ class Project extends Entity {
 	 * @return array Either an array with successful meta data or a array of error feedback meta
 	 */
 	public function delete($id) : array {
-		$result = parent::delete($id);
+		$response = parent::delete($id);
 
 		// Delete the images linked to the Project
 		$projectImage = new ProjectImage();
@@ -129,7 +129,7 @@ class Project extends Entity {
 			$projectImage->delete($image["ID"], $image["File"]);
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -142,16 +142,16 @@ class Project extends Entity {
 	 */
 	public function doSearch(array $params) : array {
 
-		$result = parent::doSearch($params);
+		$response = parent::doSearch($params);
 
 		// Loop through each project and get the Projects Images
-		for ($i = 0; $i < count($result["rows"]); $i++) {
+		for ($i = 0; $i < count($response["rows"]); $i++) {
 
-			$images = $this->getProjectImages($result["rows"][$i]["ID"]);
-			$result["rows"][$i]["Images"] = $images;
+			$images = $this->getProjectImages($response["rows"][$i]["ID"]);
+			$response["rows"][$i]["Images"] = $images;
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -163,8 +163,8 @@ class Project extends Entity {
 	public function getProjectImages($id) : array {
 		// Get all the images linked to the Project
 		$projectImage = new ProjectImage();
-		$imagesResult = $projectImage->getByColumn("ProjectID", $id);
-		$images = $imagesResult["rows"];
+		$imagesResponse = $projectImage->getByColumn("ProjectID", $id);
+		$images = $imagesResponse["rows"];
 
 		return $images;
 	}

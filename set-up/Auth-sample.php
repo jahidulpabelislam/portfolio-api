@@ -30,23 +30,23 @@ class Auth {
 	 */
 	public static function login($data) {
 
-		$result = [];
+		$response = [];
 
 		// Checks if data needed are present and not empty
 		$dataNeeded = array("username", "password");
 		if (Helper::checkData($data, $dataNeeded)) {
 
-			$result["meta"]["ok"] = false;
-			$result["meta"]["status"] = 401;
-			$result["meta"]["message"] = "Unauthorized";
+			$response["meta"]["ok"] = false;
+			$response["meta"]["status"] = 401;
+			$response["meta"]["message"] = "Unauthorized";
 
 			if (Hasher::check($data["username"], Config::PORTFOLIO_ADMIN_USERNAME)) {
 
 				if (Hasher::check($data["password"], Config::PORTFOLIO_ADMIN_PASSWORD)) {
 
-					$result["meta"]["ok"] = true;
-					$result["meta"]["status"] = 200;
-					$result["meta"]["message"] = "OK";
+					$response["meta"]["ok"] = true;
+					$response["meta"]["status"] = 200;
+					$response["meta"]["message"] = "OK";
 
 					/*
 					 * TODO Actually do the logging in here (e.g store in cookie, session or database etc.)
@@ -75,22 +75,22 @@ class Auth {
 
 					$jwt = JWT::encode($jwtData, $secretKey, self::$JWT_ALG);
 
-					$result["meta"]["jwt"] = $jwt;
+					$response["meta"]["jwt"] = $jwt;
 				}
 				else {
-					$result["meta"]["feedback"] = "Wrong Password.";
+					$response["meta"]["feedback"] = "Wrong Password.";
 				}
 			}
 			else {
-				$result["meta"]["feedback"] = "Wrong Username and/or Password.";
+				$response["meta"]["feedback"] = "Wrong Username and/or Password.";
 			}
 
 		}
 		else {
-			$result = Helper::getDataNotProvidedResult($dataNeeded);
+			$response = Helper::getDataNotProvidedResponse($dataNeeded);
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -105,14 +105,14 @@ class Auth {
 		 * TODO Actually do the log out here (e.g removing cookie, session or database etc.)
 		 */
 
-		$result = [
+		$response = [
 			"meta" => [
 				"ok" => true,
 				"feedback" => "Successfully Logged Out.",
 			],
 		];
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -161,7 +161,7 @@ class Auth {
 	public static function getAuthStatus() {
 
 		if (self::isLoggedIn()) {
-			$result = [
+			$response = [
 				"meta" => [
 					"ok" => true,
 					"status" => 200,
@@ -170,9 +170,9 @@ class Auth {
 			];
 		}
 		else {
-			$result = Helper::getNotAuthorisedResult();
+			$response = Helper::getNotAuthorisedResponse();
 		}
 
-		return $result;
+		return $response;
 	}
 }

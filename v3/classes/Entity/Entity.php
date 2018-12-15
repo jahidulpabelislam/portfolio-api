@@ -34,7 +34,7 @@ abstract class Entity {
 
 	protected $defaultLimit = 10;
 
-	public $result = [];
+	public $response = [];
 
 	/**
 	 * Entity constructor.
@@ -47,7 +47,7 @@ abstract class Entity {
 		$this->db = Database::get();
 
 		if ($id) {
-			$this->result = $this->getById($id);
+			$this->response = $this->getById($id);
 		}
 	}
 
@@ -57,21 +57,21 @@ abstract class Entity {
 	 *
 	 * @param $column string
 	 * @param $value string
-	 * @return array The result from the SQL query
+	 * @return array The response from the SQL query
 	 */
 	public function getByColumn($column, $value) : array {
 
 		$query = "SELECT * FROM $this->tableName WHERE $column = :value ORDER BY $this->defaultOrderingByColumn $this->defaultOrderingByDirection;";
 		$bindings = array(":value" => $value);
-		$result = $this->db->query($query, $bindings);
+		$response = $this->db->query($query, $bindings);
 
 		// Check everything was okay
-		if ($result["count"] > 0) {
-			$result["meta"]["ok"] = true;
+		if ($response["count"] > 0) {
+			$response["meta"]["ok"] = true;
 		}
 		// Check if database provided any meta data if not no problem with executing query but no item found
-		else if ($result["count"] <= 0 && !isset($result["meta"])){
-			$result["meta"] = [
+		else if ($response["count"] <= 0 && !isset($response["meta"])){
+			$response["meta"] = [
 				"ok" => false,
 				"status" => 404,
 				"feedback" => "No {$this->displayName}s found with $value as $column.",
@@ -79,7 +79,7 @@ abstract class Entity {
 			];
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -88,28 +88,28 @@ abstract class Entity {
 	 * Uses helper function getByColumn();
 	 *
 	 * @param $id int The ID of the Entity to get
-	 * @return array The result from the SQL query
+	 * @return array The response from the SQL query
 	 */
 	public function getById($id) : array {
 
 		if (is_numeric($id)) {
-			$result = $this->getByColumn("ID", (int) $id);
+			$response = $this->getByColumn("ID", (int) $id);
 
-			$result["row"] = [];
+			$response["row"] = [];
 
 			// Check everything was okay, so as this /Should/ return only one, use 'Row' as index
-			if ($result["count"] > 0) {
-				$result["row"] = $result["rows"][0];
+			if ($response["count"] > 0) {
+				$response["row"] = $response["rows"][0];
 			}
 			// Check if database provided any meta data if so no problem with executing query but no item found
-			else if (isset($result["meta"]) && isset($result["meta"]["status"]) && $result["meta"]["status"] === 404) {
-				$result["meta"]["feedback"] = "No $this->displayName found with $id as ID.";
+			else if (isset($response["meta"]) && isset($response["meta"]["status"]) && $response["meta"]["status"] === 404) {
+				$response["meta"]["feedback"] = "No $this->displayName found with $id as ID.";
 			}
 
-			unset($result["rows"]);
-			unset($result["count"]);
+			unset($response["rows"]);
+			unset($response["count"]);
 		} else {
-			$result = [
+			$response = [
 				"row" => [],
 				"meta" => [
 					"feedback" => "No $this->displayName found with $id as ID (Please note ID must be a numeric value).",
@@ -117,7 +117,7 @@ abstract class Entity {
 			];
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -136,36 +136,36 @@ abstract class Entity {
 		}
 		else {
 			// Check the Entity trying to edit actually exists
-			$result = $this->getById($id);
-			if (empty($result["row"])) {
-				return $result;
+			$response = $this->getById($id);
+			if (empty($response["row"])) {
+				return $response;
 			}
 			list($query, $bindings) = $this->generateUpdateQuery($values);
 		}
 
-		$result = $this->db->query($query, $bindings);
+		$response = $this->db->query($query, $bindings);
 
 		// Checks if insert was ok
-		if ($result["count"] > 0) {
+		if ($response["count"] > 0) {
 
 			$id = (empty($id)) ? $this->db->getLastInsertedId() : $id;
 
-			$result = $this->getById($id);
+			$response = $this->getById($id);
 
 			if (empty($values["ID"])) {
-				$result["meta"]["status"] = 201;
-				$result["meta"]["message"] = "Created";
+				$response["meta"]["status"] = 201;
+				$response["meta"]["message"] = "Created";
 			}
 
 		} // Else error inserting
 		else {
 			// Checks if database provided any meta data if so problem with executing query
-			if (!isset($result["meta"])) {
-				$result["meta"]["ok"] = false;
+			if (!isset($response["meta"])) {
+				$response["meta"]["ok"] = false;
 			}
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -233,29 +233,29 @@ abstract class Entity {
 	public function delete($id) : array {
 
 		// Check the Entity trying to delete actually exists
-		$result = $this->getById($id);
-		if (!empty($result["row"])) {
+		$response = $this->getById($id);
+		if (!empty($response["row"])) {
 
 			$query = "DELETE FROM $this->tableName WHERE ID = :ID;";
 			$bindings = [":ID" => $id,];
-			$result = $this->db->query($query, $bindings);
+			$response = $this->db->query($query, $bindings);
 
 			// Check if the deletion was ok
-			if ($result["count"] > 0) {
+			if ($response["count"] > 0) {
 
-				$result["meta"]["ok"] = true;
-				$result["row"]["ID"] = $id;
+				$response["meta"]["ok"] = true;
+				$response["row"]["ID"] = $id;
 
 			} //Else there was an error deleting
 			else {
 				// Check if database provided any meta data if so problem with executing query
-				if (!isset($result["meta"])) {
-					$result["meta"]["ok"] = false;
+				if (!isset($response["meta"])) {
+					$response["meta"]["ok"] = false;
 				}
 			}
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -322,17 +322,17 @@ abstract class Entity {
 		}
 
 		$query = "SELECT * FROM $this->tableName $whereClause ORDER BY Date DESC LIMIT $limit OFFSET $offset;";
-		$result = $this->db->query($query, $bindings);
+		$response = $this->db->query($query, $bindings);
 
 		// Check if database provided any meta data if not all ok
-		if (count($result["rows"]) > 0 && !isset($result["meta"])) {
+		if (count($response["rows"]) > 0 && !isset($response["meta"])) {
 
-			$result["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
+			$response["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
 
-			$result["meta"]["ok"] = true;
+			$response["meta"]["ok"] = true;
 		}
 
-		return $result;
+		return $response;
 	}
 	
 	/**

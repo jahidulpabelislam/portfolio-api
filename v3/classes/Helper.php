@@ -89,9 +89,9 @@ class Helper {
 	 * @param $path array The path (relative) tried
 	 * @return array Array of meta data
 	 */
-	public static function getMethodNotAllowedResult($method, array $path) : array {
+	public static function getMethodNotAllowedResponse($method, array $path) : array {
 
-		$result = [
+		$response = [
 			"meta" => [
 				"ok"       => false,
 				"status"   => 405,
@@ -100,7 +100,7 @@ class Helper {
 			],
 		];
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -109,9 +109,9 @@ class Helper {
 	 * @param $dataNeeded array Array of the data needed
 	 * @return array Array of meta data
 	 */
-	public static function getDataNotProvidedResult(array $dataNeeded) : array {
+	public static function getDataNotProvidedResponse(array $dataNeeded) : array {
 
-		$result = [
+		$response = [
 			"meta" => [
 				"ok" => false,
 				"status" => 400,
@@ -121,7 +121,7 @@ class Helper {
 			],
 		];
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -129,9 +129,9 @@ class Helper {
 	 *
 	 * @return array Array of meta data
 	 */
-	public static function getNotAuthorisedResult() : array {
+	public static function getNotAuthorisedResponse() : array {
 
-		$result = [
+		$response = [
 			"meta" => [
 				"ok" => false,
 				"status" => 401,
@@ -140,7 +140,7 @@ class Helper {
 			],
 		];
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -149,9 +149,9 @@ class Helper {
 	 * @param $path array The path (relative) tried
 	 * @return array Array of meta data
 	 */
-	public static function getUnrecognisedURIResult(array $path) : array {
+	public static function getUnrecognisedURIResponse(array $path) : array {
 
-		$result = [
+		$response = [
 			"meta" => [
 				"ok" => false,
 				"status" => 404,
@@ -160,25 +160,25 @@ class Helper {
 			],
 		];
 
-		return $result;
+		return $response;
 	}
 
 	/**
-	 * Send the result response back
+	 * Send the response response back
 	 *
-	 * @param $result array The result generated from the request so far
+	 * @param $response array The response generated from the request so far
 	 * @param $data array The data sent with the request
 	 * @param $method string The request method made
 	 * @param $path array The URI (Relative) the request was made to
 	 */
-	public static function sendResponse(array $result, array $data, $method, array $path) {
+	public static function sendResponse(array $response, array $data, $method, array $path) {
 
 		// Send back the data provided
-		$result["meta"]["data"] = $data;
+		$response["meta"]["data"] = $data;
 		// Send back the method requested
-		$result["meta"]["method"] = $method;
+		$response["meta"]["method"] = $method;
 		// Send back the path they requested
-		$result["meta"]["path"] = $path;
+		$response["meta"]["path"] = $path;
 
 		$originURL = $_SERVER["HTTP_ORIGIN"] ?? "";
 
@@ -202,23 +202,23 @@ class Helper {
 			header("Access-Control-Allow-Headers: Process-Data, Authorization");
 
 			if ($method === "OPTIONS") {
-				$result["meta"]["status"] = 200;
-				$result["meta"]["message"] = "OK";
+				$response["meta"]["status"] = 200;
+				$response["meta"]["message"] = "OK";
 			}
 		}
 
 		// Figure out the correct meta responses to return
-		if (isset($result["meta"]["ok"]) && $result["meta"]["ok"] !== false) {
-			$status = isset($result["meta"]["status"]) ? $result["meta"]["status"] : 200;
-			$message = isset($result["meta"]["message"]) ? $result["meta"]["message"] : "OK";
+		if (isset($response["meta"]["ok"]) && $response["meta"]["ok"] !== false) {
+			$status = isset($response["meta"]["status"]) ? $response["meta"]["status"] : 200;
+			$message = isset($response["meta"]["message"]) ? $response["meta"]["message"] : "OK";
 		}
 		else {
-			$status = isset($result["meta"]["status"]) ? $result["meta"]["status"] : 500;
-			$message = isset($result["meta"]["message"]) ? $result["meta"]["message"] : "Internal Server Error";
+			$status = isset($response["meta"]["status"]) ? $response["meta"]["status"] : 500;
+			$message = isset($response["meta"]["message"]) ? $response["meta"]["message"] : "Internal Server Error";
 		}
 
-		$result["meta"]["status"] = $status;
-		$result["meta"]["message"] = $message;
+		$response["meta"]["status"] = $status;
+		$response["meta"]["message"] = $message;
 
 		header("HTTP/1.1 $status $message");
 
@@ -239,15 +239,15 @@ class Helper {
 		// Check if requested to send json
 		$json = (stripos($_SERVER["HTTP_ACCEPT"], "application/json") !== false);
 
-		// Send the result, send by json if json was requested
+		// Send the response, send by json if json was requested
 		if ($json) {
 			header("Content-Type: application/json");
-			echo json_encode($result);
+			echo json_encode($response);
 		} // Else send by plain text
 		else {
 			header("Content-Type: text/plain");
-			echo("result: ");
-			var_dump($result);
+			echo("response: ");
+			var_dump($response);
 		}
 	}
 }

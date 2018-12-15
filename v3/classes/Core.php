@@ -36,9 +36,9 @@ class Core {
 	public function getProject($projectID, $images = false) {
 
 		$project = new Project();
-		$result = $project->getById($projectID, $images);
+		$response = $project->getById($projectID, $images);
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -50,9 +50,9 @@ class Core {
 	public function getProjects($data) {
 
 		$projects = new Project();
-		$result = $projects->doSearch($data);
+		$response = $projects->doSearch($data);
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -71,18 +71,18 @@ class Core {
 			if (Helper::checkData($data, $dataNeeded)) {
 
 				$project = new Project();
-				$result = $project->save($data);
+				$response = $project->save($data);
 
 			} // Else the data needed was not provided
 			else {
-				$result = Helper::getDataNotProvidedResult($dataNeeded);
+				$response = Helper::getDataNotProvidedResponse($dataNeeded);
 			}
 		}
 		else {
-			$result = Helper::getNotAuthorisedResult();
+			$response = Helper::getNotAuthorisedResponse();
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -101,18 +101,18 @@ class Core {
 			if (Helper::checkData($data, $dataNeeded)) {
 
 				$project = new Project();
-				$result = $project->save($data);
+				$response = $project->save($data);
 
 			} // Else the data was not provided
 			else {
-				$result = Helper::getDataNotProvidedResult($dataNeeded);
+				$response = Helper::getDataNotProvidedResponse($dataNeeded);
 			}
 		}
 		else {
-			$result = Helper::getNotAuthorisedResult();
+			$response = Helper::getNotAuthorisedResponse();
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -131,18 +131,18 @@ class Core {
 			if (Helper::checkData($data, $dataNeeded)) {
 
 				$project = new Project();
-				$result = $project->delete($data["ID"]);
+				$response = $project->delete($data["ID"]);
 
 			} // Else the data needed was not provided
 			else {
-				$result = Helper::getDataNotProvidedResult($dataNeeded);
+				$response = Helper::getDataNotProvidedResponse($dataNeeded);
 			}
 		}
 		else {
-			$result = Helper::getNotAuthorisedResult();
+			$response = Helper::getNotAuthorisedResponse();
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -154,14 +154,14 @@ class Core {
 	public function getProjectImages($projectID) {
 
 		// Check the project trying to get Images for
-		$result = $this->getProject($projectID);
-		if (!empty($result["row"])) {
+		$response = $this->getProject($projectID);
+		if (!empty($response["row"])) {
 
 			$projectImage = new ProjectImage();
-			$result = $projectImage->getByColumn("ProjectID", $projectID);
+			$response = $projectImage->getByColumn("ProjectID", $projectID);
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -174,16 +174,16 @@ class Core {
 	public function getProjectImage($projectId, $imageId) {
 
 		// Check the Project trying to get Images for
-		$result = $this->getProject($projectId);
-		if (!empty($result["row"])) {
+		$response = $this->getProject($projectId);
+		if (!empty($response["row"])) {
 			$projectImage = new ProjectImage($imageId);
 
 			$projectImage->checkProjectImageIsChildOfProject($projectId);
 
-			$result = $projectImage->result;
+			$response = $projectImage->response;
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -202,24 +202,24 @@ class Core {
 			if (Helper::checkData($data, $dataNeeded) && isset($_FILES["image"])) {
 
 				// Check the project trying to add a a Image for exists
-				$result = $this->getProject($data["ProjectID"]);
-				if (!empty($result["row"])) {
+				$response = $this->getProject($data["ProjectID"]);
+				if (!empty($response["row"])) {
 
-					$result = $this->uploadProjectImage($result["row"]);
+					$response = $this->uploadProjectImage($response["row"]);
 				}
 			} // Else data needed was not provided
 			else {
 				array_push($dataNeeded, "Image");
-				$result = Helper::getDataNotProvidedResult($dataNeeded);
+				$response = Helper::getDataNotProvidedResponse($dataNeeded);
 			}
 		}
 		else {
-			$result = Helper::getNotAuthorisedResult();
+			$response = Helper::getNotAuthorisedResponse();
 		}
 
-		$result["meta"]["files"] = $_FILES;
+		$response["meta"]["files"] = $_FILES;
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -230,7 +230,7 @@ class Core {
 	 */
 	private function uploadProjectImage($project) : array {
 
-		$result = [];
+		$response = [];
 		
 		$projectId = $project["ID"];
 		
@@ -271,14 +271,14 @@ class Core {
 					"SortOrderNumber" => 999, // High enough number
 				];
 				$projectImage = new ProjectImage();
-				$result = $projectImage->save($values);
+				$response = $projectImage->save($values);
 			} // Else there was a problem uploading file to server
 			else {
-				$result["meta"]["feedback"] = "Sorry, there was an error uploading your Image.";
+				$response["meta"]["feedback"] = "Sorry, there was an error uploading your Image.";
 			}
 		} // Else bad request as file uploaded is not a image
 		else {
-			$result = [
+			$response = [
 				"meta" => [
 					"status" => 400,
 					"message" => "Bad Request",
@@ -287,7 +287,7 @@ class Core {
 			];
 		}
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -306,29 +306,29 @@ class Core {
 			if (Helper::checkData($data, $dataNeeded)) {
 
 				// Check the Project trying to edit actually exists
-				$result = $this->getProject($data["ProjectID"]);
-				if (!empty($result["row"])) {
+				$response = $this->getProject($data["ProjectID"]);
+				if (!empty($response["row"])) {
 
-					$result = $this->getProjectImage($data["ProjectID"], $data["ID"]);
+					$response = $this->getProjectImage($data["ProjectID"], $data["ID"]);
 
-					if (!empty($result["row"])) {
+					if (!empty($response["row"])) {
 
-						$fileName = $result["row"]["File"];
+						$fileName = $response["row"]["File"];
 
 						// Update database to delete row
 						$projectImage = new ProjectImage();
-						$result = $projectImage->delete($data["ID"], $fileName);
+						$response = $projectImage->delete($data["ID"], $fileName);
 					}
 				}
 			} // Else data was not provided
 			else {
-				$result = Helper::getDataNotProvidedResult($dataNeeded);
+				$response = Helper::getDataNotProvidedResponse($dataNeeded);
 			}
 		}
 		else {
-			$result = Helper::getNotAuthorisedResult();
+			$response = Helper::getNotAuthorisedResponse();
 		}
 
-		return $result;
+		return $response;
 	}
 }
