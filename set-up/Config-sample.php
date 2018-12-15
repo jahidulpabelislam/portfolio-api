@@ -21,33 +21,33 @@ class Config {
 	private static $instance = null;
 
 	// IP of database server
-	const DB_IP = 'localhost'; // TODO CHANGE ME
+	const DB_IP = "localhost"; // TODO CHANGE ME
 	// Database name to use in server
-	const DB_NAME = 'jpi'; // TODO CHANGE ME
+	const DB_NAME = "jpi"; // TODO CHANGE ME
 	// Username to database
-	const DB_USERNAME = 'root'; // TODO CHANGE ME
+	const DB_USERNAME = "root"; // TODO CHANGE ME
 	// Password for the user above
-	const DB_PASSWORD = ''; // TODO CHANGE ME
+	const DB_PASSWORD = ""; // TODO CHANGE ME
 
 	// The secret key to use in Firebase's JWT
-	const PORTFOLIO_ADMIN_SECRET_KEY = 'changeme'; // TODO CHANGE ME
+	const PORTFOLIO_ADMIN_SECRET_KEY = "changeme"; // TODO CHANGE ME
 
 	// Username for portfolio admin
-	const PORTFOLIO_ADMIN_USERNAME = 'root'; // TODO CHANGE ME
+	const PORTFOLIO_ADMIN_USERNAME = "root"; // TODO CHANGE ME
 	// Hashed password for portfolio admin
-	const PORTFOLIO_ADMIN_PASSWORD = 'root'; // TODO CHANGE ME
+	const PORTFOLIO_ADMIN_PASSWORD = "root"; // TODO CHANGE ME
 
 	public function __construct() {
-		$environment = !empty(getenv('APPLICATION_ENV')) ? getenv('APPLICATION_ENV') : 'development';
+		$environment = !empty(getenv("APPLICATION_ENV")) ? getenv("APPLICATION_ENV") : "development";
 		// Don't want debugging on live/production site
-		if ($environment === 'production') {
+		if ($environment === "production") {
 			$this->debug = false;
-			ini_set('display_errors', 0);
+			ini_set("display_errors", 0);
 		}
 		else {
 			$this->debug = true;
 			error_reporting(E_ALL);
-			ini_set('display_errors', 1);
+			ini_set("display_errors", 1);
 		}
 	}
 
