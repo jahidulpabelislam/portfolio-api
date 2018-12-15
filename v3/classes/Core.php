@@ -259,7 +259,7 @@ class Core {
 
 		$newFileLocation = $directory . $newFilename;
 
-		$newImageFullPath = $_SERVER["DOCUMENT_ROOT"] . $newFileLocation;
+		$newImageFullPath = ROOT . $newFileLocation;
 
 		// Check if file is a actual image
 		$fileType = mime_content_type($image["tmp_name"]);
