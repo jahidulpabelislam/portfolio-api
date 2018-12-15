@@ -44,7 +44,7 @@ class Auth {
 					$result["meta"]["message"] = "OK";
 
 					/*
-					 * Actually do the logging in here (e.g store in cookie, session or database etc.)
+					 * TODO Actually do the logging in here (e.g store in cookie, session or database etc.)
 					 */
 
 				}
@@ -73,7 +73,7 @@ class Auth {
 	public static function logout() {
 
 		/*
-		 * Actually do the log out here (e.g removing cookie, session or database etc.)
+		 * TODO Actually do the log out here (e.g removing cookie, session or database etc.)
 		 */
 
 		$result = [
@@ -94,7 +94,7 @@ class Auth {
 	public static function isLoggedIn() {
 
 		/*
-		 * Actually do the check of logged in status (e.g check against stored cookie, session or database etc.)
+		 * TODO Actually do the check of logged in status (e.g check against stored cookie, session or database etc.)
 		 */
 
 		return false;

@@ -20,7 +20,7 @@ class Hasher {
 	 */
 	public static function generate($string) {
 
-		// Generate a hashed on given string
+		// TODO Generate a hashed on given string
 
 		$hashed = $string;
 
@@ -30,7 +30,7 @@ class Hasher {
 	// This will be used to compare a raw string against a stored hash
 	public static function check($string, $hash) {
 
-		// Compare a raw string against a hash of what it should be
+		// TODO Compare a raw string against a hash of what it should be
 
 		return $string === $hash;
 
