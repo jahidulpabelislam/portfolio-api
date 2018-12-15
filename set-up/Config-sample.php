@@ -29,6 +29,9 @@ class Config {
 	// Password for the user above
 	const DB_PASSWORD = '';
 
+	// The secret key to use in Firebase's JWT
+	const PORTFOLIO_ADMIN_SECRET_KEY = 'changeme';
+
 	// Username for portfolio admin
 	const PORTFOLIO_ADMIN_USERNAME = 'root';
 	// Hashed password for portfolio admin
