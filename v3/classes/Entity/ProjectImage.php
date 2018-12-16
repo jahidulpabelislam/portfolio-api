@@ -32,7 +32,7 @@ class ProjectImage extends Entity {
 		"ID",
 		"File",
 		"ProjectID",
-		"SortOrderNumber"
+		"SortOrderNumber",
 	];
 
 	/**

@@ -235,11 +235,11 @@ class Core {
 	private function uploadProjectImage($project) : array {
 
 		$response = [];
-		
+
 		$projectId = $project["ID"];
-		
+
 		$projectName = $project["Name"];
-		
+
 		$projectNameFormatted = strtolower($projectName);
 		$projectNameFormatted = preg_replace("/[^a-z0-9]+/", "-", $projectNameFormatted);
 

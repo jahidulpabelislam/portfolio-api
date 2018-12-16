@@ -226,10 +226,10 @@ class Helper {
 
 		header("HTTP/1.1 $status $message");
 
-		$notCachedURLs = array(
+		$notCachedURLs = [
 			"session/",
 			"logout/",
-		);
+		];
 
 		// Set cache for 31 days for some GET Requests
 		if ($method == "GET" && !in_array(implode("/", $path), $notCachedURLs)) {

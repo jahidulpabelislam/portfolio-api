@@ -41,7 +41,7 @@ class Database {
 		$this->config = Config::get();
 
 		$dsn = "mysql:host=" . Config::DB_IP . ";dbname=" . Config::DB_NAME . ";charset-UTF-8";
-		$option = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
+		$option = [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,];
 
 		try {
 			$this->db = new \PDO($dsn, Config::DB_USERNAME, Config::DB_PASSWORD, $option);

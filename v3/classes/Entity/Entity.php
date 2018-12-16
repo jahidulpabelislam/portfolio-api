@@ -33,7 +33,7 @@ abstract class Entity {
 	protected $defaultOrderingByDirection = "DESC";
 
 	public $columns = [];
-	
+
 	protected $searchableColumns = [];
 
 	protected $defaultLimit = 10;
@@ -66,7 +66,7 @@ abstract class Entity {
 	public function getByColumn($column, $value) : array {
 
 		$query = "SELECT * FROM $this->tableName WHERE $column = :value ORDER BY $this->defaultOrderingByColumn $this->defaultOrderingByDirection;";
-		$bindings = array(":value" => $value);
+		$bindings = [":value" => $value,];
 		$response = $this->db->query($query, $bindings);
 
 		// Check everything was okay

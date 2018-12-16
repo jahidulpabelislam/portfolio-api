@@ -37,7 +37,7 @@ class Auth {
 		$response = [];
 
 		// Checks if data needed are present and not empty
-		$dataNeeded = array("username", "password");
+		$dataNeeded = ["username", "password",];
 		if (Helper::checkData($data, $dataNeeded)) {
 
 			$response["meta"]["ok"] = false;
@@ -72,7 +72,7 @@ class Auth {
 						"exp" => $expire,
 						"data" => [
 							// Any extra API secific data
-						]
+						],
 					];
 
 					$secretKey = Config::PORTFOLIO_ADMIN_SECRET_KEY;
@@ -139,11 +139,11 @@ class Auth {
 		list($jwt) = sscanf($auth, "Bearer %s");
 
 		if (!empty($jwt)) {
-			
+
 			try {
 				$secretKey = Config::PORTFOLIO_ADMIN_SECRET_KEY;
 
-				$token = JWT::decode($jwt, $secretKey, array(self::$JWT_ALG));
+				$token = JWT::decode($jwt, $secretKey, [self::$JWT_ALG]);
 
 				// An exception is thrown if auth bearer token provided isn't valid
 				// So assume all is valid here
