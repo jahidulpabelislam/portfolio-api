@@ -61,7 +61,7 @@ class Auth {
 					 */
 					$tokenId = 1; // Json Token Id: an unique identifier for the token
 					$issuedAt = time(); // Issued at: time when the token was generated
-					$expire = $issuedAt + (60 * 60 * 1000) * self::$JWT_EXPIRATION_HOURS; // Token expiration time
+					$expire = $issuedAt + (self::$JWT_EXPIRATION_HOURS * 60 * 60); // Token expiration time
 					$serverName = "https://jahidulpabelislam.com/"; // Issuer
 
 					$jwtData = [
