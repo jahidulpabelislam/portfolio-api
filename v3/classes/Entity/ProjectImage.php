@@ -77,7 +77,6 @@ class ProjectImage extends Entity {
 			$response = [
 				"row" => [],
 				"meta" => [
-					"ok" => false,
 					"status" => 404,
 					"feedback" => "No $this->displayName found with $imageId as ID for Project: $projectId.",
 					"message" => "Not Found",

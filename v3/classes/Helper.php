@@ -117,7 +117,6 @@ class Helper {
 
 		$response = [
 			"meta" => [
-				"ok" => false,
 				"status" => 400,
 				"message" => "Bad Request",
 				"dataNeeded" => $dataNeeded,
@@ -137,7 +136,6 @@ class Helper {
 
 		$response = [
 			"meta" => [
-				"ok" => false,
 				"status" => 401,
 				"message" => "Unauthorized",
 				"feedback" => "You need to be logged in!",
@@ -157,7 +155,6 @@ class Helper {
 
 		$response = [
 			"meta" => [
-				"ok" => false,
 				"status" => 404,
 				"feedback" => "Unrecognised URI (" . self::getAPIURL($path) . ")",
 				"message" => "Not Found",
@@ -215,7 +212,7 @@ class Helper {
 		}
 
 		// Figure out the correct meta responses to return
-		if (isset($response["meta"]["ok"]) && $response["meta"]["ok"] !== false) {
+		if (isset($response["meta"]["ok"]) && $response["meta"]["ok"] === true) {
 			$status = isset($response["meta"]["status"]) ? $response["meta"]["status"] : 200;
 			$message = isset($response["meta"]["message"]) ? $response["meta"]["message"] : "OK";
 		}

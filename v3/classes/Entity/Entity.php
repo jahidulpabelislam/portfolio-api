@@ -75,7 +75,6 @@ abstract class Entity {
 		}
 		// Check if database provided any meta data if not no problem with executing query but no item found
 		else if ($response["meta"]["affected_rows"] <= 0 && !isset($response["meta"]["feedback"])){
-			$response["meta"]["ok"] = false;
 			$response["meta"]["status"] = 404;
 			$response["meta"]["feedback"] = "No {$this->displayName}s found with $value as $column.";
 			$response["meta"]["message"] = "Not Found";
@@ -116,7 +115,9 @@ abstract class Entity {
 			$response = [
 				"row" => [],
 				"meta" => [
+					"status" => 404,
 					"feedback" => "No $this->displayName found with $id as ID (Please note ID must be a numeric value).",
+					"message" => "Not Found",
 				],
 			];
 		}
@@ -159,13 +160,6 @@ abstract class Entity {
 			if (empty($values["ID"])) {
 				$response["meta"]["status"] = 201;
 				$response["meta"]["message"] = "Created";
-			}
-
-		} // Else error inserting
-		else {
-			// Checks if database provided any meta data if so problem with executing query
-			if (!isset($response["meta"])) {
-				$response["meta"]["ok"] = false;
 			}
 		}
 
@@ -250,13 +244,9 @@ abstract class Entity {
 				$response["meta"]["ok"] = true;
 				$response["row"]["ID"] = $id;
 
-			} //Else there was an error deleting
-			else {
-				// Check if database provided any meta data if so problem with executing query
-				if (!isset($response["meta"])) {
-					$response["meta"]["ok"] = false;
-				}
 			}
+
+			unset($response["rows"]);
 		}
 
 		return $response;
