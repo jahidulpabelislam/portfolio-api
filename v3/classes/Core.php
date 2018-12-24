@@ -282,12 +282,10 @@ class Core {
 			}
 		} // Else bad request as file uploaded is not a image
 		else {
-			$response = [
-				"meta" => [
-					"status" => 400,
-					"message" => "Bad Request",
-					"feedback" => "File is not an image.",
-				],
+			$response["meta"] = [
+				"status" => 400,
+				"message" => "Bad Request",
+				"feedback" => "File is not an image.",
 			];
 		}
 
