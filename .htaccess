@@ -43,3 +43,9 @@ DirectoryIndex index.php index.html
   ExpiresByType application/json "access plus 2678400 seconds"
   ExpiresByType text/plain "access plus 2678400 seconds"
 </IfModule>
+
+# Rewrite rule for backend API
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^v([0-9]+)/(.+)/$ /index.php/$2

@@ -26,7 +26,21 @@ class Router {
 
 		list($method, $path, $data) = Helper::extractFromRequest();
 
-		$api = new Core();
+		$version = !empty($path[0]) ? $path[0] : "";
+
+		if ($version !== "v" . Config::API_VERSION) {
+			$path[0] = "v3";
+			$shouldBeURL = Helper::getAPIURL($path);
+			$response = [
+				"meta" => [
+					"status" => 404,
+					"feedback" => "Unrecognised API Version. Current Version is v" . Config::API_VERSION. ". So update requested URL to $shouldBeURL.",
+					"message" => "Not Found",
+				],
+			];
+			Helper::sendResponse($response, $data, $method, $path);
+			return;
+		}
 
 		$entity = !empty($path[1]) ? $path[1] : "";
 
@@ -62,6 +76,8 @@ class Router {
 				}
 				break;
 			case "projects":
+				$api = new Core();
+
 				switch ($method) {
 					case "GET":
 						if (isset($path[2]) && trim($path[2]) !== "") {

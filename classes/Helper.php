@@ -36,7 +36,7 @@ class Helper {
 			$explodedPath .= "/";
 		}
 
-		$url .= $explodedPath;
+		$url .= "/" . $explodedPath;
 
 		return $url;
 	}
