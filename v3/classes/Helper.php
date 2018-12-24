@@ -232,7 +232,7 @@ class Helper {
 		];
 
 		// Set cache for 31 days for some GET Requests
-		if ($method == "GET" && !in_array(implode("/", $path), $notCachedURLs)) {
+		if ($method == "GET" && !in_array(Config::API_VERSION . implode("/", $path), $notCachedURLs)) {
 			$secondsToCache = 2678400;
 			$expiresTime = gmdate("D, d M Y H:i:s", time() + $secondsToCache) . " GMT";
 			header("Cache-Control: max-age=$secondsToCache, public");

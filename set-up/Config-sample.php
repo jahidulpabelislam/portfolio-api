@@ -23,6 +23,8 @@ class Config {
 	public $debug = false;
 
 	private static $instance = null;
+	
+	const API_VERSION = "3";
 
 	// IP of database server
 	const DB_IP = "localhost"; // TODO CHANGE ME
