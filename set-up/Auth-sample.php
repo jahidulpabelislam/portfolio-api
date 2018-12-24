@@ -40,7 +40,6 @@ class Auth {
 		$dataNeeded = ["username", "password",];
 		if (Helper::checkData($data, $dataNeeded)) {
 
-			$response["meta"]["ok"] = false;
 			$response["meta"]["status"] = 401;
 			$response["meta"]["message"] = "Unauthorized";
 

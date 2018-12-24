@@ -97,7 +97,6 @@ class Helper {
 
 		$response = [
 			"meta" => [
-				"ok" => false,
 				"status" => 405,
 				"message" => "Method not allowed.",
 				"feedback" => "$method Method Not Allowed on " .  self::getAPIURL($path),
@@ -211,8 +210,10 @@ class Helper {
 			}
 		}
 
+		$response["meta"]["ok"] = isset($response["meta"]["ok"]) ? $response["meta"]["ok"] : false;
+
 		// Figure out the correct meta responses to return
-		if (isset($response["meta"]["ok"]) && $response["meta"]["ok"] === true) {
+		if ($response["meta"]["ok"] === true) {
 			$status = isset($response["meta"]["status"]) ? $response["meta"]["status"] : 200;
 			$message = isset($response["meta"]["message"]) ? $response["meta"]["message"] : "OK";
 		}

@@ -108,7 +108,6 @@ class Database {
 			catch (\PDOException $error) {
 				error_log("Error executing query on database: " . $error->getMessage() . " using query: $query and bindings: " . print_r($bindings, true) . ", full error: " . $error);
 
-				$response["meta"]["ok"] = false;
 				$response["meta"]["feedback"] = "Problem with Server.";
 
 				if ($this->config->debug) {
@@ -117,7 +116,7 @@ class Database {
 			}
 		}
 		else {
-			$response["meta"]["ok"] = false;
+
 			$response["meta"]["feedback"] = "Problem with Server.";
 
 			if ($this->config->debug) {
