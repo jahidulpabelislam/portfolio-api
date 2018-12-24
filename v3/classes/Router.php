@@ -28,7 +28,7 @@ class Router {
 
 		$api = new Core();
 
-		$entity = !empty($path[0]) ? $path[0] : "";
+		$entity = !empty($path[1]) ? $path[1] : "";
 
 		$response = [];
 
@@ -64,50 +64,50 @@ class Router {
 			case "projects":
 				switch ($method) {
 					case "GET":
-						if (isset($path[1]) && trim($path[1]) !== "") {
-							$projectID = $path[1];
-							if (isset($path[2]) && $path[2] === "images") {
-								if (isset($path[3]) && $path[3] !== "" && !isset($path[4])) {
-									$response = $api->getProjectImage($projectID, $path[3]);
+						if (isset($path[2]) && trim($path[2]) !== "") {
+							$projectID = $path[2];
+							if (isset($path[3]) && $path[3] === "images") {
+								if (isset($path[4]) && $path[4] !== "" && !isset($path[5])) {
+									$response = $api->getProjectImage($projectID, $path[4]);
 								}
-								else if (!isset($path[3])) {
+								else if (!isset($path[4])) {
 									$response = $api->getProjectImages($projectID);
 								}
 							}
-							else if (!isset($path[2])) {
+							else if (!isset($path[3])) {
 								$response = $api->getProject($projectID, true);
 							}
 						}
-						else if (!isset($path[1])) {
+						else if (!isset($path[2])) {
 							$response = $api->getProjects($data);
 						}
 						break;
 					case "POST":
-						if (isset($path[1]) && trim($path[1]) !== "" &&
-							isset($path[2]) && $path[2] === "images" && !isset($path[3])) {
-								$data["ProjectID"] = $path[1];
+						if (isset($path[2]) && trim($path[2]) !== "" &&
+							isset($path[3]) && $path[3] === "images" && !isset($path[4])) {
+								$data["ProjectID"] = $path[2];
 								$response = $api->addProjectImage($data);
 						}
-						else if (!isset($path[1])) {
+						else if (!isset($path[2])) {
 							$response = $api->addProject($data);
 						}
 						break;
 					case "PUT":
-						if (isset($path[1]) && trim($path[1]) !== "" && !isset($path[2])) {
-							$data["ID"] = $path[1];
+						if (isset($path[2]) && trim($path[2]) !== "" && !isset($path[3])) {
+							$data["ID"] = $path[2];
 							$response = $api->editProject($data);
 						}
 						break;
 					case "DELETE":
-						if (isset($path[1]) && trim($path[1]) !== "") {
-							if (isset($path[2]) && $path[2] === "images"
-								&& isset($path[3]) && $path[3] !== "" && !isset($path[4])) {
-								$data["ID"] = $path[3];
-								$data["ProjectID"] = $path[1];
+						if (isset($path[2]) && trim($path[2]) !== "") {
+							if (isset($path[3]) && $path[3] === "images"
+								&& isset($path[4]) && $path[4] !== "" && !isset($path[5])) {
+								$data["ID"] = $path[4];
+								$data["ProjectID"] = $path[2];
 								$response = $api->deleteImage($data);
 							}
-							else if (!isset($path[2])) {
-								$data["ID"] = $path[1];
+							else if (!isset($path[3])) {
+								$data["ID"] = $path[2];
 								$response = $api->deleteProject($data);
 							}
 						}

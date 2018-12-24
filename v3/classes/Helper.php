@@ -36,7 +36,7 @@ class Helper {
 			$explodedPath .= "/";
 		}
 
-		$url .= "/v3/" . $explodedPath;
+		$url .= $explodedPath;
 
 		return $url;
 	}
@@ -49,7 +49,7 @@ class Helper {
 		// Get the requested method
 		$method = strtoupper($_SERVER["REQUEST_METHOD"]);
 
-		$requestedURI = !empty($_SERVER["PATH_INFO"]) ? trim($_SERVER["PATH_INFO"], "/") : "";
+		$requestedURI = !empty($_SERVER["REQUEST_URI"]) ? trim($_SERVER["REQUEST_URI"], "/") : "";
 
 		// Get the individual parts of the request URI as an array
 		$requestedURIArray = explode("/", $requestedURI);
