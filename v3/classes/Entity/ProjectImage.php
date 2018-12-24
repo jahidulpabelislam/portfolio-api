@@ -51,7 +51,7 @@ class ProjectImage extends Entity {
 		$response = parent::delete($id);
 
 		// Check if the deletion was ok
-		if ($response["count"] > 0 && $fileName) {
+		if ($response["meta"]["affected_rows"] > 0 && $fileName) {
 
 			// Checks if file exists to delete the actual Image file from server
 			if (file_exists(ROOT . $fileName)) {

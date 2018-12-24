@@ -177,6 +177,9 @@ class Helper {
 	 */
 	public static function sendResponse(array $response, array $data, $method, array $path) {
 
+		// Just remove any internal meta data
+		unset($response["meta"]["affected_rows"]);
+
 		// Send back the data provided
 		$response["meta"]["data"] = $data;
 		// Send back the method requested

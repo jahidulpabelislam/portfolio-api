@@ -70,18 +70,18 @@ abstract class Entity {
 		$response = $this->db->query($query, $bindings);
 
 		// Check everything was okay
-		if ($response["count"] > 0) {
+		if ($response["meta"]["affected_rows"] > 0) {
 			$response["meta"]["ok"] = true;
 		}
 		// Check if database provided any meta data if not no problem with executing query but no item found
-		else if ($response["count"] <= 0 && !isset($response["meta"])){
-			$response["meta"] = [
-				"ok" => false,
-				"status" => 404,
-				"feedback" => "No {$this->displayName}s found with $value as $column.",
-				"message" => "Not Found",
-			];
+		else if ($response["meta"]["affected_rows"] <= 0 && !isset($response["meta"]["feedback"])){
+			$response["meta"]["ok"] = false;
+			$response["meta"]["status"] = 404;
+			$response["meta"]["feedback"] = "No {$this->displayName}s found with $value as $column.";
+			$response["meta"]["message"] = "Not Found";
 		}
+
+		$response["meta"]["count"] = $response["meta"]["affected_rows"];
 
 		return $response;
 	}
@@ -102,16 +102,16 @@ abstract class Entity {
 			$response["row"] = [];
 
 			// Check everything was okay, so as this /Should/ return only one, use 'Row' as index
-			if ($response["count"] > 0) {
+			if ($response["meta"]["affected_rows"] > 0) {
 				$response["row"] = $response["rows"][0];
 			}
 			// Check if database provided any meta data if so no problem with executing query but no item found
-			else if (isset($response["meta"]) && isset($response["meta"]["status"]) && $response["meta"]["status"] === 404) {
+			else if (isset($response["meta"]["status"]) && $response["meta"]["status"] === 404) {
 				$response["meta"]["feedback"] = "No $this->displayName found with $id as ID.";
 			}
 
 			unset($response["rows"]);
-			unset($response["count"]);
+			unset($response["meta"]["count"]);
 		} else {
 			$response = [
 				"row" => [],
@@ -150,7 +150,7 @@ abstract class Entity {
 		$response = $this->db->query($query, $bindings);
 
 		// Checks if insert was ok
-		if ($response["count"] > 0) {
+		if ($response["meta"]["affected_rows"] > 0) {
 
 			$id = (empty($id)) ? $this->db->getLastInsertedId() : $id;
 
@@ -245,7 +245,7 @@ abstract class Entity {
 			$response = $this->db->query($query, $bindings);
 
 			// Check if the deletion was ok
-			if ($response["count"] > 0) {
+			if ($response["meta"]["affected_rows"] > 0) {
 
 				$response["meta"]["ok"] = true;
 				$response["row"]["ID"] = $id;
@@ -276,7 +276,7 @@ abstract class Entity {
 		$totalCount = $this->db->query($query, $bindings);
 
 		if ($totalCount && count($totalCount["rows"]) > 0) {
-			return  $totalCount["rows"][0]["TotalCount"];
+			return $totalCount["rows"][0]["TotalCount"];
 		}
 
 		return 0;
@@ -328,11 +328,12 @@ abstract class Entity {
 		$query = "SELECT * FROM $this->tableName $whereClause ORDER BY Date DESC LIMIT $limit OFFSET $offset;";
 		$response = $this->db->query($query, $bindings);
 
+		$response["meta"]["count"] = $response["meta"]["affected_rows"];
+
 		// Check if database provided any meta data if not all ok
-		if (count($response["rows"]) > 0 && !isset($response["meta"])) {
+		if ($response["meta"]["affected_rows"] > 0) {
 
 			$response["meta"]["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
-
 			$response["meta"]["ok"] = true;
 		}
 

@@ -78,7 +78,9 @@ class Database {
 	public function query($query, $bindings = null) {
 
 		$response = [
-			"count" => 0,
+			"meta" => [
+				"affected_rows" => 0,
+			],
 			"rows" => [],
 		];
 
@@ -101,7 +103,7 @@ class Database {
 				}
 
 				// Add the count of how many rows were effected
-				$response["count"] = $executedQuery->rowCount();
+				$response["meta"]["affected_rows"] = $executedQuery->rowCount();
 			}
 			catch (\PDOException $error) {
 				error_log("Error executing query on database: " . $error->getMessage() . " using query: $query and bindings: " . print_r($bindings, true) . ", full error: " . $error);
