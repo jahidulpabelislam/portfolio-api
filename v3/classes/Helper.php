@@ -97,9 +97,9 @@ class Helper {
 
 		$response = [
 			"meta" => [
-				"ok"       => false,
-				"status"   => 405,
-				"message"  => "Method not allowed.",
+				"ok" => false,
+				"status" => 405,
+				"message" => "Method not allowed.",
 				"feedback" => "$method Method Not Allowed on " .  self::getAPIURL($path),
 			],
 		];
