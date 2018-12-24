@@ -321,10 +321,16 @@ abstract class Entity {
 		$response["meta"]["count"] = $response["meta"]["affected_rows"];
 
 		// Check if database provided any meta data if not all ok
-		if ($response["meta"]["affected_rows"] > 0) {
+		if ($response["meta"]["affected_rows"] > 0 && !isset($response["meta"]["feedback"])) {
 
 			$response["meta"]["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
 			$response["meta"]["ok"] = true;
+		}
+		else if ($response["meta"]["affected_rows"] === 0 && !isset($response["meta"]["feedback"])) {
+			$response["meta"]["status"] = 404;
+			$response["meta"]["feedback"] = "No {$this->displayName}s found.";
+			$response["meta"]["message"] = "Not Found";
+			$response["meta"]["total_count"] = 0;
 		}
 
 		return $response;
