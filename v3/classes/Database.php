@@ -98,7 +98,7 @@ class Database {
 				}
 
 				// If query was a select, return array of data
-				if (strpos($query, "SELECT") !== false) {
+				if (stripos($query, "SELECT") !== false) {
 					$response["rows"] = $executedQuery->fetchAll(\PDO::FETCH_ASSOC);
 				}
 
