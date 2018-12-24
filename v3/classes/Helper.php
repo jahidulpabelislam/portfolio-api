@@ -228,7 +228,6 @@ class Helper {
 
 		$notCachedURLs = [
 			"session/",
-			"logout/",
 		];
 
 		// Set cache for 31 days for some GET Requests
