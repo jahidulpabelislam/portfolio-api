@@ -253,8 +253,8 @@ class Core {
 
 		// The full path for new file on the server
 		$newFilename = $projectNameFormatted;
-		$newFilename .=  "-" . date("YmdHis", time());
-		$newFilename .= "-" . mt_rand();
+		$newFilename .=  "-" . date("Ymd-His");
+		$newFilename .= "-" . mt_rand(0, 99);
 		$newFilename .= "." . $imageFileExt;
 
 		$newFileLocation = $directory . $newFilename;
