@@ -149,7 +149,7 @@ class Project extends Entity {
 		$response = parent::doSearch($params);
 
 		// Loop through each project and get the Projects Images
-		for ($i = 0; $i < count($response["rows"]); $i++) {
+		for ($i = 0; $i < $response["meta"]["count"]; $i++) {
 
 			$images = $this->getProjectImages($response["rows"][$i]["ID"]);
 			$response["rows"][$i]["Images"] = $images;
