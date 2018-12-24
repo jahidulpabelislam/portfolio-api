@@ -28,8 +28,9 @@ class Router {
 
 		$version = !empty($path[0]) ? $path[0] : "";
 
-		if ($version !== "v" . Config::API_VERSION) {
-			$path[0] = "v3";
+		$shouldBeVersion = "v" . Config::API_VERSION;
+		if ($version !== $shouldBeVersion) {
+			$path[0] = $shouldBeVersion;
 			$shouldBeURL = Helper::getAPIURL($path);
 			$response = [
 				"meta" => [
