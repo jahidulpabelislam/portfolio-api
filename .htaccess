@@ -44,8 +44,14 @@ DirectoryIndex index.php index.html
   ExpiresByType text/plain "access plus 2678400 seconds"
 </IfModule>
 
-# Rewrite rule for backend API
 RewriteEngine On
+
+# All API requests are routed via one PHP router file
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^v([0-9]+)/(.+)/$ /index.php/$2
+
+# Force trailing slash
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^v([0-9]+)/(.+)$ /v$1/$2/ [R=301,L]
