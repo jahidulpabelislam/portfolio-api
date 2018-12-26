@@ -12,78 +12,79 @@
  * @since Class available since Release: v3
  * @copyright 2014-2018 JPI
 */
+
 namespace JPI\API\Entity;
 
 if (!defined("ROOT")) {
-	die();
+    die();
 }
 
 class ProjectImage extends Entity {
 
-	public $tableName = "PortfolioProjectImage";
+    public $tableName = "PortfolioProjectImage";
 
-	public $displayName = "Project Image";
+    public $displayName = "Project Image";
 
-	protected $defaultOrderingByColumn = "SortOrderNumber";
+    protected $defaultOrderingByColumn = "SortOrderNumber";
 
-	protected $defaultOrderingByDirection = "ASC";
+    protected $defaultOrderingByDirection = "ASC";
 
-	public $columns = [
-		"ID",
-		"File",
-		"ProjectID",
-		"SortOrderNumber",
-	];
+    public $columns = [
+        "ID",
+        "File",
+        "ProjectID",
+        "SortOrderNumber",
+    ];
 
-	/**
-	 * Delete an Entity from the Database
-	 *
-	 * Add extra functionality on top of default delete function
-	 * As these Entities are linked to a file on the server
-	 * Here actually delete the file from the server
-	 *
-	 * @param $id int The ID of the Entity to delete
-	 * @param string $fileName string The filename of the file to delete
-	 * @return array Either an array with successful meta data or a array of error feedback meta
-	 */
-	public function delete($id, $fileName = "") : array {
+    /**
+     * Delete an Entity from the Database
+     *
+     * Add extra functionality on top of default delete function
+     * As these Entities are linked to a file on the server
+     * Here actually delete the file from the server
+     *
+     * @param $id int The ID of the Entity to delete
+     * @param string $fileName string The filename of the file to delete
+     * @return array Either an array with successful meta data or a array of error feedback meta
+     */
+    public function delete($id, $fileName = ""): array {
 
-		$response = parent::delete($id);
+        $response = parent::delete($id);
 
-		// Check if the deletion was ok
-		if ($response["meta"]["affected_rows"] > 0 && $fileName) {
+        // Check if the deletion was ok
+        if ($response["meta"]["affected_rows"] > 0 && $fileName) {
 
-			// Checks if file exists to delete the actual Image file from server
-			if (file_exists(ROOT . $fileName)) {
-				unlink(ROOT . $fileName);
-			}
-		}
+            // Checks if file exists to delete the actual Image file from server
+            if (file_exists(ROOT . $fileName)) {
+                unlink(ROOT . $fileName);
+            }
+        }
 
-		return $response;
-	}
+        return $response;
+    }
 
-	/**
-	 * Check if a ProjectImage is a child of a Project.
-	 * Use in conjunction with ProjectImage::getById()
-	 *
-	 * @param $projectId int The id of a Project it should check against
-	 */
-	public function checkProjectImageIsChildOfProject($projectId) {
+    /**
+     * Check if a ProjectImage is a child of a Project.
+     * Use in conjunction with ProjectImage::getById()
+     *
+     * @param $projectId int The id of a Project it should check against
+     */
+    public function checkProjectImageIsChildOfProject($projectId) {
 
-		$response = $this->response;
+        $response = $this->response;
 
-		if (!empty($response["row"]) && $response["row"]["ProjectID"] !== $projectId) {
-			$imageId = $response["row"]["ID"];
-			$response = [
-				"row" => [],
-				"meta" => [
-					"status" => 404,
-					"feedback" => "No $this->displayName found with $imageId as ID for Project: $projectId.",
-					"message" => "Not Found",
-				],
-			];
+        if (!empty($response["row"]) && $response["row"]["ProjectID"] !== $projectId) {
+            $imageId = $response["row"]["ID"];
+            $response = [
+                "row"  => [],
+                "meta" => [
+                    "status"   => 404,
+                    "feedback" => "No $this->displayName found with $imageId as ID for Project: $projectId.",
+                    "message"  => "Not Found",
+                ],
+            ];
 
-			$this->response = $response;
-		}
-	}
+            $this->response = $response;
+        }
+    }
 }

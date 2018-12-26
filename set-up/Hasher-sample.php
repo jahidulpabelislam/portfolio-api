@@ -14,29 +14,29 @@
 namespace JPI\API;
 
 if (!defined("ROOT")) {
-	die();
+    die();
 }
 
 class Hasher {
 
-	/*
-	 * This will generate a hashed value of given string
-	 */
-	public static function generate($string) {
+    /*
+     * This will generate a hashed value of given string
+     */
+    public static function generate($string) {
 
-		// TODO Generate a hashed on given string
+        // TODO Generate a hashed on given string
 
-		$hashed = $string;
+        $hashed = $string;
 
-		return $hashed;
-	}
+        return $hashed;
+    }
 
-	// This will be used to compare a raw string against a stored hash
-	public static function check($string, $hash) {
+    // This will be used to compare a raw string against a stored hash
+    public static function check($string, $hash) {
 
-		// TODO Compare a raw string against a hash of what it should be
+        // TODO Compare a raw string against a hash of what it should be
 
-		return $string === $hash;
+        return $string === $hash;
 
-	}
+    }
 }

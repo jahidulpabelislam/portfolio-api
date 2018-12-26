@@ -18,125 +18,123 @@
 namespace JPI\API;
 
 if (!defined("ROOT")) {
-	die();
+    die();
 }
 
 class Database {
 
-	private $db = null;
+    private $db = null;
+    private $config = null;
+    private $error = null;
 
-	private $config = null;
+    private static $instance = null;
 
-	private $error = null;
+    /**
+     * Connects to a MySQL engine
+     * using application constants DB_IP, DB_USERNAME, and DB_PASSWORD
+     * defined in Config.php
+     */
+    public function __construct() {
 
-	private static $instance = null;
+        $this->config = Config::get();
 
-	/**
-	 * Connects to a MySQL engine
-	 * using application constants DB_IP, DB_USERNAME, and DB_PASSWORD
-	 * defined in Config.php
-	 */
-	public function __construct() {
+        $dsn = "mysql:host=" . Config::DB_IP . ";dbname=" . Config::DB_NAME . ";charset-UTF-8";
+        $option = [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,];
 
-		$this->config = Config::get();
+        try {
+            $this->db = new \PDO($dsn, Config::DB_USERNAME, Config::DB_PASSWORD, $option);
+        }
+        catch (\PDOException $error) {
+            error_log("Error creating a connection to database: " . $error->getMessage() . ", full error: " . $error);
+            if ($this->config->debug) {
+                $this->error = $error->getMessage();
+            }
+        }
+    }
 
-		$dsn = "mysql:host=" . Config::DB_IP . ";dbname=" . Config::DB_NAME . ";charset-UTF-8";
-		$option = [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,];
+    /**
+     * Singleton getter
+     *
+     * @return Database
+     */
+    public static function get() {
 
-		try {
-			$this->db = new \PDO($dsn, Config::DB_USERNAME, Config::DB_PASSWORD, $option);
-		}
-		catch (\PDOException $error) {
-			error_log("Error creating a connection to database: " . $error->getMessage(). ", full error: " . $error);
-			if ($this->config->debug) {
-				$this->error = $error->getMessage();
-			}
-		}
-	}
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
 
-	/**
-	 * Singleton getter
-	 *
-	 * @return Database
-	 */
-	public static function get() {
+        return self::$instance;
+    }
 
-		if (self::$instance === null) {
-			self::$instance = new self();
-		}
+    /**
+     * Executes a SQL query
+     *
+     * @param $query string The SQL query to run
+     * @param null $bindings array Array of any bindings to use with the SQL query
+     * @return array Array of data or meta feedback
+     */
+    public function query($query, $bindings = null) {
 
-		return self::$instance;
-	}
+        $response = [
+            "meta" => [
+                "affected_rows" => 0,
+            ],
+            "rows" => [],
+        ];
 
-	/**
-	 * Executes a SQL query
-	 *
-	 * @param $query string The SQL query to run
-	 * @param null $bindings array Array of any bindings to use with the SQL query
-	 * @return array Array of data or meta feedback
-	 */
-	public function query($query, $bindings = null) {
+        if ($this->db) {
 
-		$response = [
-			"meta" => [
-				"affected_rows" => 0,
-			],
-			"rows" => [],
-		];
+            try {
 
-		if ($this->db) {
+                // Check if any bindings to execute
+                if (isset($bindings)) {
+                    $executedQuery = $this->db->prepare($query);
+                    $executedQuery->execute($bindings);
+                }
+                else {
+                    $executedQuery = $this->db->query($query);
+                }
 
-			try {
+                // If query was a select, return array of data
+                if (stripos($query, "SELECT") !== false) {
+                    $response["rows"] = $executedQuery->fetchAll(\PDO::FETCH_ASSOC);
+                }
 
-				// Check if any bindings to execute
-				if (isset($bindings)) {
-					$executedQuery = $this->db->prepare($query);
-					$executedQuery->execute($bindings);
-				}
-				else {
-					$executedQuery = $this->db->query($query);
-				}
+                // Add the count of how many rows were effected
+                $response["meta"]["affected_rows"] = $executedQuery->rowCount();
+            }
+            catch (\PDOException $error) {
+                error_log("Error executing query on database: " . $error->getMessage() . " using query: $query and bindings: " . print_r($bindings, true) . ", full error: " . $error);
 
-				// If query was a select, return array of data
-				if (stripos($query, "SELECT") !== false) {
-					$response["rows"] = $executedQuery->fetchAll(\PDO::FETCH_ASSOC);
-				}
+                $response["meta"]["feedback"] = "Problem with Server.";
 
-				// Add the count of how many rows were effected
-				$response["meta"]["affected_rows"] = $executedQuery->rowCount();
-			}
-			catch (\PDOException $error) {
-				error_log("Error executing query on database: " . $error->getMessage() . " using query: $query and bindings: " . print_r($bindings, true) . ", full error: " . $error);
+                if ($this->config->debug) {
+                    $response["meta"]["feedback"] = $error->getMessage();
+                }
+            }
+        }
+        else {
 
-				$response["meta"]["feedback"] = "Problem with Server.";
+            $response["meta"]["feedback"] = "Problem with Server.";
 
-				if ($this->config->debug) {
-					$response["meta"]["feedback"] = $error->getMessage();
-				}
-			}
-		}
-		else {
+            if ($this->config->debug) {
+                $response["meta"]["feedback"] = $this->error;
+            }
+        }
 
-			$response["meta"]["feedback"] = "Problem with Server.";
+        return $response;
+    }
 
-			if ($this->config->debug) {
-				$response["meta"]["feedback"] = $this->error;
-			}
-		}
+    /**
+     * @return int The ID of last inserted row of data
+     */
+    public function getLastInsertedId() {
+        if ($this->db) {
+            return $this->db->lastInsertId();
+        }
 
-		return $response;
-	}
-
-	/**
-	 * @return int The ID of last inserted row of data
-	 */
-	public function getLastInsertedId() {
-		if ($this->db) {
-			return $this->db->lastInsertId();
-		}
-
-		return null;
-	}
+        return null;
+    }
 }
 
 Database::get();

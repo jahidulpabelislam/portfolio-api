@@ -14,132 +14,133 @@
 namespace JPI\API;
 
 if (!defined("ROOT")) {
-	die();
+    die();
 }
 
 class Router {
 
-	/**
-	 * Try and perform the necessary actions needed to fulfil the request that a user made
-	 */
-	public static function performRequest() {
+    /**
+     * Try and perform the necessary actions needed to fulfil the request that a user made
+     */
+    public static function performRequest() {
 
-		list($method, $path, $data) = Helper::extractFromRequest();
+        list($method, $path, $data) = Helper::extractFromRequest();
 
-		$version = !empty($path[0]) ? $path[0] : "";
+        $version = !empty($path[0]) ? $path[0] : "";
 
-		$shouldBeVersion = "v" . Config::API_VERSION;
-		if ($version !== $shouldBeVersion) {
-			$path[0] = $shouldBeVersion;
-			$shouldBeURL = Helper::getAPIURL($path);
-			$response = [
-				"meta" => [
-					"status" => 404,
-					"feedback" => "Unrecognised API Version. Current Version is v" . Config::API_VERSION. ". So update requested URL to $shouldBeURL.",
-					"message" => "Not Found",
-				],
-			];
-			Helper::sendResponse($response, $data, $method, $path);
-			return;
-		}
+        $shouldBeVersion = "v" . Config::API_VERSION;
+        if ($version !== $shouldBeVersion) {
+            $path[0] = $shouldBeVersion;
+            $shouldBeURL = Helper::getAPIURL($path);
+            $response = [
+                "meta" => [
+                    "status"   => 404,
+                    "feedback" => "Unrecognised API Version. Current Version is v" . Config::API_VERSION . ". So update requested URL to $shouldBeURL.",
+                    "message"  => "Not Found",
+                ],
+            ];
+            Helper::sendResponse($response, $data, $method, $path);
 
-		$entity = !empty($path[1]) ? $path[1] : "";
+            return;
+        }
 
-		$response = [];
+        $entity = !empty($path[1]) ? $path[1] : "";
 
-		// Figure out what action on what object request is for & perform necessary action(s)
-		switch ($entity) {
-			case "login":
-				switch ($method) {
-					case "POST":
-						$response = Auth::login($data);
-						break;
-					default:
-						$response = Helper::getMethodNotAllowedResponse($method, $path);
-				}
-				break;
-			case "logout":
-				switch ($method) {
-					case "DELETE":
-						$response = Auth::logout();
-						break;
-					default:
-						$response = Helper::getMethodNotAllowedResponse($method, $path);
-				}
-				break;
-			case "session":
-				switch ($method) {
-					case "GET":
-						$response = Auth::getAuthStatus();
-						break;
-					default:
-						$response = Helper::getMethodNotAllowedResponse($method, $path);
-				}
-				break;
-			case "projects":
-				$api = new Core();
+        $response = [];
 
-				switch ($method) {
-					case "GET":
-						if (isset($path[2]) && trim($path[2]) !== "") {
-							$projectID = $path[2];
-							if (isset($path[3]) && $path[3] === "images") {
-								if (isset($path[4]) && $path[4] !== "" && !isset($path[5])) {
-									$response = $api->getProjectImage($projectID, $path[4]);
-								}
-								else if (!isset($path[4])) {
-									$response = $api->getProjectImages($projectID);
-								}
-							}
-							else if (!isset($path[3])) {
-								$response = $api->getProject($projectID, true);
-							}
-						}
-						else if (!isset($path[2])) {
-							$response = $api->getProjects($data);
-						}
-						break;
-					case "POST":
-						if (isset($path[2]) && trim($path[2]) !== "" &&
-							isset($path[3]) && $path[3] === "images" && !isset($path[4])) {
-								$data["ProjectID"] = $path[2];
-								$response = $api->addProjectImage($data);
-						}
-						else if (!isset($path[2])) {
-							$response = $api->addProject($data);
-						}
-						break;
-					case "PUT":
-						if (isset($path[2]) && trim($path[2]) !== "" && !isset($path[3])) {
-							$data["ID"] = $path[2];
-							$response = $api->editProject($data);
-						}
-						break;
-					case "DELETE":
-						if (isset($path[2]) && trim($path[2]) !== "") {
-							if (isset($path[3]) && $path[3] === "images"
-								&& isset($path[4]) && $path[4] !== "" && !isset($path[5])) {
-								$data["ID"] = $path[4];
-								$data["ProjectID"] = $path[2];
-								$response = $api->deleteImage($data);
-							}
-							else if (!isset($path[3])) {
-								$data["ID"] = $path[2];
-								$response = $api->deleteProject($data);
-							}
-						}
-						break;
-					default:
-						$response = Helper::getMethodNotAllowedResponse($method, $path);
-						break;
-				}
-				break;
-		}
+        // Figure out what action on what object request is for & perform necessary action(s)
+        switch ($entity) {
+            case "login":
+                switch ($method) {
+                    case "POST":
+                        $response = Auth::login($data);
+                        break;
+                    default:
+                        $response = Helper::getMethodNotAllowedResponse($method, $path);
+                }
+                break;
+            case "logout":
+                switch ($method) {
+                    case "DELETE":
+                        $response = Auth::logout();
+                        break;
+                    default:
+                        $response = Helper::getMethodNotAllowedResponse($method, $path);
+                }
+                break;
+            case "session":
+                switch ($method) {
+                    case "GET":
+                        $response = Auth::getAuthStatus();
+                        break;
+                    default:
+                        $response = Helper::getMethodNotAllowedResponse($method, $path);
+                }
+                break;
+            case "projects":
+                $api = new Core();
 
-		if (empty($response)) {
-			$response = Helper::getUnrecognisedURIResponse($path);
-		}
+                switch ($method) {
+                    case "GET":
+                        if (isset($path[2]) && trim($path[2]) !== "") {
+                            $projectID = $path[2];
+                            if (isset($path[3]) && $path[3] === "images") {
+                                if (isset($path[4]) && $path[4] !== "" && !isset($path[5])) {
+                                    $response = $api->getProjectImage($projectID, $path[4]);
+                                }
+                                else if (!isset($path[4])) {
+                                    $response = $api->getProjectImages($projectID);
+                                }
+                            }
+                            else if (!isset($path[3])) {
+                                $response = $api->getProject($projectID, true);
+                            }
+                        }
+                        else if (!isset($path[2])) {
+                            $response = $api->getProjects($data);
+                        }
+                        break;
+                    case "POST":
+                        if (isset($path[2]) && trim($path[2]) !== "" &&
+                            isset($path[3]) && $path[3] === "images" && !isset($path[4])) {
+                            $data["ProjectID"] = $path[2];
+                            $response = $api->addProjectImage($data);
+                        }
+                        else if (!isset($path[2])) {
+                            $response = $api->addProject($data);
+                        }
+                        break;
+                    case "PUT":
+                        if (isset($path[2]) && trim($path[2]) !== "" && !isset($path[3])) {
+                            $data["ID"] = $path[2];
+                            $response = $api->editProject($data);
+                        }
+                        break;
+                    case "DELETE":
+                        if (isset($path[2]) && trim($path[2]) !== "") {
+                            if (isset($path[3]) && $path[3] === "images"
+                                && isset($path[4]) && $path[4] !== "" && !isset($path[5])) {
+                                $data["ID"] = $path[4];
+                                $data["ProjectID"] = $path[2];
+                                $response = $api->deleteImage($data);
+                            }
+                            else if (!isset($path[3])) {
+                                $data["ID"] = $path[2];
+                                $response = $api->deleteProject($data);
+                            }
+                        }
+                        break;
+                    default:
+                        $response = Helper::getMethodNotAllowedResponse($method, $path);
+                        break;
+                }
+                break;
+        }
 
-		Helper::sendResponse($response, $data, $method, $path);
-	}
+        if (empty($response)) {
+            $response = Helper::getUnrecognisedURIResponse($path);
+        }
+
+        Helper::sendResponse($response, $data, $method, $path);
+    }
 }
