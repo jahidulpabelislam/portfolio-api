@@ -1,11 +1,19 @@
 # Portfolio API
 
+This API is to manage the CRUD of projects and its images. This will essentially will be used to display projects in my [Portfolio](https://jahidulpabelislam.com/), this is all joined together via a [CMS](https://github.com/jahidulpabelislam/portfolio-cms/).
+
+The API and CMS were created as I had realised that the projects within my site were consistent regarding what information was being shown. Therefore, for future proofing and making it easier to maintain, I thought to make sure it is ALWAYS consistent I can define a common project structure, so each project has the same information. This was done by a database through this API and CMS.
+
+By doing this, in the website I can define one project element/HTML structure and styling and then just do a loop through all the projects returned from the API via an AJAX request and create multiple project elements using that one defined structure.
+
+It was originally built within the [Portfolio](https://github.com/jahidulpabelislam/portfolio/) project/repo, and two versions were built initially built within this project. However, from v3, it was decided it would be good to separate the API from the portfolio to aid maintainability and readability.
+
 ## API
 
 ### Endpoints
 
 #### Resources
- 
+
 | URI | Description | <code>GET</code> | <code>POST</code> | <code>DELETE</code> | <code>PUT</code>|
 | --- | :----: | :----: |:----:|:----:|:----:|
 | [/projects/](https://api.jahidulpabelislam.com/v3/projects/) | All Projects | &#10004; | &#10004; | &#10006; | &#10006; |
@@ -24,7 +32,7 @@
 
 ## Requirements
 
-* Git 
+* Git
 * PHP7
 * PHP PDO
 * Composer
