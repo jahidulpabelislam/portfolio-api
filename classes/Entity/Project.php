@@ -43,8 +43,8 @@ class Project extends Entity {
     protected $searchableColumns = [
         "name",
         "skills",
-        "longDescription",
-        "shortDescription",
+        "long_description",
+        "short_description",
     ];
 
     /**
