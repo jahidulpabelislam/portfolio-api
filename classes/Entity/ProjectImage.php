@@ -21,7 +21,7 @@ if (!defined("ROOT")) {
 
 class ProjectImage extends Entity {
 
-    public $tableName = "PortfolioProjectImage";
+    public $tableName = "portfolio_project_image";
 
     public $displayName = "Project Image";
 
