@@ -25,30 +25,30 @@ class Project extends Entity {
 
     public $displayName = "Project";
 
-    protected $defaultOrderingByColumn = "Date";
+    protected $defaultOrderingByColumn = "date";
 
     public $columns = [
-        "ID",
-        "Name",
-        "Skills",
-        "LongDescription",
-        "ShortDescription",
-        "Link",
-        "GitHub",
-        "Download",
-        "Colour",
-        "Date",
+        "id",
+        "name",
+        "skills",
+        "long_description",
+        "short_description",
+        "link",
+        "github",
+        "download",
+        "colour",
+        "date",
     ];
 
     protected $searchableColumns = [
-        "Name",
-        "Skills",
-        "LongDescription",
-        "ShortDescription",
+        "name",
+        "skills",
+        "longDescription",
+        "shortDescription",
     ];
 
     /**
-     * Load a single Entity from the Database where a ID column = a value ($id)
+     * Load a single Entity from the Database where a id column = a value ($id)
      * Either return Entity with success meta data, or failed meta data
      * Uses helper function getByColumn();
      *
@@ -56,7 +56,7 @@ class Project extends Entity {
      * As Project is linked to Multiple Project Images
      * Add these to the response unless specified
      *
-     * @param $id int The ID of the Entity to get
+     * @param $id int The id of the Entity to get
      * @param bool $images bool Whether of not to also get and output the Project Images linked to this Project
      * @return array The response from the SQL query
      */
@@ -67,7 +67,7 @@ class Project extends Entity {
         if (!empty($response["row"])) {
             if ($images) {
                 $images = $this->getProjectImages($id);
-                $response["row"]["Images"] = $images;
+                $response["row"]["images"] = $images;
             }
         }
 
@@ -79,32 +79,32 @@ class Project extends Entity {
      * Will either be a new insert or a update to an existing Entity
      *
      * Add extra functionality on top of default save
-     * If the save was a update, update the Order 'SortOrderNumber' on its Project Images
-     * The SortOrderNumber is based on to order the items are in
+     * If the save was a update, update the Order 'sort_order_number' on its Project Images
+     * The sort_order_number is based on to order the items are in
      *
      * @param $values array The values as an array to use for the Entity
      * @return array Either an array with successful meta data or an array of error feedback meta
      */
     public function save(array $values): array {
 
-        $values["Date"] = date("Y-m-d", strtotime($values["Date"]));
+        $values["date"] = date("Y-m-d", strtotime($values["date"]));
 
         $response = parent::save($values);
 
         // Checks if the save was a update
-        if (!empty($values["ID"])) {
+        if (!empty($values["id"])) {
             // Checks if update was ok
             if (!empty($response["row"])) {
-                $images = json_decode($values["Images"]);
+                $images = json_decode($values["images"]);
 
                 if (count($images) > 0) {
                     foreach ($images as $sortOrder => $image) {
-                        $imageUpdateData = ["ID" => $image->ID, "SortOrderNumber" => $sortOrder,];
+                        $imageUpdateData = ["id" => $image->id, "sort_order_number" => $sortOrder,];
                         $projectImage = new ProjectImage();
                         $projectImage->save($imageUpdateData);
                     }
 
-                    $response = $this->getById($values["ID"]);
+                    $response = $this->getById($values["id"]);
                 }
             }
         }
@@ -118,7 +118,7 @@ class Project extends Entity {
      * Add extra functionality on top of default delete function
      * As these Entities are linked to many Project Images, so delete these also
      *
-     * @param $id int The ID of the Entity to delete
+     * @param $id int The id of the Entity to delete
      * @return array Either an array with successful meta data or a array of error feedback meta
      */
     public function delete($id): array {
@@ -130,7 +130,7 @@ class Project extends Entity {
         foreach ($images as $image) {
 
             // Delete the image from the database & from file
-            $projectImage->delete($image["ID"], $image["File"]);
+            $projectImage->delete($image["id"], $image["file"]);
         }
 
         return $response;
@@ -151,8 +151,8 @@ class Project extends Entity {
         // Loop through each project and get the Projects Images
         for ($i = 0; $i < $response["meta"]["count"]; $i++) {
 
-            $images = $this->getProjectImages($response["rows"][$i]["ID"]);
-            $response["rows"][$i]["Images"] = $images;
+            $images = $this->getProjectImages($response["rows"][$i]["id"]);
+            $response["rows"][$i]["images"] = $images;
         }
 
         return $response;
@@ -167,7 +167,7 @@ class Project extends Entity {
     public function getProjectImages($id): array {
         // Get all the images linked to the Project
         $projectImage = new ProjectImage();
-        $imagesResponse = $projectImage->getByColumn("ProjectID", $id);
+        $imagesResponse = $projectImage->getByColumn("project_id", $id);
         $images = $imagesResponse["rows"];
 
         return $images;

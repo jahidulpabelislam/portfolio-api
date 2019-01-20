@@ -25,15 +25,15 @@ class ProjectImage extends Entity {
 
     public $displayName = "Project Image";
 
-    protected $defaultOrderingByColumn = "SortOrderNumber";
+    protected $defaultOrderingByColumn = "sort_order_number";
 
     protected $defaultOrderingByDirection = "ASC";
 
     public $columns = [
-        "ID",
-        "File",
-        "ProjectID",
-        "SortOrderNumber",
+        "id",
+        "file",
+        "project_id",
+        "sort_order_number",
     ];
 
     /**
@@ -43,7 +43,7 @@ class ProjectImage extends Entity {
      * As these Entities are linked to a file on the server
      * Here actually delete the file from the server
      *
-     * @param $id int The ID of the Entity to delete
+     * @param $id int The id of the Entity to delete
      * @param string $fileName string The filename of the file to delete
      * @return array Either an array with successful meta data or a array of error feedback meta
      */
@@ -73,8 +73,8 @@ class ProjectImage extends Entity {
 
         $response = $this->response;
 
-        if (!empty($response["row"]) && $response["row"]["ProjectID"] !== $projectId) {
-            $imageId = $response["row"]["ID"];
+        if (!empty($response["row"]) && $response["row"]["project_id"] !== $projectId) {
+            $imageId = $response["row"]["id"];
             $response = [
                 "row"  => [],
                 "meta" => [

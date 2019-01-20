@@ -103,7 +103,7 @@ class Router {
                     case "POST":
                         if (isset($path[2]) && trim($path[2]) !== "" &&
                             isset($path[3]) && $path[3] === "images" && !isset($path[4])) {
-                            $data["ProjectID"] = $path[2];
+                            $data["project_id"] = $path[2];
                             $response = $api->addProjectImage($data);
                         }
                         else if (!isset($path[2])) {
@@ -112,7 +112,7 @@ class Router {
                         break;
                     case "PUT":
                         if (isset($path[2]) && trim($path[2]) !== "" && !isset($path[3])) {
-                            $data["ID"] = $path[2];
+                            $data["id"] = $path[2];
                             $response = $api->editProject($data);
                         }
                         break;
@@ -120,12 +120,12 @@ class Router {
                         if (isset($path[2]) && trim($path[2]) !== "") {
                             if (isset($path[3]) && $path[3] === "images"
                                 && isset($path[4]) && $path[4] !== "" && !isset($path[5])) {
-                                $data["ID"] = $path[4];
-                                $data["ProjectID"] = $path[2];
+                                $data["id"] = $path[4];
+                                $data["project_id"] = $path[2];
                                 $response = $api->deleteImage($data);
                             }
                             else if (!isset($path[3])) {
-                                $data["ID"] = $path[2];
+                                $data["id"] = $path[2];
                                 $response = $api->deleteProject($data);
                             }
                         }

@@ -28,7 +28,7 @@ abstract class Entity {
 
     public $displayName = null;
 
-    protected $defaultOrderingByColumn = "ID";
+    protected $defaultOrderingByColumn = "id";
 
     protected $defaultOrderingByDirection = "DESC";
 
@@ -43,9 +43,9 @@ abstract class Entity {
     /**
      * Entity constructor.
      *
-     * If $id is passed, load up the Entity from Database where ID = $id
+     * If $id is passed, load up the Entity from Database where id = $id
      *
-     * @param null $id int The ID of a Entity in the Database to load
+     * @param null $id int The id of a Entity in the Database to load
      */
     public function __construct($id = null) {
         $this->db = Database::get();
@@ -86,17 +86,17 @@ abstract class Entity {
     }
 
     /**
-     * Load a single Entity from the Database where a ID column = a value ($id)
+     * Load a single Entity from the Database where a id column = a value ($id)
      * Either return Entity with success meta data, or failed meta data
      * Uses helper function getByColumn();
      *
-     * @param $id int The ID of the Entity to get
+     * @param $id int The id of the Entity to get
      * @return array The response from the SQL query
      */
     public function getById($id): array {
 
         if (is_numeric($id)) {
-            $response = $this->getByColumn("ID", (int)$id);
+            $response = $this->getByColumn("id", (int)$id);
 
             $response["row"] = [];
 
@@ -135,7 +135,7 @@ abstract class Entity {
      */
     public function save(array $values): array {
 
-        $id = $values["ID"] ?? null;
+        $id = $values["id"] ?? null;
 
         if (empty($id)) {
             list($query, $bindings) = $this->generateInsertQuery($values);
@@ -158,7 +158,7 @@ abstract class Entity {
 
             $response = $this->getById($id);
 
-            if (empty($values["ID"])) {
+            if (empty($values["id"])) {
                 $response["meta"]["status"] = 201;
                 $response["meta"]["message"] = "Created";
             }
@@ -179,7 +179,7 @@ abstract class Entity {
         $bindings = [];
 
         foreach ($this->columns as $column) {
-            if ($column !== "ID" && !empty($values[$column])) {
+            if ($column !== "id" && !empty($values[$column])) {
                 $columnsQuery .= $column . ", ";
                 $valuesQuery .= ":" . $column . ", ";
                 $bindings[":$column"] = $values[$column];
@@ -210,7 +210,7 @@ abstract class Entity {
             if (isset($values[$column])) {
                 $bindings[":$column"] = $values[$column];
 
-                if ($column !== "ID") {
+                if ($column !== "id") {
                     $valuesQuery .= $column . " = :" . $column . ", ";
                 }
             }
@@ -218,7 +218,7 @@ abstract class Entity {
 
         $valuesQuery = rtrim($valuesQuery, ", ");
 
-        $query = "UPDATE $this->tableName $valuesQuery WHERE ID = :ID;";
+        $query = "UPDATE $this->tableName $valuesQuery WHERE id = :id;";
 
         return [$query, $bindings];
     }
@@ -226,7 +226,7 @@ abstract class Entity {
     /**
      * Delete an Entity from the Database
      *
-     * @param $id int The ID of the Entity to delete
+     * @param $id int The id of the Entity to delete
      * @return array Either an array with successful meta data or a array of error feedback meta
      */
     public function delete($id): array {
@@ -235,15 +235,15 @@ abstract class Entity {
         $response = $this->getById($id);
         if (!empty($response["row"])) {
 
-            $query = "DELETE FROM $this->tableName WHERE ID = :ID;";
-            $bindings = [":ID" => $id,];
+            $query = "DELETE FROM $this->tableName WHERE id = :id;";
+            $bindings = [":id" => $id,];
             $response = $this->db->query($query, $bindings);
 
             // Check if the deletion was ok
             if ($response["meta"]["affected_rows"] > 0) {
 
                 $response["meta"]["ok"] = true;
-                $response["row"]["ID"] = $id;
+                $response["row"]["id"] = $id;
 
             }
 
@@ -316,7 +316,7 @@ abstract class Entity {
             list($whereClause, $bindings) = $this->generateSearchWhereQuery($params["search"]);
         }
 
-        $query = "SELECT * FROM $this->tableName $whereClause ORDER BY Date DESC LIMIT $limit OFFSET $offset;";
+        $query = "SELECT * FROM $this->tableName $whereClause ORDER BY date DESC LIMIT $limit OFFSET $offset;";
         $response = $this->db->query($query, $bindings);
 
         $response["meta"]["count"] = $response["meta"]["affected_rows"];

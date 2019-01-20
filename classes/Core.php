@@ -71,7 +71,7 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if data needed is present and not empty
-            $dataNeeded = ["Name", "Skills", "LongDescription", "ShortDescription", "GitHub", "Date",];
+            $dataNeeded = ["name", "skills", "long_description", "short_description", "github", "date",];
             if (Helper::checkData($data, $dataNeeded)) {
 
                 $project = new Project();
@@ -101,7 +101,7 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if data needed is present and not empty
-            $dataNeeded = ["ID", "Name", "Skills", "LongDescription", "ShortDescription", "GitHub", "Date",];
+            $dataNeeded = ["id", "name", "skills", "long_description", "short_description", "github", "date",];
             if (Helper::checkData($data, $dataNeeded)) {
 
                 $project = new Project();
@@ -131,11 +131,11 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if the data needed is present and not empty
-            $dataNeeded = ["ID",];
+            $dataNeeded = ["id",];
             if (Helper::checkData($data, $dataNeeded)) {
 
                 $project = new Project();
-                $response = $project->delete($data["ID"]);
+                $response = $project->delete($data["id"]);
 
             } // Else the data needed was not provided
             else {
@@ -162,7 +162,7 @@ class Core {
         if (!empty($response["row"])) {
 
             $projectImage = new ProjectImage();
-            $response = $projectImage->getByColumn("ProjectID", $projectID);
+            $response = $projectImage->getByColumn("project_id", $projectID);
         }
 
         return $response;
@@ -202,18 +202,18 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if the data needed is present and not empty
-            $dataNeeded = ["ProjectID",];
+            $dataNeeded = ["project_id",];
             if (Helper::checkData($data, $dataNeeded) && isset($_FILES["image"])) {
 
                 // Check the project trying to add a a Image for exists
-                $response = $this->getProject($data["ProjectID"]);
+                $response = $this->getProject($data["project_id"]);
                 if (!empty($response["row"])) {
 
                     $response = $this->uploadProjectImage($response["row"]);
                 }
             } // Else data needed was not provided
             else {
-                array_push($dataNeeded, "Image");
+                array_push($dataNeeded, "image");
                 $response = Helper::getDataNotProvidedResponse($dataNeeded);
             }
         }
@@ -236,9 +236,9 @@ class Core {
 
         $response = [];
 
-        $projectId = $project["ID"];
+        $projectId = $project["id"];
 
-        $projectName = $project["Name"];
+        $projectName = $project["name"];
 
         $projectNameFormatted = strtolower($projectName);
         $projectNameFormatted = preg_replace("/[^a-z0-9]+/", "-", $projectNameFormatted);
@@ -270,9 +270,9 @@ class Core {
 
                 // Update database with location of new Image
                 $values = [
-                    "File"            => $newFileLocation,
-                    "ProjectID"       => $projectId,
-                    "SortOrderNumber" => 999, // High enough number
+                    "file"            => $newFileLocation,
+                    "project_id"       => $projectId,
+                    "sort_order_number" => 999, // High enough number
                 ];
                 $projectImage = new ProjectImage();
                 $response = $projectImage->save($values);
@@ -304,22 +304,22 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if data needed is present and not empty
-            $dataNeeded = ["ProjectID", "ID",];
+            $dataNeeded = ["project_id", "id",];
             if (Helper::checkData($data, $dataNeeded)) {
 
                 // Check the Project trying to edit actually exists
-                $response = $this->getProject($data["ProjectID"]);
+                $response = $this->getProject($data["project_id"]);
                 if (!empty($response["row"])) {
 
-                    $response = $this->getProjectImage($data["ProjectID"], $data["ID"]);
+                    $response = $this->getProjectImage($data["project_id"], $data["id"]);
 
                     if (!empty($response["row"])) {
 
-                        $fileName = $response["row"]["File"];
+                        $fileName = $response["row"]["file"];
 
                         // Update database to delete row
                         $projectImage = new ProjectImage();
-                        $response = $projectImage->delete($data["ID"], $fileName);
+                        $response = $projectImage->delete($data["id"], $fileName);
                     }
                 }
             } // Else data was not provided
