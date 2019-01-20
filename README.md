@@ -21,6 +21,16 @@
 | [/logout/](https://api.jahidulpabelislam.com/v3/logout/) | Log Current User Out | &#10006; | &#10006; | &#10004; | &#10006; |
 | [/session/](https://api.jahidulpabelislam.com/v3/session/) | Get Current Auth Status | &#10004; | &#10006; | &#10006; | &#10006; |
 
+
+## Requirements
+
+* Git 
+* PHP7
+* PHP PDO
+* Composer
+* MySQL
+* Apache
+
 ## Setup
 
 Create Database.
