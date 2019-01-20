@@ -53,6 +53,8 @@ class Helper {
 
         $requestedURI = !empty($requestedPath) ? trim($requestedPath, "/") : "";
 
+        $requestedURI = strtolower($requestedURI);
+
         // Get the individual parts of the request URI as an array
         $requestedURIArray = explode("/", $requestedURI);
 
