@@ -30,8 +30,9 @@ class Router {
 
         $shouldBeVersion = "v" . Config::API_VERSION;
         if ($version !== $shouldBeVersion) {
-            $path[0] = $shouldBeVersion;
-            $shouldBeURL = Helper::getAPIURL($path);
+            $shouldBePath = $path;
+            $shouldBePath[0] = $shouldBeVersion;
+            $shouldBeURL = Helper::getAPIURL($shouldBePath);
             $response = [
                 "meta" => [
                     "status"   => 404,
