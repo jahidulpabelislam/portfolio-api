@@ -33,12 +33,22 @@
 
 ## Setup
 
-Create Database.
+1. Clone repo with `git@github.com:jahidulpabelislam/portfolio-api.git`.
 
-Import /set-up/base-structure.sql into newly created database.
+2. Navigate to project folder and run `composer install`.
 
-Copy /set-up/Config-sample.php and move to /classes/Config.php then fill in the 6 necessary constants.
+3. Create new database.
 
-Copy /set-up/Hasher-sample.php and move to /classes/Hasher.php then update both the functions with your Hashing functionality.
+4. A MySQL user with select, insert, update & delete capabilities on new database.
 
-Copy /set-up/Auth-sample.php and move to /classes/Auth.php then update all 3 functions with your Auth functionality.
+5. Import `/set-up/base-structure.sql` into newly created database.
+
+6. Run migrations from `/migrations/*` (if any) into MySQL.
+
+7. Copy and fill in example files (in any order).
+
+    * Copy `/set-up/Config-sample.php` and move to `/classes/Config.php` then fill in the 6 necessary constants.
+
+    * Copy `/set-up/Hasher-sample.php` and move to `/classes/Hasher.php` then update both the functions with your Hashing functionality.
+
+    * Copy `/set-up/Auth-sample.php` and move to `/classes/Auth.php` then update all 3 functions with your Auth functionality.
