@@ -47,9 +47,9 @@ It was originally built within the [Portfolio](https://github.com/jahidulpabelis
 
 3. Create new database.
 
-4. A MySQL user with select, insert, update & delete capabilities on new database.
+4. A MySQL user with select, insert, update & delete capabilities on the new database.
 
-5. Import `/set-up/base-structure.sql` into newly created database.
+5. Import `/set-up/base-structure.sql` into the newly created database.
 
 6. Run migrations from `/migrations/*` (if any) into MySQL.
 
