@@ -9,7 +9,7 @@
  * @version 1
  * @link https://github.com/jahidulpabelislam/portfolio-api/
  * @since Class available since Release: v3
- * @copyright 2014-2018 JPI
+ * @copyright 2012-2018 JPI
 */
 
 namespace JPI\API\Entity;

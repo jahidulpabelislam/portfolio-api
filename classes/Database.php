@@ -12,7 +12,7 @@
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
  * @version 3
  * @link https://github.com/jahidulpabelislam/portfolio-api/
- * @copyright 2014-2018 JPI
+ * @copyright 2012-2018 JPI
 */
 
 namespace JPI\API;
