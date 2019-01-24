@@ -8,6 +8,26 @@ By doing this, in the website I can define one project element/HTML structure an
 
 It was originally built within the [Portfolio](https://github.com/jahidulpabelislam/portfolio/) project/repo, and two versions were built initially built within this project. However, from v3, it was decided it would be good to separate the API from the portfolio to aid maintainability and readability.
 
+## Work Done
+
+### [v1](https://github.com/jahidulpabelislam/portfolio/tree/v2/admin/)
+The initial creation of the API began and finished in summer of 2016. The one main aim of this project was to make a start and finish adding functionality for managing the CRUD of projects and images linked to projects.
+
+I knew from the beginning that I would build the API using PHP as I had previous experience building an API with PHP. And as a challenge for myself I also aimed to build the whole API (& CMS) from scratch (without any libraries/plugins).
+
+### [v2](https://github.com/jahidulpabelislam/portfolio/tree/v4/api/v2/)
+In the summer of 2017 it was the start of version 2 which eventually finished in the summer of 2018. v2 was just a slight update on the code base to tidy up the code base such as:
+ * updating the URI structure
+ * better login and log out functionality (hashing)
+ * adding  better security
+
+### [v3](https://github.com/jahidulpabelislam/portfolio-api/releases/tag/v3/)
+Towards the end of 2018 (v3), I aimed to split the API part of the Portfolio project and create a new base project to build from in the future for new features and new versions.
+
+Also a sub-aim was also to refactor the whole of the API part of the original project with better code and following consistent standards throughout (PHP & SQL).
+
+Also for the Cross domain requests from the CMS for secured endpoints such as Deletes & Posts I integrated JWT auth using Firebase.
+
 ## API
 
 ### Endpoints
