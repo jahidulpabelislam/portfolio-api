@@ -73,7 +73,7 @@ Also for the Cross domain requests from the CMS for secured endpoints such as De
 
 5. Import `/set-up/base-structure.sql` into the newly created database.
 
-6. Run migrations from `/migrations/*` (if any) into MySQL.
+6. Run migrations from `/migrations/*` (if any) into MySQL in the order of the number at the start of the filenames.
 
 7. Copy and fill in example files (in any order).
 
