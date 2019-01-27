@@ -8,7 +8,7 @@
  * @version 2
  * @link https://github.com/jahidulpabelislam/portfolio-api/
  * @since Class available since Release: v2
- * @copyright 2012-2018 JPI
+ * @copyright 2010-2018 JPI
 */
 
 namespace JPI\API;
@@ -30,8 +30,9 @@ class Router {
 
         $shouldBeVersion = "v" . Config::API_VERSION;
         if ($version !== $shouldBeVersion) {
-            $path[0] = $shouldBeVersion;
-            $shouldBeURL = Helper::getAPIURL($path);
+            $shouldBePath = $path;
+            $shouldBePath[0] = $shouldBeVersion;
+            $shouldBeURL = Helper::getAPIURL($shouldBePath);
             $response = [
                 "meta" => [
                     "status"   => 404,
