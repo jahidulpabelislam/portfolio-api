@@ -25,8 +25,6 @@ class Project extends Entity {
 
     public $displayName = "Project";
 
-    protected $defaultOrderingByColumn = "date";
-
     public $columns = [
         "id",
         "name",
@@ -47,32 +45,7 @@ class Project extends Entity {
         "short_description",
     ];
 
-    /**
-     * Load a single Entity from the Database where a id column = a value ($id)
-     * Either return Entity with success meta data, or failed meta data
-     * Uses helper function getByColumn();
-     *
-     * As extra functionality on top of default function
-     * As Project is linked to Multiple Project Images
-     * Add these to the response unless specified
-     *
-     * @param $id int The id of the Entity to get
-     * @param bool $images bool Whether of not to also get and output the Project Images linked to this Project
-     * @return array The response from the SQL query
-     */
-    public function getById($id, $images = true): array {
-        $response = parent::getById($id);
-
-        // Check if database provided any meta data if so no problem with executing query but no project found
-        if (!empty($response["row"])) {
-            if ($images) {
-                $images = $this->getProjectImages($id);
-                $response["row"]["images"] = $images;
-            }
-        }
-
-        return $response;
-    }
+    protected $defaultOrderingByColumn = "date";
 
     /**
      * Save values to the Entity Table in the Database
@@ -110,6 +83,48 @@ class Project extends Entity {
         }
 
         return $response;
+    }
+
+    /**
+     * Load a single Entity from the Database where a id column = a value ($id)
+     * Either return Entity with success meta data, or failed meta data
+     * Uses helper function getByColumn();
+     *
+     * As extra functionality on top of default function
+     * As Project is linked to Multiple Project Images
+     * Add these to the response unless specified
+     *
+     * @param $id int The id of the Entity to get
+     * @param bool $images bool Whether of not to also get and output the Project Images linked to this Project
+     * @return array The response from the SQL query
+     */
+    public function getById($id, $images = true): array {
+        $response = parent::getById($id);
+
+        // Check if database provided any meta data if so no problem with executing query but no project found
+        if (!empty($response["row"])) {
+            if ($images) {
+                $images = $this->getProjectImages($id);
+                $response["row"]["images"] = $images;
+            }
+        }
+
+        return $response;
+    }
+
+    /**
+     * Helper function to get all Project Image Entities linked to this project
+     *
+     * @param $id int The Project Image to find Images for
+     * @return array An array of ProjectImage's (if any found)
+     */
+    public function getProjectImages($id): array {
+        // Get all the images linked to the Project
+        $projectImage = new ProjectImage();
+        $imagesResponse = $projectImage->getByColumn("project_id", $id);
+        $images = $imagesResponse["rows"];
+
+        return $images;
     }
 
     /**
@@ -156,20 +171,5 @@ class Project extends Entity {
         }
 
         return $response;
-    }
-
-    /**
-     * Helper function to get all Project Image Entities linked to this project
-     *
-     * @param $id int The Project Image to find Images for
-     * @return array An array of ProjectImage's (if any found)
-     */
-    public function getProjectImages($id): array {
-        // Get all the images linked to the Project
-        $projectImage = new ProjectImage();
-        $imagesResponse = $projectImage->getByColumn("project_id", $id);
-        $images = $imagesResponse["rows"];
-
-        return $images;
     }
 }

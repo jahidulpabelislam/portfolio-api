@@ -25,16 +25,16 @@ class ProjectImage extends Entity {
 
     public $displayName = "Project Image";
 
-    protected $defaultOrderingByColumn = "sort_order_number";
-
-    protected $defaultOrderingByDirection = "ASC";
-
     public $columns = [
         "id",
         "file",
         "project_id",
         "sort_order_number",
     ];
+
+    protected $defaultOrderingByColumn = "sort_order_number";
+
+    protected $defaultOrderingByDirection = "ASC";
 
     /**
      * Delete an Entity from the Database
@@ -76,11 +76,11 @@ class ProjectImage extends Entity {
         if (!empty($response["row"]) && $response["row"]["project_id"] !== $projectId) {
             $imageId = $response["row"]["id"];
             $response = [
-                "row"  => [],
+                "row" => [],
                 "meta" => [
-                    "status"   => 404,
+                    "status" => 404,
                     "feedback" => "No $this->displayName found with $imageId as ID for Project: $projectId.",
-                    "message"  => "Not Found",
+                    "message" => "Not Found",
                 ],
             ];
 

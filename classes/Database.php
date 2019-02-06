@@ -23,11 +23,11 @@ if (!defined("ROOT")) {
 
 class Database {
 
+    private static $instance = null;
+
     private $db = null;
     private $config = null;
     private $error = null;
-
-    private static $instance = null;
 
     /**
      * Connects to a MySQL engine

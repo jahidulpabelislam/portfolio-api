@@ -35,9 +35,9 @@ class Router {
             $shouldBeURL = Helper::getAPIURL($shouldBePath);
             $response = [
                 "meta" => [
-                    "status"   => 404,
+                    "status" => 404,
                     "feedback" => "Unrecognised API Version. Current Version is v" . Config::API_VERSION . ". So update requested URL to $shouldBeURL.",
-                    "message"  => "Not Found",
+                    "message" => "Not Found",
                 ],
             ];
             Helper::sendResponse($response, $data, $method, $path);
@@ -84,17 +84,17 @@ class Router {
                 switch ($method) {
                     case "GET":
                         if (isset($path[2]) && trim($path[2]) !== "") {
-                            $projectID = $path[2];
+                            $projectId = $path[2];
                             if (isset($path[3]) && $path[3] === "images") {
                                 if (isset($path[4]) && $path[4] !== "" && !isset($path[5])) {
-                                    $response = $api->getProjectImage($projectID, $path[4]);
+                                    $response = $api->getProjectImage($projectId, $path[4]);
                                 }
                                 else if (!isset($path[4])) {
-                                    $response = $api->getProjectImages($projectID);
+                                    $response = $api->getProjectImages($projectId);
                                 }
                             }
                             else if (!isset($path[3])) {
-                                $response = $api->getProject($projectID, true);
+                                $response = $api->getProject($projectId, true);
                             }
                         }
                         else if (!isset($path[2])) {
@@ -102,8 +102,11 @@ class Router {
                         }
                         break;
                     case "POST":
-                        if (isset($path[2]) && trim($path[2]) !== "" &&
-                            isset($path[3]) && $path[3] === "images" && !isset($path[4])) {
+                        if (
+                            isset($path[2]) && trim($path[2]) !== ""
+                            && isset($path[3]) && $path[3] === "images"
+                            && !isset($path[4])
+                        ) {
                             $data["project_id"] = $path[2];
                             $response = $api->addProjectImage($data);
                         }
@@ -119,8 +122,11 @@ class Router {
                         break;
                     case "DELETE":
                         if (isset($path[2]) && trim($path[2]) !== "") {
-                            if (isset($path[3]) && $path[3] === "images"
-                                && isset($path[4]) && $path[4] !== "" && !isset($path[5])) {
+                            if (
+                                isset($path[3]) && $path[3] === "images"
+                                && isset($path[4]) && $path[4] !== ""
+                                && !isset($path[5])
+                            ) {
                                 $data["id"] = $path[4];
                                 $data["project_id"] = $path[2];
                                 $response = $api->deleteImage($data);

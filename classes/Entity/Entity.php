@@ -22,23 +22,23 @@ use JPI\API\Database;
 
 abstract class Entity {
 
-    private $db = null;
+    public $response = [];
 
     public $tableName = null;
 
     public $displayName = null;
 
-    protected $defaultOrderingByColumn = "id";
-
-    protected $defaultOrderingByDirection = "DESC";
-
     public $columns = [];
 
     protected $searchableColumns = [];
 
+    protected $defaultOrderingByColumn = "id";
+
+    protected $defaultOrderingByDirection = "DESC";
+
     protected $defaultLimit = 10;
 
-    public $response = [];
+    private $db = null;
 
     /**
      * Entity constructor.
@@ -53,36 +53,6 @@ abstract class Entity {
         if ($id) {
             $this->response = $this->getById($id);
         }
-    }
-
-    /**
-     * Load Entities from the Database where a column ($column) = a value ($value)
-     * Either return Entities with success meta data, or failed meta data
-     *
-     * @param $column string
-     * @param $value string
-     * @return array The response from the SQL query
-     */
-    public function getByColumn($column, $value): array {
-
-        $query = "SELECT * FROM $this->tableName WHERE $column = :value ORDER BY $this->defaultOrderingByColumn $this->defaultOrderingByDirection;";
-        $bindings = [":value" => $value,];
-        $response = $this->db->query($query, $bindings);
-
-        // Check everything was okay
-        if ($response["meta"]["affected_rows"] > 0) {
-            $response["meta"]["ok"] = true;
-        }
-        // Check if database provided any meta data if not no problem with executing query but no item found
-        else if ($response["meta"]["affected_rows"] <= 0 && !isset($response["meta"]["feedback"])) {
-            $response["meta"]["status"] = 404;
-            $response["meta"]["feedback"] = "No {$this->displayName}s found with $value as $column.";
-            $response["meta"]["message"] = "Not Found";
-        }
-
-        $response["meta"]["count"] = $response["meta"]["affected_rows"];
-
-        return $response;
     }
 
     /**
@@ -114,14 +84,44 @@ abstract class Entity {
         }
         else {
             $response = [
-                "row"  => [],
+                "row" => [],
                 "meta" => [
-                    "status"   => 404,
+                    "status" => 404,
                     "feedback" => "No $this->displayName found with $id as ID (Please note ID must be a numeric value).",
-                    "message"  => "Not Found",
+                    "message" => "Not Found",
                 ],
             ];
         }
+
+        return $response;
+    }
+
+    /**
+     * Load Entities from the Database where a column ($column) = a value ($value)
+     * Either return Entities with success meta data, or failed meta data
+     *
+     * @param $column string
+     * @param $value string
+     * @return array The response from the SQL query
+     */
+    public function getByColumn($column, $value): array {
+
+        $query = "SELECT * FROM $this->tableName WHERE $column = :value ORDER BY $this->defaultOrderingByColumn $this->defaultOrderingByDirection;";
+        $bindings = [":value" => $value,];
+        $response = $this->db->query($query, $bindings);
+
+        // Check everything was okay
+        if ($response["meta"]["affected_rows"] > 0) {
+            $response["meta"]["ok"] = true;
+        }
+        // Check if database provided any meta data if not no problem with executing query but no item found
+        else if ($response["meta"]["affected_rows"] <= 0 && !isset($response["meta"]["feedback"])) {
+            $response["meta"]["status"] = 404;
+            $response["meta"]["feedback"] = "No {$this->displayName}s found with $value as $column.";
+            $response["meta"]["message"] = "Not Found";
+        }
+
+        $response["meta"]["count"] = $response["meta"]["affected_rows"];
 
         return $response;
     }
@@ -254,26 +254,6 @@ abstract class Entity {
     }
 
     /**
-     * Used to get a total count of Entities using a where clause
-     * Used together with Entity::doSearch, as this return a limited Entities
-     * but we want to get a number of total items without limit
-     *
-     * @param $whereClause string
-     * @param array $bindings array Any data to aid in the database querying
-     * @return int
-     */
-    public function getTotalCountByWhereClause($whereClause, array $bindings): int {
-        $query = "SELECT COUNT(*) AS TotalCount FROM $this->tableName $whereClause;";
-        $totalCount = $this->db->query($query, $bindings);
-
-        if ($totalCount && count($totalCount["rows"]) > 0) {
-            return $totalCount["rows"][0]["TotalCount"];
-        }
-
-        return 0;
-    }
-
-    /**
      * Gets all Entities but paginated, also might include search
      *
      * @param array $params array Any data to aid in the search query
@@ -375,7 +355,7 @@ abstract class Entity {
             $whereClause = rtrim($whereClause, "OR");
 
             $bindings = [
-                "searchString"         => $searchString,
+                "searchString" => $searchString,
                 "searchStringReversed" => $searchStringReversed,
             ];
 
@@ -384,5 +364,25 @@ abstract class Entity {
         else {
             return ["", []];
         }
+    }
+
+    /**
+     * Used to get a total count of Entities using a where clause
+     * Used together with Entity::doSearch, as this return a limited Entities
+     * but we want to get a number of total items without limit
+     *
+     * @param $whereClause string
+     * @param array $bindings array Any data to aid in the database querying
+     * @return int
+     */
+    public function getTotalCountByWhereClause($whereClause, array $bindings): int {
+        $query = "SELECT COUNT(*) AS TotalCount FROM $this->tableName $whereClause;";
+        $totalCount = $this->db->query($query, $bindings);
+
+        if ($totalCount && count($totalCount["rows"]) > 0) {
+            return $totalCount["rows"][0]["TotalCount"];
+        }
+
+        return 0;
     }
 }

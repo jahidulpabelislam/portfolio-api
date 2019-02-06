@@ -64,11 +64,11 @@ class Auth {
                     $serverName = "https://jahidulpabelislam.com/"; // Issuer
 
                     $jwtData = [
-                        "jti"  => $tokenId,
-                        "iss"  => $serverName,
-                        "iat"  => $issuedAt,
-                        "nbf"  => $issuedAt,
-                        "exp"  => $expire,
+                        "jti" => $tokenId,
+                        "iss" => $serverName,
+                        "iat" => $issuedAt,
+                        "nbf" => $issuedAt,
+                        "exp" => $expire,
                         "data" => [
                             // Any extra API secific data
                         ],
@@ -110,10 +110,33 @@ class Auth {
 
         $response = [
             "meta" => [
-                "ok"       => true,
+                "ok" => true,
                 "feedback" => "Successfully Logged Out.",
             ],
         ];
+
+        return $response;
+    }
+
+    /**
+     * Check whether the user is logged or not
+     *
+     * @return array The request response to send back
+     */
+    public static function getAuthStatus() {
+
+        if (self::isLoggedIn()) {
+            $response = [
+                "meta" => [
+                    "ok" => true,
+                    "status" => 200,
+                    "message" => "OK",
+                ],
+            ];
+        }
+        else {
+            $response = Helper::getNotAuthorisedResponse();
+        }
 
         return $response;
     }
@@ -154,28 +177,5 @@ class Auth {
         }
 
         return false;
-    }
-
-    /**
-     * Check whether the user is logged or not
-     *
-     * @return array The request response to send back
-     */
-    public static function getAuthStatus() {
-
-        if (self::isLoggedIn()) {
-            $response = [
-                "meta" => [
-                    "ok"      => true,
-                    "status"  => 200,
-                    "message" => "OK",
-                ],
-            ];
-        }
-        else {
-            $response = Helper::getNotAuthorisedResponse();
-        }
-
-        return $response;
     }
 }

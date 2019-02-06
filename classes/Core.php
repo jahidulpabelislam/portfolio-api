@@ -31,21 +31,6 @@ class Core {
     }
 
     /**
-     * Get a particular Project defined by $projectID
-     *
-     * @param $projectID int The id of the Project to get
-     * @param bool $images bool Whether the images for the Project should should be added
-     * @return array The request response to send back
-     */
-    public function getProject($projectID, $images = false) {
-
-        $project = new Project();
-        $response = $project->getById($projectID, $images);
-
-        return $response;
-    }
-
-    /**
      * Gets all projects but paginated, also might include search
      *
      * @param $data array Any data to aid in the search query
@@ -152,40 +137,33 @@ class Core {
     /**
      * Get the Images attached to a Project
      *
-     * @param $projectID int The Id of the Project
+     * @param $projectId int The Id of the Project
      * @return array The request response to send back
      */
-    public function getProjectImages($projectID) {
+    public function getProjectImages($projectId) {
 
         // Check the project trying to get Images for
-        $response = $this->getProject($projectID);
+        $response = $this->getProject($projectId);
         if (!empty($response["row"])) {
 
             $projectImage = new ProjectImage();
-            $response = $projectImage->getByColumn("project_id", $projectID);
+            $response = $projectImage->getByColumn("project_id", $projectId);
         }
 
         return $response;
     }
 
     /**
-     * Get a Project Image for a Project by id
+     * Get a particular Project defined by $projectId
      *
-     * @param $projectId int The id of the Project trying to get Images for
-     * @param $imageId int The id of the Project Image to get
+     * @param $projectId int The id of the Project to get
+     * @param bool $images bool Whether the images for the Project should should be added
      * @return array The request response to send back
      */
-    public function getProjectImage($projectId, $imageId) {
+    public function getProject($projectId, $images = false) {
 
-        // Check the Project trying to get Images for
-        $response = $this->getProject($projectId);
-        if (!empty($response["row"])) {
-            $projectImage = new ProjectImage($imageId);
-
-            $projectImage->checkProjectImageIsChildOfProject($projectId);
-
-            $response = $projectImage->response;
-        }
+        $project = new Project();
+        $response = $project->getById($projectId, $images);
 
         return $response;
     }
@@ -270,8 +248,8 @@ class Core {
 
                 // Update database with location of new Image
                 $values = [
-                    "file"            => $newFileLocation,
-                    "project_id"       => $projectId,
+                    "file" => $newFileLocation,
+                    "project_id" => $projectId,
                     "sort_order_number" => 999, // High enough number
                 ];
                 $projectImage = new ProjectImage();
@@ -283,8 +261,8 @@ class Core {
         } // Else bad request as file uploaded is not a image
         else {
             $response["meta"] = [
-                "status"   => 400,
-                "message"  => "Bad Request",
+                "status" => 400,
+                "message" => "Bad Request",
                 "feedback" => "File is not an image.",
             ];
         }
@@ -329,6 +307,28 @@ class Core {
         }
         else {
             $response = Helper::getNotAuthorisedResponse();
+        }
+
+        return $response;
+    }
+
+    /**
+     * Get a Project Image for a Project by id
+     *
+     * @param $projectId int The id of the Project trying to get Images for
+     * @param $imageId int The id of the Project Image to get
+     * @return array The request response to send back
+     */
+    public function getProjectImage($projectId, $imageId) {
+
+        // Check the Project trying to get Images for
+        $response = $this->getProject($projectId);
+        if (!empty($response["row"])) {
+            $projectImage = new ProjectImage($imageId);
+
+            $projectImage->checkProjectImageIsChildOfProject($projectId);
+
+            $response = $projectImage->response;
         }
 
         return $response;

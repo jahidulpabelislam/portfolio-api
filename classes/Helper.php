@@ -21,27 +21,6 @@ if (!defined("ROOT")) {
 class Helper {
 
     /**
-     * Generates a full url from the URI user requested
-     *
-     * @param array $path array The URI user request as an array
-     * @return string The Full URI user requested
-     */
-    public static function getAPIURL(array $path): string {
-        $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] != "off") ? "https" : "http";
-        $url = $protocol . "://" . $_SERVER["SERVER_NAME"];
-
-        $explodedPath = implode("/", $path);
-
-        if ($explodedPath) {
-            $explodedPath .= "/";
-        }
-
-        $url .= "/" . $explodedPath;
-
-        return $url;
-    }
-
-    /**
      * @return array Return an array with data extracted from the request
      */
     public static function extractFromRequest(): array {
@@ -101,13 +80,34 @@ class Helper {
 
         $response = [
             "meta" => [
-                "status"   => 405,
-                "message"  => "Method not allowed.",
+                "status" => 405,
+                "message" => "Method not allowed.",
                 "feedback" => "$method Method Not Allowed on " . self::getAPIURL($path),
             ],
         ];
 
         return $response;
+    }
+
+    /**
+     * Generates a full url from the URI user requested
+     *
+     * @param array $path array The URI user request as an array
+     * @return string The Full URI user requested
+     */
+    public static function getAPIURL(array $path): string {
+        $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] != "off") ? "https" : "http";
+        $url = $protocol . "://" . $_SERVER["SERVER_NAME"];
+
+        $explodedPath = implode("/", $path);
+
+        if ($explodedPath) {
+            $explodedPath .= "/";
+        }
+
+        $url .= "/" . $explodedPath;
+
+        return $url;
     }
 
     /**
@@ -120,10 +120,10 @@ class Helper {
 
         $response = [
             "meta" => [
-                "status"     => 400,
-                "message"    => "Bad Request",
+                "status" => 400,
+                "message" => "Bad Request",
                 "dataNeeded" => $dataNeeded,
-                "feedback"   => "The necessary data was not provided.",
+                "feedback" => "The necessary data was not provided.",
             ],
         ];
 
@@ -139,8 +139,8 @@ class Helper {
 
         $response = [
             "meta" => [
-                "status"   => 401,
-                "message"  => "Unauthorized",
+                "status" => 401,
+                "message" => "Unauthorized",
                 "feedback" => "You need to be logged in!",
             ],
         ];
@@ -158,9 +158,9 @@ class Helper {
 
         $response = [
             "meta" => [
-                "status"   => 404,
+                "status" => 404,
                 "feedback" => "Unrecognised URI (" . self::getAPIURL($path) . ")",
-                "message"  => "Not Found",
+                "message" => "Not Found",
             ],
         ];
 

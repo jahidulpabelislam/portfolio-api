@@ -39,9 +39,9 @@ class Config {
     // Hashed password for portfolio admin
     const PORTFOLIO_ADMIN_PASSWORD = "root"; // TODO CHANGE ME
 
-    public $debug = false;
-
     private static $instance = null;
+
+    public $debug = false;
 
     public function __construct() {
         $environment = !empty(getenv("APPLICATION_ENV")) ? getenv("APPLICATION_ENV") : "development";
