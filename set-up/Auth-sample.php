@@ -119,29 +119,6 @@ class Auth {
     }
 
     /**
-     * Check whether the user is logged or not
-     *
-     * @return array The request response to send back
-     */
-    public static function getAuthStatus() {
-
-        if (self::isLoggedIn()) {
-            $response = [
-                "meta" => [
-                    "ok" => true,
-                    "status" => 200,
-                    "message" => "OK",
-                ],
-            ];
-        }
-        else {
-            $response = Helper::getNotAuthorisedResponse();
-        }
-
-        return $response;
-    }
-
-    /**
      * Check whether the current user is logged in (e.g check against stored cookie, session or database etc.)
      *
      * @return bool Whether user is logged in or not
@@ -177,5 +154,28 @@ class Auth {
         }
 
         return false;
+    }
+
+    /**
+     * Check whether the user is logged or not
+     *
+     * @return array The request response to send back
+     */
+    public static function getAuthStatus() {
+
+        if (self::isLoggedIn()) {
+            $response = [
+                "meta" => [
+                    "ok" => true,
+                    "status" => 200,
+                    "message" => "OK",
+                ],
+            ];
+        }
+        else {
+            $response = Helper::getNotAuthorisedResponse();
+        }
+
+        return $response;
     }
 }

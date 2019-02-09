@@ -56,6 +56,37 @@ abstract class Entity {
     }
 
     /**
+     * Load Entities from the Database where a column ($column) = a value ($value)
+     * Either return Entities with success meta data, or failed meta data
+     *
+     * @param $column string
+     * @param $value string
+     * @return array The response from the SQL query
+     */
+    public function getByColumn($column, $value): array {
+
+        $query =
+            "SELECT * FROM $this->tableName WHERE $column = :value ORDER BY $this->defaultOrderingByColumn $this->defaultOrderingByDirection;";
+        $bindings = [":value" => $value,];
+        $response = $this->db->query($query, $bindings);
+
+        // Check everything was okay
+        if ($response["meta"]["affected_rows"] > 0) {
+            $response["meta"]["ok"] = true;
+        }
+        // Check if database provided any meta data if not no problem with executing query but no item found
+        else if ($response["meta"]["affected_rows"] <= 0 && !isset($response["meta"]["feedback"])) {
+            $response["meta"]["status"] = 404;
+            $response["meta"]["feedback"] = "No {$this->displayName}s found with $value as $column.";
+            $response["meta"]["message"] = "Not Found";
+        }
+
+        $response["meta"]["count"] = $response["meta"]["affected_rows"];
+
+        return $response;
+    }
+
+    /**
      * Load a single Entity from the Database where a id column = a value ($id)
      * Either return Entity with success meta data, or failed meta data
      * Uses helper function getByColumn();
@@ -91,77 +122,6 @@ abstract class Entity {
                     "message" => "Not Found",
                 ],
             ];
-        }
-
-        return $response;
-    }
-
-    /**
-     * Load Entities from the Database where a column ($column) = a value ($value)
-     * Either return Entities with success meta data, or failed meta data
-     *
-     * @param $column string
-     * @param $value string
-     * @return array The response from the SQL query
-     */
-    public function getByColumn($column, $value): array {
-
-        $query = "SELECT * FROM $this->tableName WHERE $column = :value ORDER BY $this->defaultOrderingByColumn $this->defaultOrderingByDirection;";
-        $bindings = [":value" => $value,];
-        $response = $this->db->query($query, $bindings);
-
-        // Check everything was okay
-        if ($response["meta"]["affected_rows"] > 0) {
-            $response["meta"]["ok"] = true;
-        }
-        // Check if database provided any meta data if not no problem with executing query but no item found
-        else if ($response["meta"]["affected_rows"] <= 0 && !isset($response["meta"]["feedback"])) {
-            $response["meta"]["status"] = 404;
-            $response["meta"]["feedback"] = "No {$this->displayName}s found with $value as $column.";
-            $response["meta"]["message"] = "Not Found";
-        }
-
-        $response["meta"]["count"] = $response["meta"]["affected_rows"];
-
-        return $response;
-    }
-
-    /**
-     * Save values to the Entity Table in the Database
-     * Will either be a new insert or a update to an existing Entity
-     *
-     * @param $values array The values as an array to use for the Entity
-     * @return array Either an array with successful meta data or an array of error feedback meta
-     */
-    public function save(array $values): array {
-
-        $id = $values["id"] ?? null;
-
-        if (empty($id)) {
-            list($query, $bindings) = $this->generateInsertQuery($values);
-        }
-        else {
-            // Check the Entity trying to edit actually exists
-            $response = $this->getById($id);
-            if (empty($response["row"])) {
-                return $response;
-            }
-            list($query, $bindings) = $this->generateUpdateQuery($values);
-        }
-
-        $response = $this->db->query($query, $bindings);
-
-        // Checks if insert was ok
-        if ($response["meta"]["affected_rows"] > 0) {
-
-            $id = (empty($id)) ? $this->db->getLastInsertedId() : $id;
-
-            $response = $this->getById($id);
-
-            if (empty($values["id"])) {
-                $response["meta"]["status"] = 201;
-                $response["meta"]["message"] = "Created";
-            }
         }
 
         return $response;
@@ -224,6 +184,47 @@ abstract class Entity {
     }
 
     /**
+     * Save values to the Entity Table in the Database
+     * Will either be a new insert or a update to an existing Entity
+     *
+     * @param $values array The values as an array to use for the Entity
+     * @return array Either an array with successful meta data or an array of error feedback meta
+     */
+    public function save(array $values): array {
+
+        $id = $values["id"] ?? null;
+
+        if (empty($id)) {
+            list($query, $bindings) = $this->generateInsertQuery($values);
+        }
+        else {
+            // Check the Entity trying to edit actually exists
+            $response = $this->getById($id);
+            if (empty($response["row"])) {
+                return $response;
+            }
+            list($query, $bindings) = $this->generateUpdateQuery($values);
+        }
+
+        $response = $this->db->query($query, $bindings);
+
+        // Checks if insert was ok
+        if ($response["meta"]["affected_rows"] > 0) {
+
+            $id = (empty($id)) ? $this->db->getLastInsertedId() : $id;
+
+            $response = $this->getById($id);
+
+            if (empty($values["id"])) {
+                $response["meta"]["status"] = 201;
+                $response["meta"]["message"] = "Created";
+            }
+        }
+
+        return $response;
+    }
+
+    /**
      * Delete an Entity from the Database
      *
      * @param $id int The id of the Entity to delete
@@ -248,70 +249,6 @@ abstract class Entity {
             }
 
             unset($response["rows"]);
-        }
-
-        return $response;
-    }
-
-    /**
-     * Gets all Entities but paginated, also might include search
-     *
-     * @param array $params array Any data to aid in the search query
-     * @return array The request response to send back
-     */
-    public function doSearch(array $params): array {
-
-        // If user added a limit param, use this if valid, unless its bigger than 10
-        if (isset($params["limit"])) {
-            $limit = min(abs(intval($params["limit"])), $this->defaultLimit);
-        }
-
-        // Default limit to 10 if not specified or invalid
-        if (!isset($limit) || !is_int($limit) || $limit < 1) {
-            $limit = $this->defaultLimit;
-        }
-
-        $offset = 0;
-
-        // Add a offset to the query, if specified
-        if (isset($params["offset"])) {
-            $offset = abs(intval($params["offset"]));
-        }
-
-        // Generate a offset to the query, if a page was specified using, page number and limit number
-        if (isset($params["page"])) {
-            $page = abs(intval($params["page"]));
-            if (is_int($page) && $page > 1) {
-                $offset = $limit * ($page - 1);
-            }
-        }
-
-        $bindings = [];
-
-        $whereClause = "";
-
-        // Add a filter if a search was entered
-        if (!empty($params["search"])) {
-
-            list($whereClause, $bindings) = $this->generateSearchWhereQuery($params["search"]);
-        }
-
-        $query = "SELECT * FROM $this->tableName $whereClause ORDER BY $this->defaultOrderingByColumn $this->defaultOrderingByDirection LIMIT $limit OFFSET $offset;";
-        $response = $this->db->query($query, $bindings);
-
-        $response["meta"]["count"] = $response["meta"]["affected_rows"];
-
-        // Check if database provided any meta data if not all ok
-        if ($response["meta"]["affected_rows"] > 0 && !isset($response["meta"]["feedback"])) {
-
-            $response["meta"]["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
-            $response["meta"]["ok"] = true;
-        }
-        else if ($response["meta"]["affected_rows"] === 0 && !isset($response["meta"]["feedback"])) {
-            $response["meta"]["status"] = 404;
-            $response["meta"]["feedback"] = "No {$this->displayName}s found.";
-            $response["meta"]["message"] = "Not Found";
-            $response["meta"]["total_count"] = 0;
         }
 
         return $response;
@@ -384,5 +321,70 @@ abstract class Entity {
         }
 
         return 0;
+    }
+
+    /**
+     * Gets all Entities but paginated, also might include search
+     *
+     * @param array $params array Any data to aid in the search query
+     * @return array The request response to send back
+     */
+    public function doSearch(array $params): array {
+
+        // If user added a limit param, use this if valid, unless its bigger than 10
+        if (isset($params["limit"])) {
+            $limit = min(abs(intval($params["limit"])), $this->defaultLimit);
+        }
+
+        // Default limit to 10 if not specified or invalid
+        if (!isset($limit) || !is_int($limit) || $limit < 1) {
+            $limit = $this->defaultLimit;
+        }
+
+        $offset = 0;
+
+        // Add a offset to the query, if specified
+        if (isset($params["offset"])) {
+            $offset = abs(intval($params["offset"]));
+        }
+
+        // Generate a offset to the query, if a page was specified using, page number and limit number
+        if (isset($params["page"])) {
+            $page = abs(intval($params["page"]));
+            if (is_int($page) && $page > 1) {
+                $offset = $limit * ($page - 1);
+            }
+        }
+
+        $bindings = [];
+
+        $whereClause = "";
+
+        // Add a filter if a search was entered
+        if (!empty($params["search"])) {
+
+            list($whereClause, $bindings) = $this->generateSearchWhereQuery($params["search"]);
+        }
+
+        $query =
+            "SELECT * FROM $this->tableName $whereClause ORDER BY $this->defaultOrderingByColumn $this->defaultOrderingByDirection LIMIT $limit OFFSET $offset;";
+        $response = $this->db->query($query, $bindings);
+
+        $response["meta"]["count"] = $response["meta"]["affected_rows"];
+
+        // Check if database provided any meta data if not all ok
+        if ($response["meta"]["affected_rows"] > 0 && !isset($response["meta"]["feedback"])) {
+
+            $response["meta"]["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
+            $response["meta"]["ok"] = true;
+        }
+        else if ($response["meta"]["affected_rows"] === 0 && !isset($response["meta"]["feedback"])) {
+            $response["meta"]["status"] = 404;
+            $response["meta"]["feedback"] = "No {$this->displayName}s found.";
+            $response["meta"]["message"] = "Not Found";
+            $response["meta"]["total_count"] = 0;
+        }
+
+        return $response;
     }
 }

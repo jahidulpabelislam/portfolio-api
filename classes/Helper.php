@@ -70,26 +70,6 @@ class Helper {
     }
 
     /**
-     * Generate meta data to send back when the method provided is not allowed on the URI
-     *
-     * @param $method string The method tried
-     * @param $path array The path (relative) tried
-     * @return array Array of meta data
-     */
-    public static function getMethodNotAllowedResponse($method, array $path): array {
-
-        $response = [
-            "meta" => [
-                "status" => 405,
-                "message" => "Method not allowed.",
-                "feedback" => "$method Method Not Allowed on " . self::getAPIURL($path),
-            ],
-        ];
-
-        return $response;
-    }
-
-    /**
      * Generates a full url from the URI user requested
      *
      * @param array $path array The URI user request as an array
@@ -108,6 +88,26 @@ class Helper {
         $url .= "/" . $explodedPath;
 
         return $url;
+    }
+
+    /**
+     * Generate meta data to send back when the method provided is not allowed on the URI
+     *
+     * @param $method string The method tried
+     * @param $path array The path (relative) tried
+     * @return array Array of meta data
+     */
+    public static function getMethodNotAllowedResponse($method, array $path): array {
+
+        $response = [
+            "meta" => [
+                "status" => 405,
+                "message" => "Method not allowed.",
+                "feedback" => "$method Method Not Allowed on " . self::getAPIURL($path),
+            ],
+        ];
+
+        return $response;
     }
 
     /**

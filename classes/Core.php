@@ -135,25 +135,6 @@ class Core {
     }
 
     /**
-     * Get the Images attached to a Project
-     *
-     * @param $projectId int The Id of the Project
-     * @return array The request response to send back
-     */
-    public function getProjectImages($projectId) {
-
-        // Check the project trying to get Images for
-        $response = $this->getProject($projectId);
-        if (!empty($response["row"])) {
-
-            $projectImage = new ProjectImage();
-            $response = $projectImage->getByColumn("project_id", $projectId);
-        }
-
-        return $response;
-    }
-
-    /**
      * Get a particular Project defined by $projectId
      *
      * @param $projectId int The id of the Project to get
@@ -169,37 +150,20 @@ class Core {
     }
 
     /**
-     * Try to upload a Image user has tried to add as a Project Image
+     * Get the Images attached to a Project
      *
-     * @param $data array The data sent to aid in Inserting Project Image
+     * @param $projectId int The Id of the Project
      * @return array The request response to send back
      */
-    public function addProjectImage($data) {
+    public function getProjectImages($projectId) {
 
-        // Checks if user is authored
-        if (Auth::isLoggedIn()) {
+        // Check the project trying to get Images for
+        $response = $this->getProject($projectId);
+        if (!empty($response["row"])) {
 
-            // Checks if the data needed is present and not empty
-            $dataNeeded = ["project_id",];
-            if (Helper::checkData($data, $dataNeeded) && isset($_FILES["image"])) {
-
-                // Check the project trying to add a a Image for exists
-                $response = $this->getProject($data["project_id"]);
-                if (!empty($response["row"])) {
-
-                    $response = $this->uploadProjectImage($response["row"]);
-                }
-            } // Else data needed was not provided
-            else {
-                array_push($dataNeeded, "image");
-                $response = Helper::getDataNotProvidedResponse($dataNeeded);
-            }
+            $projectImage = new ProjectImage();
+            $response = $projectImage->getByColumn("project_id", $projectId);
         }
-        else {
-            $response = Helper::getNotAuthorisedResponse();
-        }
-
-        $response["meta"]["files"] = $_FILES;
 
         return $response;
     }
@@ -271,6 +235,64 @@ class Core {
     }
 
     /**
+     * Try to upload a Image user has tried to add as a Project Image
+     *
+     * @param $data array The data sent to aid in Inserting Project Image
+     * @return array The request response to send back
+     */
+    public function addProjectImage($data) {
+
+        // Checks if user is authored
+        if (Auth::isLoggedIn()) {
+
+            // Checks if the data needed is present and not empty
+            $dataNeeded = ["project_id",];
+            if (Helper::checkData($data, $dataNeeded) && isset($_FILES["image"])) {
+
+                // Check the project trying to add a a Image for exists
+                $response = $this->getProject($data["project_id"]);
+                if (!empty($response["row"])) {
+
+                    $response = $this->uploadProjectImage($response["row"]);
+                }
+            } // Else data needed was not provided
+            else {
+                array_push($dataNeeded, "image");
+                $response = Helper::getDataNotProvidedResponse($dataNeeded);
+            }
+        }
+        else {
+            $response = Helper::getNotAuthorisedResponse();
+        }
+
+        $response["meta"]["files"] = $_FILES;
+
+        return $response;
+    }
+
+    /**
+     * Get a Project Image for a Project by id
+     *
+     * @param $projectId int The id of the Project trying to get Images for
+     * @param $imageId int The id of the Project Image to get
+     * @return array The request response to send back
+     */
+    public function getProjectImage($projectId, $imageId) {
+
+        // Check the Project trying to get Images for
+        $response = $this->getProject($projectId);
+        if (!empty($response["row"])) {
+            $projectImage = new ProjectImage($imageId);
+
+            $projectImage->checkProjectImageIsChildOfProject($projectId);
+
+            $response = $projectImage->response;
+        }
+
+        return $response;
+    }
+
+    /**
      * Try to delete a Image linked to a project
      *
      * @param $data array The data sent to delete the Project Image
@@ -307,28 +329,6 @@ class Core {
         }
         else {
             $response = Helper::getNotAuthorisedResponse();
-        }
-
-        return $response;
-    }
-
-    /**
-     * Get a Project Image for a Project by id
-     *
-     * @param $projectId int The id of the Project trying to get Images for
-     * @param $imageId int The id of the Project Image to get
-     * @return array The request response to send back
-     */
-    public function getProjectImage($projectId, $imageId) {
-
-        // Check the Project trying to get Images for
-        $response = $this->getProject($projectId);
-        if (!empty($response["row"])) {
-            $projectImage = new ProjectImage($imageId);
-
-            $projectImage->checkProjectImageIsChildOfProject($projectId);
-
-            $response = $projectImage->response;
         }
 
         return $response;
