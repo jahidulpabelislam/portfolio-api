@@ -77,7 +77,7 @@ class Helper {
      */
     public static function getAPIURL(array $path): string {
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] != "off") ? "https" : "http";
-        $url = $protocol . "://" . $_SERVER["SERVER_NAME"];
+        $url = "{$protocol}://{$_SERVER["SERVER_NAME"]}";
 
         $explodedPath = implode("/", $path);
 
@@ -85,7 +85,7 @@ class Helper {
             $explodedPath .= "/";
         }
 
-        $url .= "/" . $explodedPath;
+        $url .= "/{$explodedPath}";
 
         return $url;
     }
@@ -103,7 +103,7 @@ class Helper {
             "meta" => [
                 "status" => 405,
                 "message" => "Method not allowed.",
-                "feedback" => "$method Method Not Allowed on " . self::getAPIURL($path),
+                "feedback" => "{$method} Method Not Allowed on " . self::getAPIURL($path),
             ],
         ];
 
@@ -204,7 +204,7 @@ class Helper {
 
         // If the domain if allowed send correct header response back
         if (in_array($originDomain, $allowedDomains)) {
-            header("Access-Control-Allow-Origin: $originURL");
+            header("Access-Control-Allow-Origin: {$originURL}");
             header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
             header("Access-Control-Allow-Headers: Process-Data, Authorization");
 
@@ -229,7 +229,7 @@ class Helper {
         $response["meta"]["status"] = $status;
         $response["meta"]["message"] = $message;
 
-        header("HTTP/1.1 $status $message");
+        header("HTTP/1.1 {$status} {$message}");
 
         $notCachedURLs = [
             "session/",
@@ -239,8 +239,8 @@ class Helper {
         if ($method == "GET" && !in_array(Config::API_VERSION . implode("/", $path), $notCachedURLs)) {
             $secondsToCache = 2678400;
             $expiresTime = gmdate("D, d M Y H:i:s", time() + $secondsToCache) . " GMT";
-            header("Cache-Control: max-age=$secondsToCache, public");
-            header("Expires: $expiresTime");
+            header("Cache-Control: max-age={$secondsToCache}, public");
+            header("Expires: {$expiresTime}");
             header("Pragma: cache");
         }
 

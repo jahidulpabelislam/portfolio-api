@@ -65,8 +65,7 @@ abstract class Entity {
      */
     public function getByColumn($column, $value): array {
 
-        $query =
-            "SELECT * FROM $this->tableName WHERE $column = :value ORDER BY $this->defaultOrderingByColumn $this->defaultOrderingByDirection;";
+        $query = "SELECT * FROM {$this->tableName} WHERE {$column} = :value ORDER BY {$this->defaultOrderingByColumn} {$this->defaultOrderingByDirection};";
         $bindings = [":value" => $value,];
         $response = $this->db->query($query, $bindings);
 
@@ -77,7 +76,7 @@ abstract class Entity {
         // Check if database provided any meta data if not no problem with executing query but no item found
         else if ($response["meta"]["affected_rows"] <= 0 && !isset($response["meta"]["feedback"])) {
             $response["meta"]["status"] = 404;
-            $response["meta"]["feedback"] = "No {$this->displayName}s found with $value as $column.";
+            $response["meta"]["feedback"] = "No {$this->displayName}s found with {$value} as {$column}.";
             $response["meta"]["message"] = "Not Found";
         }
 
@@ -107,7 +106,7 @@ abstract class Entity {
             }
             // Check if database provided any meta data if so no problem with executing query but no item found
             else if (isset($response["meta"]["status"]) && $response["meta"]["status"] === 404) {
-                $response["meta"]["feedback"] = "No $this->displayName found with $id as ID.";
+                $response["meta"]["feedback"] = "No {$this->displayName} found with {$id} as ID.";
             }
 
             unset($response["rows"]);
@@ -118,7 +117,7 @@ abstract class Entity {
                 "row" => [],
                 "meta" => [
                     "status" => 404,
-                    "feedback" => "No $this->displayName found with $id as ID (Please note ID must be a numeric value).",
+                    "feedback" => "No {$this->displayName} found with {$id} as ID (Please note ID must be a numeric value).",
                     "message" => "Not Found",
                 ],
             ];
@@ -140,9 +139,9 @@ abstract class Entity {
 
         foreach ($this->columns as $column) {
             if ($column !== "id" && !empty($values[$column])) {
-                $columnsQuery .= $column . ", ";
-                $valuesQuery .= ":" . $column . ", ";
-                $bindings[":$column"] = $values[$column];
+                $columnsQuery .= "{$column}, ";
+                $valuesQuery .= ":{$column}, ";
+                $bindings[":{$column}"] = $values[$column];
             }
         }
         $columnsQuery = rtrim($columnsQuery, ", ");
@@ -151,7 +150,7 @@ abstract class Entity {
         $valuesQuery = rtrim($valuesQuery, ", ");
         $valuesQuery .= ")";
 
-        $query = "INSERT INTO $this->tableName $columnsQuery VALUES $valuesQuery;";
+        $query = "INSERT INTO {$this->tableName} {$columnsQuery} VALUES {$valuesQuery};";
 
         return [$query, $bindings];
     }
@@ -168,17 +167,17 @@ abstract class Entity {
 
         foreach ($this->columns as $column) {
             if (isset($values[$column])) {
-                $bindings[":$column"] = $values[$column];
+                $bindings[":{$column}"] = $values[$column];
 
                 if ($column !== "id") {
-                    $valuesQuery .= $column . " = :" . $column . ", ";
+                    $valuesQuery .= "{$column} = :{$column}, ";
                 }
             }
         }
 
         $valuesQuery = rtrim($valuesQuery, ", ");
 
-        $query = "UPDATE $this->tableName $valuesQuery WHERE id = :id;";
+        $query = "UPDATE {$this->tableName} {$valuesQuery} WHERE id = :id;";
 
         return [$query, $bindings];
     }
@@ -236,7 +235,7 @@ abstract class Entity {
         $response = $this->getById($id);
         if (!empty($response["row"])) {
 
-            $query = "DELETE FROM $this->tableName WHERE id = :id;";
+            $query = "DELETE FROM {$this->tableName} WHERE id = :id;";
             $bindings = [":id" => $id,];
             $response = $this->db->query($query, $bindings);
 
@@ -272,21 +271,21 @@ abstract class Entity {
 
             // Loop through each search word
             foreach ($searchWords as $word) {
-                $searchString .= "$word%";
+                $searchString .= "{$word}%";
             }
 
             $searchesReversed = array_reverse($searchWords);
 
             // Loop through each search word
             foreach ($searchesReversed as $word) {
-                $searchStringReversed .= "$word%";
+                $searchStringReversed .= "{$word}%";
             }
 
             $whereClause = "WHERE";
 
             // Loop through each search word
             foreach ($this->searchableColumns as $column) {
-                $whereClause .= " $column LIKE :searchString OR $column LIKE :searchStringReversed OR";
+                $whereClause .= " {$column} LIKE :searchString OR {$column} LIKE :searchStringReversed OR";
             }
 
             $whereClause = rtrim($whereClause, "OR");
@@ -313,7 +312,7 @@ abstract class Entity {
      * @return int
      */
     public function getTotalCountByWhereClause($whereClause, array $bindings): int {
-        $query = "SELECT COUNT(*) AS TotalCount FROM $this->tableName $whereClause;";
+        $query = "SELECT COUNT(*) AS TotalCount FROM {$this->tableName} {$whereClause};";
         $totalCount = $this->db->query($query, $bindings);
 
         if ($totalCount && count($totalCount["rows"]) > 0) {
@@ -366,8 +365,7 @@ abstract class Entity {
             list($whereClause, $bindings) = $this->generateSearchWhereQuery($params["search"]);
         }
 
-        $query =
-            "SELECT * FROM $this->tableName $whereClause ORDER BY $this->defaultOrderingByColumn $this->defaultOrderingByDirection LIMIT $limit OFFSET $offset;";
+        $query = "SELECT * FROM  {$this->tableName}  {$whereClause} ORDER BY {$this->defaultOrderingByColumn} {$this->defaultOrderingByDirection} LIMIT {$limit} OFFSET {$offset};";
         $response = $this->db->query($query, $bindings);
 
         $response["meta"]["count"] = $response["meta"]["affected_rows"];

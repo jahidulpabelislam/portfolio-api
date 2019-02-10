@@ -79,7 +79,7 @@ class ProjectImage extends Entity {
                 "row" => [],
                 "meta" => [
                     "status" => 404,
-                    "feedback" => "No $this->displayName found with $imageId as ID for Project: $projectId.",
+                    "feedback" => "No {$this->displayName} found with {$imageId} as ID for Project: {$projectId}.",
                     "message" => "Not Found",
                 ],
             ];

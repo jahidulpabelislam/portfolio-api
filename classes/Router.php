@@ -36,7 +36,7 @@ class Router {
             $response = [
                 "meta" => [
                     "status" => 404,
-                    "feedback" => "Unrecognised API Version. Current Version is v" . Config::API_VERSION . ". So update requested URL to $shouldBeURL.",
+                    "feedback" => "Unrecognised API Version. Current Version is v" . Config::API_VERSION . ". So update requested URL to {$shouldBeURL}.",
                     "message" => "Not Found",
                 ],
             ];
