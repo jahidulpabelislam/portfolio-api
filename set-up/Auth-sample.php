@@ -37,7 +37,7 @@ class Auth {
         $response = [];
 
         // Checks if data needed are present and not empty
-        $dataNeeded = ["username", "password",];
+        $dataNeeded = ["username", "password"];
         if (Helper::checkData($data, $dataNeeded)) {
 
             $response["meta"]["status"] = 401;

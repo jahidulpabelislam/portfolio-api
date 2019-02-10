@@ -56,7 +56,7 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if data needed is present and not empty
-            $dataNeeded = ["name", "skills", "long_description", "short_description", "github", "date",];
+            $dataNeeded = ["name", "skills", "long_description", "short_description", "github", "date"];
             if (Helper::checkData($data, $dataNeeded)) {
 
                 $project = new Project();
@@ -86,7 +86,7 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if data needed is present and not empty
-            $dataNeeded = ["id", "name", "skills", "long_description", "short_description", "github", "date",];
+            $dataNeeded = ["id", "name", "skills", "long_description", "short_description", "github", "date"];
             if (Helper::checkData($data, $dataNeeded)) {
 
                 $project = new Project();
@@ -116,7 +116,7 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if the data needed is present and not empty
-            $dataNeeded = ["id",];
+            $dataNeeded = ["id"];
             if (Helper::checkData($data, $dataNeeded)) {
 
                 $project = new Project();
@@ -246,7 +246,7 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if the data needed is present and not empty
-            $dataNeeded = ["project_id",];
+            $dataNeeded = ["project_id"];
             if (Helper::checkData($data, $dataNeeded) && isset($_FILES["image"])) {
 
                 // Check the project trying to add a a Image for exists
@@ -304,7 +304,7 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if data needed is present and not empty
-            $dataNeeded = ["project_id", "id",];
+            $dataNeeded = ["project_id", "id"];
             if (Helper::checkData($data, $dataNeeded)) {
 
                 // Check the Project trying to edit actually exists
