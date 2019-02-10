@@ -77,7 +77,7 @@ class Helper {
      */
     public static function getAPIURL(array $path): string {
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] != "off") ? "https" : "http";
-        $url = "{$protocol}://{$_SERVER["SERVER_NAME"]}";
+        $url = "{$protocol}://" . $_SERVER["SERVER_NAME"];
 
         $explodedPath = implode("/", $path);
 
