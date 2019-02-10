@@ -365,7 +365,7 @@ abstract class Entity {
             list($whereClause, $bindings) = $this->generateSearchWhereQuery($params["search"]);
         }
 
-        $query = "SELECT * FROM  {$this->tableName}  {$whereClause} ORDER BY {$this->defaultOrderingByColumn} {$this->defaultOrderingByDirection} LIMIT {$limit} OFFSET {$offset};";
+        $query = "SELECT * FROM  {$this->tableName} {$whereClause} ORDER BY {$this->defaultOrderingByColumn} {$this->defaultOrderingByDirection} LIMIT {$limit} OFFSET {$offset};";
         $response = $this->db->query($query, $bindings);
 
         $response["meta"]["count"] = $response["meta"]["affected_rows"];
