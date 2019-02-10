@@ -45,9 +45,10 @@ class Database {
             $this->db = new \PDO($dsn, Config::DB_USERNAME, Config::DB_PASSWORD, $option);
         }
         catch (\PDOException $error) {
-            error_log("Error creating a connection to database: {$error->getMessage()}, full error: {$error}");
+            $errorMessage = $error->getMessage();
+            error_log("Error creating a connection to database: {$errorMessage}, full error: {$error}");
             if ($this->config->debug) {
-                $this->error = $error->getMessage();
+                $this->error = $errorMessage;
             }
         }
     }
@@ -104,12 +105,13 @@ class Database {
                 $response["meta"]["affected_rows"] = $executedQuery->rowCount();
             }
             catch (\PDOException $error) {
-                error_log("Error executing query on database: {$error->getMessage()} using query: {$query} and bindings: " . print_r($bindings, true) . ", full error: {$error}");
+                $errorMessage = $error->getMessage();
+                error_log("Error executing query on database: {$errorMessage} using query: {$query} and bindings: " . print_r($bindings, true) . ", full error: {$error}");
 
                 $response["meta"]["feedback"] = "Problem with Server.";
 
                 if ($this->config->debug) {
-                    $response["meta"]["feedback"] = $error->getMessage();
+                    $response["meta"]["feedback"] = $errorMessage;
                 }
             }
         }
