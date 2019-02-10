@@ -149,7 +149,8 @@ class Auth {
                 return true;
             }
             catch (\Exception $e) {
-                error_log("Failed auth check with error: {$e->getMessage()}");
+                $errorMessage = $e->getMessage();
+                error_log("Failed auth check with error: {$errorMessage}");
             }
         }
 
