@@ -193,17 +193,8 @@ class Helper {
         $originDomain = str_replace("http://", "", $originURL);
         $originDomain = str_replace("https://", "", $originDomain);
 
-        $allowedDomains = [
-            "jahidulpabelislam.com",
-            "cms.jahidulpabelislam.com",
-            "staging.jahidulpabelislam.com",
-            "staging.cms.jahidulpabelislam.com",
-            "portfolio.local",
-            "portfolio-cms.local",
-        ];
-
         // If the domain if allowed send correct header response back
-        if (in_array($originDomain, $allowedDomains)) {
+        if (in_array($originDomain, Config::ALLOWED_DOMAINS)) {
             header("Access-Control-Allow-Origin: {$originURL}");
             header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
             header("Access-Control-Allow-Headers: Process-Data, Authorization");

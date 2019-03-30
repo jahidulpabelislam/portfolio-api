@@ -39,6 +39,12 @@ class Config {
     // Hashed password for portfolio admin
     const PORTFOLIO_ADMIN_PASSWORD = "root"; // TODO CHANGE ME
 
+    // A list of other domains that can call this API
+    const ALLOWED_DOMAINS = [
+        "jahidulpabelislam.com",
+        "cms.jahidulpabelislam.com",
+    ];
+
     private static $instance = null;
 
     public $debug = false;
