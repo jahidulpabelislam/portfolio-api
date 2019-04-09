@@ -1,7 +1,12 @@
-config.php
-Hasher.php
-Auth.php
+.idea/*
 
 logs/*
 
-.idea/*
+vendor/*
+composer.lock
+
+Config.php
+Hasher.php
+Auth.php
+
+project-images/*

@@ -43,3 +43,36 @@ DirectoryIndex index.php index.html
   ExpiresByType application/json "access plus 2678400 seconds"
   ExpiresByType text/plain "access plus 2678400 seconds"
 </IfModule>
+
+RewriteEngine On
+
+# All API requests are routed via one PHP router file
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^v([0-9]+)/(.+)/$ /index.php/$2
+
+# Force trailing slash
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^v([0-9]+)/(.+)$ /v$1/$2/ [R=301,L]
+
+# Catch if no object requested
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^v([0-9]*)/$ /index.php/$2
+
+# Catch if no object requested and no trailing slash, so redirect & force trailing slash
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^v([0-9]*)$ /v$1/ [R=301,L]
+
+# Catch if no version provided & object provided
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^v([0-9]*)/(.*)/$ /index.php/$2
+
+# Catch if no version provided & object provided and no trailing slash
+# Redirect to include slash so force it
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^v([0-9]*)/(.*)$ /v$1/$2/ [R=301,L]
