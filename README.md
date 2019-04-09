@@ -58,10 +58,10 @@ Also for the Cross domain requests from the CMS for secured endpoints such as De
 ## Requirements
 
 -   Git
--   PHP7
+-   PHP 7+
 -   PHP PDO
 -   Composer
--   MySQL
+-   MySQL 5+
 -   Apache
 
 ## Setup
