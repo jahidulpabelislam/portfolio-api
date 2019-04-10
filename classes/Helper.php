@@ -28,7 +28,7 @@ class Helper {
         // Get the requested method
         $method = strtoupper($_SERVER["REQUEST_METHOD"]);
 
-        $requestedPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $requestedPath = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 
         $requestedURI = !empty($requestedPath) ? trim($requestedPath, "/") : "";
 
