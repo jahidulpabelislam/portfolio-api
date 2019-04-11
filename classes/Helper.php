@@ -277,6 +277,7 @@ class Helper {
         else {
             echo json_encode($response, JSON_PRETTY_PRINT);
         }
+        die();
     }
 }
 
