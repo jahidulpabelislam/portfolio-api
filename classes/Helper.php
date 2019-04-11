@@ -64,6 +64,10 @@ class Helper {
         $this->data = $data;
     }
 
+    private function isDataValid($data, $dataKey) {
+        return (isset($data[$dataKey]) && trim($data[$dataKey]) !== "");
+    }
+
     /**
      * Check if all the required data is provided
      * And data provided is not empty
@@ -79,7 +83,7 @@ class Helper {
         foreach ($requiredData as $dataKey) {
 
             // Checks if the data needed is provided and is not empty
-            if (!isset($data[$dataKey]) || trim($data[$dataKey]) === "") {
+            if (!$this->isDataValid($data, $dataKey)) {
                 // Return false as data needed is not provided or empty
                 return false;
             }
@@ -90,18 +94,42 @@ class Helper {
     }
 
     /**
+     * Get all invalid required data fields
+     *
+     * @param $requiredData array Array of required data keys
+     * @return array An array of invalid data fields
+     */
+    public function getInvalidRequiredData(array $requiredData): array {
+        $invalidData = [];
+
+        $data = $this->data;
+
+        // Loops through each required data key for the request
+        foreach ($requiredData as $dataKey) {
+
+            // Checks if the data required is valid
+            if (!$this->isDataValid($data, $dataKey)) {
+                $invalidData[] = $dataKey;
+            }
+        }
+
+        return $invalidData;
+    }
+
+    /**
      * Send necessary meta data back when needed required data is not provided
      *
      * @param $requiredData array Array of the data required
      * @return array Array of meta data
      */
-    public static function getDataNotProvidedResponse(array $requiredData): array {
+    public function getDataNotProvidedResponse(array $requiredData): array {
         return [
             "meta" => [
                 "status" => 400,
                 "message" => "Bad Request",
                 "required_data" => $requiredData,
-                "feedback" => "The necessary data was not provided.",
+                "invalid_data" => $this->getInvalidRequiredData($requiredData),
+                "feedback" => "The necessary data was not provided or is valid.",
             ],
         ];
     }

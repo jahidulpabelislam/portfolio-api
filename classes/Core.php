@@ -67,7 +67,7 @@ class Core {
             }
             // Else all the data required was not provided and/or valid
             else {
-                $response = Helper::getDataNotProvidedResponse($requiredData);
+                $response = $this->helper->getDataNotProvidedResponse($requiredData);
             }
         }
         else {
@@ -98,7 +98,7 @@ class Core {
             }
             // Else all the data required was not provided and/or valid
             else {
-                $response = Helper::getDataNotProvidedResponse($requiredData);
+                $response = $this->helper->getDataNotProvidedResponse($requiredData);
             }
         }
         else {
@@ -254,7 +254,7 @@ class Core {
             // Else data needed was not provided
             else {
                 $requiredData = ["image"];
-                $response = Helper::getDataNotProvidedResponse($requiredData);
+                $response = $this->helper->getDataNotProvidedResponse($requiredData);
             }
         }
         else {
