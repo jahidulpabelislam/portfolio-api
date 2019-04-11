@@ -20,10 +20,26 @@ if (!defined("ROOT")) {
 
 class Helper {
 
+    public $method = 'GET';
+    public $path = [];
+    public $data = [];
+
+    private static $instance = null;
+
     /**
-     * @return array Return an array with data extracted from the request
+     * Singleton getter
+     *
+     * @return self
      */
-    public static function extractFromRequest(): array {
+    public static function get() {
+        if (!self::$instance) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
+    }
+
+    public function extractFromRequest() {
 
         // Get the requested method
         $method = strtoupper($_SERVER["REQUEST_METHOD"]);
@@ -42,7 +58,9 @@ class Helper {
             $data[$key] = stripslashes(urldecode($_REQUEST[$key]));
         }
 
-        return [$method, $requestedURIArray, $data];
+        $this->method = $method;
+        $this->path = $requestedURIArray;
+        $this->data = $data;
     }
 
     /**
@@ -70,12 +88,33 @@ class Helper {
     }
 
     /**
+     * Send necessary meta data back when needed data is not provided
+     *
+     * @param $dataNeeded array Array of the data needed
+     * @return array Array of meta data
+     */
+    public static function getDataNotProvidedResponse(array $dataNeeded): array {
+        return [
+            "meta" => [
+                "status" => 400,
+                "message" => "Bad Request",
+                "dataNeeded" => $dataNeeded,
+                "feedback" => "The necessary data was not provided.",
+            ],
+        ];
+    }
+
+    /**
      * Generates a full url from the URI user requested
      *
      * @param array $path array The URI user request as an array
      * @return string The Full URI user requested
      */
-    public static function getAPIURL(array $path): string {
+    public function getAPIURL($path = null): string {
+        if (!$path) {
+            $path = $this->path;
+        }
+
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] != "off") ? "https" : "http";
         $url = "{$protocol}://" . $_SERVER["SERVER_NAME"];
 
@@ -93,41 +132,16 @@ class Helper {
     /**
      * Generate meta data to send back when the method provided is not allowed on the URI
      *
-     * @param $method string The method tried
-     * @param $path array The path (relative) tried
      * @return array Array of meta data
      */
-    public static function getMethodNotAllowedResponse($method, array $path): array {
-
-        $response = [
+    public function getMethodNotAllowedResponse(): array {
+        return [
             "meta" => [
                 "status" => 405,
                 "message" => "Method not allowed.",
-                "feedback" => "{$method} Method Not Allowed on " . self::getAPIURL($path),
+                "feedback" => "{$this->method} Method Not Allowed on " . $this->getAPIURL(),
             ],
         ];
-
-        return $response;
-    }
-
-    /**
-     * Send necessary meta data back when needed data is not provided
-     *
-     * @param $dataNeeded array Array of the data needed
-     * @return array Array of meta data
-     */
-    public static function getDataNotProvidedResponse(array $dataNeeded): array {
-
-        $response = [
-            "meta" => [
-                "status" => 400,
-                "message" => "Bad Request",
-                "dataNeeded" => $dataNeeded,
-                "feedback" => "The necessary data was not provided.",
-            ],
-        ];
-
-        return $response;
     }
 
     /**
@@ -136,49 +150,65 @@ class Helper {
      * @return array Array of meta data
      */
     public static function getNotAuthorisedResponse(): array {
-
-        $response = [
+        return [
             "meta" => [
                 "status" => 401,
                 "message" => "Unauthorized",
                 "feedback" => "You need to be logged in!",
             ],
         ];
-
-        return $response;
     }
 
     /**
      * Generate response data to send back when the URI provided is not recognised
      *
-     * @param $path array The path (relative) tried
      * @return array Array of meta data
      */
-    public static function getUnrecognisedURIResponse(array $path): array {
-
-        $response = [
+    public function getUnrecognisedURIResponse(): array {
+        return [
             "meta" => [
                 "status" => 404,
-                "feedback" => "Unrecognised URI (" . self::getAPIURL($path) . ")",
+                "feedback" => "Unrecognised URI (" . $this->getAPIURL() . ")",
                 "message" => "Not Found",
             ],
         ];
+    }
 
-        return $response;
+    /**
+     * Generate response data to send back when the requested API version is not recognised
+     *
+     * @return array Array of meta data
+     */
+    public function getUnrecognisedAPIVersionResponse(): array {
+
+        $shouldBeVersion = "v" . Config::API_VERSION;
+
+        $shouldBePath = $this->path;
+        $shouldBePath[0] = $shouldBeVersion;
+        $shouldBeURL = self::getAPIURL($shouldBePath);
+
+        return [
+            "meta" => [
+                "status" => 404,
+                "feedback" => "Unrecognised API Version. Current version is " . Config::API_VERSION . ", so please update requested URL to {$shouldBeURL}.",
+                "message" => "Not Found",
+            ],
+        ];
     }
 
     /**
      * Send the response response back
      *
      * @param $response array The response generated from the request so far
-     * @param $data array The data sent with the request
-     * @param $method string The request method made
-     * @param $path array The URI (Relative) the request was made to
      */
-    public static function sendResponse(array $response, array $data, $method, array $path) {
+    public function sendResponse(array $response) {
 
         // Just remove any internal meta data
         unset($response["meta"]["affected_rows"]);
+
+        $data = $this->data;
+        $method = $this->method;
+        $path = $this->path;
 
         // Send back the data provided
         $response["meta"]["data"] = $data;
@@ -249,3 +279,5 @@ class Helper {
         }
     }
 }
+
+Helper::get();

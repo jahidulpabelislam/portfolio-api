@@ -19,29 +19,28 @@ if (!defined("ROOT")) {
 
 class Router {
 
+    private $helper;
+
+    public function __construct() {
+        $this->helper = Helper::get();
+        $this->helper->extractFromRequest();
+    }
+
     /**
      * Try and perform the necessary actions needed to fulfil the request that a user made
      */
-    public static function performRequest() {
+    public function performRequest() {
 
-        list($method, $path, $data) = Helper::extractFromRequest();
+        $method = $this->helper->method;
+        $path = $this->helper->path;
+        $data = $this->helper->data;
 
         $version = !empty($path[0]) ? $path[0] : "";
 
         $shouldBeVersion = "v" . Config::API_VERSION;
         if ($version !== $shouldBeVersion) {
-            $shouldBePath = $path;
-            $shouldBePath[0] = $shouldBeVersion;
-            $shouldBeURL = Helper::getAPIURL($shouldBePath);
-            $response = [
-                "meta" => [
-                    "status" => 404,
-                    "feedback" => "Unrecognised API Version. Current Version is v" . Config::API_VERSION . ". So update requested URL to {$shouldBeURL}.",
-                    "message" => "Not Found",
-                ],
-            ];
-            Helper::sendResponse($response, $data, $method, $path);
-
+            $response = $this->helper->getUnrecognisedAPIVersionResponse();
+            $this->helper->sendResponse($response);
             return;
         }
 
@@ -57,7 +56,7 @@ class Router {
                         $response = Auth::login($data);
                         break;
                     default:
-                        $response = Helper::getMethodNotAllowedResponse($method, $path);
+                        $response = $this->helper->getMethodNotAllowedResponse();
                 }
                 break;
             case "logout":
@@ -66,7 +65,7 @@ class Router {
                         $response = Auth::logout();
                         break;
                     default:
-                        $response = Helper::getMethodNotAllowedResponse($method, $path);
+                        $response = $this->helper->getMethodNotAllowedResponse();
                 }
                 break;
             case "session":
@@ -75,7 +74,7 @@ class Router {
                         $response = Auth::getAuthStatus();
                         break;
                     default:
-                        $response = Helper::getMethodNotAllowedResponse($method, $path);
+                        $response = $this->helper->getMethodNotAllowedResponse();
                 }
                 break;
             case "projects":
@@ -138,16 +137,16 @@ class Router {
                         }
                         break;
                     default:
-                        $response = Helper::getMethodNotAllowedResponse($method, $path);
+                        $response = $this->helper->getMethodNotAllowedResponse();
                         break;
                 }
                 break;
         }
 
         if (empty($response)) {
-            $response = Helper::getUnrecognisedURIResponse($path);
+            $response = $this->helper->getUnrecognisedURIResponse();
         }
 
-        Helper::sendResponse($response, $data, $method, $path);
+        $this->helper->sendResponse($response);
     }
 }
