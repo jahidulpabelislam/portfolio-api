@@ -26,9 +26,9 @@ class Hasher {
 
         // TODO Generate a hashed on given string
 
-        $hashed = $string;
+        $hashedString = $string;
 
-        return $hashed;
+        return $hashedString;
     }
 
     // This will be used to compare a raw string against a stored hash
