@@ -64,17 +64,17 @@ class Helper {
     }
 
     /**
-     * Check if all data needed is provided
+     * Check if all the required data is provided
      * And data provided is not empty
      *
      * @param $data array Array of the data provided for the request
-     * @param $dataNeeded array Array of data needed
-     * @return bool Whether data provided is valid and data needed is provided or not
+     * @param $requiredData array Array of required data keys
+     * @return bool Whether data required is provided & is valid or not
      */
-    public static function checkData(array $data, array $dataNeeded): bool {
+    public static function hasRequiredData(array $data, array $requiredData): bool {
 
         // Loops through each data needed for the request
-        foreach ($dataNeeded as $dataKey) {
+        foreach ($requiredData as $dataKey) {
 
             // Checks if the data needed is provided and is not empty
             if (!isset($data[$dataKey]) || trim($data[$dataKey]) === "") {
@@ -83,22 +83,22 @@ class Helper {
             }
         }
 
-        // Otherwise data provided are ok and data needed are provided
+        // Otherwise data provided is ok and data required is provided
         return true;
     }
 
     /**
-     * Send necessary meta data back when needed data is not provided
+     * Send necessary meta data back when needed required data is not provided
      *
-     * @param $dataNeeded array Array of the data needed
+     * @param $requiredData array Array of the data required
      * @return array Array of meta data
      */
-    public static function getDataNotProvidedResponse(array $dataNeeded): array {
+    public static function getDataNotProvidedResponse(array $requiredData): array {
         return [
             "meta" => [
                 "status" => 400,
                 "message" => "Bad Request",
-                "data_needed" => $dataNeeded,
+                "required_data" => $requiredData,
                 "feedback" => "The necessary data was not provided.",
             ],
         ];

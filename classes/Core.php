@@ -56,15 +56,15 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if data needed is present and not empty
-            $dataNeeded = ["name", "skills", "long_description", "short_description", "github", "date"];
-            if (Helper::checkData($data, $dataNeeded)) {
+            $requiredData = ["name", "skills", "long_description", "short_description", "github", "date"];
+            if (Helper::hasRequiredData($data, $requiredData)) {
 
                 $project = new Project();
                 $response = $project->save($data);
 
             } // Else the data needed was not provided
             else {
-                $response = Helper::getDataNotProvidedResponse($dataNeeded);
+                $response = Helper::getDataNotProvidedResponse($requiredData);
             }
         }
         else {
@@ -86,15 +86,15 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if data needed is present and not empty
-            $dataNeeded = ["id", "name", "skills", "long_description", "short_description", "github", "date"];
-            if (Helper::checkData($data, $dataNeeded)) {
+            $requiredData = ["id", "name", "skills", "long_description", "short_description", "github", "date"];
+            if (Helper::hasRequiredData($data, $requiredData)) {
 
                 $project = new Project();
                 $response = $project->save($data);
 
             } // Else the data was not provided
             else {
-                $response = Helper::getDataNotProvidedResponse($dataNeeded);
+                $response = Helper::getDataNotProvidedResponse($requiredData);
             }
         }
         else {
@@ -116,15 +116,15 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if the data needed is present and not empty
-            $dataNeeded = ["id"];
-            if (Helper::checkData($data, $dataNeeded)) {
+            $requiredData = ["id"];
+            if (Helper::hasRequiredData($data, $requiredData)) {
 
                 $project = new Project();
                 $response = $project->delete($data["id"]);
 
             } // Else the data needed was not provided
             else {
-                $response = Helper::getDataNotProvidedResponse($dataNeeded);
+                $response = Helper::getDataNotProvidedResponse($requiredData);
             }
         }
         else {
@@ -246,8 +246,8 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if the data needed is present and not empty
-            $dataNeeded = ["project_id"];
-            if (Helper::checkData($data, $dataNeeded) && isset($_FILES["image"])) {
+            $requiredData = ["project_id"];
+            if (Helper::hasRequiredData($data, $requiredData) && isset($_FILES["image"])) {
 
                 // Check the project trying to add a a Image for exists
                 $response = $this->getProject($data["project_id"]);
@@ -257,8 +257,8 @@ class Core {
                 }
             } // Else data needed was not provided
             else {
-                $dataNeeded[] = "image";
-                $response = Helper::getDataNotProvidedResponse($dataNeeded);
+                $requiredData[] = "image";
+                $response = Helper::getDataNotProvidedResponse($requiredData);
             }
         }
         else {
@@ -304,8 +304,8 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if data needed is present and not empty
-            $dataNeeded = ["project_id", "id"];
-            if (Helper::checkData($data, $dataNeeded)) {
+            $requiredData = ["project_id", "id"];
+            if (Helper::hasRequiredData($data, $requiredData)) {
 
                 // Check the Project trying to edit actually exists
                 $response = $this->getProject($data["project_id"]);
@@ -324,7 +324,7 @@ class Core {
                 }
             } // Else data was not provided
             else {
-                $response = Helper::getDataNotProvidedResponse($dataNeeded);
+                $response = Helper::getDataNotProvidedResponse($requiredData);
             }
         }
         else {

@@ -33,12 +33,11 @@ class Auth {
      * @return array Response with meta data given to ajax call after trying to login
      */
     public static function login($data) {
-
         $response = [];
 
         // Checks if data needed are present and not empty
-        $dataNeeded = ["username", "password"];
-        if (Helper::checkData($data, $dataNeeded)) {
+        $requiredData = ["username", "password"];
+        if (Helper::hasRequiredData($data, $requiredData)) {
 
             $response["meta"]["status"] = 401;
             $response["meta"]["message"] = "Unauthorized";
@@ -90,7 +89,7 @@ class Auth {
 
         }
         else {
-            $response = Helper::getDataNotProvidedResponse($dataNeeded);
+            $response = Helper::getDataNotProvidedResponse($requiredData);
         }
 
         return $response;
