@@ -68,11 +68,12 @@ class Helper {
      * Check if all the required data is provided
      * And data provided is not empty
      *
-     * @param $data array Array of the data provided for the request
      * @param $requiredData array Array of required data keys
      * @return bool Whether data required is provided & is valid or not
      */
-    public static function hasRequiredData(array $data, array $requiredData): bool {
+    public function hasRequiredData(array $requiredData): bool {
+
+        $data = $this->data;
 
         // Loops through each data needed for the request
         foreach ($requiredData as $dataKey) {

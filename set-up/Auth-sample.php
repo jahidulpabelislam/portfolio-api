@@ -35,9 +35,11 @@ class Auth {
     public static function login($data) {
         $response = [];
 
+        $helper = Helper::get();
+
         // Checks if data needed are present and not empty
         $requiredData = ["username", "password"];
-        if (Helper::hasRequiredData($data, $requiredData)) {
+        if ($helper->hasRequiredData($requiredData)) {
 
             $response["meta"]["status"] = 401;
             $response["meta"]["message"] = "Unauthorized";
@@ -89,7 +91,7 @@ class Auth {
 
         }
         else {
-            $response = Helper::getDataNotProvidedResponse($requiredData);
+            $response = $helper->getDataNotProvidedResponse($requiredData);
         }
 
         return $response;

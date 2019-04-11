@@ -22,12 +22,14 @@ use JPI\API\Entity\ProjectImage;
 class Core {
 
     private $db = null;
+    private $helper = null;
 
     /**
      * API constructor.
      */
     public function __construct() {
         $this->db = Database::get();
+        $this->helper = Helper::get();
     }
 
     /**
@@ -57,13 +59,13 @@ class Core {
 
             // Checks if data needed is present and not empty
             $requiredData = ["name", "skills", "long_description", "short_description", "github", "date"];
-            if (Helper::hasRequiredData($data, $requiredData)) {
+            if ($this->helper->hasRequiredData($requiredData)) {
 
                 $project = new Project();
                 $response = $project->save($data);
 
             }
-            // Else the data needed was not provided
+            // Else all the data required was not provided and/or valid
             else {
                 $response = Helper::getDataNotProvidedResponse($requiredData);
             }
@@ -88,13 +90,13 @@ class Core {
 
             // Checks if data needed is present and not empty
             $requiredData = ["name", "skills", "long_description", "short_description", "github", "date"];
-            if (Helper::hasRequiredData($data, $requiredData)) {
+            if ($this->helper->hasRequiredData($data, $requiredData)) {
 
                 $project = new Project();
                 $response = $project->save($data);
 
             }
-            // Else the data was not provided
+            // Else all the data required was not provided and/or valid
             else {
                 $response = Helper::getDataNotProvidedResponse($requiredData);
             }
