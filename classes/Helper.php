@@ -98,7 +98,7 @@ class Helper {
             "meta" => [
                 "status" => 400,
                 "message" => "Bad Request",
-                "dataNeeded" => $dataNeeded,
+                "data_needed" => $dataNeeded,
                 "feedback" => "The necessary data was not provided.",
             ],
         ];
