@@ -57,7 +57,7 @@ class Core {
         // Checks if user is authored
         if (Auth::isLoggedIn()) {
 
-            // Checks if data needed is present and not empty
+            // Checks that all data required is present and not empty
             $requiredFields = ["name", "skills", "long_description", "short_description", "github", "date"];
             if ($this->helper->hasRequiredFields($requiredFields)) {
 
@@ -88,9 +88,9 @@ class Core {
         // Checks if user is authored
         if (Auth::isLoggedIn()) {
 
-            // Checks if data needed is present and not empty
+            // Checks that all data required is present and not empty
             $requiredFields = ["name", "skills", "long_description", "short_description", "github", "date"];
-            if ($this->helper->hasRequiredFields($data, $requiredFields)) {
+            if ($this->helper->hasRequiredFields($requiredFields)) {
 
                 $project = new Project();
                 $response = $project->save($data);
