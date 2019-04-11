@@ -123,13 +123,15 @@ class Helper {
      * @return array Array of meta data
      */
     public function getDataNotProvidedResponse(array $requiredData): array {
+        $invalidData = $this->getInvalidRequiredData($requiredData);
+
         return [
             "meta" => [
                 "status" => 400,
                 "message" => "Bad Request",
                 "required_data" => $requiredData,
-                "invalid_data" => $this->getInvalidRequiredData($requiredData),
-                "feedback" => "The necessary data was not provided or is valid.",
+                "invalid_data" => $invalidData,
+                "feedback" => "The necessary data was not provided, missing data: " . implode(", ", $invalidData),
             ],
         ];
     }
