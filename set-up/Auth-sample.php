@@ -38,8 +38,8 @@ class Auth {
         $helper = Helper::get();
 
         // Checks if data needed are present and not empty
-        $requiredData = ["username", "password"];
-        if ($helper->hasRequiredData($requiredData)) {
+        $requiredFields = ["username", "password"];
+        if ($helper->hasRequiredFields($requiredFields)) {
 
             $response["meta"]["status"] = 401;
             $response["meta"]["message"] = "Unauthorized";
@@ -91,7 +91,7 @@ class Auth {
 
         }
         else {
-            $response = $helper->getDataNotProvidedResponse($requiredData);
+            $response = $helper->getInvalidDataResponse($requiredFields);
         }
 
         return $response;

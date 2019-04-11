@@ -58,8 +58,8 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if data needed is present and not empty
-            $requiredData = ["name", "skills", "long_description", "short_description", "github", "date"];
-            if ($this->helper->hasRequiredData($requiredData)) {
+            $requiredFields = ["name", "skills", "long_description", "short_description", "github", "date"];
+            if ($this->helper->hasRequiredFields($requiredFields)) {
 
                 $project = new Project();
                 $response = $project->save($data);
@@ -67,7 +67,7 @@ class Core {
             }
             // Else all the data required was not provided and/or valid
             else {
-                $response = $this->helper->getDataNotProvidedResponse($requiredData);
+                $response = $this->helper->getInvalidDataResponse($requiredFields);
             }
         }
         else {
@@ -89,8 +89,8 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if data needed is present and not empty
-            $requiredData = ["name", "skills", "long_description", "short_description", "github", "date"];
-            if ($this->helper->hasRequiredData($data, $requiredData)) {
+            $requiredFields = ["name", "skills", "long_description", "short_description", "github", "date"];
+            if ($this->helper->hasRequiredFields($data, $requiredFields)) {
 
                 $project = new Project();
                 $response = $project->save($data);
@@ -98,7 +98,7 @@ class Core {
             }
             // Else all the data required was not provided and/or valid
             else {
-                $response = $this->helper->getDataNotProvidedResponse($requiredData);
+                $response = $this->helper->getInvalidDataResponse($requiredFields);
             }
         }
         else {
@@ -253,8 +253,8 @@ class Core {
             }
             // Else data needed was not provided
             else {
-                $requiredData = ["image"];
-                $response = $this->helper->getDataNotProvidedResponse($requiredData);
+                $requiredFields = ["image"];
+                $response = $this->helper->getInvalidDataResponse($requiredFields);
             }
         }
         else {

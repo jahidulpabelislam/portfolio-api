@@ -64,27 +64,27 @@ class Helper {
         $this->data = $data;
     }
 
-    private function isDataValid($data, $dataKey) {
-        return (isset($data[$dataKey]) && trim($data[$dataKey]) !== "");
+    private function isFieldValid($field) {
+        $data = $this->data;
+
+        return (isset($data[$field]) && trim($data[$field]) !== "");
     }
 
     /**
      * Check if all the required data is provided
      * And data provided is not empty
      *
-     * @param $requiredData array Array of required data keys
+     * @param $requiredFields array Array of required data keys
      * @return bool Whether data required is provided & is valid or not
      */
-    public function hasRequiredData(array $requiredData): bool {
+    public function hasRequiredFields(array $requiredFields): bool {
 
-        $data = $this->data;
+        // Loops through each required data field for the request
+        foreach ($requiredFields as $field) {
 
-        // Loops through each data needed for the request
-        foreach ($requiredData as $dataKey) {
-
-            // Checks if the data needed is provided and is not empty
-            if (!$this->isDataValid($data, $dataKey)) {
-                // Return false as data needed is not provided or empty
+            // Checks if the required field is provided and is not empty
+            if (!$this->isFieldValid($field)) {
+                // Return false as required field is not provided or empty
                 return false;
             }
         }
@@ -96,42 +96,40 @@ class Helper {
     /**
      * Get all invalid required data fields
      *
-     * @param $requiredData array Array of required data keys
+     * @param $requiredFields array Array of required data keys
      * @return array An array of invalid data fields
      */
-    public function getInvalidRequiredData(array $requiredData): array {
-        $invalidData = [];
+    private function getInvalidRequiredFields(array $requiredFields): array {
+        $invalidFields = [];
 
-        $data = $this->data;
-
-        // Loops through each required data key for the request
-        foreach ($requiredData as $dataKey) {
+        // Loops through each required data field for the request
+        foreach ($requiredFields as $field) {
 
             // Checks if the data required is valid
-            if (!$this->isDataValid($data, $dataKey)) {
-                $invalidData[] = $dataKey;
+            if (!$this->isFieldValid($field)) {
+                $invalidFields[] = $field;
             }
         }
 
-        return $invalidData;
+        return $invalidFields;
     }
 
     /**
-     * Send necessary meta data back when needed required data is not provided
+     * Send necessary meta data back when required data/fields is not provided/valid
      *
-     * @param $requiredData array Array of the data required
+     * @param $requiredFields array Array of the data required
      * @return array Array of meta data
      */
-    public function getDataNotProvidedResponse(array $requiredData): array {
-        $invalidData = $this->getInvalidRequiredData($requiredData);
+    public function getInvalidDataResponse(array $requiredFields): array {
+        $invalidFields = $this->getInvalidRequiredFields($requiredFields);
 
         return [
             "meta" => [
                 "status" => 400,
                 "message" => "Bad Request",
-                "required_data" => $requiredData,
-                "invalid_data" => $invalidData,
-                "feedback" => "The necessary data was not provided, missing data: " . implode(", ", $invalidData),
+                "required_fields" => $requiredFields,
+                "invalid_fields" => $invalidFields,
+                "feedback" => "The necessary data was not provided, missing/invalid fields: " . implode(", ", $invalidFields),
             ],
         ];
     }
