@@ -236,7 +236,7 @@ abstract class Entity {
         if (!empty($response["row"])) {
 
             $query = "DELETE FROM {$this->tableName} WHERE id = :id;";
-            $bindings = [":id" => $id,];
+            $bindings = [":id" => $id];
             $response = $this->db->query($query, $bindings);
 
             // Check if the deletion was ok

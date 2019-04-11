@@ -114,7 +114,10 @@ class Project extends Entity {
 
                 if (count($images) > 0) {
                     foreach ($images as $sortOrder => $image) {
-                        $imageUpdateData = ["id" => $image->id, "sort_order_number" => $sortOrder];
+                        $imageUpdateData = [
+                            "id" => $image->id,
+                            "sort_order_number" => $sortOrder,
+                        ];
                         $projectImage = new ProjectImage();
                         $projectImage->save($imageUpdateData);
                     }

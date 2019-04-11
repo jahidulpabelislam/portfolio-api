@@ -252,9 +252,7 @@ class Helper {
 
         header("HTTP/1.1 {$status} {$message}");
 
-        $notCachedURLs = [
-            "session/",
-        ];
+        $notCachedURLs = ["session/"];
 
         // Set cache for 31 days for some GET Requests
         if ($method == "GET" && !in_array(Config::API_VERSION . implode("/", $path), $notCachedURLs)) {
