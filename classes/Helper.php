@@ -32,6 +32,7 @@ class Helper {
      * @return self
      */
     public static function get() {
+
         if (!self::$instance) {
             self::$instance = new self();
         }

@@ -48,7 +48,7 @@ class Project extends Entity {
     protected $defaultOrderingByColumn = "date";
 
     /**
-     * Helper function to get all Project Image Entities linked to this project
+     * Helper function to get all Project Image Entities linked to this Project
      *
      * @param $id int The Project Image to find Images for
      * @return array An array of ProjectImage's (if any found)
@@ -78,7 +78,7 @@ class Project extends Entity {
     public function getById($id, $images = true): array {
         $response = parent::getById($id);
 
-        // Check if database provided any meta data if so no problem with executing query but no project found
+        // Check if database provided any meta data if so no problem with executing query but no Project found
         if (!empty($response["row"])) {
             if ($images) {
                 $images = $this->getProjectImages($id);
@@ -166,7 +166,7 @@ class Project extends Entity {
 
         $response = parent::doSearch($params);
 
-        // Loop through each project and get the Projects Images
+        // Loop through each Project and get the Projects Images
         for ($i = 0; $i < $response["meta"]["count"]; $i++) {
 
             $images = $this->getProjectImages($response["rows"][$i]["id"]);

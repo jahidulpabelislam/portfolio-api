@@ -31,7 +31,7 @@ class Core {
     }
 
     /**
-     * Gets all projects but paginated, also might include search
+     * Gets all Projects but paginated, also might include search
      *
      * @param $data array Any data to aid in the search query
      * @return array The request response to send back
@@ -62,7 +62,8 @@ class Core {
                 $project = new Project();
                 $response = $project->save($data);
 
-            } // Else the data needed was not provided
+            }
+            // Else the data needed was not provided
             else {
                 $response = Helper::getDataNotProvidedResponse($requiredData);
             }
@@ -75,9 +76,9 @@ class Core {
     }
 
     /**
-     * Try to edit a Project a user has posted before
+     * Try to edit a Project a user has added before
      *
-     * @param $data array The new data entered to use to update the project with
+     * @param $data array The new data entered to use to update the Project with
      * @return array The request response to send back
      */
     public function editProject($data) {
@@ -92,7 +93,8 @@ class Core {
                 $project = new Project();
                 $response = $project->save($data);
 
-            } // Else the data was not provided
+            }
+            // Else the data was not provided
             else {
                 $response = Helper::getDataNotProvidedResponse($requiredData);
             }
@@ -105,7 +107,7 @@ class Core {
     }
 
     /**
-     * Try to delete a Project a user has posted before
+     * Try to delete a Project a user has added before
      *
      * @param $data array The data sent to aid in the deletion of the Project
      * @return array The request response to send back
@@ -122,7 +124,8 @@ class Core {
                 $project = new Project();
                 $response = $project->delete($data["id"]);
 
-            } // Else the data needed was not provided
+            }
+            // Else the data needed was not provided
             else {
                 $response = Helper::getDataNotProvidedResponse($requiredData);
             }
@@ -157,7 +160,7 @@ class Core {
      */
     public function getProjectImages($projectId) {
 
-        // Check the project trying to get Images for
+        // Check the Project trying to get Images for
         $response = $this->getProject($projectId);
         if (!empty($response["row"])) {
 
@@ -218,11 +221,13 @@ class Core {
                 ];
                 $projectImage = new ProjectImage();
                 $response = $projectImage->save($values);
-            } // Else there was a problem uploading file to server
+            }
+            // Else there was a problem uploading file to server
             else {
                 $response["meta"]["feedback"] = "Sorry, there was an error uploading your Image.";
             }
-        } // Else bad request as file uploaded is not a image
+        }
+        // Else bad request as file uploaded is not a image
         else {
             $response["meta"] = [
                 "status" => 400,
@@ -249,13 +254,14 @@ class Core {
             $requiredData = ["project_id"];
             if (Helper::hasRequiredData($data, $requiredData) && isset($_FILES["image"])) {
 
-                // Check the project trying to add a a Image for exists
+                // Check the Project trying to add a a Image for exists
                 $response = $this->getProject($data["project_id"]);
                 if (!empty($response["row"])) {
 
                     $response = $this->uploadProjectImage($response["row"]);
                 }
-            } // Else data needed was not provided
+            }
+            // Else data needed was not provided
             else {
                 $requiredData[] = "image";
                 $response = Helper::getDataNotProvidedResponse($requiredData);
@@ -293,7 +299,7 @@ class Core {
     }
 
     /**
-     * Try to delete a Image linked to a project
+     * Try to delete a Image linked to a Project
      *
      * @param $data array The data sent to delete the Project Image
      * @return array The request response to send back
@@ -307,11 +313,14 @@ class Core {
             $requiredData = ["project_id", "id"];
             if (Helper::hasRequiredData($data, $requiredData)) {
 
+                $projectId = $data["project_id"];
+                $imageId = $data["id"];
+
                 // Check the Project trying to edit actually exists
-                $response = $this->getProject($data["project_id"]);
+                $response = $this->getProject($projectId);
                 if (!empty($response["row"])) {
 
-                    $response = $this->getProjectImage($data["project_id"], $data["id"]);
+                    $response = $this->getProjectImage($projectId, $imageId);
 
                     if (!empty($response["row"])) {
 
@@ -319,7 +328,7 @@ class Core {
 
                         // Update database to delete row
                         $projectImage = new ProjectImage();
-                        $response = $projectImage->delete($data["id"], $fileName);
+                        $response = $projectImage->delete($imageId, $fileName);
                     }
                 }
             } // Else data was not provided
