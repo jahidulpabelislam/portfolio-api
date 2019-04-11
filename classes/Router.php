@@ -23,30 +23,42 @@ class Router {
 
     public function __construct() {
         $this->helper = Helper::get();
-        $this->helper->extractFromRequest();
     }
 
     /**
-     * Try and perform the necessary actions needed to fulfil the request that a user made
+     * Check that the requested API version is valid, if so return empty array
+     * else return appropriate response (array)
+     *
+     * @return array
      */
-    public function performRequest() {
+    private function checkAPIVersion() {
+        $response = [];
 
-        $method = $this->helper->method;
         $path = $this->helper->path;
-        $data = $this->helper->data;
 
         $version = !empty($path[0]) ? $path[0] : "";
 
         $shouldBeVersion = "v" . Config::API_VERSION;
         if ($version !== $shouldBeVersion) {
             $response = $this->helper->getUnrecognisedAPIVersionResponse();
-            $this->helper->sendResponse($response);
-            return;
         }
 
-        $entity = !empty($path[1]) ? $path[1] : "";
+        return $response;
+    }
 
+    /**
+     * Try and execute the requested action
+     *
+     * @return array An appropriate response to request
+     */
+    private function executeAction() {
         $response = [];
+
+        $method = $this->helper->method;
+        $path = $this->helper->path;
+        $data = $this->helper->data;
+
+        $entity = !empty($path[1]) ? $path[1] : "";
 
         // Figure out what action on what object request is for & perform necessary action(s)
         switch ($entity) {
@@ -143,6 +155,25 @@ class Router {
                 break;
         }
 
+        return $response;
+    }
+
+    /**
+     * Try and perform the necessary actions needed to fulfil the request that a user made
+     */
+    public function performRequest() {
+        $this->helper->extractFromRequest();
+
+        // Here check the requested API version, if okay return empty array
+        // else returns appropriate response
+        $response = $this->checkAPIVersion();
+
+        // Only try to perform the action if API version check above returned okay
+        if (empty($response)) {
+            $response = $this->executeAction();
+        }
+
+        // If at this point response is empty, we didn't recognise the action
         if (empty($response)) {
             $response = $this->helper->getUnrecognisedURIResponse();
         }
