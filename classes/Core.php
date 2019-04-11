@@ -87,7 +87,7 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if data needed is present and not empty
-            $requiredData = ["id", "name", "skills", "long_description", "short_description", "github", "date"];
+            $requiredData = ["name", "skills", "long_description", "short_description", "github", "date"];
             if (Helper::hasRequiredData($data, $requiredData)) {
 
                 $project = new Project();
@@ -116,19 +116,8 @@ class Core {
 
         // Checks if user is authored
         if (Auth::isLoggedIn()) {
-
-            // Checks if the data needed is present and not empty
-            $requiredData = ["id"];
-            if (Helper::hasRequiredData($data, $requiredData)) {
-
-                $project = new Project();
-                $response = $project->delete($data["id"]);
-
-            }
-            // Else the data needed was not provided
-            else {
-                $response = Helper::getDataNotProvidedResponse($requiredData);
-            }
+            $project = new Project();
+            $response = $project->delete($data["id"]);
         }
         else {
             $response = Helper::getNotAuthorisedResponse();
@@ -251,8 +240,7 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks if the data needed is present and not empty
-            $requiredData = ["project_id"];
-            if (Helper::hasRequiredData($data, $requiredData) && isset($_FILES["image"])) {
+            if (isset($_FILES["image"])) {
 
                 // Check the Project trying to add a a Image for exists
                 $response = $this->getProject($data["project_id"]);
@@ -263,7 +251,7 @@ class Core {
             }
             // Else data needed was not provided
             else {
-                $requiredData[] = "image";
+                $requiredData = ["image"];
                 $response = Helper::getDataNotProvidedResponse($requiredData);
             }
         }
@@ -309,31 +297,23 @@ class Core {
         // Checks if user is authored
         if (Auth::isLoggedIn()) {
 
-            // Checks if data needed is present and not empty
-            $requiredData = ["project_id", "id"];
-            if (Helper::hasRequiredData($data, $requiredData)) {
+            $projectId = $data["project_id"];
+            $imageId = $data["id"];
 
-                $projectId = $data["project_id"];
-                $imageId = $data["id"];
+            // Check the Project trying to edit actually exists
+            $response = $this->getProject($projectId);
+            if (!empty($response["row"])) {
 
-                // Check the Project trying to edit actually exists
-                $response = $this->getProject($projectId);
+                $response = $this->getProjectImage($projectId, $imageId);
+
                 if (!empty($response["row"])) {
 
-                    $response = $this->getProjectImage($projectId, $imageId);
+                    $fileName = $response["row"]["file"];
 
-                    if (!empty($response["row"])) {
-
-                        $fileName = $response["row"]["file"];
-
-                        // Update database to delete row
-                        $projectImage = new ProjectImage();
-                        $response = $projectImage->delete($imageId, $fileName);
-                    }
+                    // Update database to delete row
+                    $projectImage = new ProjectImage();
+                    $response = $projectImage->delete($imageId, $fileName);
                 }
-            } // Else data was not provided
-            else {
-                $response = Helper::getDataNotProvidedResponse($requiredData);
             }
         }
         else {
