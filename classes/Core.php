@@ -257,7 +257,7 @@ class Core {
                 }
             } // Else data needed was not provided
             else {
-                array_push($dataNeeded, "image");
+                $dataNeeded[] = "image";
                 $response = Helper::getDataNotProvidedResponse($dataNeeded);
             }
         }
