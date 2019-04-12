@@ -34,9 +34,9 @@ class Router {
     private function checkAPIVersion() {
         $response = [];
 
-        $path = $this->helper->path;
+        $uri = $this->helper->uriArray;
 
-        $version = !empty($path[0]) ? $path[0] : "";
+        $version = !empty($uri[0]) ? $uri[0] : "";
 
         $shouldBeVersion = "v" . Config::API_VERSION;
         if ($version !== $shouldBeVersion) {
@@ -55,10 +55,10 @@ class Router {
         $response = [];
 
         $method = $this->helper->method;
-        $path = $this->helper->path;
+        $uri = $this->helper->uriArray;
         $data = $this->helper->data;
 
-        $entity = !empty($path[1]) ? $path[1] : "";
+        $entity = !empty($uri[1]) ? $uri[1] : "";
 
         // Figure out what action on what object request is for & perform necessary action(s)
         switch ($entity) {
@@ -94,56 +94,56 @@ class Router {
 
                 switch ($method) {
                     case "GET":
-                        if (isset($path[2]) && trim($path[2]) !== "") {
-                            $projectId = $path[2];
-                            if (isset($path[3]) && $path[3] === "images") {
-                                if (isset($path[4]) && $path[4] !== "" && !isset($path[5])) {
-                                    $response = $api->getProjectImage($projectId, $path[4]);
+                        if (isset($uri[2]) && trim($uri[2]) !== "") {
+                            $projectId = $uri[2];
+                            if (isset($uri[3]) && $uri[3] === "images") {
+                                if (isset($uri[4]) && $uri[4] !== "" && !isset($uri[5])) {
+                                    $response = $api->getProjectImage($projectId, $uri[4]);
                                 }
-                                else if (!isset($path[4])) {
+                                else if (!isset($uri[4])) {
                                     $response = $api->getProjectImages($projectId);
                                 }
                             }
-                            else if (!isset($path[3])) {
+                            else if (!isset($uri[3])) {
                                 $response = $api->getProject($projectId, true);
                             }
                         }
-                        else if (!isset($path[2])) {
+                        else if (!isset($uri[2])) {
                             $response = $api->getProjects($data);
                         }
                         break;
                     case "POST":
                         if (
-                            isset($path[2]) && trim($path[2]) !== ""
-                            && isset($path[3]) && $path[3] === "images"
-                            && !isset($path[4])
+                            isset($uri[2]) && trim($uri[2]) !== ""
+                            && isset($uri[3]) && $uri[3] === "images"
+                            && !isset($uri[4])
                         ) {
-                            $data["project_id"] = $path[2];
+                            $data["project_id"] = $uri[2];
                             $response = $api->addProjectImage($data);
                         }
-                        else if (!isset($path[2])) {
+                        else if (!isset($uri[2])) {
                             $response = $api->addProject($data);
                         }
                         break;
                     case "PUT":
-                        if (isset($path[2]) && trim($path[2]) !== "" && !isset($path[3])) {
-                            $data["id"] = $path[2];
+                        if (isset($uri[2]) && trim($uri[2]) !== "" && !isset($uri[3])) {
+                            $data["id"] = $uri[2];
                             $response = $api->editProject($data);
                         }
                         break;
                     case "DELETE":
-                        if (isset($path[2]) && trim($path[2]) !== "") {
+                        if (isset($uri[2]) && trim($uri[2]) !== "") {
                             if (
-                                isset($path[3]) && $path[3] === "images"
-                                && isset($path[4]) && $path[4] !== ""
-                                && !isset($path[5])
+                                isset($uri[3]) && $uri[3] === "images"
+                                && isset($uri[4]) && $uri[4] !== ""
+                                && !isset($uri[5])
                             ) {
-                                $data["id"] = $path[4];
-                                $data["project_id"] = $path[2];
+                                $data["id"] = $uri[4];
+                                $data["project_id"] = $uri[2];
                                 $response = $api->deleteImage($data);
                             }
-                            else if (!isset($path[3])) {
-                                $data["id"] = $path[2];
+                            else if (!isset($uri[3])) {
+                                $data["id"] = $uri[2];
                                 $response = $api->deleteProject($data);
                             }
                         }

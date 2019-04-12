@@ -21,7 +21,7 @@ if (!defined("ROOT")) {
 class Helper {
 
     public $method = 'GET';
-    public $path = [];
+    public $uriArray = [];
     public $data = [];
 
     private static $instance = null;
@@ -48,15 +48,15 @@ class Helper {
         $this->method = $method;
     }
 
-    private function extractPathFromRequest() {
-        $pathString = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
-        $pathString = !empty($pathString) ? trim($pathString, "/") : "";
-        $pathString = strtolower($pathString);
+    private function extractURIFromRequest() {
+        $uriString = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+        $uriString = !empty($uriString) ? trim($uriString, "/") : "";
+        $uriString = strtolower($uriString);
 
         // Get the individual parts of the request URI as an array
-        $pathArray = explode("/", $pathString);
+        $uriArray = explode("/", $uriString);
 
-        $this->path = $pathArray;
+        $this->uriArray = $uriArray;
     }
 
     private function extractDataFromRequest() {
@@ -69,7 +69,7 @@ class Helper {
 
     public function extractFromRequest() {
         $this->extractMethodFromRequest();
-        $this->extractPathFromRequest();
+        $this->extractURIFromRequest();
         $this->extractDataFromRequest();
     }
 
@@ -140,24 +140,24 @@ class Helper {
     /**
      * Generates a full url from the URI user requested
      *
-     * @param array $path array The URI user request as an array
+     * @param array $uriArray array The URI user request as an array
      * @return string The Full URI user requested
      */
-    public function getAPIURL($path = null): string {
-        if (!$path) {
-            $path = $this->path;
+    public function getAPIURL($uriArray = null): string {
+        if (!$uriArray) {
+            $uriArray = $this->uriArray;
         }
 
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] != "off") ? "https" : "http";
         $url = "{$protocol}://" . $_SERVER["SERVER_NAME"];
 
-        $explodedPath = implode("/", $path);
+        $explodedURI = implode("/", $uriArray);
 
-        if ($explodedPath) {
-            $explodedPath .= "/";
+        if ($explodedURI) {
+            $explodedURI .= "/";
         }
 
-        $url .= "/{$explodedPath}";
+        $url .= "/{$explodedURI}";
 
         return $url;
     }
@@ -216,9 +216,9 @@ class Helper {
 
         $shouldBeVersion = "v" . Config::API_VERSION;
 
-        $shouldBePath = $this->path;
-        $shouldBePath[0] = $shouldBeVersion;
-        $shouldBeURL = self::getAPIURL($shouldBePath);
+        $shouldBeURI = $this->uriArray;
+        $shouldBeURI[0] = $shouldBeVersion;
+        $shouldBeURL = self::getAPIURL($shouldBeURI);
 
         return [
             "meta" => [
@@ -241,14 +241,14 @@ class Helper {
 
         $data = $this->data;
         $method = $this->method;
-        $path = $this->path;
+        $uri = $this->uriArray;
 
         // Send back the data provided
         $response["meta"]["data"] = $data;
         // Send back the method requested
         $response["meta"]["method"] = $method;
-        // Send back the path they requested
-        $response["meta"]["path"] = $path;
+        // Send back the URI they requested
+        $response["meta"]["uri"] = $uri;
 
         $originURL = $_SERVER["HTTP_ORIGIN"] ?? "";
 
@@ -288,7 +288,7 @@ class Helper {
         $notCachedURLs = ["session/"];
 
         // Set cache for 31 days for some GET Requests
-        if ($method == "GET" && !in_array(Config::API_VERSION . implode("/", $path), $notCachedURLs)) {
+        if ($method == "GET" && !in_array(Config::API_VERSION . implode("/", $uri), $notCachedURLs)) {
             $secondsToCache = 2678400;
             $expiresTime = gmdate("D, d M Y H:i:s", time() + $secondsToCache) . " GMT";
             header("Cache-Control: max-age={$secondsToCache}, public");
@@ -298,7 +298,6 @@ class Helper {
 
         // Check if requested to send json
         $json = (stripos($_SERVER["HTTP_ACCEPT"], "application/json") !== false);
-
         header("Content-Type: application/json");
 
         // Send the response, send by json if json was requested
