@@ -40,28 +40,37 @@ class Helper {
         return self::$instance;
     }
 
-    public function extractFromRequest() {
-
+    private function extractMethodFromRequest() {
         // Get the requested method
-        $method = strtoupper($_SERVER["REQUEST_METHOD"]);
-
-        $requestedPath = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
-
-        $requestedURI = !empty($requestedPath) ? trim($requestedPath, "/") : "";
-
-        $requestedURI = strtolower($requestedURI);
-
-        // Get the individual parts of the request URI as an array
-        $requestedURIArray = explode("/", $requestedURI);
-
-        $data = [];
-        foreach ($_REQUEST as $key => $value) {
-            $data[$key] = stripslashes(urldecode($_REQUEST[$key]));
-        }
+        $method = $_SERVER["REQUEST_METHOD"];
+        $method = strtoupper($method);
 
         $this->method = $method;
-        $this->path = $requestedURIArray;
+    }
+
+    private function extractPathFromRequest() {
+        $pathString = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+        $pathString = !empty($pathString) ? trim($pathString, "/") : "";
+        $pathString = strtolower($pathString);
+
+        // Get the individual parts of the request URI as an array
+        $pathArray = explode("/", $pathString);
+
+        $this->path = $pathArray;
+    }
+
+    private function extractDataFromRequest() {
+        $data = array_map(function($field) {
+            return stripslashes(urldecode($field));;
+        }, $_REQUEST);
+
         $this->data = $data;
+    }
+
+    public function extractFromRequest() {
+        $this->extractMethodFromRequest();
+        $this->extractPathFromRequest();
+        $this->extractDataFromRequest();
     }
 
     private function isFieldValid($field) {
