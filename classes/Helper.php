@@ -282,21 +282,16 @@ class Helper {
 
         $response["meta"]["ok"] = $response["meta"]["ok"] ?? false;
 
+        // Send back all the data sent in request
         $response["meta"]["data"] = $this->data;
         $response["meta"]["method"] = $this->method;
         $response["meta"]["uri"] = $this->uriString;
 
         // Figure out the correct meta responses to return
-        if ($response["meta"]["ok"]) {
-            $status = $response["meta"]["status"] ?? 200;
-            $message = $response["meta"]["message"] ?? "OK";
-        }
-        else {
-            $status = $response["meta"]["status"] ?? 500;
-            $message = $response["meta"]["message"] ?? "Internal Server Error";
-        }
-        $response["meta"]["status"] = $status;
-        $response["meta"]["message"] = $message;
+        $isSuccessful = $response["meta"]["ok"];
+
+        $status = $response["meta"]["status"] = $response["meta"]["status"] ?? ($isSuccessful ? 200 : 500);
+        $message = $response["meta"]["message"] = $response["meta"]["message"] ?? ($isSuccessful ? "OK" : "Internal Server Error");
 
         header("HTTP/1.1 {$status} {$message}");
 
