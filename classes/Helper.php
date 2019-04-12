@@ -231,27 +231,7 @@ class Helper {
         ];
     }
 
-    /**
-     * Send the response response back
-     *
-     * @param $response array The response generated from the request so far
-     */
-    public function sendResponse(array $response) {
-
-        // Just remove any internal meta data
-        unset($response["meta"]["affected_rows"]);
-
-        $data = $this->data;
-        $method = $this->method;
-        $uri = $this->uriString;
-
-        // Send back the data provided
-        $response["meta"]["data"] = $data;
-        // Send back the method requested
-        $response["meta"]["method"] = $method;
-        // Send back the URI they requested
-        $response["meta"]["uri"] = $uri;
-
+    private function setCORSHeaders(&$response) {
         $originURL = $_SERVER["HTTP_ORIGIN"] ?? "";
 
         // Strip the protocol from domain
@@ -264,11 +244,51 @@ class Helper {
             header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
             header("Access-Control-Allow-Headers: Process-Data, Authorization");
 
-            if ($method === "OPTIONS") {
+            if ($this->method === "OPTIONS") {
                 $response["meta"]["status"] = 200;
                 $response["meta"]["message"] = "OK";
             }
         }
+    }
+
+    private function setCacheHeaders() {
+        $notCachedURLs = [
+            "v" . Config::API_VERSION. "/session/"
+        ];
+
+        // Set cache for 31 days for some GET Requests
+        if ($this->method == "GET" && !in_array($this->uriString, $notCachedURLs)) {
+            $secondsToCache = 2678400;
+            $expiresTime = gmdate("D, d M Y H:i:s", time() + $secondsToCache) . " GMT";
+            header("Cache-Control: max-age={$secondsToCache}, public");
+            header("Expires: {$expiresTime}");
+            header("Pragma: cache");
+        }
+    }
+
+    /**
+     * Send the response response back
+     *
+     * @param $response array The response generated from the request so far
+     */
+    public function sendResponse(array $response) {
+
+        // Just remove any internal meta data
+        unset($response["meta"]["affected_rows"]);
+
+        $this->setCORSHeaders($response);
+        $this->setCacheHeaders();
+
+        $data = $this->data;
+        $method = $this->method;
+        $uri = $this->uriString;
+
+        // Send back the data provided
+        $response["meta"]["data"] = $data;
+        // Send back the method requested
+        $response["meta"]["method"] = $method;
+        // Send back the URI they requested
+        $response["meta"]["uri"] = $uri;
 
         $response["meta"]["ok"] = $response["meta"]["ok"] ?? false;
 
@@ -286,19 +306,6 @@ class Helper {
         $response["meta"]["message"] = $message;
 
         header("HTTP/1.1 {$status} {$message}");
-
-        $notCachedURLs = [
-            "v" . Config::API_VERSION. "/session/"
-        ];
-
-        // Set cache for 31 days for some GET Requests
-        if ($method == "GET" && !in_array($this->uriString, $notCachedURLs)) {
-            $secondsToCache = 2678400;
-            $expiresTime = gmdate("D, d M Y H:i:s", time() + $secondsToCache) . " GMT";
-            header("Cache-Control: max-age={$secondsToCache}, public");
-            header("Expires: {$expiresTime}");
-            header("Pragma: cache");
-        }
 
         // Check if requested to send json
         $sendJson = (stripos($_SERVER["HTTP_ACCEPT"], "application/json") !== false);
