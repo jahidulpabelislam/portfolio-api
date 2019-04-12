@@ -20,8 +20,9 @@ if (!defined("ROOT")) {
 
 class Helper {
 
-    public $method = 'GET';
+    public $method = "GET";
     public $uriArray = [];
+    public $uriString = "";
     public $data = [];
 
     private static $instance = null;
@@ -52,16 +53,16 @@ class Helper {
         $uriString = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
         $uriString = !empty($uriString) ? trim($uriString, "/") : "";
         $uriString = strtolower($uriString);
+        $this->uriString = $uriString;
 
         // Get the individual parts of the request URI as an array
         $uriArray = explode("/", $uriString);
-
         $this->uriArray = $uriArray;
     }
 
     private function extractDataFromRequest() {
         $data = array_map(function($field) {
-            return stripslashes(urldecode($field));;
+            return stripslashes(urldecode($field));
         }, $_REQUEST);
 
         $this->data = $data;
@@ -145,19 +146,20 @@ class Helper {
      */
     public function getAPIURL($uriArray = null): string {
         if (!$uriArray) {
-            $uriArray = $this->uriArray;
+            $uriString = $this->uriString;
+        }
+        else {
+            $uriString = implode("/", $uriArray);
         }
 
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] != "off") ? "https" : "http";
         $url = "{$protocol}://" . $_SERVER["SERVER_NAME"];
 
-        $explodedURI = implode("/", $uriArray);
-
-        if ($explodedURI) {
-            $explodedURI .= "/";
+        if ($uriString) {
+            $uriString .= "/";
         }
 
-        $url .= "/{$explodedURI}";
+        $url .= "/{$uriString}";
 
         return $url;
     }
@@ -241,7 +243,7 @@ class Helper {
 
         $data = $this->data;
         $method = $this->method;
-        $uri = $this->uriArray;
+        $uri = $this->uriString;
 
         // Send back the data provided
         $response["meta"]["data"] = $data;
@@ -268,16 +270,16 @@ class Helper {
             }
         }
 
-        $response["meta"]["ok"] = isset($response["meta"]["ok"]) ? $response["meta"]["ok"] : false;
+        $response["meta"]["ok"] = $response["meta"]["ok"] ?? false;
 
         // Figure out the correct meta responses to return
-        if ($response["meta"]["ok"] === true) {
-            $status = isset($response["meta"]["status"]) ? $response["meta"]["status"] : 200;
-            $message = isset($response["meta"]["message"]) ? $response["meta"]["message"] : "OK";
+        if ($response["meta"]["ok"]) {
+            $status = $response["meta"]["status"] ?? 200;
+            $message = $response["meta"]["message"] ?? "OK";
         }
         else {
-            $status = isset($response["meta"]["status"]) ? $response["meta"]["status"] : 500;
-            $message = isset($response["meta"]["message"]) ? $response["meta"]["message"] : "Internal Server Error";
+            $status = $response["meta"]["status"] ?? 500;
+            $message = $response["meta"]["message"] ?? "Internal Server Error";
         }
 
         $response["meta"]["status"] = $status;
@@ -285,10 +287,12 @@ class Helper {
 
         header("HTTP/1.1 {$status} {$message}");
 
-        $notCachedURLs = ["session/"];
+        $notCachedURLs = [
+            "v" . Config::API_VERSION. "/session/"
+        ];
 
         // Set cache for 31 days for some GET Requests
-        if ($method == "GET" && !in_array(Config::API_VERSION . implode("/", $uri), $notCachedURLs)) {
+        if ($method == "GET" && !in_array($this->uriString, $notCachedURLs)) {
             $secondsToCache = 2678400;
             $expiresTime = gmdate("D, d M Y H:i:s", time() + $secondsToCache) . " GMT";
             header("Cache-Control: max-age={$secondsToCache}, public");
@@ -297,11 +301,11 @@ class Helper {
         }
 
         // Check if requested to send json
-        $json = (stripos($_SERVER["HTTP_ACCEPT"], "application/json") !== false);
+        $sendJson = (stripos($_SERVER["HTTP_ACCEPT"], "application/json") !== false);
         header("Content-Type: application/json");
 
         // Send the response, send by json if json was requested
-        if ($json) {
+        if ($sendJson) {
             echo json_encode($response);
         } // Else send by plain text
         else {
