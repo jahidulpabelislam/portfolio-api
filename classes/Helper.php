@@ -109,16 +109,10 @@ class Helper {
      * @return array An array of invalid data fields
      */
     private function getInvalidFields(array $requiredFields): array {
-        $invalidFields = [];
-
-        // Loops through each required data field for the request
-        foreach ($requiredFields as $field) {
-
-            // Checks if the data required is valid
-            if (!$this->isFieldValid($field)) {
-                $invalidFields[] = $field;
-            }
-        }
+        // Loops through each required data field for the request and only gets invalid fields
+        $invalidFields = array_filter($requiredFields, function($field) {
+            return !$this->isFieldValid($field);
+        });
 
         return $invalidFields;
     }
@@ -138,7 +132,7 @@ class Helper {
                 "message" => "Bad Request",
                 "required_fields" => $requiredFields,
                 "invalid_fields" => $invalidFields,
-                "feedback" => "The necessary data was not provided, missing/invalid fields: " . implode(", ", $invalidFields),
+                "feedback" => "The necessary data was not provided, missing/invalid fields: " . implode(", ", $invalidFields) . ".",
             ],
         ];
     }
