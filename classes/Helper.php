@@ -99,7 +99,7 @@ class Helper {
      * @param $requiredFields array Array of required data keys
      * @return array An array of invalid data fields
      */
-    private function getInvalidRequiredFields(array $requiredFields): array {
+    private function getInvalidFields(array $requiredFields): array {
         $invalidFields = [];
 
         // Loops through each required data field for the request
@@ -120,8 +120,8 @@ class Helper {
      * @param $requiredFields array Array of the data required
      * @return array Array of meta data
      */
-    public function getInvalidDataResponse(array $requiredFields): array {
-        $invalidFields = $this->getInvalidRequiredFields($requiredFields);
+    public function getInvalidFieldsResponse(array $requiredFields): array {
+        $invalidFields = $this->getInvalidFields($requiredFields);
 
         return [
             "meta" => [

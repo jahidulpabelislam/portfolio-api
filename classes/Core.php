@@ -67,7 +67,7 @@ class Core {
             }
             // Else all the data required was not provided and/or valid
             else {
-                $response = $this->helper->getInvalidDataResponse($requiredFields);
+                $response = $this->helper->getInvalidFieldsResponse($requiredFields);
             }
         }
         else {
@@ -98,7 +98,7 @@ class Core {
             }
             // Else all the data required was not provided and/or valid
             else {
-                $response = $this->helper->getInvalidDataResponse($requiredFields);
+                $response = $this->helper->getInvalidFieldsResponse($requiredFields);
             }
         }
         else {
@@ -254,7 +254,7 @@ class Core {
             // Else data needed was not provided
             else {
                 $requiredFields = ["image"];
-                $response = $this->helper->getInvalidDataResponse($requiredFields);
+                $response = $this->helper->getInvalidFieldsResponse($requiredFields);
             }
         }
         else {

@@ -91,7 +91,7 @@ class Auth {
 
         }
         else {
-            $response = $helper->getInvalidDataResponse($requiredFields);
+            $response = $helper->getInvalidFieldsResponse($requiredFields);
         }
 
         return $response;
