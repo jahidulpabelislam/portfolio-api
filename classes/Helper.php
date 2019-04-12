@@ -245,6 +245,7 @@ class Helper {
             header("Access-Control-Allow-Headers: Process-Data, Authorization");
 
             if ($this->method === "OPTIONS") {
+                $response["meta"]["ok"] = true;
                 $response["meta"]["status"] = 200;
                 $response["meta"]["message"] = "OK";
             }
@@ -279,18 +280,11 @@ class Helper {
         $this->setCORSHeaders($response);
         $this->setCacheHeaders();
 
-        $data = $this->data;
-        $method = $this->method;
-        $uri = $this->uriString;
-
-        // Send back the data provided
-        $response["meta"]["data"] = $data;
-        // Send back the method requested
-        $response["meta"]["method"] = $method;
-        // Send back the URI they requested
-        $response["meta"]["uri"] = $uri;
-
         $response["meta"]["ok"] = $response["meta"]["ok"] ?? false;
+
+        $response["meta"]["data"] = $this->data;
+        $response["meta"]["method"] = $this->method;
+        $response["meta"]["uri"] = $this->uriString;
 
         // Figure out the correct meta responses to return
         if ($response["meta"]["ok"]) {
@@ -301,7 +295,6 @@ class Helper {
             $status = $response["meta"]["status"] ?? 500;
             $message = $response["meta"]["message"] ?? "Internal Server Error";
         }
-
         $response["meta"]["status"] = $status;
         $response["meta"]["message"] = $message;
 
