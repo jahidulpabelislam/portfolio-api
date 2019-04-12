@@ -172,7 +172,7 @@ class Helper {
             "meta" => [
                 "status" => 405,
                 "message" => "Method not allowed.",
-                "feedback" => "{$this->method} Method Not Allowed on " . $this->getAPIURL(),
+                "feedback" => "{$this->method} Method Not Allowed on " . $this->getAPIURL() . ".",
             ],
         ];
     }
@@ -201,7 +201,7 @@ class Helper {
         return [
             "meta" => [
                 "status" => 404,
-                "feedback" => "Unrecognised URI (" . $this->getAPIURL() . ")",
+                "feedback" => "Unrecognised URI (" . $this->getAPIURL() . ").",
                 "message" => "Not Found",
             ],
         ];
