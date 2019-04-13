@@ -103,7 +103,7 @@ abstract class Entity {
      * @param $id int The id of the Entity to get
      * @return array The response from the SQL query
      */
-    public function getById(int $id): array {
+    public function getById($id): array {
 
         if (is_numeric($id)) {
             $response = $this->getByColumn("id", (int)$id);
@@ -247,7 +247,7 @@ abstract class Entity {
      * @param $id int The id of the Entity to delete
      * @return array Either an array with successful meta data or a array of error feedback meta
      */
-    public function delete(int $id): array {
+    public function delete($id): array {
 
         // Check the Entity trying to delete actually exists
         $response = $this->getById($id);

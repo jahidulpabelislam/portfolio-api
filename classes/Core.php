@@ -123,7 +123,7 @@ class Core {
      * @param bool $getImages bool Whether the images for the Project should should be added
      * @return array The request response to send back
      */
-    public function getProject(int $projectId, bool $getImages = false): array {
+    public function getProject($projectId, bool $getImages = false): array {
 
         $project = new Project();
         $response = $project->getById($projectId, $getImages);
@@ -137,7 +137,7 @@ class Core {
      * @param $projectId int The Id of the Project
      * @return array The request response to send back
      */
-    public function getProjectImages(int $projectId): array {
+    public function getProjectImages($projectId): array {
 
         // Check the Project trying to get Images for
         $response = $this->getProject($projectId);
@@ -258,7 +258,7 @@ class Core {
      * @param $imageId int The id of the Project Image to get
      * @return array The request response to send back
      */
-    public function getProjectImage(int $projectId, int $imageId): array {
+    public function getProjectImage($projectId, $imageId): array {
 
         // Check the Project trying to get Images for
         $response = $this->getProject($projectId);
@@ -266,7 +266,7 @@ class Core {
             $projectImage = new ProjectImage();
             $response = $projectImage->getById($imageId);
 
-            if ($response["row"]["project_id"] !== $projectId) {
+            if (!empty($response["row"]["project_id"]) && $response["row"]["project_id"] !== $projectId) {
                 $response = $projectImage->getNotFoundResponse($projectId, $imageId);
             }
         }
