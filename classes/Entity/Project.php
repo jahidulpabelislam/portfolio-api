@@ -28,14 +28,16 @@ class Project extends Entity {
     public $columns = [
         "id",
         "name",
+        "date",
         "skills",
-        "long_description",
-        "short_description",
         "link",
         "github",
         "download",
         "colour",
-        "date",
+        "short_description",
+        "long_description",
+        "created_at",
+        "updated_at",
     ];
 
     protected $searchableColumns = [
