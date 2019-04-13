@@ -265,14 +265,18 @@ abstract class Entity {
      * Used to generate a where clause for a search on a entity along with any binding needed
      * Used with Entity::doSearch();
      *
-     * @param $search string The string to search for within searchable columns (if any)
+     * @param $params array The fields to search for within searchable columns (if any)
      * @return array An array consisting of the generated where clause and an associative array containing any bindings to aid the Database querying
      */
-    private function generateSearchWhereQuery($search): array {
+    private function generateSearchWhereQuery($params): array {
 
         if ($this->searchableColumns) {
+            $bindings = [];
+
+            $searchString = $params["search"] ?? "";
+
             // Split each word in search
-            $searchWords = explode(" ", $search);
+            $searchWords = explode(" ", $searchString);
 
             $searchString = "%" . implode("%", $searchWords) . "%";
 
@@ -280,19 +284,33 @@ abstract class Entity {
 
             $searchStringReversed = "%" . implode("%", $searchesReversed) . "%";
 
-            $whereClause = "WHERE";
+            $searchWhereClause = "WHERE (";
+
+            $globalWhereClauses = [];
 
             // Loop through each searchable column
             foreach ($this->searchableColumns as $column) {
-                $whereClause .= " {$column} LIKE :searchString OR {$column} LIKE :searchStringReversed OR";
+                $searchWhereClause .= " {$column} LIKE :searchString OR {$column} LIKE :searchStringReversed OR";
+
+                if (!empty($params[$column])) {
+                    $binding = ":{$column}";
+                    $globalWhereClauses[] = " {$column} = {$binding}";
+                    $bindings[$binding] = $params[$column];
+                }
             }
 
-            $whereClause = rtrim($whereClause, "OR");
+            $searchWhereClause = rtrim($searchWhereClause, "OR");
+            $searchWhereClause .= ")";
 
-            $bindings = [
-                "searchString" => $searchString,
-                "searchStringReversed" => $searchStringReversed,
-            ];
+            $bindings["searchString"] = $searchString;
+            $bindings["searchStringReversed"] = $searchStringReversed;
+
+            $globalWhereClause = "";
+            if (!empty($globalWhereClauses)) {
+                $globalWhereClause = "AND " . implode(" AND ", $globalWhereClauses);
+            }
+
+            $whereClause = $searchWhereClause . " " . $globalWhereClause;
 
             return [$whereClause, $bindings];
         }
@@ -357,9 +375,9 @@ abstract class Entity {
         $whereClause = "";
 
         // Add a filter if a search was entered
-        if (!empty($params["search"])) {
+        if (!empty($params)) {
 
-            list($whereClause, $bindings) = $this->generateSearchWhereQuery($params["search"]);
+            list($whereClause, $bindings) = $this->generateSearchWhereQuery($params);
         }
 
         $query = "SELECT * FROM  {$this->tableName} {$whereClause}

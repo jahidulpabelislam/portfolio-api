@@ -15,11 +15,16 @@
 
 namespace JPI\API\Entity;
 
+use JPI\API\Auth;
+use JPI\API\Helper;
+
 if (!defined("ROOT")) {
     die();
 }
 
 class Project extends Entity {
+
+    const PUBLIC_STATUS = "published";
 
     protected $tableName = "portfolio_project";
 
@@ -44,6 +49,7 @@ class Project extends Entity {
         "skills",
         "long_description",
         "short_description",
+        "status",
     ];
 
     protected $defaultOrderingByColumn = "date";
@@ -81,10 +87,17 @@ class Project extends Entity {
     public function getById($id, $getImages = true): array {
         $response = parent::getById($id);
 
-        // Check if Project was found and Project's Images was requested, get and add these
-        if ($getImages && !empty($response["row"])) {
-            $getImages = $this->getProjectImages($id);
-            $response["row"]["images"] = $getImages;
+        // If Project was found
+        if (!empty($response["row"])) {
+            if (!Auth::isLoggedIn() && $response["row"]["status"] !== self::PUBLIC_STATUS){
+                return Helper::getNotAuthorisedResponse();
+            }
+
+            // If Project's Images was requested, get and add these
+            if ($getImages) {
+                $getImages = $this->getProjectImages($id);
+                $response["row"]["images"] = $getImages;
+            }
         }
 
         return $response;
@@ -160,6 +173,10 @@ class Project extends Entity {
      * @return array The request response to send back
      */
     public function doSearch(array $params): array {
+
+        if (!Auth::isLoggedIn()){
+            $params["status"] = self::PUBLIC_STATUS;
+        }
 
         $response = parent::doSearch($params);
 
