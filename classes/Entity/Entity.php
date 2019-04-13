@@ -193,7 +193,15 @@ abstract class Entity {
 
         $id = $values["id"] ?? null;
 
+        if (in_array("updated_at", $this->columns)) {
+            $values["updated_at"] = date("Y-m-d H:i:s");
+        }
+
         if (empty($id)) {
+            if (in_array("created_at", $this->columns)) {
+                $values["created_at"] = date("Y-m-d H:i:s");
+            }
+
             list($query, $bindings) = $this->generateInsertQuery($values);
         }
         else {
