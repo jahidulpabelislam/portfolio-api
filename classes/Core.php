@@ -47,13 +47,12 @@ class Core {
     }
 
     /**
-     * Try and add a Project a user has attempted to add
+     * Try to either insert or update a Project
      *
-     * @param $data array The data to insert into the database for this new Project
+     * @param $data array The data to insert/update into the database for the Project
      * @return array The request response to send back
      */
-    public function addProject($data) {
-
+    private function saveProject($data) {
         // Checks if user is authored
         if (Auth::isLoggedIn()) {
 
@@ -78,34 +77,23 @@ class Core {
     }
 
     /**
+     * Try and add a Project a user has attempted to add
+     *
+     * @param $data array The data to insert into the database for this new Project
+     * @return array The request response to send back
+     */
+    public function addProject($data) {
+        return $this->saveProject($data);
+    }
+
+    /**
      * Try to edit a Project a user has added before
      *
      * @param $data array The new data entered to use to update the Project with
      * @return array The request response to send back
      */
     public function editProject($data) {
-
-        // Checks if user is authored
-        if (Auth::isLoggedIn()) {
-
-            // Checks that all data required is present and not empty
-            $requiredFields = ["name", "skills", "long_description", "short_description", "github", "date"];
-            if ($this->helper->hasRequiredFields($requiredFields)) {
-
-                $project = new Project();
-                $response = $project->save($data);
-
-            }
-            // Else all the data required was not provided and/or valid
-            else {
-                $response = $this->helper->getInvalidFieldsResponse($requiredFields);
-            }
-        }
-        else {
-            $response = Helper::getNotAuthorisedResponse();
-        }
-
-        return $response;
+        return $this->saveProject($data);
     }
 
     /**
