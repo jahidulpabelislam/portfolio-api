@@ -22,8 +22,6 @@ use JPI\API\Database;
 
 abstract class Entity {
 
-    public $response = [];
-
     protected $tableName = "";
 
     protected $columns = [];
@@ -43,18 +41,10 @@ abstract class Entity {
     private $db = null;
 
     /**
-     * Entity constructor.
-     *
-     * If $id is passed, load up the Entity from Database where id = $id
-     *
-     * @param null $id int The id of a Entity in the Database to load
+     * Entity constructor
      */
-    public function __construct($id = null) {
+    public function __construct() {
         $this->db = Database::get();
-
-        if ($id) {
-            $this->response = $this->getById($id);
-        }
     }
 
     public function toArray(array $entity): array {

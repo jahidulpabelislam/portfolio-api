@@ -68,27 +68,19 @@ class ProjectImage extends Entity {
     }
 
     /**
-     * Check if a ProjectImage is a child of a Project.
-     * Use in conjunction with ProjectImage::getById()
+     * Return the response when a ProjectImage is not found
      *
-     * @param $projectId int The id of a Project it should check against
+     * @param $projectId int The id of the Project requested
+     * @param $imageId int The id of a Project Image requested
      */
-    public function checkProjectImageIsChildOfProject(int $projectId) {
-
-        $response = $this->response;
-
-        if (!empty($response["row"]) && $response["row"]["project_id"] !== $projectId) {
-            $imageId = $response["row"]["id"];
-            $response = [
-                "row" => [],
-                "meta" => [
-                    "status" => 404,
-                    "feedback" => "No {$this->displayName} found with {$imageId} as ID for Project: {$projectId}.",
-                    "message" => "Not Found",
-                ],
-            ];
-
-            $this->response = $response;
-        }
+    public function getNotFoundResponse(int $projectId, int $imageId) {
+        return [
+            "row" => [],
+            "meta" => [
+                "status" => 404,
+                "feedback" => "No {$this->displayName} found with {$imageId} as ID for Project: {$projectId}.",
+                "message" => "Not Found",
+            ],
+        ];
     }
 }

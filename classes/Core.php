@@ -263,11 +263,12 @@ class Core {
         // Check the Project trying to get Images for
         $response = $this->getProject($projectId);
         if (!empty($response["row"])) {
-            $projectImage = new ProjectImage($imageId);
+            $projectImage = new ProjectImage();
+            $response = $projectImage->getById($imageId);
 
-            $projectImage->checkProjectImageIsChildOfProject($projectId);
-
-            $response = $projectImage->response;
+            if ($response["row"]["project_id"] !== $projectId) {
+                $response = $projectImage->getNotFoundResponse($projectId, $imageId);
+            }
         }
 
         return $response;
