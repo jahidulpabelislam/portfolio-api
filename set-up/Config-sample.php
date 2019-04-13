@@ -69,7 +69,6 @@ class Config {
      * @return Config
      */
     public static function get(): Config {
-
         if (self::$instance === null) {
             self::$instance = new self();
         }
