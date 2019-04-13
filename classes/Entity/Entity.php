@@ -396,6 +396,7 @@ abstract class Entity {
         $response = $this->db->query($query, $bindings);
 
         $response["meta"]["count"] = $response["meta"]["affected_rows"];
+        $response["meta"]["total_count"] = 0;
 
         // Check if database provided any meta data if not all ok
         if ($response["meta"]["count"] > 0 && !isset($response["meta"]["feedback"])) {
@@ -411,7 +412,6 @@ abstract class Entity {
             $response["meta"]["status"] = 404;
             $response["meta"]["feedback"] = "No {$this->displayName}s found.";
             $response["meta"]["message"] = "Not Found";
-            $response["meta"]["total_count"] = 0;
         }
 
         return $response;
