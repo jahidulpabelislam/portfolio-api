@@ -21,11 +21,9 @@ if (!defined("ROOT")) {
 
 class ProjectImage extends Entity {
 
-    public $tableName = "portfolio_project_image";
+    protected $tableName = "portfolio_project_image";
 
-    public $displayName = "Project Image";
-
-    public $columns = [
+    protected $columns = [
         "id",
         "project_id",
         "file",
@@ -37,6 +35,8 @@ class ProjectImage extends Entity {
     protected $defaultOrderingByColumn = "sort_order_number";
 
     protected $defaultOrderingByDirection = "ASC";
+
+    public $displayName = "Project Image";
 
     /**
      * Delete an Entity from the Database

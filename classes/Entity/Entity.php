@@ -24,11 +24,9 @@ abstract class Entity {
 
     public $response = [];
 
-    public $tableName = null;
+    protected $tableName = "";
 
-    public $displayName = null;
-
-    public $columns = [];
+    protected $columns = [];
 
     protected $searchableColumns = [];
 
@@ -37,6 +35,8 @@ abstract class Entity {
     protected $defaultOrderingByDirection = "DESC";
 
     protected $defaultLimit = 10;
+
+    public $displayName = "";
 
     private $db = null;
 
@@ -339,9 +339,8 @@ abstract class Entity {
             $limit = $this->defaultLimit;
         }
 
-        $offset = 0;
-
         // Add a offset to the query, if specified
+        $offset = 0;
         if (isset($params["offset"])) {
             $offset = abs(intval($params["offset"]));
         }
@@ -355,7 +354,6 @@ abstract class Entity {
         }
 
         $bindings = [];
-
         $whereClause = "";
 
         // Add a filter if a search was entered
@@ -364,18 +362,20 @@ abstract class Entity {
             list($whereClause, $bindings) = $this->generateSearchWhereQuery($params["search"]);
         }
 
-        $query = "SELECT * FROM  {$this->tableName} {$whereClause} ORDER BY {$this->defaultOrderingByColumn} {$this->defaultOrderingByDirection} LIMIT {$limit} OFFSET {$offset};";
+        $query = "SELECT * FROM  {$this->tableName} {$whereClause}
+                    ORDER BY {$this->defaultOrderingByColumn} {$this->defaultOrderingByDirection}
+                    LIMIT {$limit} OFFSET {$offset};";
         $response = $this->db->query($query, $bindings);
 
         $response["meta"]["count"] = $response["meta"]["affected_rows"];
 
         // Check if database provided any meta data if not all ok
-        if ($response["meta"]["affected_rows"] > 0 && !isset($response["meta"]["feedback"])) {
+        if ($response["meta"]["count"] > 0 && !isset($response["meta"]["feedback"])) {
 
             $response["meta"]["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
             $response["meta"]["ok"] = true;
         }
-        else if ($response["meta"]["affected_rows"] === 0 && !isset($response["meta"]["feedback"])) {
+        else if ($response["meta"]["count"] === 0 && !isset($response["meta"]["feedback"])) {
             $response["meta"]["status"] = 404;
             $response["meta"]["feedback"] = "No {$this->displayName}s found.";
             $response["meta"]["message"] = "Not Found";

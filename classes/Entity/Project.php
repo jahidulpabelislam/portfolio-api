@@ -21,11 +21,9 @@ if (!defined("ROOT")) {
 
 class Project extends Entity {
 
-    public $tableName = "portfolio_project";
+    protected $tableName = "portfolio_project";
 
-    public $displayName = "Project";
-
-    public $columns = [
+    protected $columns = [
         "id",
         "name",
         "date",
@@ -49,6 +47,8 @@ class Project extends Entity {
     ];
 
     protected $defaultOrderingByColumn = "date";
+
+    public $displayName = "Project";
 
     /**
      * Helper function to get all Project Image Entities linked to this Project
