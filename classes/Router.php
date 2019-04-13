@@ -31,7 +31,7 @@ class Router {
      *
      * @return array
      */
-    private function checkAPIVersion() {
+    private function checkAPIVersion(): array {
         $response = [];
 
         $uri = $this->helper->uriArray;

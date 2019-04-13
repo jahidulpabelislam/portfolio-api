@@ -62,7 +62,7 @@ class Project extends Entity {
      * @param $id int The Project Image to find Images for
      * @return array An array of ProjectImage's (if any found)
      */
-    public function getProjectImages($id): array {
+    public function getProjectImages(int $id): array {
         // Get all the images linked to the Project
         $projectImage = new ProjectImage();
         $imagesResponse = $projectImage->getByColumn("project_id", $id);
@@ -84,7 +84,7 @@ class Project extends Entity {
      * @param bool $getImages bool Whether of not to also get and output the Project Images linked to this Project
      * @return array The response from the SQL query
      */
-    public function getById($id, $getImages = true): array {
+    public function getById(int $id, bool $getImages = true): array {
         $response = parent::getById($id);
 
         // If Project was found
@@ -151,7 +151,7 @@ class Project extends Entity {
      * @param $id int The id of the Entity to delete
      * @return array Either an array with successful meta data or a array of error feedback meta
      */
-    public function delete($id): array {
+    public function delete(int $id): array {
         $response = parent::delete($id);
 
         // Delete all the images linked to this Project from the database & from disk

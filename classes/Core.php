@@ -38,7 +38,7 @@ class Core {
      * @param $data array Any data to aid in the search query
      * @return array The request response to send back
      */
-    public function getProjects($data) {
+    public function getProjects(array $data): array {
 
         $projects = new Project();
         $response = $projects->doSearch($data);
@@ -52,7 +52,7 @@ class Core {
      * @param $data array The data to insert/update into the database for the Project
      * @return array The request response to send back
      */
-    private function saveProject($data) {
+    private function saveProject(array $data): array {
         // Checks if user is authored
         if (Auth::isLoggedIn()) {
 
@@ -82,7 +82,7 @@ class Core {
      * @param $data array The data to insert into the database for this new Project
      * @return array The request response to send back
      */
-    public function addProject($data) {
+    public function addProject(array $data): array {
         return $this->saveProject($data);
     }
 
@@ -92,7 +92,7 @@ class Core {
      * @param $data array The new data entered to use to update the Project with
      * @return array The request response to send back
      */
-    public function editProject($data) {
+    public function editProject(array $data): array {
         return $this->saveProject($data);
     }
 
@@ -102,7 +102,7 @@ class Core {
      * @param $data array The data sent to aid in the deletion of the Project
      * @return array The request response to send back
      */
-    public function deleteProject($data) {
+    public function deleteProject(array $data): array {
 
         // Checks if user is authored
         if (Auth::isLoggedIn()) {
@@ -123,7 +123,7 @@ class Core {
      * @param bool $getImages bool Whether the images for the Project should should be added
      * @return array The request response to send back
      */
-    public function getProject($projectId, $getImages = false) {
+    public function getProject(int $projectId, bool $getImages = false): array {
 
         $project = new Project();
         $response = $project->getById($projectId, $getImages);
@@ -137,7 +137,7 @@ class Core {
      * @param $projectId int The Id of the Project
      * @return array The request response to send back
      */
-    public function getProjectImages($projectId) {
+    public function getProjectImages(int $projectId): array {
 
         // Check the Project trying to get Images for
         $response = $this->getProject($projectId);
@@ -156,8 +156,7 @@ class Core {
      * @param $project array The Project trying to upload image for
      * @return array The request response to send back
      */
-    private function uploadProjectImage($project): array {
-
+    private function uploadProjectImage(array $project): array {
         $response = [];
 
         $projectId = $project["id"];
@@ -223,7 +222,7 @@ class Core {
      * @param $data array The data sent to aid in Inserting Project Image
      * @return array The request response to send back
      */
-    public function addProjectImage($data) {
+    public function addProjectImage(array $data): array {
 
         // Checks if user is authored
         if (Auth::isLoggedIn()) {
@@ -234,7 +233,6 @@ class Core {
                 // Check the Project trying to add a a Image for exists
                 $response = $this->getProject($data["project_id"]);
                 if (!empty($response["row"])) {
-
                     $response = $this->uploadProjectImage($response["row"]);
                 }
             }
@@ -260,7 +258,7 @@ class Core {
      * @param $imageId int The id of the Project Image to get
      * @return array The request response to send back
      */
-    public function getProjectImage($projectId, $imageId) {
+    public function getProjectImage(int $projectId, int $imageId): array {
 
         // Check the Project trying to get Images for
         $response = $this->getProject($projectId);
@@ -281,7 +279,7 @@ class Core {
      * @param $data array The data sent to delete the Project Image
      * @return array The request response to send back
      */
-    public function deleteImage($data) {
+    public function deleteImage(array $data): array {
 
         // Checks if user is authored
         if (Auth::isLoggedIn()) {

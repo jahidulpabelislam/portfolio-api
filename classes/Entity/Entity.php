@@ -57,7 +57,7 @@ abstract class Entity {
         }
     }
 
-    public function toArray($entity) {
+    public function toArray(array $entity): array {
         $array = [];
         foreach ($this->columns as $column) {
             $value = $entity[$column];
@@ -79,7 +79,7 @@ abstract class Entity {
      * @param $value string
      * @return array The response from the SQL query
      */
-    public function getByColumn($column, $value): array {
+    public function getByColumn(string $column, $value): array {
 
         $query = "SELECT * FROM {$this->tableName} WHERE {$column} = :value ORDER BY {$this->defaultOrderingByColumn} {$this->defaultOrderingByDirection};";
         $bindings = [":value" => $value];
@@ -113,7 +113,7 @@ abstract class Entity {
      * @param $id int The id of the Entity to get
      * @return array The response from the SQL query
      */
-    public function getById($id): array {
+    public function getById(int $id): array {
 
         if (is_numeric($id)) {
             $response = $this->getByColumn("id", (int)$id);
@@ -257,7 +257,7 @@ abstract class Entity {
      * @param $id int The id of the Entity to delete
      * @return array Either an array with successful meta data or a array of error feedback meta
      */
-    public function delete($id): array {
+    public function delete(int $id): array {
 
         // Check the Entity trying to delete actually exists
         $response = $this->getById($id);
@@ -288,7 +288,7 @@ abstract class Entity {
      * @param $params array The fields to search for within searchable columns (if any)
      * @return array An array consisting of the generated where clause and an associative array containing any bindings to aid the Database querying
      */
-    private function generateSearchWhereQuery($params): array {
+    private function generateSearchWhereQuery(array $params): array {
 
         if ($this->searchableColumns) {
             $bindings = [];
@@ -348,7 +348,7 @@ abstract class Entity {
      * @param array $bindings array Any data to aid in the database querying
      * @return int
      */
-    public function getTotalCountByWhereClause($whereClause, array $bindings): int {
+    public function getTotalCountByWhereClause(string $whereClause, array $bindings): int {
         $query = "SELECT COUNT(*) AS total_count FROM {$this->tableName} {$whereClause};";
         $totalCount = $this->db->query($query, $bindings);
 

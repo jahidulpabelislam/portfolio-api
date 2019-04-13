@@ -58,7 +58,7 @@ class Database {
      *
      * @return Database
      */
-    public static function get() {
+    public static function get(): Database {
 
         if (self::$instance === null) {
             self::$instance = new self();
@@ -74,7 +74,7 @@ class Database {
      * @param null $bindings array Array of any bindings to use with the SQL query
      * @return array Array of data or meta feedback
      */
-    public function query($query, $bindings = null) {
+    public function query(string $query, $bindings = null): array {
 
         $response = [
             "meta" => [

@@ -51,7 +51,7 @@ class ProjectImage extends Entity {
      * @param string $fileName string The filename of the file to delete
      * @return array Either an array with successful meta data or a array of error feedback meta
      */
-    public function delete($id, $fileName = ""): array {
+    public function delete(int $id, $fileName = ""): array {
 
         $response = parent::delete($id);
 
@@ -73,7 +73,7 @@ class ProjectImage extends Entity {
      *
      * @param $projectId int The id of a Project it should check against
      */
-    public function checkProjectImageIsChildOfProject($projectId) {
+    public function checkProjectImageIsChildOfProject(int $projectId) {
 
         $response = $this->response;
 

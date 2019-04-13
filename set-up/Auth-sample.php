@@ -32,7 +32,7 @@ class Auth {
      * @param $data array The data provided when trying to login
      * @return array Response with meta data given to ajax call after trying to login
      */
-    public static function login($data) {
+    public static function login(array $data): array {
         $response = [];
 
         $helper = Helper::get();
@@ -101,9 +101,9 @@ class Auth {
      * Do the log out here (e.g removing cookie, session or database etc.)
      * If successful output appropriate success message
      *
-     * @return mixed
+     * @return array
      */
-    public static function logout() {
+    public static function logout(): array {
 
         /*
          * TODO Actually do the log out here (e.g removing cookie, session or database etc.)
@@ -124,7 +124,7 @@ class Auth {
      *
      * @return bool Whether user is logged in or not
      */
-    public static function isLoggedIn() {
+    public static function isLoggedIn(): bool {
 
         /*
          * TODO Actually do the check of logged in status (e.g check against stored cookie, session or database etc.)
@@ -163,7 +163,7 @@ class Auth {
      *
      * @return array The request response to send back
      */
-    public static function getAuthStatus() {
+    public static function getAuthStatus(): array {
 
         if (self::isLoggedIn()) {
             $response = [

@@ -80,7 +80,7 @@ class Helper {
      * @param array $uriArray array The URI user request as an array
      * @return string The Full URI user requested
      */
-    public function getAPIURL($uriArray = null): string {
+    public function getAPIURL(array $uriArray = null): string {
         if (!$uriArray) {
             $uriString = $this->uriString;
         }
@@ -100,7 +100,7 @@ class Helper {
         return $url;
     }
 
-    private function isFieldValid($field) {
+    private function isFieldValid($field): bool {
         $data = $this->data;
 
         return (isset($data[$field]) && trim($data[$field]) !== "");
@@ -231,7 +231,7 @@ class Helper {
         ];
     }
 
-    private function setCORSHeaders(&$response) {
+    private function setCORSHeaders(array &$response) {
         $originURL = $_SERVER["HTTP_ORIGIN"] ?? "";
 
         // Strip the protocol from domain
