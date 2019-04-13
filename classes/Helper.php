@@ -74,6 +74,32 @@ class Helper {
         $this->extractDataFromRequest();
     }
 
+    /**
+     * Generates a full url from the URI user requested
+     *
+     * @param array $uriArray array The URI user request as an array
+     * @return string The Full URI user requested
+     */
+    public function getAPIURL($uriArray = null): string {
+        if (!$uriArray) {
+            $uriString = $this->uriString;
+        }
+        else {
+            $uriString = implode("/", $uriArray);
+        }
+
+        $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] != "off") ? "https" : "http";
+        $url = "{$protocol}://" . $_SERVER["SERVER_NAME"];
+
+        if ($uriString) {
+            $uriString .= "/";
+        }
+
+        $url .= "/{$uriString}";
+
+        return $url;
+    }
+
     private function isFieldValid($field) {
         $data = $this->data;
 
@@ -136,32 +162,6 @@ class Helper {
                 "feedback" => "The necessary data was not provided, missing/invalid fields: " . implode(", ", $invalidFields) . ".",
             ],
         ];
-    }
-
-    /**
-     * Generates a full url from the URI user requested
-     *
-     * @param array $uriArray array The URI user request as an array
-     * @return string The Full URI user requested
-     */
-    public function getAPIURL($uriArray = null): string {
-        if (!$uriArray) {
-            $uriString = $this->uriString;
-        }
-        else {
-            $uriString = implode("/", $uriArray);
-        }
-
-        $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] != "off") ? "https" : "http";
-        $url = "{$protocol}://" . $_SERVER["SERVER_NAME"];
-
-        if ($uriString) {
-            $uriString .= "/";
-        }
-
-        $url .= "/{$uriString}";
-
-        return $url;
     }
 
     /**
