@@ -254,7 +254,7 @@ class Helper {
 
     private function setCacheHeaders() {
         $notCachedURLs = [
-            "v" . Config::API_VERSION. "/session/"
+            "v" . Config::API_VERSION . "/session/",
         ];
 
         // Set cache for 31 days for some GET Requests

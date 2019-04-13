@@ -17,6 +17,9 @@
 
 namespace JPI\API;
 
+use PDO;
+use PDOException;
+
 if (!defined("ROOT")) {
     die();
 }
@@ -39,12 +42,12 @@ class Database {
         $this->config = Config::get();
 
         $dsn = "mysql:host=" . Config::DB_IP . ";dbname=" . Config::DB_NAME . ";charset-UTF-8";
-        $option = [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION];
+        $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
 
         try {
-            $this->db = new \PDO($dsn, Config::DB_USERNAME, Config::DB_PASSWORD, $option);
+            $this->db = new PDO($dsn, Config::DB_USERNAME, Config::DB_PASSWORD, $options);
         }
-        catch (\PDOException $error) {
+        catch (PDOException $error) {
             $errorMessage = $error->getMessage();
             error_log("Error creating a connection to database: {$errorMessage}, full error: {$error}");
             if ($this->config->debug) {
@@ -98,13 +101,13 @@ class Database {
 
                 // If query was a select, return array of data
                 if (stripos($query, "SELECT") !== false) {
-                    $response["rows"] = $executedQuery->fetchAll(\PDO::FETCH_ASSOC);
+                    $response["rows"] = $executedQuery->fetchAll(PDO::FETCH_ASSOC);
                 }
 
                 // Add the count of how many rows were effected
                 $response["meta"]["affected_rows"] = $executedQuery->rowCount();
             }
-            catch (\PDOException $error) {
+            catch (PDOException $error) {
                 $errorMessage = $error->getMessage();
                 error_log("Error executing query on database: {$errorMessage} using query: {$query} and bindings: " . print_r($bindings, true) . ", full error: {$error}");
 

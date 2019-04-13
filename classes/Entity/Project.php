@@ -89,7 +89,7 @@ class Project extends Entity {
 
         // If Project was found
         if (!empty($response["row"])) {
-            if (!Auth::isLoggedIn() && $response["row"]["status"] !== self::PUBLIC_STATUS){
+            if (!Auth::isLoggedIn() && $response["row"]["status"] !== self::PUBLIC_STATUS) {
                 return Helper::getNotAuthorisedResponse();
             }
 
@@ -174,7 +174,7 @@ class Project extends Entity {
      */
     public function doSearch(array $params): array {
 
-        if (!Auth::isLoggedIn()){
+        if (!Auth::isLoggedIn()) {
             $params["status"] = self::PUBLIC_STATUS;
         }
 
@@ -183,6 +183,7 @@ class Project extends Entity {
         // Loop through each Project and get the Projects Images
         $response["rows"] = array_map(function($project) {
             $project["images"] = $this->getProjectImages($project["id"]);
+
             return $project;
         }, $response["rows"]);
 
