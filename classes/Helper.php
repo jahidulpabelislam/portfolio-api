@@ -33,7 +33,6 @@ class Helper {
      * @return self
      */
     public static function get() {
-
         if (!self::$instance) {
             self::$instance = new self();
         }
@@ -100,7 +99,7 @@ class Helper {
         return $url;
     }
 
-    private function isFieldValid($field): bool {
+    private function isFieldValid(string $field): bool {
         $data = $this->data;
 
         return (isset($data[$field]) && trim($data[$field]) !== "");
