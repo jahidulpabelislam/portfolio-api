@@ -120,13 +120,13 @@ class Core {
      * Get a particular Project defined by $projectId
      *
      * @param $projectId int The id of the Project to get
-     * @param bool $images bool Whether the images for the Project should should be added
+     * @param bool $getImages bool Whether the images for the Project should should be added
      * @return array The request response to send back
      */
-    public function getProject($projectId, $images = false) {
+    public function getProject($projectId, $getImages = false) {
 
         $project = new Project();
-        $response = $project->getById($projectId, $images);
+        $response = $project->getById($projectId, $getImages);
 
         return $response;
     }
@@ -161,7 +161,6 @@ class Core {
         $response = [];
 
         $projectId = $project["id"];
-
         $projectName = $project["name"];
 
         $projectNameFormatted = strtolower($projectName);

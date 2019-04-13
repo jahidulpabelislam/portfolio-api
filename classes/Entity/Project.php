@@ -72,18 +72,16 @@ class Project extends Entity {
      * Add these to the response unless specified
      *
      * @param $id int The id of the Entity to get
-     * @param bool $images bool Whether of not to also get and output the Project Images linked to this Project
+     * @param bool $getImages bool Whether of not to also get and output the Project Images linked to this Project
      * @return array The response from the SQL query
      */
-    public function getById($id, $images = true): array {
+    public function getById($id, $getImages = true): array {
         $response = parent::getById($id);
 
-        // Check if database provided any meta data if so no problem with executing query but no Project found
-        if (!empty($response["row"])) {
-            if ($images) {
-                $images = $this->getProjectImages($id);
-                $response["row"]["images"] = $images;
-            }
+        // Check if Project was found and Project's Images was requested, get and add these
+        if ($getImages && !empty($response["row"])) {
+            $getImages = $this->getProjectImages($id);
+            $response["row"]["images"] = $getImages;
         }
 
         return $response;
