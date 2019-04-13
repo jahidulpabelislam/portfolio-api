@@ -28,6 +28,8 @@ abstract class Entity {
 
     protected $columns = [];
 
+    protected $intColumns = ["id"];
+
     protected $searchableColumns = [];
 
     protected $defaultOrderingByColumn = "id";
@@ -55,6 +57,20 @@ abstract class Entity {
         }
     }
 
+    public function toArray($entity) {
+        $array = [];
+        foreach ($this->columns as $column) {
+            $value = $entity[$column];
+            if (in_array($column, $this->intColumns)) {
+                $value = (int)$value;
+            }
+
+            $array[$column] = $value;
+        }
+
+        return $array;
+    }
+
     /**
      * Load Entities from the Database where a column ($column) = a value ($value)
      * Either return Entities with success meta data, or failed meta data
@@ -69,18 +85,22 @@ abstract class Entity {
         $bindings = [":value" => $value];
         $response = $this->db->query($query, $bindings);
 
+        $response["meta"]["count"] = $response["meta"]["affected_rows"];
+
         // Check everything was okay
-        if ($response["meta"]["affected_rows"] > 0) {
+        if ($response["meta"]["count"] > 0) {
+            foreach ($response["rows"] as $i => $entity) {
+                $response["rows"][$i] = $this->toArray($entity);
+            }
+
             $response["meta"]["ok"] = true;
         }
         // Check if database provided any meta data if not no problem with executing query but no item found
-        else if ($response["meta"]["affected_rows"] <= 0 && !isset($response["meta"]["feedback"])) {
+        else if ($response["meta"]["count"] <= 0 && !isset($response["meta"]["feedback"])) {
             $response["meta"]["status"] = 404;
             $response["meta"]["feedback"] = "No {$this->displayName}s found with {$value} as {$column}.";
             $response["meta"]["message"] = "Not Found";
         }
-
-        $response["meta"]["count"] = $response["meta"]["affected_rows"];
 
         return $response;
     }
@@ -101,7 +121,7 @@ abstract class Entity {
             $response["row"] = [];
 
             // Check everything was okay, so as this /Should/ return only one, use 'Row' as index
-            if ($response["meta"]["affected_rows"] > 0) {
+            if ($response["meta"]["count"] > 0) {
                 $response["row"] = $response["rows"][0];
             }
             // Check if database provided any meta data if so no problem with executing query but no item found
@@ -389,6 +409,10 @@ abstract class Entity {
 
         // Check if database provided any meta data if not all ok
         if ($response["meta"]["count"] > 0 && !isset($response["meta"]["feedback"])) {
+
+            foreach ($response["rows"] as $i => $entity) {
+                $response["rows"][$i] = $this->toArray($entity);
+            }
 
             $response["meta"]["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
             $response["meta"]["ok"] = true;

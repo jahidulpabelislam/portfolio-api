@@ -26,11 +26,13 @@ class ProjectImage extends Entity {
     protected $columns = [
         "id",
         "project_id",
-        "file",
         "sort_order_number",
+        "file",
         "created_at",
         "updated_at",
     ];
+
+    protected $intColumns = ["id", "project_id", "sort_order_number"];
 
     protected $defaultOrderingByColumn = "sort_order_number";
 
