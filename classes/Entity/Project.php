@@ -104,24 +104,22 @@ class Project extends Entity {
 
         $response = parent::save($values);
 
-        // Checks if the save was a update
-        if (!empty($values["id"])) {
-            // Checks if update was ok
-            if (!empty($response["row"])) {
-                $images = json_decode($values["images"]);
+        // Checks if the save was a update & update was okay
+        if (!empty($values["id"]) && !empty($response["row"]) && !empty($values["images"])) {
 
-                if (count($images) > 0) {
-                    foreach ($images as $sortOrder => $image) {
-                        $imageUpdateData = [
-                            "id" => $image->id,
-                            "sort_order_number" => $sortOrder,
-                        ];
-                        $projectImage = new ProjectImage();
-                        $projectImage->save($imageUpdateData);
-                    }
+            $images = json_decode($values["images"]);
 
-                    $response = $this->getById($values["id"]);
+            if (count($images) > 0) {
+                foreach ($images as $sortOrder => $image) {
+                    $imageUpdateData = [
+                        "id" => $image->id,
+                        "sort_order_number" => $sortOrder,
+                    ];
+                    $projectImage = new ProjectImage();
+                    $projectImage->save($imageUpdateData);
                 }
+
+                $response = $this->getById($values["id"]);
             }
         }
 
@@ -140,12 +138,10 @@ class Project extends Entity {
     public function delete($id): array {
         $response = parent::delete($id);
 
-        // Delete the images linked to the Project
+        // Delete all the images linked to this Project from the database & from disk
         $projectImage = new ProjectImage();
         $images = $this->getProjectImages($id);
         foreach ($images as $image) {
-
-            // Delete the image from the database & from file
             $projectImage->delete($image["id"], $image["file"]);
         }
 
@@ -165,11 +161,10 @@ class Project extends Entity {
         $response = parent::doSearch($params);
 
         // Loop through each Project and get the Projects Images
-        for ($i = 0; $i < $response["meta"]["count"]; $i++) {
-
-            $images = $this->getProjectImages($response["rows"][$i]["id"]);
-            $response["rows"][$i]["images"] = $images;
-        }
+        $response["rows"] = array_map(function($project) {
+            $project["images"] = $this->getProjectImages($project["id"]);
+            return $project;
+        }, $response["rows"]);
 
         return $response;
     }

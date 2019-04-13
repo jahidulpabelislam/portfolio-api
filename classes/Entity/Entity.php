@@ -244,7 +244,6 @@ abstract class Entity {
 
                 $response["meta"]["ok"] = true;
                 $response["row"]["id"] = $id;
-
             }
 
             unset($response["rows"]);
