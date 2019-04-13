@@ -36,6 +36,7 @@ class Project extends Entity {
         "colour",
         "short_description",
         "long_description",
+        "status",
         "created_at",
         "updated_at",
     ];
