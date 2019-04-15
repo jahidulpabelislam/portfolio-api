@@ -50,7 +50,7 @@ abstract class Entity {
     public function toArray(array $entity): array {
         $array = [];
         foreach ($this->columns as $column) {
-            $value = $entity[$column];
+            $value = $entity[$column] ?? '';
             if (in_array($column, $this->intColumns)) {
                 $value = (int)$value;
             }
