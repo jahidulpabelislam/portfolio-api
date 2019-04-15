@@ -358,24 +358,27 @@ abstract class Entity {
     public function doSearch(array $params): array {
 
         // If user added a limit param, use this if valid, unless its bigger than 10
-        if (isset($params["limit"])) {
-            $limit = min(abs(intval($params["limit"])), $this->defaultLimit);
+        if (!empty($params["limit"])) {
+            $limit = (int)$params["limit"];
+            $limit = abs($limit);
+            $limit = min($limit, $this->defaultLimit);
         }
-
         // Default limit to 10 if not specified or invalid
-        if (!isset($limit) || !is_int($limit) || $limit < 1) {
+        if (empty($limit) || !is_int($limit) || $limit < 1) {
             $limit = $this->defaultLimit;
         }
 
         // Add a offset to the query, if specified
         $offset = 0;
-        if (isset($params["offset"])) {
-            $offset = abs(intval($params["offset"]));
+        if (!empty($params["offset"])) {
+            $offset = (int)$params["offset"];
+            $offset = abs($offset);
         }
 
-        // Generate a offset to the query, if a page was specified using, page number and limit number
-        if (isset($params["page"])) {
-            $page = abs(intval($params["page"]));
+        // Generate a offset to the query, if a page was specified using page & limit values
+        if (!empty($params["page"])) {
+            $page = (int)$params["page"];
+            $page = abs($page);
             if (is_int($page) && $page > 1) {
                 $offset = $limit * ($page - 1);
             }
