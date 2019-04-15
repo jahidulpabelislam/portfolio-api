@@ -119,7 +119,7 @@ class Core {
     /**
      * Get a particular Project defined by $projectId
      *
-     * @param $projectId int The id of the Project to get
+     * @param $projectId int The Id of the Project to get
      * @param bool $getImages bool Whether the images for the Project should should be added
      * @return array The request response to send back
      */
@@ -252,10 +252,10 @@ class Core {
     }
 
     /**
-     * Get a Project Image for a Project by id
+     * Get a Project Image for a Project by Id
      *
-     * @param $projectId int The id of the Project trying to get Images for
-     * @param $imageId int The id of the Project Image to get
+     * @param $projectId int The Id of the Project trying to get Images for
+     * @param $imageId int The Id of the Project Image to get
      * @return array The request response to send back
      */
     public function getProjectImage($projectId, $imageId): array {

@@ -96,11 +96,11 @@ abstract class Entity {
     }
 
     /**
-     * Load a single Entity from the Database where a id column = a value ($id)
+     * Load a single Entity from the Database where a Id column = a value ($id)
      * Either return Entity with success meta data, or failed meta data
      * Uses helper function getByColumn();
      *
-     * @param $id int The id of the Entity to get
+     * @param $id int The Id of the Entity to get
      * @return array The response from the SQL query
      */
     public function getById($id): array {
@@ -244,7 +244,7 @@ abstract class Entity {
     /**
      * Delete an Entity from the Database
      *
-     * @param $id int The id of the Entity to delete
+     * @param $id int The Id of the Entity to delete
      * @return array Either an array with successful meta data or a array of error feedback meta
      */
     public function delete($id): array {

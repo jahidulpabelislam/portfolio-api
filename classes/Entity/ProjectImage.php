@@ -47,7 +47,7 @@ class ProjectImage extends Entity {
      * As these Entities are linked to a file on the server
      * Here actually delete the file from the server
      *
-     * @param $id int The id of the Entity to delete
+     * @param $id int The Id of the Entity to delete
      * @param string $fileName string The filename of the file to delete
      * @return array Either an array with successful meta data or a array of error feedback meta
      */
@@ -70,8 +70,8 @@ class ProjectImage extends Entity {
     /**
      * Return the response when a ProjectImage is not found
      *
-     * @param $projectId int The id of the Project requested
-     * @param $imageId int The id of a Project Image requested
+     * @param $projectId int The Id of the Project requested
+     * @param $imageId int The Id of a Project Image requested
      */
     public function getNotFoundResponse(int $projectId, int $imageId) {
         return [

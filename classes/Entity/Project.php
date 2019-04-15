@@ -72,7 +72,7 @@ class Project extends Entity {
     }
 
     /**
-     * Load a single Entity from the Database where a id column = a value ($id)
+     * Load a single Entity from the Database where a Id column = a value ($id)
      * Either return Entity with success meta data, or failed meta data
      * Uses helper function getByColumn();
      *
@@ -80,7 +80,7 @@ class Project extends Entity {
      * As Project is linked to Multiple Project Images
      * Add these to the response unless specified
      *
-     * @param $id int The id of the Entity to get
+     * @param $id int The Id of the Entity to get
      * @param bool $getImages bool Whether of not to also get and output the Project Images linked to this Project
      * @return array The response from the SQL query
      */
@@ -148,7 +148,7 @@ class Project extends Entity {
      * Add extra functionality on top of default delete function
      * As these Entities are linked to many Project Images, so delete these also
      *
-     * @param $id int The id of the Entity to delete
+     * @param $id int The Id of the Entity to delete
      * @return array Either an array with successful meta data or a array of error feedback meta
      */
     public function delete($id): array {
