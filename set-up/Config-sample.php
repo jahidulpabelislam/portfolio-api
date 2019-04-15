@@ -50,7 +50,7 @@ class Config {
     public $debug = false;
 
     public function __construct() {
-        $environment = !empty(getenv("APPLICATION_ENV")) ? getenv("APPLICATION_ENV") : "development";
+        $environment = !empty(getenv("APPLICATION_ENV")) ? getenv("APPLICATION_ENV") : "production";
         // Don't want debugging on live/production site
         if ($environment === "production") {
             $this->debug = false;

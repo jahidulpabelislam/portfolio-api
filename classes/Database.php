@@ -41,10 +41,10 @@ class Database {
 
         $this->config = Config::get();
 
-        $dsn = "mysql:host=" . Config::DB_IP . ";dbname=" . Config::DB_NAME . ";charset-UTF-8";
-        $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
-
         try {
+            $dsn = "mysql:host=" . Config::DB_IP . ";dbname=" . Config::DB_NAME . ";charset-UTF-8";
+            $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
+
             $this->db = new PDO($dsn, Config::DB_USERNAME, Config::DB_PASSWORD, $options);
         }
         catch (PDOException $error) {
@@ -62,7 +62,6 @@ class Database {
      * @return Database
      */
     public static function get(): Database {
-
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -78,7 +77,6 @@ class Database {
      * @return array Array of data or meta feedback
      */
     public function query(string $query, $bindings = null): array {
-
         $response = [
             "meta" => [
                 "affected_rows" => 0,
@@ -87,9 +85,7 @@ class Database {
         ];
 
         if ($this->db) {
-
             try {
-
                 // Check if any bindings to execute
                 if (isset($bindings)) {
                     $executedQuery = $this->db->prepare($query);
@@ -112,16 +108,13 @@ class Database {
                 error_log("Error executing query on database: {$errorMessage} using query: {$query} and bindings: " . print_r($bindings, true) . ", full error: {$error}");
 
                 $response["meta"]["feedback"] = "Problem with Server.";
-
                 if ($this->config->debug) {
                     $response["meta"]["feedback"] = $errorMessage;
                 }
             }
         }
         else {
-
             $response["meta"]["feedback"] = "Problem with Server.";
-
             if ($this->config->debug) {
                 $response["meta"]["feedback"] = $this->error;
             }

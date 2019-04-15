@@ -52,7 +52,7 @@ class Project extends Entity {
         "status",
     ];
 
-    protected $defaultOrderingByColumn = "date";
+    protected $defaultOrderByColumn = "date";
 
     public $displayName = "Project";
 

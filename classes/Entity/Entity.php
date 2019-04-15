@@ -30,9 +30,9 @@ abstract class Entity {
 
     protected $searchableColumns = [];
 
-    protected $defaultOrderingByColumn = "id";
+    protected $defaultOrderByColumn = "id";
 
-    protected $defaultOrderingByDirection = "DESC";
+    protected $defaultOrderByDirection = "DESC";
 
     protected $defaultLimit = 10;
 
@@ -50,7 +50,7 @@ abstract class Entity {
     public function toArray(array $entity): array {
         $array = [];
         foreach ($this->columns as $column) {
-            $value = $entity[$column] ?? '';
+            $value = $entity[$column] ?? "";
             if (in_array($column, $this->intColumns)) {
                 $value = (int)$value;
             }
@@ -71,7 +71,7 @@ abstract class Entity {
      */
     public function getByColumn(string $column, $value): array {
 
-        $query = "SELECT * FROM {$this->tableName} WHERE {$column} = :value ORDER BY {$this->defaultOrderingByColumn} {$this->defaultOrderingByDirection};";
+        $query = "SELECT * FROM {$this->tableName} WHERE {$column} = :value ORDER BY {$this->defaultOrderByColumn} {$this->defaultOrderByDirection};";
         $bindings = [":value" => $value];
         $response = $this->db->query($query, $bindings);
 
@@ -394,7 +394,7 @@ abstract class Entity {
         }
 
         $query = "SELECT * FROM  {$this->tableName} {$whereClause}
-                    ORDER BY {$this->defaultOrderingByColumn} {$this->defaultOrderingByDirection}
+                    ORDER BY {$this->defaultOrderByColumn} {$this->defaultOrderByDirection}
                     LIMIT {$limit} OFFSET {$offset};";
         $response = $this->db->query($query, $bindings);
 

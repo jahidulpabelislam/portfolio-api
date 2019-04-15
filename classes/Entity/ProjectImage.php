@@ -34,9 +34,9 @@ class ProjectImage extends Entity {
 
     protected $intColumns = ["id", "project_id", "sort_order_number"];
 
-    protected $defaultOrderingByColumn = "sort_order_number";
+    protected $defaultOrderByColumn = "sort_order_number";
 
-    protected $defaultOrderingByDirection = "ASC";
+    protected $defaultOrderByDirection = "ASC";
 
     public $displayName = "Project Image";
 
@@ -52,7 +52,6 @@ class ProjectImage extends Entity {
      * @return array Either an array with successful meta data or a array of error feedback meta
      */
     public function delete($id, $fileName = ""): array {
-
         $response = parent::delete($id);
 
         // Check if the deletion was ok

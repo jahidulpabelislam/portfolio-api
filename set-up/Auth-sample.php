@@ -109,14 +109,12 @@ class Auth {
          * TODO Actually do the log out here (e.g removing cookie, session or database etc.)
          */
 
-        $response = [
+        return [
             "meta" => [
                 "ok" => true,
                 "feedback" => "Successfully Logged Out.",
             ],
         ];
-
-        return $response;
     }
 
     /**
@@ -139,7 +137,6 @@ class Auth {
         list($jwt) = sscanf($auth, "Bearer %s");
 
         if (!empty($jwt)) {
-
             try {
                 $secretKey = Config::PORTFOLIO_ADMIN_SECRET_KEY;
 
@@ -164,7 +161,6 @@ class Auth {
      * @return array The request response to send back
      */
     public static function getAuthStatus(): array {
-
         if (self::isLoggedIn()) {
             $response = [
                 "meta" => [
