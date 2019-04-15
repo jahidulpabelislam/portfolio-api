@@ -79,9 +79,9 @@ abstract class Entity {
 
         // Check everything was okay
         if ($response["meta"]["count"] > 0) {
-            foreach ($response["rows"] as $i => $entity) {
-                $response["rows"][$i] = $this->toArray($entity);
-            }
+            $response["rows"] = array_map(function($row) {
+                return $this->toArray($row);
+            }, $response["rows"]);
 
             $response["meta"]["ok"] = true;
         }
@@ -401,9 +401,9 @@ abstract class Entity {
         // Check if database provided any meta data if not all ok
         if ($response["meta"]["count"] > 0 && !isset($response["meta"]["feedback"])) {
 
-            foreach ($response["rows"] as $i => $entity) {
-                $response["rows"][$i] = $this->toArray($entity);
-            }
+            $response["rows"] = array_map(function($row) {
+                return $this->toArray($row);
+            }, $response["rows"]);
 
             $response["meta"]["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
             $response["meta"]["ok"] = true;
