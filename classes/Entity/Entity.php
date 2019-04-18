@@ -398,7 +398,6 @@ abstract class Entity {
 
         // Add a filter if a search was entered
         if (!empty($params)) {
-
             list($whereClause, $bindings) = $this->generateSearchWhereQuery($params);
         }
 
@@ -408,7 +407,7 @@ abstract class Entity {
         $response = $this->db->query($query, $bindings);
 
         $response["meta"]["count"] = $response["meta"]["affected_rows"];
-        $response["meta"]["total_count"] = 0;
+        $response["meta"]["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
 
         // Check if database provided any meta data if not all ok
         if ($response["meta"]["count"] > 0 && !isset($response["meta"]["feedback"])) {
@@ -417,7 +416,6 @@ abstract class Entity {
                 return $this->toArray($row);
             }, $response["rows"]);
 
-            $response["meta"]["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
             $response["meta"]["ok"] = true;
         }
         else if ($response["meta"]["count"] === 0 && !isset($response["meta"]["feedback"])) {
