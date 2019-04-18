@@ -18,6 +18,7 @@ if (!defined("ROOT")) {
     die();
 }
 
+use DateTime;
 use JPI\API\Database;
 
 abstract class Entity {
@@ -27,6 +28,8 @@ abstract class Entity {
     protected $columns = [];
 
     protected $intColumns = ["id"];
+
+    protected $dateColumns = ["created_at", "updated_at"];
 
     protected $searchableColumns = [];
 
@@ -53,6 +56,12 @@ abstract class Entity {
             $value = $entity[$column] ?? "";
             if (in_array($column, $this->intColumns)) {
                 $value = (int)$value;
+            }
+            else if (in_array($column, $this->dateColumns)) {
+                $datetime = DateTime::createFromFormat("Y-m-d G:i:s", $value);
+                if ($datetime) {
+                    $value = $datetime->format('Y-m-d G:i:s e');
+                }
             }
 
             $array[$column] = $value;
