@@ -20,6 +20,7 @@ if (!defined("ROOT")) {
 
 use DateTime;
 use JPI\API\Database;
+use JPI\API\Helper;
 
 abstract class Entity {
 
@@ -42,12 +43,14 @@ abstract class Entity {
     public $displayName = "";
 
     private $db = null;
+    private $helper = null;
 
     /**
      * Entity constructor
      */
     public function __construct() {
         $this->db = Database::get();
+        $this->helper = Helper::get();
     }
 
     public function toArray(array $entity): array {
@@ -409,7 +412,30 @@ abstract class Entity {
         $response["meta"]["page"] = $page;
 
         $response["meta"]["count"] = $response["meta"]["affected_rows"];
-        $response["meta"]["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
+        $totalCount = $response["meta"]["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
+
+        $lastPage = ceil($totalCount / $limit);
+        $response["meta"]["total_pages"] = $lastPage;
+
+        $pageURL = $this->helper->getAPIURL() . "?";
+        $params = $this->helper->data;
+        if (isset($params["limit"])) {
+            $params["limit"] = $limit;
+        }
+
+        $hasPreviousPage = ($page > 1) && ($lastPage >= ($page - 1));
+        $response["meta"]["has_previous_page"] = $hasPreviousPage;
+        if ($hasPreviousPage) {
+            $params["page"] = $page - 1;
+            $response["meta"]["previous_page_url"] = $pageURL . http_build_query($params, "", "&");
+        }
+
+        $hasNextPage = $page < $lastPage;
+        $response["meta"]["has_next_page"] = $hasNextPage;
+        if ($response["meta"]["has_next_page"]) {
+            $params["page"] = $page + 1;
+            $response["meta"]["next_page_url"] = $pageURL . http_build_query($params, "", "&");
+        }
 
         // Check if database provided any meta data if not all ok
         if ($response["meta"]["count"] > 0 && !isset($response["meta"]["feedback"])) {
