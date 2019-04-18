@@ -366,24 +366,29 @@ abstract class Entity {
      */
     public function doSearch(array $params): array {
 
+        $limit = $this->defaultLimit;
+
         // If user added a limit param, use this if valid, unless its bigger than 10
         if (!empty($params["limit"])) {
             $limit = (int)$params["limit"];
-            $limit = abs($limit);
             $limit = min($limit, $this->defaultLimit);
         }
+
         // Default limit to 10 if not specified or invalid
-        if (empty($limit) || !is_int($limit) || $limit < 1) {
+        if ($limit < 1) {
             $limit = $this->defaultLimit;
         }
 
         // Generate a offset to the query, if a page was specified using page & limit values
         $offset = 0;
+        $page = 1;
         if (!empty($params["page"])) {
             $page = (int)$params["page"];
-            $page = abs($page);
             if (is_int($page) && $page > 1) {
                 $offset = $limit * ($page - 1);
+            }
+            else {
+                $page = 1;
             }
         }
 
@@ -399,6 +404,9 @@ abstract class Entity {
                     ORDER BY {$this->defaultOrderByColumn} {$this->defaultOrderByDirection}
                     LIMIT {$limit} OFFSET {$offset};";
         $response = $this->db->query($query, $bindings);
+
+        $response["meta"]["limit"] = $limit;
+        $response["meta"]["page"] = $page;
 
         $response["meta"]["count"] = $response["meta"]["affected_rows"];
         $response["meta"]["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
