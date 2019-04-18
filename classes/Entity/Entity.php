@@ -377,14 +377,8 @@ abstract class Entity {
             $limit = $this->defaultLimit;
         }
 
-        // Add a offset to the query, if specified
-        $offset = 0;
-        if (!empty($params["offset"])) {
-            $offset = (int)$params["offset"];
-            $offset = abs($offset);
-        }
-
         // Generate a offset to the query, if a page was specified using page & limit values
+        $offset = 0;
         if (!empty($params["page"])) {
             $page = (int)$params["page"];
             $page = abs($page);
