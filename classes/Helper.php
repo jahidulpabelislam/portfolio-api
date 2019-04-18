@@ -303,7 +303,7 @@ class Helper {
             echo json_encode($response);
         } // Else send by plain text
         else {
-            echo json_encode($response, JSON_PRETTY_PRINT);
+            echo json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         }
         die();
     }
