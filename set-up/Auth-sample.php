@@ -162,7 +162,7 @@ class Auth {
      */
     public static function getAuthStatus(): array {
         if (self::isLoggedIn()) {
-            $response = [
+            return [
                 "meta" => [
                     "ok" => true,
                     "status" => 200,
@@ -170,10 +170,7 @@ class Auth {
                 ],
             ];
         }
-        else {
-            $response = Helper::getNotAuthorisedResponse();
-        }
 
-        return $response;
+        return Helper::getNotAuthorisedResponse();
     }
 }
