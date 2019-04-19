@@ -62,9 +62,13 @@ class Helper {
     }
 
     private function extractDataFromRequest() {
-        $data = array_map(function($field) {
-            return stripslashes(urldecode($field));
-        }, $_REQUEST);
+        $data = [];
+        foreach ($_REQUEST as $key => $field) {
+            if (!empty($field)) {
+                $value = stripslashes(urldecode($field));
+                $data[$key] = $value;
+            }
+        }
 
         $this->data = $data;
     }
