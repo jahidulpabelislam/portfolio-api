@@ -417,7 +417,7 @@ abstract class Entity {
         $lastPage = ceil($totalCount / $limit);
         $response["meta"]["total_pages"] = $lastPage;
 
-        $pageURL = $this->helper->getAPIURL() . "?";
+        $pageURL = $this->helper->getAPIURL();
         $params = $this->helper->data;
         if (isset($params["limit"])) {
             $params["limit"] = $limit;
@@ -427,14 +427,16 @@ abstract class Entity {
         $response["meta"]["has_previous_page"] = $hasPreviousPage;
         if ($hasPreviousPage) {
             $params["page"] = $page - 1;
-            $response["meta"]["previous_page_url"] = $pageURL . http_build_query($params, "", "&");
+            $response["meta"]["previous_page_url"] = $pageURL;
+            $response["meta"]["previous_page_params"] = $params;
         }
 
         $hasNextPage = $page < $lastPage;
         $response["meta"]["has_next_page"] = $hasNextPage;
         if ($response["meta"]["has_next_page"]) {
             $params["page"] = $page + 1;
-            $response["meta"]["next_page_url"] = $pageURL . http_build_query($params, "", "&");
+            $response["meta"]["next_page_url"] = $pageURL;
+            $response["meta"]["next_page_params"] = $params;
         }
 
         // Check if database provided any meta data if not all ok
