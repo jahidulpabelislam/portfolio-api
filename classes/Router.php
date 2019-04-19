@@ -47,20 +47,14 @@ class Router {
     }
 
     /**
-     * Try and execute the requested action
-     *
+     * @param string $entity
+     * @param string $method
+     * @param array $data
      * @return array An appropriate response to request
      */
-    private function executeAction() {
+    private function executeAuthAction(string $entity, string $method, array $data): array{
         $response = [];
 
-        $method = $this->helper->method;
-        $uri = $this->helper->uriArray;
-        $data = $this->helper->data;
-
-        $entity = !empty($uri[1]) ? $uri[1] : "";
-
-        // Figure out what action on what object request is for & perform necessary action(s)
         switch ($entity) {
             case "login":
                 switch ($method) {
@@ -89,70 +83,106 @@ class Router {
                         $response = $this->helper->getMethodNotAllowedResponse();
                 }
                 break;
-            case "projects":
-                $api = new Core();
+        }
 
-                switch ($method) {
-                    case "GET":
-                        if (isset($uri[2]) && trim($uri[2]) !== "") {
-                            $projectId = $uri[2];
-                            if (isset($uri[3]) && $uri[3] === "images") {
-                                if (isset($uri[4]) && $uri[4] !== "" && !isset($uri[5])) {
-                                    $response = $api->getProjectImage($projectId, $uri[4]);
-                                }
-                                else if (!isset($uri[4])) {
-                                    $response = $api->getProjectImages($projectId);
-                                }
-                            }
-                            else if (!isset($uri[3])) {
-                                $response = $api->getProject($projectId, true);
-                            }
+        return $response;
+    }
+
+    /**
+     * @param array $uri
+     * @param string $method
+     * @param array $data
+     * @return array An appropriate response to request
+     */
+    private function executeProjectsAction(array $uri, string $method, array $data): array {
+        $api = new Core();
+
+        $response = [];
+
+        switch ($method) {
+            case "GET":
+                if (isset($uri[2]) && trim($uri[2]) !== "") {
+                    $projectId = $uri[2];
+                    if (isset($uri[3]) && $uri[3] === "images") {
+                        if (isset($uri[4]) && $uri[4] !== "" && !isset($uri[5])) {
+                            $response = $api->getProjectImage($projectId, $uri[4]);
                         }
-                        else if (!isset($uri[2])) {
-                            $response = $api->getProjects($data);
+                        else if (!isset($uri[4])) {
+                            $response = $api->getProjectImages($projectId);
                         }
-                        break;
-                    case "POST":
-                        if (
-                            isset($uri[2]) && trim($uri[2]) !== ""
-                            && isset($uri[3]) && $uri[3] === "images"
-                            && !isset($uri[4])
-                        ) {
-                            $data["project_id"] = $uri[2];
-                            $response = $api->addProjectImage($data);
-                        }
-                        else if (!isset($uri[2])) {
-                            $response = $api->addProject($data);
-                        }
-                        break;
-                    case "PUT":
-                        if (isset($uri[2]) && trim($uri[2]) !== "" && !isset($uri[3])) {
-                            $data["id"] = $uri[2];
-                            $response = $api->editProject($data);
-                        }
-                        break;
-                    case "DELETE":
-                        if (isset($uri[2]) && trim($uri[2]) !== "") {
-                            if (
-                                isset($uri[3]) && $uri[3] === "images"
-                                && isset($uri[4]) && $uri[4] !== ""
-                                && !isset($uri[5])
-                            ) {
-                                $data["id"] = $uri[4];
-                                $data["project_id"] = $uri[2];
-                                $response = $api->deleteImage($data);
-                            }
-                            else if (!isset($uri[3])) {
-                                $data["id"] = $uri[2];
-                                $response = $api->deleteProject($data);
-                            }
-                        }
-                        break;
-                    default:
-                        $response = $this->helper->getMethodNotAllowedResponse();
-                        break;
+                    }
+                    else if (!isset($uri[3])) {
+                        $response = $api->getProject($projectId, true);
+                    }
+                }
+                else if (!isset($uri[2])) {
+                    $response = $api->getProjects($data);
                 }
                 break;
+            case "POST":
+                if (
+                    isset($uri[2]) && trim($uri[2]) !== ""
+                    && isset($uri[3]) && $uri[3] === "images"
+                    && !isset($uri[4])
+                ) {
+                    $data["project_id"] = $uri[2];
+                    $response = $api->addProjectImage($data);
+                }
+                else if (!isset($uri[2])) {
+                    $response = $api->addProject($data);
+                }
+                break;
+            case "PUT":
+                if (isset($uri[2]) && trim($uri[2]) !== "" && !isset($uri[3])) {
+                    $data["id"] = $uri[2];
+                    $response = $api->editProject($data);
+                }
+                break;
+            case "DELETE":
+                if (isset($uri[2]) && trim($uri[2]) !== "") {
+                    if (
+                        isset($uri[3]) && $uri[3] === "images"
+                        && isset($uri[4]) && $uri[4] !== ""
+                        && !isset($uri[5])
+                    ) {
+                        $data["id"] = $uri[4];
+                        $data["project_id"] = $uri[2];
+                        $response = $api->deleteImage($data);
+                    }
+                    else if (!isset($uri[3])) {
+                        $data["id"] = $uri[2];
+                        $response = $api->deleteProject($data);
+                    }
+                }
+                break;
+            default:
+                $response = $this->helper->getMethodNotAllowedResponse();
+                break;
+        }
+
+        return $response;
+    }
+
+    /**
+     * Try and execute the requested action
+     *
+     * @return array An appropriate response to request
+     */
+    private function executeAction(): array {
+        $response = [];
+
+        $method = $this->helper->method;
+        $uri = $this->helper->uriArray;
+        $data = $this->helper->data;
+
+        $entity = !empty($uri[1]) ? $uri[1] : "";
+
+        $authEntities = ["login", "logout", "session"];
+
+        if ($entity === "projects") {
+            $response = $this->executeProjectsAction($uri, $method, $data);
+        } else if (in_array($entity, $authEntities)) {
+            $response = $this->executeAuthAction($entity, $method, $data);
         }
 
         return $response;
