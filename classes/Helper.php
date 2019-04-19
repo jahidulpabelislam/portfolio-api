@@ -50,9 +50,11 @@ class Helper {
 
     private function extractURIFromRequest() {
         $uriString = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
-        $uriString = !empty($uriString) ? trim($uriString, "/") : "";
-        $uriString = strtolower($uriString);
+        $uriString = !empty($uriString) ? trim($uriString) : "";
         $this->uriString = $uriString;
+
+        $uriString = trim($uriString, " /");
+        $uriString = strtolower($uriString);
 
         // Get the individual parts of the request URI as an array
         $uriArray = explode("/", $uriString);
@@ -80,20 +82,22 @@ class Helper {
      * @return string The Full URI user requested
      */
     public function getAPIURL(array $uriArray = null): string {
-        if (!$uriArray) {
-            $uriString = $this->uriString;
+        if ($uriArray) {
+            $uriString = implode("/", $uriArray);
         }
         else {
-            $uriString = implode("/", $uriArray);
+            $uriString = $this->uriString;
         }
 
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] != "off") ? "https" : "http";
         $url = "{$protocol}://" . $_SERVER["SERVER_NAME"];
 
-        if ($uriString) {
+        if (!empty($uriString)) {
+            $uriString = trim($uriString, "/");
             $uriString .= "/";
         }
 
+        $url = rtrim($url, "/");
         $url .= "/{$uriString}";
 
         return $url;
