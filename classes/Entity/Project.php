@@ -123,12 +123,12 @@ class Project extends Entity {
         // Checks if the save was a update & update was okay
         if (!empty($values["id"]) && !empty($response["row"]) && !empty($values["images"])) {
 
-            $images = json_decode($values["images"]);
+            $images = json_decode($values["images"], true);
 
             if (count($images) > 0) {
                 foreach ($images as $sortOrder => $image) {
                     $imageUpdateData = [
-                        "id" => $image->id,
+                        "id" => $image["id"],
                         "sort_order_number" => $sortOrder,
                     ];
                     $projectImage = new ProjectImage();
