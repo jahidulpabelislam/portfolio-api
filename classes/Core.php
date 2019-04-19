@@ -123,7 +123,7 @@ class Core {
      * @param bool $getImages bool Whether the images for the Project should should be added
      * @return array The request response to send back
      */
-    public function getProject($projectId, bool $getImages = false): array {
+    public function getProject($projectId, $getImages = false): array {
 
         $project = new Project();
         $response = $project->getById($projectId, $getImages);
