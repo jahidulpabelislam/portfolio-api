@@ -76,7 +76,7 @@ class Database {
      * @param null $bindings array Array of any bindings to use with the SQL query
      * @return array Array of data or meta feedback
      */
-    public function query(string $query, $bindings = null): array {
+    public function query(string $query, array $bindings = null): array {
         $response = [
             "meta" => [
                 "affected_rows" => 0,
@@ -126,7 +126,7 @@ class Database {
     /**
      * @return int|null The Id of last inserted row of data
      */
-    public function getLastInsertedId() {
+    public function getLastInsertedId(): ?int {
         if ($this->db) {
             return $this->db->lastInsertId();
         }
