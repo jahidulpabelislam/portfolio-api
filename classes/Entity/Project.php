@@ -7,9 +7,9 @@
  * PHP version 7
  *
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @version 1
+ * @version 1.1.0
  * @link https://github.com/jahidulpabelislam/portfolio-api/
- * @since Class available since Release: v3
+ * @since Class available since Release: v3.0.0
  * @copyright 2010-2018 JPI
 */
 
