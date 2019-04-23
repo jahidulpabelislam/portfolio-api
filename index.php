@@ -18,4 +18,5 @@ require_once(ROOT . "/vendor/autoload.php");
 
 use JPI\API\Router;
 
-Router::performRequest();
+$router = new Router();
+$router->performRequest();

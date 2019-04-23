@@ -50,16 +50,12 @@ class Config {
     public $debug = false;
 
     public function __construct() {
-        $environment = !empty(getenv("APPLICATION_ENV")) ? getenv("APPLICATION_ENV") : "development";
-        // Don't want debugging on live/production site
-        if ($environment === "production") {
-            $this->debug = false;
-            ini_set("display_errors", 0);
-        }
-        else {
+        $environment = getenv("APPLICATION_ENV") ?? "production";
+
+        // Only want debugging on development site
+        $this->debug = false;
+        if ($environment === "development") {
             $this->debug = true;
-            error_reporting(E_ALL);
-            ini_set("display_errors", 1);
         }
     }
 
@@ -68,8 +64,7 @@ class Config {
      *
      * @return Config
      */
-    public static function get() {
-
+    public static function get(): Config {
         if (self::$instance === null) {
             self::$instance = new self();
         }

@@ -22,24 +22,56 @@ use JPI\API\Entity\ProjectImage;
 class Core {
 
     private $db = null;
+    private $helper = null;
 
     /**
      * API constructor.
      */
     public function __construct() {
         $this->db = Database::get();
+        $this->helper = Helper::get();
     }
 
     /**
-     * Gets all projects but paginated, also might include search
+     * Gets all Projects but paginated, also might include search
      *
      * @param $data array Any data to aid in the search query
      * @return array The request response to send back
      */
-    public function getProjects($data) {
+    public function getProjects(array $data): array {
 
         $projects = new Project();
         $response = $projects->doSearch($data);
+
+        return $response;
+    }
+
+    /**
+     * Try to either insert or update a Project
+     *
+     * @param $data array The data to insert/update into the database for the Project
+     * @return array The request response to send back
+     */
+    private function saveProject(array $data): array {
+        // Checks if user is authored
+        if (Auth::isLoggedIn()) {
+
+            // Checks that all data required is present and not empty
+            $requiredFields = ["name", "skills", "long_description", "short_description", "github", "date"];
+            if ($this->helper->hasRequiredFields($requiredFields)) {
+
+                $project = new Project();
+                $response = $project->save($data);
+
+            }
+            // Else all the data required was not provided and/or valid
+            else {
+                $response = $this->helper->getInvalidFieldsResponse($requiredFields);
+            }
+        }
+        else {
+            $response = Helper::getNotAuthorisedResponse();
+        }
 
         return $response;
     }
@@ -50,82 +82,32 @@ class Core {
      * @param $data array The data to insert into the database for this new Project
      * @return array The request response to send back
      */
-    public function addProject($data) {
-
-        // Checks if user is authored
-        if (Auth::isLoggedIn()) {
-
-            // Checks if data needed is present and not empty
-            $dataNeeded = ["name", "skills", "long_description", "short_description", "github", "date"];
-            if (Helper::checkData($data, $dataNeeded)) {
-
-                $project = new Project();
-                $response = $project->save($data);
-
-            } // Else the data needed was not provided
-            else {
-                $response = Helper::getDataNotProvidedResponse($dataNeeded);
-            }
-        }
-        else {
-            $response = Helper::getNotAuthorisedResponse();
-        }
-
-        return $response;
+    public function addProject(array $data): array {
+        return $this->saveProject($data);
     }
 
     /**
-     * Try to edit a Project a user has posted before
+     * Try to edit a Project a user has added before
      *
-     * @param $data array The new data entered to use to update the project with
+     * @param $data array The new data entered to use to update the Project with
      * @return array The request response to send back
      */
-    public function editProject($data) {
-
-        // Checks if user is authored
-        if (Auth::isLoggedIn()) {
-
-            // Checks if data needed is present and not empty
-            $dataNeeded = ["id", "name", "skills", "long_description", "short_description", "github", "date"];
-            if (Helper::checkData($data, $dataNeeded)) {
-
-                $project = new Project();
-                $response = $project->save($data);
-
-            } // Else the data was not provided
-            else {
-                $response = Helper::getDataNotProvidedResponse($dataNeeded);
-            }
-        }
-        else {
-            $response = Helper::getNotAuthorisedResponse();
-        }
-
-        return $response;
+    public function editProject(array $data): array {
+        return $this->saveProject($data);
     }
 
     /**
-     * Try to delete a Project a user has posted before
+     * Try to delete a Project a user has added before
      *
      * @param $data array The data sent to aid in the deletion of the Project
      * @return array The request response to send back
      */
-    public function deleteProject($data) {
+    public function deleteProject(array $data): array {
 
         // Checks if user is authored
         if (Auth::isLoggedIn()) {
-
-            // Checks if the data needed is present and not empty
-            $dataNeeded = ["id"];
-            if (Helper::checkData($data, $dataNeeded)) {
-
-                $project = new Project();
-                $response = $project->delete($data["id"]);
-
-            } // Else the data needed was not provided
-            else {
-                $response = Helper::getDataNotProvidedResponse($dataNeeded);
-            }
+            $project = new Project();
+            $response = $project->delete($data["id"]);
         }
         else {
             $response = Helper::getNotAuthorisedResponse();
@@ -137,14 +119,14 @@ class Core {
     /**
      * Get a particular Project defined by $projectId
      *
-     * @param $projectId int The id of the Project to get
-     * @param bool $images bool Whether the images for the Project should should be added
+     * @param $projectId int The Id of the Project to get
+     * @param bool $getImages bool Whether the images for the Project should should be added
      * @return array The request response to send back
      */
-    public function getProject($projectId, $images = false) {
+    public function getProject($projectId, bool $getImages = false): array {
 
         $project = new Project();
-        $response = $project->getById($projectId, $images);
+        $response = $project->getById($projectId, $getImages);
 
         return $response;
     }
@@ -155,9 +137,9 @@ class Core {
      * @param $projectId int The Id of the Project
      * @return array The request response to send back
      */
-    public function getProjectImages($projectId) {
+    public function getProjectImages($projectId): array {
 
-        // Check the project trying to get Images for
+        // Check the Project trying to get Images for
         $response = $this->getProject($projectId);
         if (!empty($response["row"])) {
 
@@ -174,12 +156,10 @@ class Core {
      * @param $project array The Project trying to upload image for
      * @return array The request response to send back
      */
-    private function uploadProjectImage($project): array {
-
+    private function uploadProjectImage(array $project): array {
         $response = [];
 
         $projectId = $project["id"];
-
         $projectName = $project["name"];
 
         $projectNameFormatted = strtolower($projectName);
@@ -218,11 +198,13 @@ class Core {
                 ];
                 $projectImage = new ProjectImage();
                 $response = $projectImage->save($values);
-            } // Else there was a problem uploading file to server
+            }
+            // Else there was a problem uploading file to server
             else {
                 $response["meta"]["feedback"] = "Sorry, there was an error uploading your Image.";
             }
-        } // Else bad request as file uploaded is not a image
+        }
+        // Else bad request as file uploaded is not a image
         else {
             $response["meta"] = [
                 "status" => 400,
@@ -240,25 +222,24 @@ class Core {
      * @param $data array The data sent to aid in Inserting Project Image
      * @return array The request response to send back
      */
-    public function addProjectImage($data) {
+    public function addProjectImage(array $data): array {
 
         // Checks if user is authored
         if (Auth::isLoggedIn()) {
 
             // Checks if the data needed is present and not empty
-            $dataNeeded = ["project_id"];
-            if (Helper::checkData($data, $dataNeeded) && isset($_FILES["image"])) {
+            if (isset($_FILES["image"])) {
 
-                // Check the project trying to add a a Image for exists
+                // Check the Project trying to add a a Image for exists
                 $response = $this->getProject($data["project_id"]);
                 if (!empty($response["row"])) {
-
                     $response = $this->uploadProjectImage($response["row"]);
                 }
-            } // Else data needed was not provided
+            }
+            // Else data needed was not provided
             else {
-                array_push($dataNeeded, "image");
-                $response = Helper::getDataNotProvidedResponse($dataNeeded);
+                $requiredFields = ["image"];
+                $response = $this->helper->getInvalidFieldsResponse($requiredFields);
             }
         }
         else {
@@ -271,60 +252,56 @@ class Core {
     }
 
     /**
-     * Get a Project Image for a Project by id
+     * Get a Project Image for a Project by Id
      *
-     * @param $projectId int The id of the Project trying to get Images for
-     * @param $imageId int The id of the Project Image to get
+     * @param $projectId int The Id of the Project trying to get Images for
+     * @param $imageId int The Id of the Project Image to get
      * @return array The request response to send back
      */
-    public function getProjectImage($projectId, $imageId) {
+    public function getProjectImage($projectId, $imageId): array {
 
         // Check the Project trying to get Images for
         $response = $this->getProject($projectId);
         if (!empty($response["row"])) {
-            $projectImage = new ProjectImage($imageId);
+            $projectImage = new ProjectImage();
+            $response = $projectImage->getById($imageId);
 
-            $projectImage->checkProjectImageIsChildOfProject($projectId);
-
-            $response = $projectImage->response;
+            if (!empty($response["row"]["project_id"]) && $response["row"]["project_id"] !== $projectId) {
+                $response = $projectImage->getNotFoundResponse($projectId, $imageId);
+            }
         }
 
         return $response;
     }
 
     /**
-     * Try to delete a Image linked to a project
+     * Try to delete a Image linked to a Project
      *
      * @param $data array The data sent to delete the Project Image
      * @return array The request response to send back
      */
-    public function deleteImage($data) {
+    public function deleteImage(array $data): array {
 
         // Checks if user is authored
         if (Auth::isLoggedIn()) {
 
-            // Checks if data needed is present and not empty
-            $dataNeeded = ["project_id", "id"];
-            if (Helper::checkData($data, $dataNeeded)) {
+            $projectId = $data["project_id"];
+            $imageId = $data["id"];
 
-                // Check the Project trying to edit actually exists
-                $response = $this->getProject($data["project_id"]);
+            // Check the Project trying to edit actually exists
+            $response = $this->getProject($projectId);
+            if (!empty($response["row"])) {
+
+                $response = $this->getProjectImage($projectId, $imageId);
+
                 if (!empty($response["row"])) {
 
-                    $response = $this->getProjectImage($data["project_id"], $data["id"]);
+                    $fileName = $response["row"]["file"];
 
-                    if (!empty($response["row"])) {
-
-                        $fileName = $response["row"]["file"];
-
-                        // Update database to delete row
-                        $projectImage = new ProjectImage();
-                        $response = $projectImage->delete($data["id"], $fileName);
-                    }
+                    // Update database to delete row
+                    $projectImage = new ProjectImage();
+                    $response = $projectImage->delete($imageId, $fileName);
                 }
-            } // Else data was not provided
-            else {
-                $response = Helper::getDataNotProvidedResponse($dataNeeded);
             }
         }
         else {

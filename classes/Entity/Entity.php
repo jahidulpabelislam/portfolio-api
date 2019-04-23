@@ -18,41 +18,59 @@ if (!defined("ROOT")) {
     die();
 }
 
+use DateTime;
 use JPI\API\Database;
+use JPI\API\Helper;
 
 abstract class Entity {
 
-    public $response = [];
+    protected $tableName = "";
 
-    public $tableName = null;
+    protected $columns = [];
 
-    public $displayName = null;
+    protected $intColumns = ["id"];
 
-    public $columns = [];
+    protected $dateColumns = ["created_at", "updated_at"];
 
     protected $searchableColumns = [];
 
-    protected $defaultOrderingByColumn = "id";
+    protected $defaultOrderByColumn = "id";
 
-    protected $defaultOrderingByDirection = "DESC";
+    protected $defaultOrderByDirection = "DESC";
 
     protected $defaultLimit = 10;
 
+    public $displayName = "";
+
     private $db = null;
+    private $helper = null;
 
     /**
-     * Entity constructor.
-     *
-     * If $id is passed, load up the Entity from Database where id = $id
-     *
-     * @param null $id int The id of a Entity in the Database to load
+     * Entity constructor
      */
-    public function __construct($id = null) {
+    public function __construct() {
         $this->db = Database::get();
+        $this->helper = Helper::get();
+    }
 
-        if ($id) {
-            $this->response = $this->getById($id);
+    public function toArray(array $entity): array {
+        $array = [];
+        foreach ($this->columns as $column) {
+            $value = $entity[$column] ?? "";
+            if (in_array($column, $this->intColumns)) {
+                $value = (int)$value;
+            }
+            else if (in_array($column, $this->dateColumns)) {
+                $datetime = DateTime::createFromFormat("Y-m-d G:i:s", $value);
+                if ($datetime) {
+                    $value = $datetime->format('Y-m-d G:i:s e');
+                }
+            }
+
+            $array[$column] = $value;
         }
+
+        return $array;
     }
 
     /**
@@ -63,34 +81,38 @@ abstract class Entity {
      * @param $value string
      * @return array The response from the SQL query
      */
-    public function getByColumn($column, $value): array {
+    public function getByColumn(string $column, $value): array {
 
-        $query = "SELECT * FROM {$this->tableName} WHERE {$column} = :value ORDER BY {$this->defaultOrderingByColumn} {$this->defaultOrderingByDirection};";
-        $bindings = [":value" => $value,];
+        $query = "SELECT * FROM {$this->tableName} WHERE {$column} = :value ORDER BY {$this->defaultOrderByColumn} {$this->defaultOrderByDirection};";
+        $bindings = [":value" => $value];
         $response = $this->db->query($query, $bindings);
 
+        $response["meta"]["count"] = $response["meta"]["affected_rows"];
+
         // Check everything was okay
-        if ($response["meta"]["affected_rows"] > 0) {
+        if ($response["meta"]["count"] > 0) {
+            $response["rows"] = array_map(function($row) {
+                return $this->toArray($row);
+            }, $response["rows"]);
+
             $response["meta"]["ok"] = true;
         }
         // Check if database provided any meta data if not no problem with executing query but no item found
-        else if ($response["meta"]["affected_rows"] <= 0 && !isset($response["meta"]["feedback"])) {
+        else if ($response["meta"]["count"] <= 0 && !isset($response["meta"]["feedback"])) {
             $response["meta"]["status"] = 404;
             $response["meta"]["feedback"] = "No {$this->displayName}s found with {$value} as {$column}.";
             $response["meta"]["message"] = "Not Found";
         }
 
-        $response["meta"]["count"] = $response["meta"]["affected_rows"];
-
         return $response;
     }
 
     /**
-     * Load a single Entity from the Database where a id column = a value ($id)
+     * Load a single Entity from the Database where a Id column = a value ($id)
      * Either return Entity with success meta data, or failed meta data
      * Uses helper function getByColumn();
      *
-     * @param $id int The id of the Entity to get
+     * @param $id int The Id of the Entity to get
      * @return array The response from the SQL query
      */
     public function getById($id): array {
@@ -101,7 +123,7 @@ abstract class Entity {
             $response["row"] = [];
 
             // Check everything was okay, so as this /Should/ return only one, use 'Row' as index
-            if ($response["meta"]["affected_rows"] > 0) {
+            if ($response["meta"]["count"] > 0) {
                 $response["row"] = $response["rows"][0];
             }
             // Check if database provided any meta data if so no problem with executing query but no item found
@@ -193,7 +215,15 @@ abstract class Entity {
 
         $id = $values["id"] ?? null;
 
+        if (in_array("updated_at", $this->columns)) {
+            $values["updated_at"] = date("Y-m-d H:i:s");
+        }
+
         if (empty($id)) {
+            if (in_array("created_at", $this->columns)) {
+                $values["created_at"] = date("Y-m-d H:i:s");
+            }
+
             list($query, $bindings) = $this->generateInsertQuery($values);
         }
         else {
@@ -226,7 +256,7 @@ abstract class Entity {
     /**
      * Delete an Entity from the Database
      *
-     * @param $id int The id of the Entity to delete
+     * @param $id int The Id of the Entity to delete
      * @return array Either an array with successful meta data or a array of error feedback meta
      */
     public function delete($id): array {
@@ -236,7 +266,7 @@ abstract class Entity {
         if (!empty($response["row"])) {
 
             $query = "DELETE FROM {$this->tableName} WHERE id = :id;";
-            $bindings = [":id" => $id,];
+            $bindings = [":id" => $id];
             $response = $this->db->query($query, $bindings);
 
             // Check if the deletion was ok
@@ -244,7 +274,6 @@ abstract class Entity {
 
                 $response["meta"]["ok"] = true;
                 $response["row"]["id"] = $id;
-
             }
 
             unset($response["rows"]);
@@ -258,42 +287,52 @@ abstract class Entity {
      * Used to generate a where clause for a search on a entity along with any binding needed
      * Used with Entity::doSearch();
      *
-     * @param $search string The string to search for within searchable columns (if any)
+     * @param $params array The fields to search for within searchable columns (if any)
      * @return array An array consisting of the generated where clause and an associative array containing any bindings to aid the Database querying
      */
-    private function generateSearchWhereQuery($search): array {
+    private function generateSearchWhereQuery(array $params): array {
 
         if ($this->searchableColumns) {
+            $bindings = [];
+
+            $searchString = $params["search"] ?? "";
+
             // Split each word in search
-            $searchWords = explode(" ", $search);
+            $searchWords = explode(" ", $searchString);
 
-            $searchString = $searchStringReversed = "%";
-
-            // Loop through each search word
-            foreach ($searchWords as $word) {
-                $searchString .= "{$word}%";
-            }
+            $searchString = "%" . implode("%", $searchWords) . "%";
 
             $searchesReversed = array_reverse($searchWords);
 
-            // Loop through each search word
-            foreach ($searchesReversed as $word) {
-                $searchStringReversed .= "{$word}%";
-            }
+            $searchStringReversed = "%" . implode("%", $searchesReversed) . "%";
 
-            $whereClause = "WHERE";
+            $searchWhereClause = "WHERE (";
 
-            // Loop through each search word
+            $globalWhereClauses = [];
+
+            // Loop through each searchable column
             foreach ($this->searchableColumns as $column) {
-                $whereClause .= " {$column} LIKE :searchString OR {$column} LIKE :searchStringReversed OR";
+                $searchWhereClause .= " {$column} LIKE :searchString OR {$column} LIKE :searchStringReversed OR";
+
+                if (!empty($params[$column])) {
+                    $binding = ":{$column}";
+                    $globalWhereClauses[] = " {$column} = {$binding}";
+                    $bindings[$binding] = $params[$column];
+                }
             }
 
-            $whereClause = rtrim($whereClause, "OR");
+            $searchWhereClause = rtrim($searchWhereClause, "OR");
+            $searchWhereClause .= ")";
 
-            $bindings = [
-                "searchString" => $searchString,
-                "searchStringReversed" => $searchStringReversed,
-            ];
+            $bindings["searchString"] = $searchString;
+            $bindings["searchStringReversed"] = $searchStringReversed;
+
+            $globalWhereClause = "";
+            if (!empty($globalWhereClauses)) {
+                $globalWhereClause = "AND " . implode(" AND ", $globalWhereClauses);
+            }
+
+            $whereClause = $searchWhereClause . " " . $globalWhereClause;
 
             return [$whereClause, $bindings];
         }
@@ -311,7 +350,7 @@ abstract class Entity {
      * @param array $bindings array Any data to aid in the database querying
      * @return int
      */
-    public function getTotalCountByWhereClause($whereClause, array $bindings): int {
+    public function getTotalCountByWhereClause(string $whereClause, array $bindings): int {
         $query = "SELECT COUNT(*) AS total_count FROM {$this->tableName} {$whereClause};";
         $totalCount = $this->db->query($query, $bindings);
 
@@ -330,57 +369,89 @@ abstract class Entity {
      */
     public function doSearch(array $params): array {
 
+        $limit = $this->defaultLimit;
+
         // If user added a limit param, use this if valid, unless its bigger than 10
-        if (isset($params["limit"])) {
-            $limit = min(abs(intval($params["limit"])), $this->defaultLimit);
+        if (!empty($params["limit"])) {
+            $limit = (int)$params["limit"];
+            $limit = min($limit, $this->defaultLimit);
         }
 
         // Default limit to 10 if not specified or invalid
-        if (!isset($limit) || !is_int($limit) || $limit < 1) {
+        if ($limit < 1) {
             $limit = $this->defaultLimit;
         }
 
+        // Generate a offset to the query, if a page was specified using page & limit values
         $offset = 0;
-
-        // Add a offset to the query, if specified
-        if (isset($params["offset"])) {
-            $offset = abs(intval($params["offset"]));
-        }
-
-        // Generate a offset to the query, if a page was specified using, page number and limit number
-        if (isset($params["page"])) {
-            $page = abs(intval($params["page"]));
+        $page = 1;
+        if (!empty($params["page"])) {
+            $page = (int)$params["page"];
             if (is_int($page) && $page > 1) {
                 $offset = $limit * ($page - 1);
+            }
+            else {
+                $page = 1;
             }
         }
 
         $bindings = [];
-
         $whereClause = "";
 
         // Add a filter if a search was entered
-        if (!empty($params["search"])) {
-
-            list($whereClause, $bindings) = $this->generateSearchWhereQuery($params["search"]);
+        if (!empty($params)) {
+            list($whereClause, $bindings) = $this->generateSearchWhereQuery($params);
         }
 
-        $query = "SELECT * FROM  {$this->tableName} {$whereClause} ORDER BY {$this->defaultOrderingByColumn} {$this->defaultOrderingByDirection} LIMIT {$limit} OFFSET {$offset};";
+        $query = "SELECT * FROM  {$this->tableName} {$whereClause}
+                    ORDER BY {$this->defaultOrderByColumn} {$this->defaultOrderByDirection}
+                    LIMIT {$limit} OFFSET {$offset};";
         $response = $this->db->query($query, $bindings);
 
+        $response["meta"]["limit"] = $limit;
+        $response["meta"]["page"] = $page;
+
         $response["meta"]["count"] = $response["meta"]["affected_rows"];
+        $totalCount = $response["meta"]["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
+
+        $lastPage = ceil($totalCount / $limit);
+        $response["meta"]["total_pages"] = $lastPage;
+
+        $pageURL = $this->helper->getAPIURL();
+        $params = $this->helper->data;
+        if (isset($params["limit"])) {
+            $params["limit"] = $limit;
+        }
+
+        $hasPreviousPage = ($page > 1) && ($lastPage >= ($page - 1));
+        $response["meta"]["has_previous_page"] = $hasPreviousPage;
+        if ($hasPreviousPage) {
+            $params["page"] = $page - 1;
+            $response["meta"]["previous_page_url"] = $pageURL;
+            $response["meta"]["previous_page_params"] = $params;
+        }
+
+        $hasNextPage = $page < $lastPage;
+        $response["meta"]["has_next_page"] = $hasNextPage;
+        if ($response["meta"]["has_next_page"]) {
+            $params["page"] = $page + 1;
+            $response["meta"]["next_page_url"] = $pageURL;
+            $response["meta"]["next_page_params"] = $params;
+        }
 
         // Check if database provided any meta data if not all ok
-        if ($response["meta"]["affected_rows"] > 0 && !isset($response["meta"]["feedback"])) {
+        if ($response["meta"]["count"] > 0 && !isset($response["meta"]["feedback"])) {
 
-            $response["meta"]["total_count"] = $this->getTotalCountByWhereClause($whereClause, $bindings);
+            $response["rows"] = array_map(function($row) {
+                return $this->toArray($row);
+            }, $response["rows"]);
+
             $response["meta"]["ok"] = true;
         }
-        else if ($response["meta"]["affected_rows"] === 0 && !isset($response["meta"]["feedback"])) {
+        else if ($response["meta"]["count"] === 0 && !isset($response["meta"]["feedback"])) {
             $response["meta"]["status"] = 404;
             $response["meta"]["feedback"] = "No {$this->displayName}s found.";
             $response["meta"]["message"] = "Not Found";
-            $response["meta"]["total_count"] = 0;
         }
 
         return $response;

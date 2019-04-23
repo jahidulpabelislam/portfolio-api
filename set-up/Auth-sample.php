@@ -32,13 +32,14 @@ class Auth {
      * @param $data array The data provided when trying to login
      * @return array Response with meta data given to ajax call after trying to login
      */
-    public static function login($data) {
-
+    public static function login(array $data): array {
         $response = [];
 
+        $helper = Helper::get();
+
         // Checks if data needed are present and not empty
-        $dataNeeded = ["username", "password"];
-        if (Helper::checkData($data, $dataNeeded)) {
+        $requiredFields = ["username", "password"];
+        if ($helper->hasRequiredFields($requiredFields)) {
 
             $response["meta"]["status"] = 401;
             $response["meta"]["message"] = "Unauthorized";
@@ -90,7 +91,7 @@ class Auth {
 
         }
         else {
-            $response = Helper::getDataNotProvidedResponse($dataNeeded);
+            $response = $helper->getInvalidFieldsResponse($requiredFields);
         }
 
         return $response;
@@ -100,22 +101,20 @@ class Auth {
      * Do the log out here (e.g removing cookie, session or database etc.)
      * If successful output appropriate success message
      *
-     * @return mixed
+     * @return array
      */
-    public static function logout() {
+    public static function logout(): array {
 
         /*
          * TODO Actually do the log out here (e.g removing cookie, session or database etc.)
          */
 
-        $response = [
+        return [
             "meta" => [
                 "ok" => true,
                 "feedback" => "Successfully Logged Out.",
             ],
         ];
-
-        return $response;
     }
 
     /**
@@ -123,7 +122,7 @@ class Auth {
      *
      * @return bool Whether user is logged in or not
      */
-    public static function isLoggedIn() {
+    public static function isLoggedIn(): bool {
 
         /*
          * TODO Actually do the check of logged in status (e.g check against stored cookie, session or database etc.)
@@ -138,7 +137,6 @@ class Auth {
         list($jwt) = sscanf($auth, "Bearer %s");
 
         if (!empty($jwt)) {
-
             try {
                 $secretKey = Config::PORTFOLIO_ADMIN_SECRET_KEY;
 
@@ -162,10 +160,9 @@ class Auth {
      *
      * @return array The request response to send back
      */
-    public static function getAuthStatus() {
-
+    public static function getAuthStatus(): array {
         if (self::isLoggedIn()) {
-            $response = [
+            return [
                 "meta" => [
                     "ok" => true,
                     "status" => 200,
@@ -173,10 +170,7 @@ class Auth {
                 ],
             ];
         }
-        else {
-            $response = Helper::getNotAuthorisedResponse();
-        }
 
-        return $response;
+        return Helper::getNotAuthorisedResponse();
     }
 }

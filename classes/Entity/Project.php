@@ -15,27 +15,33 @@
 
 namespace JPI\API\Entity;
 
+use JPI\API\Auth;
+use JPI\API\Helper;
+
 if (!defined("ROOT")) {
     die();
 }
 
 class Project extends Entity {
 
-    public $tableName = "portfolio_project";
+    const PUBLIC_STATUS = "published";
 
-    public $displayName = "Project";
+    protected $tableName = "portfolio_project";
 
-    public $columns = [
+    protected $columns = [
         "id",
         "name",
+        "date",
         "skills",
-        "long_description",
-        "short_description",
         "link",
         "github",
         "download",
         "colour",
-        "date",
+        "short_description",
+        "long_description",
+        "status",
+        "created_at",
+        "updated_at",
     ];
 
     protected $searchableColumns = [
@@ -43,12 +49,15 @@ class Project extends Entity {
         "skills",
         "long_description",
         "short_description",
+        "status",
     ];
 
-    protected $defaultOrderingByColumn = "date";
+    protected $defaultOrderByColumn = "date";
+
+    public $displayName = "Project";
 
     /**
-     * Helper function to get all Project Image Entities linked to this project
+     * Helper function to get all Project Image Entities linked to this Project
      *
      * @param $id int The Project Image to find Images for
      * @return array An array of ProjectImage's (if any found)
@@ -63,7 +72,7 @@ class Project extends Entity {
     }
 
     /**
-     * Load a single Entity from the Database where a id column = a value ($id)
+     * Load a single Entity from the Database where a Id column = a value ($id)
      * Either return Entity with success meta data, or failed meta data
      * Uses helper function getByColumn();
      *
@@ -71,18 +80,23 @@ class Project extends Entity {
      * As Project is linked to Multiple Project Images
      * Add these to the response unless specified
      *
-     * @param $id int The id of the Entity to get
-     * @param bool $images bool Whether of not to also get and output the Project Images linked to this Project
+     * @param $id int The Id of the Entity to get
+     * @param bool $getImages bool Whether of not to also get and output the Project Images linked to this Project
      * @return array The response from the SQL query
      */
-    public function getById($id, $images = true): array {
+    public function getById($id, bool $getImages = true): array {
         $response = parent::getById($id);
 
-        // Check if database provided any meta data if so no problem with executing query but no project found
+        // If Project was found
         if (!empty($response["row"])) {
-            if ($images) {
-                $images = $this->getProjectImages($id);
-                $response["row"]["images"] = $images;
+            if (!Auth::isLoggedIn() && $response["row"]["status"] !== self::PUBLIC_STATUS) {
+                return Helper::getNotAuthorisedResponse();
+            }
+
+            // If Project's Images was requested, get and add these
+            if ($getImages) {
+                $getImages = $this->getProjectImages($id);
+                $response["row"]["images"] = $getImages;
             }
         }
 
@@ -106,21 +120,22 @@ class Project extends Entity {
 
         $response = parent::save($values);
 
-        // Checks if the save was a update
-        if (!empty($values["id"])) {
-            // Checks if update was ok
-            if (!empty($response["row"])) {
-                $images = json_decode($values["images"]);
+        // Checks if the save was a update & update was okay
+        if (!empty($values["id"]) && !empty($response["row"]) && !empty($values["images"])) {
 
-                if (count($images) > 0) {
-                    foreach ($images as $sortOrder => $image) {
-                        $imageUpdateData = ["id" => $image->id, "sort_order_number" => $sortOrder,];
-                        $projectImage = new ProjectImage();
-                        $projectImage->save($imageUpdateData);
-                    }
+            $images = json_decode($values["images"], true);
 
-                    $response = $this->getById($values["id"]);
+            if (count($images) > 0) {
+                foreach ($images as $sortOrder => $image) {
+                    $imageUpdateData = [
+                        "id" => $image["id"],
+                        "sort_order_number" => $sortOrder,
+                    ];
+                    $projectImage = new ProjectImage();
+                    $projectImage->save($imageUpdateData);
                 }
+
+                $response = $this->getById($values["id"]);
             }
         }
 
@@ -133,18 +148,16 @@ class Project extends Entity {
      * Add extra functionality on top of default delete function
      * As these Entities are linked to many Project Images, so delete these also
      *
-     * @param $id int The id of the Entity to delete
+     * @param $id int The Id of the Entity to delete
      * @return array Either an array with successful meta data or a array of error feedback meta
      */
     public function delete($id): array {
         $response = parent::delete($id);
 
-        // Delete the images linked to the Project
+        // Delete all the images linked to this Project from the database & from disk
         $projectImage = new ProjectImage();
         $images = $this->getProjectImages($id);
         foreach ($images as $image) {
-
-            // Delete the image from the database & from file
             $projectImage->delete($image["id"], $image["file"]);
         }
 
@@ -161,14 +174,18 @@ class Project extends Entity {
      */
     public function doSearch(array $params): array {
 
+        if (!Auth::isLoggedIn()) {
+            $params["status"] = self::PUBLIC_STATUS;
+        }
+
         $response = parent::doSearch($params);
 
-        // Loop through each project and get the Projects Images
-        for ($i = 0; $i < $response["meta"]["count"]; $i++) {
+        // Loop through each Project and get the Projects Images
+        $response["rows"] = array_map(function($project) {
+            $project["images"] = $this->getProjectImages($project["id"]);
 
-            $images = $this->getProjectImages($response["rows"][$i]["id"]);
-            $response["rows"][$i]["images"] = $images;
-        }
+            return $project;
+        }, $response["rows"]);
 
         return $response;
     }

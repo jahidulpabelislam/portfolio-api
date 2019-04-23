@@ -21,20 +21,24 @@ if (!defined("ROOT")) {
 
 class ProjectImage extends Entity {
 
-    public $tableName = "portfolio_project_image";
+    protected $tableName = "portfolio_project_image";
 
-    public $displayName = "Project Image";
-
-    public $columns = [
+    protected $columns = [
         "id",
-        "file",
         "project_id",
         "sort_order_number",
+        "file",
+        "created_at",
+        "updated_at",
     ];
 
-    protected $defaultOrderingByColumn = "sort_order_number";
+    protected $intColumns = ["id", "project_id", "sort_order_number"];
 
-    protected $defaultOrderingByDirection = "ASC";
+    protected $defaultOrderByColumn = "sort_order_number";
+
+    protected $defaultOrderByDirection = "ASC";
+
+    public $displayName = "Project Image";
 
     /**
      * Delete an Entity from the Database
@@ -43,12 +47,11 @@ class ProjectImage extends Entity {
      * As these Entities are linked to a file on the server
      * Here actually delete the file from the server
      *
-     * @param $id int The id of the Entity to delete
+     * @param $id int The Id of the Entity to delete
      * @param string $fileName string The filename of the file to delete
      * @return array Either an array with successful meta data or a array of error feedback meta
      */
-    public function delete($id, $fileName = ""): array {
-
+    public function delete($id, string $fileName = ""): array {
         $response = parent::delete($id);
 
         // Check if the deletion was ok
@@ -64,27 +67,19 @@ class ProjectImage extends Entity {
     }
 
     /**
-     * Check if a ProjectImage is a child of a Project.
-     * Use in conjunction with ProjectImage::getById()
+     * Return the response when a ProjectImage is not found
      *
-     * @param $projectId int The id of a Project it should check against
+     * @param $projectId int The Id of the Project requested
+     * @param $imageId int The Id of a Project Image requested
      */
-    public function checkProjectImageIsChildOfProject($projectId) {
-
-        $response = $this->response;
-
-        if (!empty($response["row"]) && $response["row"]["project_id"] !== $projectId) {
-            $imageId = $response["row"]["id"];
-            $response = [
-                "row" => [],
-                "meta" => [
-                    "status" => 404,
-                    "feedback" => "No {$this->displayName} found with {$imageId} as ID for Project: {$projectId}.",
-                    "message" => "Not Found",
-                ],
-            ];
-
-            $this->response = $response;
-        }
+    public function getNotFoundResponse(int $projectId, int $imageId) {
+        return [
+            "row" => [],
+            "meta" => [
+                "status" => 404,
+                "feedback" => "No {$this->displayName} found with {$imageId} as ID for Project: {$projectId}.",
+                "message" => "Not Found",
+            ],
+        ];
     }
 }
