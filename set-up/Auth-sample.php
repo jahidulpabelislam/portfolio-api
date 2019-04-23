@@ -8,7 +8,7 @@
  * @version 2.1
  * @link https://github.com/jahidulpabelislam/portfolio-api/
  * @since Class available since Release: v2.0.0
- * @copyright 2010-2018 JPI
+ * @copyright 2010-2019 JPI
 */
 
 namespace JPI\API;
