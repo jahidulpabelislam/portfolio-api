@@ -57,12 +57,11 @@ class Core {
         if (Auth::isLoggedIn()) {
 
             // Checks that all data required is present and not empty
-            $requiredFields = ["name", "skills", "long_description", "short_description", "github", "date"];
+            $requiredFields = ["name", "date", "skills", "long_description", "short_description"];
             if ($this->helper->hasRequiredFields($requiredFields)) {
 
                 $project = new Project();
                 $response = $project->save($data);
-
             }
             // Else all the data required was not provided and/or valid
             else {
