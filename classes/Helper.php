@@ -64,10 +64,8 @@ class Helper {
     private function extractDataFromRequest() {
         $data = [];
         foreach ($_REQUEST as $key => $field) {
-            if (!empty($field)) {
-                $value = stripslashes(urldecode($field));
-                $data[$key] = $value;
-            }
+            $value = stripslashes(urldecode($field));
+            $data[$key] = $value;
         }
 
         $this->data = $data;
