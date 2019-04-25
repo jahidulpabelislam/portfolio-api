@@ -11,7 +11,7 @@
 */
 
 if (!defined("ROOT")) {
-    define("ROOT", $_SERVER["DOCUMENT_ROOT"]);
+    define("ROOT", rtrim($_SERVER["DOCUMENT_ROOT"], " /"));
 }
 
 require_once(ROOT . "/vendor/autoload.php");
