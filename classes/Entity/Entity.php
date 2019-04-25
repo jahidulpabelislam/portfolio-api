@@ -160,7 +160,7 @@ abstract class Entity {
         $bindings = [];
 
         foreach ($this->columns as $column) {
-            if ($column !== "id" && !isset($values[$column])) {
+            if ($column !== "id" && isset($values[$column])) {
                 $columnsQuery .= "{$column}, ";
                 $valuesQuery .= ":{$column}, ";
                 $bindings[":{$column}"] = $values[$column];
