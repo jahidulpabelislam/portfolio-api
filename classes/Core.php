@@ -265,7 +265,8 @@ class Core {
             $projectImage = new ProjectImage();
             $response = $projectImage->getById($imageId);
 
-            if (!empty($response["row"]["project_id"]) && $response["row"]["project_id"] !== $projectId) {
+            $projectId = (int)$projectId;
+            if (!empty($response["row"]["project_id"]) && (int)$response["row"]["project_id"] !== $projectId) {
                 $response = $projectImage->getNotFoundResponse($projectId, $imageId);
             }
         }

@@ -57,6 +57,8 @@ class ProjectImage extends Entity {
         // Check if the deletion was ok
         if ($response["meta"]["affected_rows"] > 0 && $fileName) {
 
+            $fileName = "/" . ltrim($fileName, "/"); // Makes sure there is a leading slash
+
             // Checks if file exists to delete the actual Image file from server
             if (file_exists(ROOT . $fileName)) {
                 unlink(ROOT . $fileName);

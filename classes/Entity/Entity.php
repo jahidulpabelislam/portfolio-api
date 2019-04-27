@@ -264,6 +264,7 @@ abstract class Entity {
         // Check the Entity trying to delete actually exists
         $response = $this->getById($id);
         if (!empty($response["row"])) {
+            $id = (int)$id;
 
             $query = "DELETE FROM {$this->tableName} WHERE id = :id;";
             $bindings = [":id" => $id];
