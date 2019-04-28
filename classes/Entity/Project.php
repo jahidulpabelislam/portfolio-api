@@ -32,13 +32,13 @@ class Project extends Entity {
         "id",
         "name",
         "date",
-        "skills",
         "link",
         "github",
         "download",
         "colour",
         "short_description",
         "long_description",
+        "skills",
         "status",
         "created_at",
         "updated_at",
@@ -55,6 +55,16 @@ class Project extends Entity {
     protected $defaultOrderByColumn = "date";
 
     public $displayName = "Project";
+
+    public function toArray(array $entity): array{
+        $array = parent::toArray($entity);
+
+        if (isset($array["skills"])) {
+            $array["skills"] = explode(",", $array["skills"]);
+        }
+
+        return $array;
+    }
 
     /**
      * Helper function to get all Project Image Entities linked to this Project
