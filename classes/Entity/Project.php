@@ -126,7 +126,11 @@ class Project extends Entity {
      */
     public function save(array $values): array {
 
-        $values["date"] = date("Y-m-d", strtotime($values["date"]));
+        // Transform the incoming data into the necessary data for the database
+
+        if (isset($values["date"])) {
+            $values["date"] = date("Y-m-d", strtotime($values["date"]));
+        }
 
         if (isset($values["skills"]) && is_array($values["skills"])) {
             $values["skills"] = implode(",", $values["skills"]);
