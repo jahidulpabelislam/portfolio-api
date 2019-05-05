@@ -128,6 +128,10 @@ class Project extends Entity {
 
         $values["date"] = date("Y-m-d", strtotime($values["date"]));
 
+        if (isset($values["skills"]) && is_array($values["skills"])) {
+            $values["skills"] = implode(",", $values["skills"]);
+        }
+
         $response = parent::save($values);
 
         // Checks if the save was a update & update was okay
