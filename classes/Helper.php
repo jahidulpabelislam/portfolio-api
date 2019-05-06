@@ -61,11 +61,27 @@ class Helper {
         $this->uriArray = $uriArray;
     }
 
+    private function sanitizeData($value) {
+        if (is_array($value)) {
+            $newValue = [];
+            foreach ($value as $subKey => $subValue) {
+                $newValue[$subKey] = $this->sanitizeData($subValue);
+            }
+            $value = $newValue;
+        }
+
+        if (is_string($value)) {
+            $value = stripslashes(urldecode($value));
+        }
+
+        return $value;
+    }
+
     private function extractDataFromRequest() {
         $data = [];
-        foreach ($_REQUEST as $key => $field) {
-            $value = stripslashes(urldecode($field));
-            $data[$key] = $value;
+
+        foreach ($_REQUEST as $field => $value) {
+            $data[$field] = $this->sanitizeData($value);
         }
 
         $this->data = $data;
@@ -108,7 +124,21 @@ class Helper {
     private function isFieldValid(string $field): bool {
         $data = $this->data;
 
-        return (isset($data[$field]) && trim($data[$field]) !== "");
+        if (!isset($data[$field])) {
+            return false;
+        }
+
+        $value = $data[$field];
+
+        if (is_array($value)) {
+            return count($value) > 0;
+        }
+
+        if (is_string($value)) {
+            return (trim($value) !== "");
+        }
+
+        return false;
     }
 
     /**
@@ -259,7 +289,7 @@ class Helper {
 
     private function setCacheHeaders() {
         $notCachedURLs = [
-            "v" . Config::API_VERSION . "/session/",
+            "/v" . Config::API_VERSION . "/session/",
         ];
 
         // Set cache for 31 days for some GET Requests

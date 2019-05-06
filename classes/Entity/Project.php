@@ -32,13 +32,13 @@ class Project extends Entity {
         "id",
         "name",
         "date",
-        "skills",
         "link",
         "github",
         "download",
-        "colour",
         "short_description",
         "long_description",
+        "colour",
+        "skills",
         "status",
         "created_at",
         "updated_at",
@@ -55,6 +55,16 @@ class Project extends Entity {
     protected $defaultOrderByColumn = "date";
 
     public $displayName = "Project";
+
+    public function toArray(array $entity): array{
+        $array = parent::toArray($entity);
+
+        if (isset($array["skills"])) {
+            $array["skills"] = explode(",", $array["skills"]);
+        }
+
+        return $array;
+    }
 
     /**
      * Helper function to get all Project Image Entities linked to this Project
@@ -116,17 +126,27 @@ class Project extends Entity {
      */
     public function save(array $values): array {
 
-        $values["date"] = date("Y-m-d", strtotime($values["date"]));
+        // Transform the incoming data into the necessary data for the database
+
+        if (isset($values["date"])) {
+            $values["date"] = date("Y-m-d", strtotime($values["date"]));
+        }
+
+        if (isset($values["skills"]) && is_array($values["skills"])) {
+            $values["skills"] = implode(",", $values["skills"]);
+        }
 
         $response = parent::save($values);
 
         // Checks if the save was a update & update was okay
         if (!empty($values["id"]) && !empty($response["row"]) && !empty($values["images"])) {
 
-            $images = json_decode($values["images"], true);
+            $images = $values["images"];
 
             if (count($images) > 0) {
                 foreach ($images as $sortOrder => $image) {
+                    $image = json_decode($image, true);
+
                     $imageUpdateData = [
                         "id" => $image["id"],
                         "sort_order_number" => $sortOrder,

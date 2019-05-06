@@ -30,7 +30,7 @@ abstract class Entity {
 
     protected $intColumns = ["id"];
 
-    protected $dateColumns = ["created_at", "updated_at"];
+    protected $dateTimeColumns = ["created_at", "updated_at"];
 
     protected $searchableColumns = [];
 
@@ -60,7 +60,7 @@ abstract class Entity {
             if (in_array($column, $this->intColumns)) {
                 $value = (int)$value;
             }
-            else if (in_array($column, $this->dateColumns)) {
+            else if (in_array($column, $this->dateTimeColumns)) {
                 $datetime = DateTime::createFromFormat("Y-m-d G:i:s", $value);
                 if ($datetime) {
                     $value = $datetime->format('Y-m-d G:i:s e');

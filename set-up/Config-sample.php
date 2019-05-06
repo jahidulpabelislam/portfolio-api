@@ -20,7 +20,7 @@ if (!defined("ROOT")) {
 
 class Config {
 
-    const API_VERSION = "3.1";
+    const API_VERSION = "3";
 
     // IP of database server
     const DB_IP = "localhost"; // TODO CHANGE ME
