@@ -1,5 +1,6 @@
 # Portfolio API
 
+[![CodeFactor](https://www.codefactor.io/repository/github/jahidulpabelislam/portfolio-api/badge?style=flat-square)](https://www.codefactor.io/repository/github/jahidulpabelislam/portfolio-api)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/491ad3efe79b413c9ecdbc941342986c)](https://app.codacy.com/app/jahidulpabelislam/portfolio-api?utm_source=github.com&utm_medium=referral&utm_content=jahidulpabelislam/portfolio-api&utm_campaign=Badge_Grade_Dashboard)
 
 This API is to manage the projects and its images in my [Portfolio](https://jahidulpabelislam.com/). This will essentially will be used to display projects in my Portfolio, this is all connected together via the [CMS Repo](https://github.com/jahidulpabelislam/portfolio-cms/) as well the actual [Portfolio Repo](https://github.com/jahidulpabelislam/portfolio/).
