@@ -42,8 +42,8 @@ abstract class Entity {
 
     public $displayName = "";
 
-    private $db = null;
-    private $helper = null;
+    private $db;
+    private $helper;
 
     /**
      * Entity constructor
@@ -76,10 +76,6 @@ abstract class Entity {
     /**
      * Load Entities from the Database where a column ($column) = a value ($value)
      * Either return Entities with success meta data, or failed meta data
-     *
-     * @param $column string
-     * @param $value string
-     * @return array The response from the SQL query
      */
     public function getByColumn(string $column, $value): array {
 
@@ -131,8 +127,7 @@ abstract class Entity {
                 $response["meta"]["feedback"] = "No {$this->displayName} found with {$id} as ID.";
             }
 
-            unset($response["rows"]);
-            unset($response["meta"]["count"]);
+            unset($response["rows"], $response["meta"]["count"]);
         }
         else {
             $response = [
@@ -240,7 +235,7 @@ abstract class Entity {
         // Checks if insert was ok
         if ($response["meta"]["affected_rows"] > 0) {
 
-            $id = (empty($id)) ? $this->db->getLastInsertedId() : $id;
+            $id = empty($id) ? $this->db->getLastInsertedId() : $id;
 
             $response = $this->getById($id);
 
@@ -347,8 +342,7 @@ abstract class Entity {
      * Used together with Entity::doSearch, as this return a limited Entities
      * but we want to get a number of total items without limit
      *
-     * @param $whereClause string
-     * @param array $bindings array Any data to aid in the database querying
+     * @param $bindings array Any data to aid in the database querying
      * @return int
      */
     public function getTotalCountByWhereClause(string $whereClause, array $bindings): int {
@@ -365,7 +359,7 @@ abstract class Entity {
     /**
      * Gets all Entities but paginated, also might include search
      *
-     * @param array $params array Any data to aid in the search query
+     * @param $params array Any data to aid in the search query
      * @return array The request response to send back
      */
     public function doSearch(array $params): array {
@@ -401,7 +395,7 @@ abstract class Entity {
 
         // Add a filter if a search was entered
         if (!empty($params)) {
-            list($whereClause, $bindings) = $this->generateSearchWhereQuery($params);
+            [$whereClause, $bindings] = $this->generateSearchWhereQuery($params);
         }
 
         $query = "SELECT * FROM  {$this->tableName} {$whereClause}
@@ -441,18 +435,20 @@ abstract class Entity {
         }
 
         // Check if database provided any meta data if not all ok
-        if ($response["meta"]["count"] > 0 && !isset($response["meta"]["feedback"])) {
+        if (!isset($response["meta"]["feedback"])) {
+            if ($response["meta"]["count"] > 0) {
 
-            $response["rows"] = array_map(function($row) {
-                return $this->toArray($row);
-            }, $response["rows"]);
+                $response["rows"] = array_map(function($row) {
+                    return $this->toArray($row);
+                }, $response["rows"]);
 
-            $response["meta"]["ok"] = true;
-        }
-        else if ($response["meta"]["count"] === 0 && !isset($response["meta"]["feedback"])) {
-            $response["meta"]["status"] = 404;
-            $response["meta"]["feedback"] = "No {$this->displayName}s found.";
-            $response["meta"]["message"] = "Not Found";
+                $response["meta"]["ok"] = true;
+            }
+            else {
+                $response["meta"]["status"] = 404;
+                $response["meta"]["feedback"] = "No {$this->displayName}s found.";
+                $response["meta"]["message"] = "Not Found";
+            }
         }
 
         return $response;

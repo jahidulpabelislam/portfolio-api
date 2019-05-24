@@ -25,7 +25,7 @@ class Helper {
     public $uriString = "";
     public $data = [];
 
-    private static $instance = null;
+    private static $instance;
 
     /**
      * Singleton getter
@@ -96,7 +96,7 @@ class Helper {
     /**
      * Generates a full url from the URI user requested
      *
-     * @param array $uriArray array The URI user request as an array
+     * @param $uriArray array The URI user request as an array
      * @return string The Full URI user requested
      */
     public function getAPIURL(array $uriArray = null): string {
@@ -107,7 +107,7 @@ class Helper {
             $uriString = $this->uriString;
         }
 
-        $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] != "off") ? "https" : "http";
+        $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
         $url = "{$protocol}://" . $_SERVER["SERVER_NAME"];
 
         if (!empty($uriString)) {
@@ -255,7 +255,7 @@ class Helper {
 
         $shouldBeURI = $this->uriArray;
         $shouldBeURI[0] = $shouldBeVersion;
-        $shouldBeURL = self::getAPIURL($shouldBeURI);
+        $shouldBeURL = $this->getAPIURL($shouldBeURI);
 
         return [
             "meta" => [
@@ -270,8 +270,7 @@ class Helper {
         $originURL = $_SERVER["HTTP_ORIGIN"] ?? "";
 
         // Strip the protocol from domain
-        $originDomain = str_replace("http://", "", $originURL);
-        $originDomain = str_replace("https://", "", $originDomain);
+        $originDomain = str_replace(["http://", "https://"], "", $originURL);
 
         // If the domain if allowed send correct header response back
         if (in_array($originDomain, Config::ALLOWED_DOMAINS)) {
@@ -293,7 +292,7 @@ class Helper {
         ];
 
         // Set cache for 31 days for some GET Requests
-        if ($this->method == "GET" && !in_array($this->uriString, $notCachedURLs)) {
+        if ($this->method === "GET" && !in_array($this->uriString, $notCachedURLs)) {
             $secondsToCache = 2678400;
             $expiresTime = gmdate("D, d M Y H:i:s", time() + $secondsToCache) . " GMT";
             header("Cache-Control: max-age={$secondsToCache}, public");

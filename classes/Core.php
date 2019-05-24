@@ -21,14 +21,12 @@ use JPI\API\Entity\ProjectImage;
 
 class Core {
 
-    private $db = null;
-    private $helper = null;
+    private $helper;
 
     /**
      * API constructor.
      */
     public function __construct() {
-        $this->db = Database::get();
         $this->helper = Helper::get();
     }
 
@@ -119,7 +117,7 @@ class Core {
      * Get a particular Project defined by $projectId
      *
      * @param $projectId int The Id of the Project to get
-     * @param bool $getImages bool Whether the images for the Project should should be added
+     * @param $getImages bool Whether the images for the Project should should be added
      * @return array The request response to send back
      */
     public function getProject($projectId, bool $getImages = false): array {
@@ -175,7 +173,7 @@ class Core {
         // The full path for new file on the server
         $newFilename = $projectNameFormatted;
         $newFilename .= "-" . date("Ymd-His");
-        $newFilename .= "-" . mt_rand(0, 99);
+        $newFilename .= "-" . random_int(0, 99);
         $newFilename .= "." . $imageFileExt;
 
         $newFileLocation = $directory . $newFilename;

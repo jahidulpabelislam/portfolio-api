@@ -47,9 +47,6 @@ class Router {
     }
 
     /**
-     * @param string $entity
-     * @param string $method
-     * @param array $data
      * @return array An appropriate response to request
      */
     private function executeAuthAction(string $entity, string $method, array $data): array{
@@ -89,9 +86,6 @@ class Router {
     }
 
     /**
-     * @param array $uri
-     * @param string $method
-     * @param array $data
      * @return array An appropriate response to request
      */
     private function executeProjectsAction(array $uri, string $method, array $data): array {

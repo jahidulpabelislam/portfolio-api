@@ -26,11 +26,11 @@ if (!defined("ROOT")) {
 
 class Database {
 
-    private static $instance = null;
+    private static $instance;
 
-    private $db = null;
-    private $config = null;
-    private $error = null;
+    private $db;
+    private $config;
+    private $error;
 
     /**
      * Connects to a MySQL engine
@@ -38,9 +38,12 @@ class Database {
      * defined in Config.php
      */
     public function __construct() {
-
         $this->config = Config::get();
 
+        $this->connectToDB();
+    }
+
+    private function connectToDB() {
         try {
             $dsn = "mysql:host=" . Config::DB_IP . ";dbname=" . Config::DB_NAME . ";charset-UTF-8";
             $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
@@ -62,7 +65,7 @@ class Database {
      * @return Database
      */
     public static function get(): Database {
-        if (self::$instance === null) {
+        if (!self::$instance) {
             self::$instance = new self();
         }
 
@@ -73,7 +76,7 @@ class Database {
      * Executes a SQL query
      *
      * @param $query string The SQL query to run
-     * @param null $bindings array Array of any bindings to use with the SQL query
+     * @param $bindings array Array of any bindings to use with the SQL query
      * @return array Array of data or meta feedback
      */
     public function query(string $query, array $bindings = null): array {

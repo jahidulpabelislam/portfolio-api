@@ -48,14 +48,14 @@ class ProjectImage extends Entity {
      * Here actually delete the file from the server
      *
      * @param $id int The Id of the Entity to delete
-     * @param string $fileName string The filename of the file to delete
+     * @param $fileName string The filename of the file to delete
      * @return array Either an array with successful meta data or a array of error feedback meta
      */
     public function delete($id, string $fileName = ""): array {
         $response = parent::delete($id);
 
         // Check if the deletion was ok
-        if ($response["meta"]["affected_rows"] > 0 && $fileName) {
+        if (!empty($fileName) && $response["meta"]["affected_rows"] > 0) {
 
             $fileName = "/" . ltrim($fileName, "/"); // Makes sure there is a leading slash
 
@@ -73,8 +73,9 @@ class ProjectImage extends Entity {
      *
      * @param $projectId int The Id of the Project requested
      * @param $imageId int The Id of a Project Image requested
+     * @return array
      */
-    public function getNotFoundResponse(int $projectId, int $imageId) {
+    public function getNotFoundResponse(int $projectId, int $imageId): array {
         return [
             "row" => [],
             "meta" => [
