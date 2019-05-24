@@ -28,10 +28,10 @@ DirectoryIndex index.php index.html
 
 # Add caching for API responses
 <IfModule mod_expires.c>
-  ExpiresActive On
-  ExpiresDefault "access plus 1 seconds"
-  ExpiresByType application/json "access plus 2678400 seconds"
-  ExpiresByType text/plain "access plus 2678400 seconds"
+    ExpiresActive On
+    ExpiresDefault "access plus 1 seconds"
+    ExpiresByType application/json "access plus 2678400 seconds"
+    ExpiresByType text/plain "access plus 2678400 seconds"
 </IfModule>
 
 RewriteEngine On

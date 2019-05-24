@@ -398,7 +398,7 @@ abstract class Entity {
             [$whereClause, $bindings] = $this->generateSearchWhereQuery($params);
         }
 
-        $query = "SELECT * FROM  {$this->tableName} {$whereClause}
+        $query = "SELECT * FROM {$this->tableName} {$whereClause}
                     ORDER BY {$this->defaultOrderByColumn} {$this->defaultOrderByDirection}
                     LIMIT {$limit} OFFSET {$offset};";
         $response = $this->db->query($query, $bindings);

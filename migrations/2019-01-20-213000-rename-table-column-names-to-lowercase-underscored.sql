@@ -4,7 +4,7 @@ ALTER TABLE `portfolio_project`
     CHANGE `LongDescription` `long_description` varchar(10000) DEFAULT NULL,
     CHANGE `ShortDescription` `short_description` varchar(10000) NOT NULL,
     CHANGE `Skills` `skills` varchar(200) DEFAULT NULL,
-    CHANGE `Link` `link`  varchar(200) DEFAULT NULL,
+    CHANGE `Link` `link` varchar(200) DEFAULT NULL,
     CHANGE `GitHub` `github` varchar(200) NOT NULL,
     CHANGE `Download` `download` varchar(200) DEFAULT NULL,
     CHANGE `colour` `colour` varchar(20) DEFAULT NULL,
