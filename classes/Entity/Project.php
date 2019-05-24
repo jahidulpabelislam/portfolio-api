@@ -99,7 +99,7 @@ class Project extends Entity {
 
         // If Project was found
         if (!empty($response["row"])) {
-            if (!Auth::isLoggedIn() && $response["row"]["status"] !== self::PUBLIC_STATUS) {
+            if ($response["row"]["status"] !== self::PUBLIC_STATUS && !Auth::isLoggedIn()) {
                 return Core::getNotAuthorisedResponse();
             }
 
