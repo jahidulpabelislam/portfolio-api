@@ -16,7 +16,7 @@
 namespace JPI\API\Entity;
 
 use JPI\API\Auth;
-use JPI\API\Helper;
+use JPI\API\Core;
 
 if (!defined("ROOT")) {
     die();
@@ -100,7 +100,7 @@ class Project extends Entity {
         // If Project was found
         if (!empty($response["row"])) {
             if (!Auth::isLoggedIn() && $response["row"]["status"] !== self::PUBLIC_STATUS) {
-                return Helper::getNotAuthorisedResponse();
+                return Core::getNotAuthorisedResponse();
             }
 
             // If Project's Images was requested, get and add these

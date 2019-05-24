@@ -36,11 +36,11 @@ class Auth {
     public static function login(array $data): array {
         $response = [];
 
-        $helper = Helper::get();
+        $api = Core::get();
 
         // Checks if data needed are present and not empty
         $requiredFields = ["username", "password"];
-        if ($helper->hasRequiredFields($requiredFields)) {
+        if ($api->hasRequiredFields($requiredFields)) {
 
             $response["meta"]["status"] = 401;
             $response["meta"]["message"] = "Unauthorized";
@@ -92,7 +92,7 @@ class Auth {
 
         }
         else {
-            $response = $helper->getInvalidFieldsResponse($requiredFields);
+            $response = $api->getInvalidFieldsResponse($requiredFields);
         }
 
         return $response;
@@ -172,6 +172,6 @@ class Auth {
             ];
         }
 
-        return Helper::getNotAuthorisedResponse();
+        return Core::getNotAuthorisedResponse();
     }
 }

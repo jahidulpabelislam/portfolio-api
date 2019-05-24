@@ -20,7 +20,7 @@ if (!defined("ROOT")) {
 
 use DateTime;
 use JPI\API\Database;
-use JPI\API\Helper;
+use JPI\API\Core;
 
 abstract class Entity {
 
@@ -43,14 +43,14 @@ abstract class Entity {
     public $displayName = "";
 
     private $db;
-    private $helper;
+    private $api;
 
     /**
      * Entity constructor
      */
     public function __construct() {
         $this->db = Database::get();
-        $this->helper = Helper::get();
+        $this->api = Core::get();
     }
 
     public function toArray(array $entity): array {
@@ -412,8 +412,8 @@ abstract class Entity {
         $lastPage = ceil($totalCount / $limit);
         $response["meta"]["total_pages"] = $lastPage;
 
-        $pageURL = $this->helper->getAPIURL();
-        $params = $this->helper->data;
+        $pageURL = $this->api->getAPIURL();
+        $params = $this->api->data;
         if (isset($params["limit"])) {
             $params["limit"] = $limit;
         }

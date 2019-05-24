@@ -19,10 +19,10 @@ if (!defined("ROOT")) {
 
 class Router {
 
-    private $helper;
+    private $api;
 
     public function __construct() {
-        $this->helper = Helper::get();
+        $this->api = Core::get();
     }
 
     /**
@@ -34,13 +34,13 @@ class Router {
     private function checkAPIVersion(): array {
         $response = [];
 
-        $uri = $this->helper->uriArray;
+        $uri = $this->api->uriArray;
 
         $version = !empty($uri[0]) ? $uri[0] : "";
 
         $shouldBeVersion = "v" . Config::API_VERSION;
         if ($version !== $shouldBeVersion) {
-            $response = $this->helper->getUnrecognisedAPIVersionResponse();
+            $response = $this->api->getUnrecognisedAPIVersionResponse();
         }
 
         return $response;
@@ -59,7 +59,7 @@ class Router {
                         $response = Auth::login($data);
                         break;
                     default:
-                        $response = $this->helper->getMethodNotAllowedResponse();
+                        $response = $this->api->getMethodNotAllowedResponse();
                 }
                 break;
             case "logout":
@@ -68,7 +68,7 @@ class Router {
                         $response = Auth::logout();
                         break;
                     default:
-                        $response = $this->helper->getMethodNotAllowedResponse();
+                        $response = $this->api->getMethodNotAllowedResponse();
                 }
                 break;
             case "session":
@@ -77,7 +77,7 @@ class Router {
                         $response = Auth::getAuthStatus();
                         break;
                     default:
-                        $response = $this->helper->getMethodNotAllowedResponse();
+                        $response = $this->api->getMethodNotAllowedResponse();
                 }
                 break;
         }
@@ -89,7 +89,7 @@ class Router {
      * @return array An appropriate response to request
      */
     private function executeProjectsAction(array $uri, string $method, array $data): array {
-        $api = new Core();
+        $api = new Projects();
 
         $response = [];
 
@@ -150,7 +150,7 @@ class Router {
                 }
                 break;
             default:
-                $response = $this->helper->getMethodNotAllowedResponse();
+                $response = $this->api->getMethodNotAllowedResponse();
                 break;
         }
 
@@ -165,9 +165,9 @@ class Router {
     private function executeAction(): array {
         $response = [];
 
-        $method = $this->helper->method;
-        $uri = $this->helper->uriArray;
-        $data = $this->helper->data;
+        $method = $this->api->method;
+        $uri = $this->api->uriArray;
+        $data = $this->api->data;
 
         $entity = !empty($uri[1]) ? $uri[1] : "";
 
@@ -186,7 +186,7 @@ class Router {
      * Try and perform the necessary actions needed to fulfil the request that a user made
      */
     public function performRequest() {
-        $this->helper->extractFromRequest();
+        $this->api->extractFromRequest();
 
         // Here check the requested API version, if okay return empty array
         // else returns appropriate response
@@ -199,9 +199,9 @@ class Router {
 
         // If at this point response is empty, we didn't recognise the action
         if (empty($response)) {
-            $response = $this->helper->getUnrecognisedURIResponse();
+            $response = $this->api->getUnrecognisedURIResponse();
         }
 
-        $this->helper->sendResponse($response);
+        $this->api->sendResponse($response);
     }
 }
