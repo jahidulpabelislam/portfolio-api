@@ -200,7 +200,7 @@ class Core {
         return [
             "meta" => [
                 "status" => 405,
-                "message" => "Method not allowed.",
+                "message" => "Method Not Allowed.",
                 "feedback" => "Method {$this->method} not allowed on " . $this->getAPIURL() . ".",
             ],
         ];
@@ -271,6 +271,8 @@ class Core {
 
             if ($this->method === "OPTIONS") {
                 $response["meta"]["ok"] = true;
+                $response["meta"]["status"] = 200;
+                $response["meta"]["message"] = "OK";
             }
         }
     }
@@ -319,7 +321,7 @@ class Core {
         // Check if requested to send json
         $isSendingJson = (stripos($_SERVER["HTTP_ACCEPT"], "application/json") !== false);
 
-        $encodeParams = $isSendingJson ? [] : JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
+        $encodeParams = $isSendingJson ? 0 : JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
         echo json_encode($response, $encodeParams);
         die();
     }
