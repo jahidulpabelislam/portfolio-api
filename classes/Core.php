@@ -1,6 +1,8 @@
 <?php
 /*
- * All the custom functions for this API that allow to perform all user requests.
+ * All the general functions for the API.
+ *
+ * Can be used by multiple API's.
  *
  * PHP version 7
  *
@@ -16,298 +18,313 @@ if (!defined("ROOT")) {
     die();
 }
 
-use JPI\API\Entity\Project;
-use JPI\API\Entity\ProjectImage;
-
 class Core {
 
-    private $db = null;
-    private $helper = null;
+    public $method = "GET";
+    public $uriArray = [];
+    public $uriString = "";
+    public $data = [];
+
+    private static $instance;
 
     /**
-     * API constructor.
+     * Singleton getter
+     *
+     * @return self
      */
-    public function __construct() {
-        $this->db = Database::get();
-        $this->helper = Helper::get();
+    public static function get() {
+        if (!self::$instance) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
     }
 
-    /**
-     * Gets all Projects but paginated, also might include search
-     *
-     * @param $data array Any data to aid in the search query
-     * @return array The request response to send back
-     */
-    public function getProjects(array $data): array {
+    private function extractMethodFromRequest() {
+        $method = $_SERVER["REQUEST_METHOD"];
+        $method = strtoupper($method);
 
-        $projects = new Project();
-        $response = $projects->doSearch($data);
-
-        return $response;
+        $this->method = $method;
     }
 
-    /**
-     * Try to either insert or update a Project
-     *
-     * @param $data array The data to insert/update into the database for the Project
-     * @return array The request response to send back
-     */
-    private function saveProject(array $data): array {
-        // Checks if user is authored
-        if (Auth::isLoggedIn()) {
+    private function extractURIFromRequest() {
+        $uriString = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+        $uriString = !empty($uriString) ? trim($uriString) : "";
+        $this->uriString = $uriString;
 
-            // Checks that all data required is present and not empty
-            $requiredFields = ["name", "date", "skills", "long_description", "short_description"];
-            if ($this->helper->hasRequiredFields($requiredFields)) {
+        $uriString = trim($uriString, " /");
+        $uriString = strtolower($uriString);
 
-                $project = new Project();
-                $response = $project->save($data);
+        // Get the individual parts of the request URI as an array
+        $uriArray = explode("/", $uriString);
+        $this->uriArray = $uriArray;
+    }
+
+    private function sanitizeData($value) {
+        if (is_array($value)) {
+            $newArrayValues = [];
+            foreach ($value as $subKey => $subValue) {
+                $newArrayValues[$subKey] = $this->sanitizeData($subValue);
             }
-            // Else all the data required was not provided and/or valid
-            else {
-                $response = $this->helper->getInvalidFieldsResponse($requiredFields);
-            }
+            $value = $newArrayValues;
         }
-        else {
-            $response = Helper::getNotAuthorisedResponse();
+        else if (is_string($value)) {
+            $value = stripslashes(urldecode(trim($value)));
         }
 
-        return $response;
+        return $value;
     }
 
-    /**
-     * Try and add a Project a user has attempted to add
-     *
-     * @param $data array The data to insert into the database for this new Project
-     * @return array The request response to send back
-     */
-    public function addProject(array $data): array {
-        return $this->saveProject($data);
-    }
+    private function extractDataFromRequest() {
+        $data = [];
 
-    /**
-     * Try to edit a Project a user has added before
-     *
-     * @param $data array The new data entered to use to update the Project with
-     * @return array The request response to send back
-     */
-    public function editProject(array $data): array {
-        return $this->saveProject($data);
-    }
-
-    /**
-     * Try to delete a Project a user has added before
-     *
-     * @param $data array The data sent to aid in the deletion of the Project
-     * @return array The request response to send back
-     */
-    public function deleteProject(array $data): array {
-
-        // Checks if user is authored
-        if (Auth::isLoggedIn()) {
-            $project = new Project();
-            $response = $project->delete($data["id"]);
-        }
-        else {
-            $response = Helper::getNotAuthorisedResponse();
+        foreach ($_REQUEST as $field => $value) {
+            $data[$field] = $this->sanitizeData($value);
         }
 
-        return $response;
+        $this->data = $data;
+    }
+
+    public function extractFromRequest() {
+        $this->extractMethodFromRequest();
+        $this->extractURIFromRequest();
+        $this->extractDataFromRequest();
     }
 
     /**
-     * Get a particular Project defined by $projectId
+     * Generates a full url from the URI user requested
      *
-     * @param $projectId int The Id of the Project to get
-     * @param bool $getImages bool Whether the images for the Project should should be added
-     * @return array The request response to send back
+     * @param $uriArray array The URI user request as an array
+     * @return string The full URI user requested
      */
-    public function getProject($projectId, bool $getImages = false): array {
+    public function getAPIURL(array $uriArray = null): string {
+        $uriString = $uriArray ? implode("/", $uriArray) : $this->uriString;
 
-        $project = new Project();
-        $response = $project->getById($projectId, $getImages);
-
-        return $response;
-    }
-
-    /**
-     * Get the Images attached to a Project
-     *
-     * @param $projectId int The Id of the Project
-     * @return array The request response to send back
-     */
-    public function getProjectImages($projectId): array {
-
-        // Check the Project trying to get Images for
-        $response = $this->getProject($projectId);
-        if (!empty($response["row"])) {
-
-            $projectImage = new ProjectImage();
-            $response = $projectImage->getByColumn("project_id", $projectId);
+        if (!empty($uriString)) {
+            $uriString = trim($uriString, "/");
+            $uriString .= "/";
         }
 
-        return $response;
+        $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
+        $url = "{$protocol}://" . $_SERVER["SERVER_NAME"];
+
+        $url = rtrim($url, "/");
+        $url .= "/{$uriString}";
+
+        return $url;
+    }
+
+    private function isFieldValid(string $field): bool {
+        $data = $this->data;
+
+        if (!isset($data[$field])) {
+            return false;
+        }
+
+        $value = $data[$field];
+
+        if (is_array($value)) {
+            return (count($value) > 0);
+        }
+        else if (is_string($value)) {
+            return ($value !== "");
+        }
+
+        return false;
     }
 
     /**
-     * Try and upload the added image
+     * Check if all the required data is provided
+     * And data provided is not empty
      *
-     * @param $project array The Project trying to upload image for
-     * @return array The request response to send back
+     * @param $requiredFields array Array of required data keys
+     * @return bool Whether data required is provided & is valid or not
      */
-    private function uploadProjectImage(array $project): array {
-        $response = [];
+    public function hasRequiredFields(array $requiredFields): bool {
 
-        $projectId = $project["id"];
-        $projectName = $project["name"];
+        // Loops through each required data field for the request
+        foreach ($requiredFields as $field) {
 
-        $projectNameFormatted = strtolower($projectName);
-        $projectNameFormatted = preg_replace("/[^a-z0-9]+/", "-", $projectNameFormatted);
-
-        $image = $_FILES["image"];
-
-        // Get the file ext
-        $imageFileExt = pathinfo(basename($image["name"]), PATHINFO_EXTENSION);
-
-        // The directory to upload file
-        $directory = "/project-images/";
-
-        // The full path for new file on the server
-        $newFilename = $projectNameFormatted;
-        $newFilename .= "-" . date("Ymd-His");
-        $newFilename .= "-" . mt_rand(0, 99);
-        $newFilename .= "." . $imageFileExt;
-
-        $newFileLocation = $directory . $newFilename;
-
-        $newImageFullPath = ROOT . $newFileLocation;
-
-        // Check if file is a actual image
-        $fileType = mime_content_type($image["tmp_name"]);
-        if (stripos($fileType, "image/") !== false) {
-
-            // Try to uploaded file
-            if (move_uploaded_file($image["tmp_name"], $newImageFullPath)) {
-
-                // Update database with location of new Image
-                $values = [
-                    "file" => $newFileLocation,
-                    "project_id" => $projectId,
-                    "sort_order_number" => 999, // High enough number
-                ];
-                $projectImage = new ProjectImage();
-                $response = $projectImage->save($values);
-            }
-            // Else there was a problem uploading file to server
-            else {
-                $response["meta"]["feedback"] = "Sorry, there was an error uploading your Image.";
+            // Checks if the required field is provided and is not empty
+            if (!$this->isFieldValid($field)) {
+                // Return false as required field is not provided or empty
+                return false;
             }
         }
-        // Else bad request as file uploaded is not a image
-        else {
-            $response["meta"] = [
+
+        // Otherwise data provided is ok and data required is provided
+        return true;
+    }
+
+    /**
+     * Get all invalid required data fields
+     *
+     * @param $requiredFields array Array of required data keys
+     * @return array An array of invalid data fields
+     */
+    private function getInvalidFields(array $requiredFields): array {
+        // Loops through each required data field for the request and only gets invalid fields
+        $invalidFields = array_filter($requiredFields, function($field) {
+            return !$this->isFieldValid($field);
+        });
+
+        return $invalidFields;
+    }
+
+    /**
+     * Send necessary meta data back when required data/fields is not provided/valid
+     *
+     * @param $requiredFields array Array of the data required
+     * @return array Array of meta data
+     */
+    public function getInvalidFieldsResponse(array $requiredFields): array {
+        $invalidFields = $this->getInvalidFields($requiredFields);
+
+        return [
+            "meta" => [
                 "status" => 400,
                 "message" => "Bad Request",
-                "feedback" => "File is not an image.",
-            ];
-        }
-
-        return $response;
+                "required_fields" => $requiredFields,
+                "invalid_fields" => $invalidFields,
+                "feedback" => "The necessary data was not provided, missing/invalid fields: " . implode(", ", $invalidFields) . ".",
+            ],
+        ];
     }
 
     /**
-     * Try to upload a Image user has tried to add as a Project Image
+     * Generate meta data to send back when the method provided is not allowed on the URI
      *
-     * @param $data array The data sent to aid in Inserting Project Image
-     * @return array The request response to send back
+     * @return array Array of meta data
      */
-    public function addProjectImage(array $data): array {
-
-        // Checks if user is authored
-        if (Auth::isLoggedIn()) {
-
-            // Checks if the data needed is present and not empty
-            if (isset($_FILES["image"])) {
-
-                // Check the Project trying to add a a Image for exists
-                $response = $this->getProject($data["project_id"]);
-                if (!empty($response["row"])) {
-                    $response = $this->uploadProjectImage($response["row"]);
-                }
-            }
-            // Else data needed was not provided
-            else {
-                $requiredFields = ["image"];
-                $response = $this->helper->getInvalidFieldsResponse($requiredFields);
-            }
-        }
-        else {
-            $response = Helper::getNotAuthorisedResponse();
-        }
-
-        $response["meta"]["files"] = $_FILES;
-
-        return $response;
+    public function getMethodNotAllowedResponse(): array {
+        return [
+            "meta" => [
+                "status" => 405,
+                "message" => "Method Not Allowed.",
+                "feedback" => "Method {$this->method} not allowed on " . $this->getAPIURL() . ".",
+            ],
+        ];
     }
 
     /**
-     * Get a Project Image for a Project by Id
+     * Send necessary meta data back when user isn't logged in correctly
      *
-     * @param $projectId int The Id of the Project trying to get Images for
-     * @param $imageId int The Id of the Project Image to get
-     * @return array The request response to send back
+     * @return array Array of meta data
      */
-    public function getProjectImage($projectId, $imageId): array {
-
-        // Check the Project trying to get Images for
-        $response = $this->getProject($projectId);
-        if (!empty($response["row"])) {
-            $projectImage = new ProjectImage();
-            $response = $projectImage->getById($imageId);
-
-            $projectId = (int)$projectId;
-            if (!empty($response["row"]["project_id"]) && (int)$response["row"]["project_id"] !== $projectId) {
-                $response = $projectImage->getNotFoundResponse($projectId, $imageId);
-            }
-        }
-
-        return $response;
+    public static function getNotAuthorisedResponse(): array {
+        return [
+            "meta" => [
+                "status" => 401,
+                "message" => "Unauthorized",
+                "feedback" => "You need to be logged in!",
+            ],
+        ];
     }
 
     /**
-     * Try to delete a Image linked to a Project
+     * Generate response data to send back when the URI provided is not recognised
      *
-     * @param $data array The data sent to delete the Project Image
-     * @return array The request response to send back
+     * @return array Array of meta data
      */
-    public function deleteImage(array $data): array {
+    public function getUnrecognisedURIResponse(): array {
+        return [
+            "meta" => [
+                "status" => 404,
+                "feedback" => "Unrecognised URI (" . $this->getAPIURL() . ").",
+                "message" => "Not Found",
+            ],
+        ];
+    }
 
-        // Checks if user is authored
-        if (Auth::isLoggedIn()) {
+    /**
+     * Generate response data to send back when the requested API version is not recognised
+     *
+     * @return array Array of meta data
+     */
+    public function getUnrecognisedAPIVersionResponse(): array {
+        $shouldBeVersion = "v" . Config::API_VERSION;
 
-            $projectId = $data["project_id"];
-            $imageId = $data["id"];
+        $shouldBeURI = $this->uriArray;
+        $shouldBeURI[0] = $shouldBeVersion;
+        $shouldBeURL = $this->getAPIURL($shouldBeURI);
 
-            // Check the Project trying to edit actually exists
-            $response = $this->getProject($projectId);
-            if (!empty($response["row"])) {
+        return [
+            "meta" => [
+                "status" => 404,
+                "feedback" => "Unrecognised API version. Current version is " . Config::API_VERSION . ", so please update requested URL to {$shouldBeURL}.",
+                "message" => "Not Found",
+            ],
+        ];
+    }
 
-                $response = $this->getProjectImage($projectId, $imageId);
+    private function setCORSHeaders(array &$response) {
+        $originURL = $_SERVER["HTTP_ORIGIN"] ?? "";
 
-                if (!empty($response["row"])) {
+        // Strip the protocol from domain
+        $originDomain = str_replace(["http://", "https://"], "", $originURL);
 
-                    $fileName = $response["row"]["file"];
+        // If the domain if allowed send correct header response back
+        if (in_array($originDomain, Config::ALLOWED_DOMAINS)) {
+            header("Access-Control-Allow-Origin: {$originURL}");
+            header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+            header("Access-Control-Allow-Headers: Process-Data, Authorization");
 
-                    // Update database to delete row
-                    $projectImage = new ProjectImage();
-                    $response = $projectImage->delete($imageId, $fileName);
-                }
+            if ($this->method === "OPTIONS") {
+                $response["meta"]["ok"] = true;
+                $response["meta"]["status"] = 200;
+                $response["meta"]["message"] = "OK";
             }
         }
-        else {
-            $response = Helper::getNotAuthorisedResponse();
-        }
+    }
 
-        return $response;
+    private function setCacheHeaders() {
+        $notCachedURLs = [
+            "/v" . Config::API_VERSION . "/auth/session/",
+        ];
+
+        // Set cache for 31 days for some GET Requests
+        if ($this->method === "GET" && !in_array($this->uriString, $notCachedURLs)) {
+            $secondsToCache = 2678400;
+            $expiresTime = gmdate("D, d M Y H:i:s", time() + $secondsToCache) . " GMT";
+            header("Cache-Control: max-age={$secondsToCache}, public");
+            header("Expires: {$expiresTime}");
+            header("Pragma: cache");
+        }
+    }
+
+    /**
+     * Send the response response back
+     *
+     * @param $response array The response generated from the request so far
+     */
+    public function sendResponse(array $response) {
+
+        // Just remove any internal meta data
+        unset($response["meta"]["affected_rows"]);
+
+        $this->setCORSHeaders($response);
+        $this->setCacheHeaders();
+
+        // Figure out the correct meta responses to return
+        $isSuccessful = $response["meta"]["ok"] = $response["meta"]["ok"] ?? false;
+        $status = $response["meta"]["status"] = $response["meta"]["status"] ?? ($isSuccessful ? 200 : 500);
+        $message = $response["meta"]["message"] = $response["meta"]["message"] ?? ($isSuccessful ? "OK" : "Internal Server Error");
+
+        // Send back all the data sent in request
+        $response["meta"]["data"] = $this->data;
+        $response["meta"]["method"] = $this->method;
+        $response["meta"]["uri"] = $this->uriString;
+
+        header("HTTP/1.1 {$status} {$message}");
+        header("Content-Type: application/json");
+
+        // Check if requested to send json
+        $isSendingJson = (stripos($_SERVER["HTTP_ACCEPT"], "application/json") !== false);
+
+        $encodeParams = $isSendingJson ? 0 : JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
+        echo json_encode($response, $encodeParams);
+        die();
     }
 }
+
+Core::get();

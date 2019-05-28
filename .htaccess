@@ -1,14 +1,9 @@
-#Block user from viewing list of files in a directory
+# Block user from viewing list of files in a directory
 Options -Indexes
 IndexIgnore *
 
-#Stop users from viewing this folder/files
-<Files /logs/>
-    order allow,deny
-    deny from all
-</Files>
+# Stop users from viewing these folders/files
 
-#Stop users from viewing thsese development file
 <Files .gitattributes>
     order allow,deny
     deny from all
@@ -25,11 +20,6 @@ IndexIgnore *
 </Files>
 
 <Files README.md>
-    order allow,deny
-    deny from all
-</Files>
-
-<Files robots.txt>
     order allow,deny
     deny from all
 </Files>

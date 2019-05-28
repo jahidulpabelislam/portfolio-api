@@ -17,12 +17,13 @@ if (!defined("ROOT")) {
     die();
 }
 
+use Exception;
 use Firebase\JWT\JWT;
 
 class Auth {
 
-    const JWT_ALG = "HS512";
-    const JWT_EXPIRATION_HOURS = 1;
+    private const JWT_ALG = "HS512";
+    private const JWT_EXPIRATION_HOURS = 1;
 
     /**
      * Authenticate a user trying to login
@@ -35,11 +36,11 @@ class Auth {
     public static function login(array $data): array {
         $response = [];
 
-        $helper = Helper::get();
+        $api = Core::get();
 
         // Checks if data needed are present and not empty
         $requiredFields = ["username", "password"];
-        if ($helper->hasRequiredFields($requiredFields)) {
+        if ($api->hasRequiredFields($requiredFields)) {
 
             $response["meta"]["status"] = 401;
             $response["meta"]["message"] = "Unauthorized";
@@ -91,7 +92,7 @@ class Auth {
 
         }
         else {
-            $response = $helper->getInvalidFieldsResponse($requiredFields);
+            $response = $api->getInvalidFieldsResponse($requiredFields);
         }
 
         return $response;
@@ -134,7 +135,7 @@ class Auth {
         $headers = apache_request_headers();
 
         $auth = $headers["Authorization"] ?? "";
-        list($jwt) = sscanf($auth, "Bearer %s");
+        [$jwt] = sscanf($auth, "Bearer %s");
 
         if (!empty($jwt)) {
             try {
@@ -146,7 +147,7 @@ class Auth {
                 // So assume all is valid here
                 return true;
             }
-            catch (\Exception $e) {
+            catch (Exception $e) {
                 $errorMessage = $e->getMessage();
                 error_log("Failed auth check with error: {$errorMessage}");
             }
@@ -171,6 +172,6 @@ class Auth {
             ];
         }
 
-        return Helper::getNotAuthorisedResponse();
+        return Core::getNotAuthorisedResponse();
     }
 }

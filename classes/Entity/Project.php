@@ -16,7 +16,7 @@
 namespace JPI\API\Entity;
 
 use JPI\API\Auth;
-use JPI\API\Helper;
+use JPI\API\Core;
 
 if (!defined("ROOT")) {
     die();
@@ -24,7 +24,7 @@ if (!defined("ROOT")) {
 
 class Project extends Entity {
 
-    const PUBLIC_STATUS = "published";
+    private const PUBLIC_STATUS = "published";
 
     protected $tableName = "portfolio_project";
 
@@ -91,7 +91,7 @@ class Project extends Entity {
      * Add these to the response unless specified
      *
      * @param $id int The Id of the Entity to get
-     * @param bool $getImages bool Whether of not to also get and output the Project Images linked to this Project
+     * @param $getImages bool Whether of not to also get and output the Project Images linked to this Project
      * @return array The response from the SQL query
      */
     public function getById($id, bool $getImages = true): array {
@@ -99,8 +99,8 @@ class Project extends Entity {
 
         // If Project was found
         if (!empty($response["row"])) {
-            if (!Auth::isLoggedIn() && $response["row"]["status"] !== self::PUBLIC_STATUS) {
-                return Helper::getNotAuthorisedResponse();
+            if ($response["row"]["status"] !== self::PUBLIC_STATUS && !Auth::isLoggedIn()) {
+                return Core::getNotAuthorisedResponse();
             }
 
             // If Project's Images was requested, get and add these
@@ -189,7 +189,7 @@ class Project extends Entity {
      *
      * Adds extra functionality to include any Images linked to all Projects found in search
      *
-     * @param array $params array Any data to aid in the search query
+     * @param $params array Any data to aid in the search query
      * @return array The request response to send back
      */
     public function doSearch(array $params): array {
