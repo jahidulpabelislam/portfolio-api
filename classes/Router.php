@@ -58,7 +58,7 @@ class Router {
                 $response = Auth::logout();
             }
         }
-        if ($method === "GET") {
+        else if ($method === "GET") {
             if ($authAction === "session" && (!isset($uri[3]) || $uri[3] === "")) {
                 $response = Auth::getAuthStatus();
             }
