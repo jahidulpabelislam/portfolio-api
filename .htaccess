@@ -24,11 +24,6 @@ IndexIgnore *
     deny from all
 </Files>
 
-<Files robots.txt>
-    order allow,deny
-    deny from all
-</Files>
-
 DirectoryIndex index.php index.html
 
 # Add caching for API responses
