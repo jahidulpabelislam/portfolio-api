@@ -41,7 +41,6 @@ class Core {
     }
 
     private function extractMethodFromRequest() {
-        // Get the requested method
         $method = $_SERVER["REQUEST_METHOD"];
         $method = strtoupper($method);
 
@@ -63,15 +62,14 @@ class Core {
 
     private function sanitizeData($value) {
         if (is_array($value)) {
-            $newValue = [];
+            $newArrayValues = [];
             foreach ($value as $subKey => $subValue) {
-                $newValue[$subKey] = $this->sanitizeData($subValue);
+                $newArrayValues[$subKey] = $this->sanitizeData($subValue);
             }
-            $value = $newValue;
+            $value = $newArrayValues;
         }
-
-        if (is_string($value)) {
-            $value = stripslashes(urldecode($value));
+        else if (is_string($value)) {
+            $value = stripslashes(urldecode(trim($value)));
         }
 
         return $value;
@@ -97,23 +95,18 @@ class Core {
      * Generates a full url from the URI user requested
      *
      * @param $uriArray array The URI user request as an array
-     * @return string The Full URI user requested
+     * @return string The full URI user requested
      */
     public function getAPIURL(array $uriArray = null): string {
-        if ($uriArray) {
-            $uriString = implode("/", $uriArray);
-        }
-        else {
-            $uriString = $this->uriString;
-        }
-
-        $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
-        $url = "{$protocol}://" . $_SERVER["SERVER_NAME"];
+        $uriString = $uriArray ? implode("/", $uriArray) : $this->uriString;
 
         if (!empty($uriString)) {
             $uriString = trim($uriString, "/");
             $uriString .= "/";
         }
+
+        $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
+        $url = "{$protocol}://" . $_SERVER["SERVER_NAME"];
 
         $url = rtrim($url, "/");
         $url .= "/{$uriString}";
@@ -131,11 +124,10 @@ class Core {
         $value = $data[$field];
 
         if (is_array($value)) {
-            return count($value) > 0;
+            return (count($value) > 0);
         }
-
-        if (is_string($value)) {
-            return (trim($value) !== "");
+        else if (is_string($value)) {
+            return ($value !== "");
         }
 
         return false;
@@ -209,7 +201,7 @@ class Core {
             "meta" => [
                 "status" => 405,
                 "message" => "Method not allowed.",
-                "feedback" => "{$this->method} Method Not Allowed on " . $this->getAPIURL() . ".",
+                "feedback" => "Method {$this->method} not allowed on " . $this->getAPIURL() . ".",
             ],
         ];
     }
@@ -250,7 +242,6 @@ class Core {
      * @return array Array of meta data
      */
     public function getUnrecognisedAPIVersionResponse(): array {
-
         $shouldBeVersion = "v" . Config::API_VERSION;
 
         $shouldBeURI = $this->uriArray;
@@ -260,7 +251,7 @@ class Core {
         return [
             "meta" => [
                 "status" => 404,
-                "feedback" => "Unrecognised API Version. Current version is " . Config::API_VERSION . ", so please update requested URL to {$shouldBeURL}.",
+                "feedback" => "Unrecognised API version. Current version is " . Config::API_VERSION . ", so please update requested URL to {$shouldBeURL}.",
                 "message" => "Not Found",
             ],
         ];
@@ -280,8 +271,6 @@ class Core {
 
             if ($this->method === "OPTIONS") {
                 $response["meta"]["ok"] = true;
-                $response["meta"]["status"] = 200;
-                $response["meta"]["message"] = "OK";
             }
         }
     }
@@ -314,32 +303,24 @@ class Core {
         $this->setCORSHeaders($response);
         $this->setCacheHeaders();
 
-        $response["meta"]["ok"] = $response["meta"]["ok"] ?? false;
+        // Figure out the correct meta responses to return
+        $isSuccessful = $response["meta"]["ok"] = $response["meta"]["ok"] ?? false;
+        $status = $response["meta"]["status"] = $response["meta"]["status"] ?? ($isSuccessful ? 200 : 500);
+        $message = $response["meta"]["message"] = $response["meta"]["message"] ?? ($isSuccessful ? "OK" : "Internal Server Error");
 
         // Send back all the data sent in request
         $response["meta"]["data"] = $this->data;
         $response["meta"]["method"] = $this->method;
         $response["meta"]["uri"] = $this->uriString;
 
-        // Figure out the correct meta responses to return
-        $isSuccessful = $response["meta"]["ok"];
-
-        $status = $response["meta"]["status"] = $response["meta"]["status"] ?? ($isSuccessful ? 200 : 500);
-        $message = $response["meta"]["message"] = $response["meta"]["message"] ?? ($isSuccessful ? "OK" : "Internal Server Error");
-
         header("HTTP/1.1 {$status} {$message}");
-
-        // Check if requested to send json
-        $sendJson = (stripos($_SERVER["HTTP_ACCEPT"], "application/json") !== false);
         header("Content-Type: application/json");
 
-        // Send the response, send by json if json was requested
-        if ($sendJson) {
-            echo json_encode($response);
-        } // Else send by plain text
-        else {
-            echo json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        }
+        // Check if requested to send json
+        $isSendingJson = (stripos($_SERVER["HTTP_ACCEPT"], "application/json") !== false);
+
+        $encodeParams = $isSendingJson ? [] : [JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES];
+        echo json_encode($response, $encodeParams);
         die();
     }
 }

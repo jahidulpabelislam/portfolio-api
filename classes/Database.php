@@ -126,9 +126,6 @@ class Database {
         return $response;
     }
 
-    /**
-     * @return int|null The Id of last inserted row of data
-     */
     public function getLastInsertedId(): ?int {
         if ($this->db) {
             return $this->db->lastInsertId();
