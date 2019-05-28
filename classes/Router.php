@@ -43,39 +43,35 @@ class Router {
     }
 
     /**
-     * @return array An appropriate response to request
+     * @return array An appropriate response to auth request
      */
-    private function executeAuthAction(string $entity, string $method, array $data): array{
-        if ($entity === "login") {
-            if ($method === "POST") {
+    private function executeAuthAction(array $uri, string $method, array $data): array {
+        $authAction = $uri[2];
+
+        if ($method === "POST") {
+            if ($authAction === "login" && (!isset($uri[3]) || $uri[3] === "")) {
                 $response = Auth::login($data);
             }
-            else {
-                $response = $this->api->getMethodNotAllowedResponse();
-            }
         }
-        else if ($entity === "logout") {
-            if ($method === "DELETE") {
+        else if ($method === "DELETE") {
+            if ($authAction === "logout" && (!isset($uri[3]) || $uri[3] === "")) {
                 $response = Auth::logout();
             }
-            else {
-                $response = $this->api->getMethodNotAllowedResponse();
-            }
         }
-        else if ($entity === "session") {
-            if ($method === "GET") {
+        if ($method === "GET") {
+            if ($authAction === "session" && (!isset($uri[3]) || $uri[3] === "")) {
                 $response = Auth::getAuthStatus();
             }
-            else {
-                $response = $this->api->getMethodNotAllowedResponse();
-            }
+        }
+        else {
+            $response = $this->api->getMethodNotAllowedResponse();
         }
 
         return $response ?? [];
     }
 
     /**
-     * @return array An appropriate response to request
+     * @return array An appropriate response to projects request
      */
     private function executeProjectsAction(array $uri, string $method, array $data): array {
         $api = new Projects();
@@ -156,12 +152,11 @@ class Router {
 
         $entity = !empty($uri[1]) ? $uri[1] : "";
 
-        $authEntities = ["login", "logout", "session"];
-
-        if ($entity === "projects") {
+        if ($entity === "auth") {
+            $response = $this->executeAuthAction($uri, $method, $data);
+        }
+        else if ($entity === "projects") {
             $response = $this->executeProjectsAction($uri, $method, $data);
-        } else if (in_array($entity, $authEntities)) {
-            $response = $this->executeAuthAction($entity, $method, $data);
         }
 
         return $response ?? [];
