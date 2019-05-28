@@ -319,7 +319,7 @@ class Core {
         // Check if requested to send json
         $isSendingJson = (stripos($_SERVER["HTTP_ACCEPT"], "application/json") !== false);
 
-        $encodeParams = $isSendingJson ? [] : [JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES];
+        $encodeParams = $isSendingJson ? [] : JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
         echo json_encode($response, $encodeParams);
         die();
     }
