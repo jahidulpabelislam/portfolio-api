@@ -2,13 +2,8 @@
 Options -Indexes
 IndexIgnore *
 
-# Stop users from viewing this folder/files
-<Files /logs/>
-    order allow,deny
-    deny from all
-</Files>
+# Stop users from viewing these folders/files
 
-# Stop users from viewing thsese development file
 <Files .gitattributes>
     order allow,deny
     deny from all
