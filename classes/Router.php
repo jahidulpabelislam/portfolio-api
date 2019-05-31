@@ -46,7 +46,7 @@ class Router {
      * @return array An appropriate response to auth request
      */
     private function executeAuthAction(array $uri, string $method, array $data): array {
-        $authAction = $uri[2];
+        $authAction = $uri[2] ?? "";
 
         if ($method === "POST") {
             if ($authAction === "login" && (!isset($uri[3]) || $uri[3] === "")) {
@@ -150,7 +150,7 @@ class Router {
         $uri = $this->api->uriArray;
         $data = $this->api->data;
 
-        $entity = !empty($uri[1]) ? $uri[1] : "";
+        $entity = $uri[1] ?? "";
 
         if ($entity === "auth") {
             $response = $this->executeAuthAction($uri, $method, $data);
