@@ -49,7 +49,7 @@ class Core {
 
     private function extractURIFromRequest() {
         $uriString = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
-        $uriString = !empty($uriString) ? trim($uriString) : "";
+        $uriString = trim($uriString);
         $this->uriString = $uriString;
 
         $uriString = trim($uriString, " /");
