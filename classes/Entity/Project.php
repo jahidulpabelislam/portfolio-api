@@ -16,7 +16,6 @@
 namespace JPI\API\Entity;
 
 use JPI\API\Auth;
-use JPI\API\Core;
 
 if (!defined("ROOT")) {
     die();
@@ -26,22 +25,24 @@ class Project extends Entity {
 
     private const PUBLIC_STATUS = "published";
 
+    public static $displayName = "Project";
+
     protected $tableName = "portfolio_project";
 
     protected $columns = [
-        "id",
-        "name",
-        "date",
-        "link",
-        "github",
-        "download",
-        "short_description",
-        "long_description",
-        "colour",
-        "skills",
-        "status",
-        "created_at",
-        "updated_at",
+        "id" => 0,
+        "name" => "",
+        "date" => "",
+        "link" => "",
+        "github" => "",
+        "download" => "",
+        "short_description" => "",
+        "long_description" => "",
+        "colour" => "",
+        "skills" => "",
+        "status" => "draft",
+        "created_at" => "",
+        "updated_at" => "",
     ];
 
     protected $searchableColumns = [
@@ -52,31 +53,34 @@ class Project extends Entity {
         "status",
     ];
 
-    protected $defaultOrderByColumn = "date";
+    protected $orderByColumn = "date";
 
-    public $displayName = "Project";
+    public function toArray(): array{
+        $projectArray = parent::toArray();
 
-    public function toArray(array $entity): array{
-        $array = parent::toArray($entity);
-
-        if (isset($array["skills"])) {
-            $array["skills"] = explode(",", $array["skills"]);
+        if (isset($projectArray["skills"])) {
+            $skills = explode(",", $projectArray["skills"]);
+            $skills = array_map("trim", $skills);
+            $projectArray["skills"] = $skills;
         }
 
-        return $array;
+        if (isset($projectArray["images"]) && count($projectArray["images"])) {
+            $projectArray["images"] = array_map(function(ProjectImage $image) {
+                return $image->toArray();
+            }, $projectArray["images"]);
+        }
+
+        return $projectArray;
     }
 
     /**
      * Helper function to get all Project Image Entities linked to this Project
-     *
-     * @param $id int The Project Image to find Images for
      * @return array An array of ProjectImage's (if any found)
      */
-    public function getProjectImages($id): array {
+    public function getProjectImages(): array {
         // Get all the images linked to the Project
         $projectImage = new ProjectImage();
-        $imagesResponse = $projectImage->getByColumn("project_id", $id);
-        $images = $imagesResponse["rows"];
+        $images = $projectImage->getByColumn("project_id", $this->id);
 
         return $images;
     }
@@ -92,25 +96,23 @@ class Project extends Entity {
      *
      * @param $id int The Id of the Entity to get
      * @param $getImages bool Whether of not to also get and output the Project Images linked to this Project
-     * @return array The response from the SQL query
      */
-    public function getById($id, bool $getImages = true): array {
-        $response = parent::getById($id);
+    public function getById($id, bool $getImages = true) {
+        parent::getById($id);
 
         // If Project was found
-        if (!empty($response["row"])) {
-            if ($response["row"]["status"] !== self::PUBLIC_STATUS && !Auth::isLoggedIn()) {
-                return Core::getNotAuthorisedResponse();
+        if (!empty($this->id)) {
+
+            if ($this->status !== self::PUBLIC_STATUS && !Auth::isLoggedIn()) {
+                $this->id = 0;
+                return;
             }
 
             // If Project's Images was requested, get and add these
             if ($getImages) {
-                $getImages = $this->getProjectImages($id);
-                $response["row"]["images"] = $getImages;
+                $this->columns["images"] = $this->getProjectImages();
             }
         }
-
-        return $response;
     }
 
     /**
@@ -176,7 +178,7 @@ class Project extends Entity {
 
         // Delete all the images linked to this Project from the database & from disk
         $projectImage = new ProjectImage();
-        $images = $this->getProjectImages($id);
+        $images = $this->getProjectImages();
         foreach ($images as $image) {
             $projectImage->delete($image["id"], $image["file"]);
         }
@@ -198,15 +200,16 @@ class Project extends Entity {
             $params["status"] = self::PUBLIC_STATUS;
         }
 
-        $response = parent::doSearch($params);
+        $projects = parent::doSearch($params);
 
         // Loop through each Project and get the Projects Images
-        $response["rows"] = array_map(function($project) {
-            $project["images"] = $this->getProjectImages($project["id"]);
+        $projects = array_map(function(Project $project) {
+
+            $project->columns["images"] = $project->getProjectImages();
 
             return $project;
-        }, $response["rows"]);
+        }, $projects);
 
-        return $response;
+        return $projects;
     }
 }

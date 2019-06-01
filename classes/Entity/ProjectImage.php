@@ -21,24 +21,24 @@ if (!defined("ROOT")) {
 
 class ProjectImage extends Entity {
 
+    public static $displayName = "Project Image";
+
     protected $tableName = "portfolio_project_image";
 
     protected $columns = [
-        "id",
-        "project_id",
-        "sort_order_number",
-        "file",
-        "created_at",
-        "updated_at",
+        "id" => 0,
+        "project_id" => 0,
+        "sort_order_number" => 0,
+        "file" => "",
+        "created_at" => "",
+        "updated_at" => "",
     ];
 
     protected $intColumns = ["id", "project_id", "sort_order_number"];
 
-    protected $defaultOrderByColumn = "sort_order_number";
+    protected $orderByColumn = "sort_order_number";
 
-    protected $defaultOrderByDirection = "ASC";
-
-    public $displayName = "Project Image";
+    protected $orderByDirection = "ASC";
 
     /**
      * Delete an Entity from the Database
@@ -57,7 +57,8 @@ class ProjectImage extends Entity {
         // Check if the deletion was ok
         if (!empty($fileName) && $response["meta"]["affected_rows"] > 0) {
 
-            $fileName = "/" . ltrim($fileName, "/"); // Makes sure there is a leading slash
+            // Makes sure there is a leading slash
+            $fileName = "/" . ltrim($fileName, "/");
 
             // Checks if file exists to delete the actual Image file from server
             if (file_exists(ROOT . $fileName)) {
@@ -66,23 +67,5 @@ class ProjectImage extends Entity {
         }
 
         return $response;
-    }
-
-    /**
-     * Return the response when a ProjectImage is not found
-     *
-     * @param $projectId int The Id of the Project requested
-     * @param $imageId int The Id of a Project Image requested
-     * @return array
-     */
-    public function getNotFoundResponse(int $projectId, int $imageId): array {
-        return [
-            "row" => [],
-            "meta" => [
-                "status" => 404,
-                "feedback" => "No {$this->displayName} found with {$imageId} as ID for Project: {$projectId}.",
-                "message" => "Not Found",
-            ],
-        ];
     }
 }

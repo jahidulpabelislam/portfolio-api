@@ -16,6 +16,7 @@ if (!defined("ROOT")) {
     die();
 }
 
+use JPI\API\Entity\Entity;
 use JPI\API\Entity\Project;
 use JPI\API\Entity\ProjectImage;
 
@@ -31,6 +32,107 @@ class Projects {
     }
 
     /**
+     * Return a response when items were requested,
+     * so check if some found return the items (with necessary meta)
+     * else if not found return necessary meta
+     */
+    public static function getItemsResponse(Entity $entity, array $entities = []): array {
+        if (count($entities)) {
+
+            $rows = array_map(function(Entity $entity) {
+                return $entity->toArray();
+            }, $entities);
+
+            return [
+                "meta" => [
+                    "ok" => true,
+                    "count" => count($rows),
+                ],
+                "rows" => $rows,
+            ];
+        }
+
+        return [
+            "meta" => [
+                "count" => 0,
+                "status" => 404,
+                "feedback" => "No {$entity::$displayName}s found.",
+                "message" => "Not Found",
+            ],
+            "rows" => [],
+        ];
+    }
+
+    /**
+     * Return a response when items request was a search request,
+     * so check if some found return the items (with necessary meta)
+     * else if not found return necessary meta
+     *
+     * Use getItemsResponse function as the base response, then just adds additional meta data
+     */
+    public function getItemsSearchResponse(Entity $entity, array $entities = [], array $data = []): array {
+        // The items response is the base response, and the extra meta is added below
+        $response = self::getItemsResponse($entity, $entities);
+
+        $totalCount = $entity->getTotalCountForSearch($data);
+        $response["meta"]["total_count"] = $totalCount;
+
+        $limit = $entity->limitBy;
+        $page = $entity->page;
+
+        $lastPage = ceil($totalCount / $limit);
+        $response["meta"]["total_pages"] = $lastPage;
+
+        $pageURL = $this->api->getAPIURL();
+        if (isset($data["limit"])) {
+            $data["limit"] = $limit;
+        }
+
+        $hasPreviousPage = ($page > 1) && ($lastPage >= ($page - 1));
+        $response["meta"]["has_previous_page"] = $hasPreviousPage;
+        if ($hasPreviousPage) {
+            $data["page"] = $page - 1;
+            $response["meta"]["previous_page_url"] = $pageURL;
+            $response["meta"]["previous_page_params"] = $data;
+        }
+
+        $hasNextPage = $page < $lastPage;
+        $response["meta"]["has_next_page"] = $hasNextPage;
+        if ($response["meta"]["has_next_page"]) {
+            $data["page"] = $page + 1;
+            $response["meta"]["next_page_url"] = $pageURL;
+            $response["meta"]["next_page_params"] = $data;
+        }
+
+        return $response;
+    }
+
+    /**
+     * Return a response when a item was requested,
+     * so check if found return the item (with necessary meta)
+     * else if not found return necessary meta
+     */
+    public static function getItemResponse(Entity $entity, $id): array {
+        if ($entity->id && $entity->id == $id) {
+            return [
+                "meta" => [
+                    "ok" => true,
+                ],
+                "row" => $entity->toArray(),
+            ];
+        }
+
+        return [
+            "meta" => [
+                "status" => 404,
+                "feedback" => "No {$entity::$displayName} found with {$id} as ID.",
+                "message" => "Not Found",
+            ],
+            "row" => [],
+        ];
+    }
+
+    /**
      * Gets all Projects but paginated, also might include search
      *
      * @param $data array Any data to aid in the search query
@@ -38,10 +140,10 @@ class Projects {
      */
     public function getProjects(array $data): array {
 
-        $projects = new Project();
-        $response = $projects->doSearch($data);
+        $project = new Project();
+        $projects = $project->doSearch($data);
 
-        return $response;
+        return $this->getItemsSearchResponse($project, $projects, $data);
     }
 
     /**
@@ -51,17 +153,14 @@ class Projects {
      * @return array The request response to send back
      */
     private function saveProject(array $data): array {
-        // Checks if user is authored
         if (Auth::isLoggedIn()) {
 
-            // Checks that all data required is present and not empty
             $requiredFields = ["name", "date", "skills", "long_description", "short_description"];
             if ($this->api->hasRequiredFields($requiredFields)) {
 
                 $project = new Project();
                 $response = $project->save($data);
             }
-            // Else all the data required was not provided and/or valid
             else {
                 $response = $this->api->getInvalidFieldsResponse($requiredFields);
             }
@@ -100,8 +199,6 @@ class Projects {
      * @return array The request response to send back
      */
     public function deleteProject(array $data): array {
-
-        // Checks if user is authored
         if (Auth::isLoggedIn()) {
             $project = new Project();
             $response = $project->delete($data["id"]);
@@ -123,9 +220,9 @@ class Projects {
     public function getProject($projectId, bool $getImages = false): array {
 
         $project = new Project();
-        $response = $project->getById($projectId, $getImages);
+        $project->getById($projectId, $getImages);
 
-        return $response;
+        return self::getItemResponse($project, $projectId);
     }
 
     /**
@@ -136,15 +233,15 @@ class Projects {
      */
     public function getProjectImages($projectId): array {
 
-        // Check the Project trying to get Images for
-        $response = $this->getProject($projectId);
-        if (!empty($response["row"])) {
-
+        // Check the Project trying to get Images for exists
+        $projectRes = $this->getProject($projectId);
+        if (!empty($projectRes["row"])) {
             $projectImage = new ProjectImage();
-            $response = $projectImage->getByColumn("project_id", $projectId);
+            $projectImages = $projectImage->getByColumn("project_id", $projectId);
+            return self::getItemsResponse($projectImage, $projectImages);
         }
 
-        return $response;
+        return $projectRes;
     }
 
     /**
@@ -220,20 +317,15 @@ class Projects {
      * @return array The request response to send back
      */
     public function addProjectImage(array $data): array {
-
-        // Checks if user is authored
         if (Auth::isLoggedIn()) {
-
-            // Checks if the data needed is present and not empty
             if (isset($_FILES["image"])) {
 
-                // Check the Project trying to add a a Image for exists
+                // Check the Project trying to add a Image for exists
                 $response = $this->getProject($data["project_id"]);
                 if (!empty($response["row"])) {
                     $response = $this->uploadProjectImage($response["row"]);
                 }
             }
-            // Else data needed was not provided
             else {
                 $requiredFields = ["image"];
                 $response = $this->api->getInvalidFieldsResponse($requiredFields);
@@ -257,15 +349,18 @@ class Projects {
      */
     public function getProjectImage($projectId, $imageId): array {
 
-        // Check the Project trying to get Images for
+        // Check the Project trying to get Images for exists
         $response = $this->getProject($projectId);
         if (!empty($response["row"])) {
             $projectImage = new ProjectImage();
-            $response = $projectImage->getById($imageId);
+            $projectImage->getById($imageId);
+
+            $response = self::getItemResponse($projectImage, $imageId);
 
             $projectId = (int)$projectId;
-            if (!empty($response["row"]["project_id"]) && (int)$response["row"]["project_id"] !== $projectId) {
-                $response = $projectImage->getNotFoundResponse($projectId, $imageId);
+            if (!empty($projectImage->project_id) && $projectImage->project_id !== $projectId) {
+                $response["row"] = [];
+                $response["meta"]["feedback"] = "No {$projectImage::$displayName} found with {$imageId} as ID for Project: {$projectId}.";
             }
         }
 
@@ -279,8 +374,6 @@ class Projects {
      * @return array The request response to send back
      */
     public function deleteImage(array $data): array {
-
-        // Checks if user is authored
         if (Auth::isLoggedIn()) {
 
             $projectId = $data["project_id"];
