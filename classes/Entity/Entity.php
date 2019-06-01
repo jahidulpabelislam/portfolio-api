@@ -235,7 +235,7 @@ abstract class Entity {
         // Checks if insert was ok
         if ($response["meta"]["affected_rows"] > 0) {
 
-            $id = empty($id) ? $this->db->getLastInsertedId() : $id;
+            $id = $id ?? $this->db->getLastInsertedId();
 
             $response = $this->getById($id);
 

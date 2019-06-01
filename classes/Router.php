@@ -32,7 +32,7 @@ class Router {
     private function checkAPIVersion(): array {
         $uri = $this->api->uriArray;
 
-        $version = !empty($uri[0]) ? $uri[0] : "";
+        $version = $uri[0] ?? "";
 
         $shouldBeVersion = "v" . Config::API_VERSION;
         if ($version !== $shouldBeVersion) {
