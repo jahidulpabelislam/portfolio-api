@@ -198,7 +198,7 @@ class Projects {
             }
             // Else there was a problem uploading file to server
             else {
-                $response["meta"]["feedback"] = "Sorry, there was an error uploading your Image.";
+                $response["meta"]["feedback"] = "Sorry, there was an error uploading your image.";
             }
         }
         // Else bad request as file uploaded is not a image

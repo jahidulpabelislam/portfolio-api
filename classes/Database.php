@@ -110,14 +110,14 @@ class Database {
                 $errorMessage = $error->getMessage();
                 error_log("Error executing query on database: {$errorMessage} using query: {$query} and bindings: " . print_r($bindings, true) . ", full error: {$error}");
 
-                $response["meta"]["feedback"] = "Problem with Server.";
+                $response["meta"]["feedback"] = "Problem with server.";
                 if ($this->config->debug) {
                     $response["meta"]["feedback"] = $errorMessage;
                 }
             }
         }
         else {
-            $response["meta"]["feedback"] = "Problem with Server.";
+            $response["meta"]["feedback"] = "Problem with server.";
             if ($this->config->debug) {
                 $response["meta"]["feedback"] = $this->error;
             }

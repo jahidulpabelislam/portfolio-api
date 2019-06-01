@@ -83,11 +83,11 @@ class Auth {
                     $response["meta"]["jwt"] = $jwt;
                 }
                 else {
-                    $response["meta"]["feedback"] = "Wrong Password.";
+                    $response["meta"]["feedback"] = "Wrong password.";
                 }
             }
             else {
-                $response["meta"]["feedback"] = "Wrong Username and/or Password.";
+                $response["meta"]["feedback"] = "Wrong username and/or password.";
             }
 
         }
@@ -113,7 +113,7 @@ class Auth {
         return [
             "meta" => [
                 "ok" => true,
-                "feedback" => "Successfully Logged Out.",
+                "feedback" => "Successfully logged out.",
             ],
         ];
     }
