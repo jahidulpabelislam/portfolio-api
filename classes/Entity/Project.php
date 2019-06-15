@@ -27,7 +27,7 @@ class Project extends Entity {
 
     public static $displayName = "Project";
 
-    protected $tableName = "portfolio_project";
+    protected static $tableName = "portfolio_project";
 
     protected $columns = [
         "id" => null,
@@ -45,7 +45,7 @@ class Project extends Entity {
         "updated_at" => "",
     ];
 
-    protected $searchableColumns = [
+    protected static $searchableColumns = [
         "name",
         "skills",
         "long_description",
@@ -53,7 +53,7 @@ class Project extends Entity {
         "status",
     ];
 
-    protected $orderByColumn = "date";
+    protected static $orderByColumn = "date";
 
     private $images = [];
 

@@ -30,7 +30,6 @@ class Projects {
     public function __construct() {
         $this->api = Core::get();
     }
-
     /**
      * Return a response when items were requested,
      * so check if some found return the items (with necessary meta)
@@ -224,7 +223,7 @@ class Projects {
                     }
                 }
 
-                $response = $this::getItemResponse($project, $project->id);
+                $response = self::getItemResponse($project, $project->id);
             }
             else {
                 $response = $this->api->getInvalidFieldsResponse($requiredFields);
@@ -310,8 +309,10 @@ class Projects {
         // Check the Project trying to get Images for exists
         $projectRes = $this->getProject($projectId);
         if (!empty($projectRes["row"])) {
+
             $projectImage = new ProjectImage();
             $projectImages = $projectImage->getByColumn("project_id", $projectId);
+
             return self::getItemsResponse($projectImage, $projectImages);
         }
 
@@ -368,7 +369,7 @@ class Projects {
                 $projectImage->setValues($values);
                 $projectImage->save();
 
-                $response = $this::getItemResponse($projectImage, $projectImage->id);
+                $response = self::getItemResponse($projectImage, $projectImage->id);
 
                 if (!empty($response["row"])) {
                     $response["meta"]["status"] = 201;

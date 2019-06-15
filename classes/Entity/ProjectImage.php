@@ -23,7 +23,7 @@ class ProjectImage extends Entity {
 
     public static $displayName = "Project Image";
 
-    protected $tableName = "portfolio_project_image";
+    protected static $tableName = "portfolio_project_image";
 
     protected $columns = [
         "id" => null,
@@ -34,11 +34,11 @@ class ProjectImage extends Entity {
         "updated_at" => "",
     ];
 
-    protected $intColumns = ["id", "project_id", "sort_order_number"];
+    protected static $intColumns = ["id", "project_id", "sort_order_number"];
 
-    protected $orderByColumn = "sort_order_number";
+    protected static $orderByColumn = "sort_order_number";
 
-    protected $orderByDirection = "ASC";
+    protected static $orderByDirection = "ASC";
 
     /**
      * Delete an Entity from the Database

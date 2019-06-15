@@ -25,30 +25,26 @@ abstract class Entity {
 
     public static $displayName = "";
 
-    protected $tableName = "";
+    protected static $tableName = "";
 
     protected $columns = [];
 
-    protected $intColumns = ["id"];
+    protected static $intColumns = ["id"];
 
-    protected $dateTimeColumns = ["created_at", "updated_at"];
+    protected static $dateTimeColumns = ["created_at", "updated_at"];
 
-    protected $searchableColumns = [];
+    protected static $searchableColumns = [];
 
-    protected $orderByColumn = "id";
+    protected static $orderByColumn = "id";
+    protected static $orderByDirection = "DESC";
 
-    protected $orderByDirection = "DESC";
+    protected static $defaultLimitBy = 10;
 
-    protected $defaultLimitBy = 10;
     public $limitBy = 10;
-
     public $page = 1;
 
     private $db;
 
-    /**
-     * Entity constructor
-     */
     public function __construct() {
         $this->db = Database::get();
     }
@@ -65,7 +61,7 @@ abstract class Entity {
 
     public function __set($name, $value) {
         if (array_key_exists($name, $this->columns)) {
-            if (in_array($name, $this->intColumns)) {
+            if (in_array($name, static::$intColumns)) {
                 $value = (int)$value;
             }
 
@@ -86,7 +82,7 @@ abstract class Entity {
         $array = $this->columns;
 
         foreach ($array as $column => $value) {
-            if (in_array($column, $this->dateTimeColumns)) {
+            if (in_array($column, static::$dateTimeColumns)) {
                 $datetime = DateTime::createFromFormat("Y-m-d G:i:s", $value);
                 if ($datetime) {
                     $array[$column] = $datetime->format("Y-m-d G:i:s e");
@@ -102,9 +98,9 @@ abstract class Entity {
      * Either return Entities with success meta data, or failed meta data
      */
     public function getByColumn(string $column, $value): array {
-        $query = "SELECT * FROM {$this->tableName}
-                    WHERE {$column} = :value
-                    ORDER BY {$this->orderByColumn} {$this->orderByDirection};";
+        $query = "SELECT * FROM " . static::$tableName .
+                    " WHERE {$column} = :value
+                    ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . ";";
         $bindings = [":value" => $value];
         $response = $this->db->query($query, $bindings);
 
@@ -139,8 +135,7 @@ abstract class Entity {
      * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
      */
     private function generateInsertQuery(): array {
-        $columnsQuery = "(";
-        $valuesQuery = "(";
+        $columnsQuery = $valuesQuery = "";
         $bindings = [];
 
         foreach ($this->columns as $column => $value) {
@@ -150,13 +145,10 @@ abstract class Entity {
                 $bindings[":{$column}"] = $value;
             }
         }
-        $columnsQuery = rtrim($columnsQuery, ", ");
-        $columnsQuery .= ")";
+        $columnsQuery = rtrim($columnsQuery, " ,");
+        $valuesQuery = rtrim($valuesQuery, " ,");
 
-        $valuesQuery = rtrim($valuesQuery, ", ");
-        $valuesQuery .= ")";
-
-        $query = "INSERT INTO {$this->tableName} {$columnsQuery} VALUES {$valuesQuery};";
+        $query = "INSERT INTO " . static::$tableName . " ({$columnsQuery}) VALUES ({$valuesQuery});";
 
         return [$query, $bindings];
     }
@@ -167,7 +159,7 @@ abstract class Entity {
      * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
      */
     private function generateUpdateQuery(): array {
-        $valuesQuery = "SET ";
+        $valuesQuery = "";
         $bindings = [];
 
         foreach ($this->columns as $column => $value) {
@@ -177,10 +169,9 @@ abstract class Entity {
                 $valuesQuery .= "{$column} = :{$column}, ";
             }
         }
+        $valuesQuery = rtrim($valuesQuery, " ,");
 
-        $valuesQuery = rtrim($valuesQuery, ", ");
-
-        $query = "UPDATE {$this->tableName} {$valuesQuery} WHERE id = :id;";
+        $query = "UPDATE " . static::$tableName . " SET {$valuesQuery} WHERE id = :id;";
 
         return [$query, $bindings];
     }
@@ -204,7 +195,7 @@ abstract class Entity {
                 $this->created_at = date("Y-m-d H:i:s");
             }
 
-            list($query, $bindings) = $this->generateInsertQuery();
+            [$query, $bindings] = $this->generateInsertQuery();
         }
         else {
             // Check the Entity trying to edit actually exists
@@ -220,14 +211,13 @@ abstract class Entity {
                 $this->created_at = $createdAt->format("Y-m-d H:i:s");
             }
 
-            list($query, $bindings) = $this->generateUpdateQuery();
+            [$query, $bindings] = $this->generateUpdateQuery();
         }
 
         $response = $this->db->query($query, $bindings);
 
         // Checks if insert was ok
         if ($response["meta"]["affected_rows"] > 0) {
-
             $id = $id ?? $this->db->getLastInsertedId();
             $this->getById($id);
         }
@@ -247,7 +237,7 @@ abstract class Entity {
         if (!empty($this->id) && $this->id == $id) {
             $id = (int)$id;
 
-            $query = "DELETE FROM {$this->tableName} WHERE id = :id;";
+            $query = "DELETE FROM " . static::$tableName . " WHERE id = :id;";
             $bindings = [":id" => $id];
             $response = $this->db->query($query, $bindings);
 
@@ -268,7 +258,7 @@ abstract class Entity {
      */
     private function generateSearchWhereQuery(array $params): array {
 
-        if ($this->searchableColumns) {
+        if (static::$searchableColumns) {
             $bindings = [];
 
             $searchString = $params["search"] ?? "";
@@ -282,12 +272,12 @@ abstract class Entity {
 
             $searchStringReversed = "%" . implode("%", $searchesReversed) . "%";
 
-            $searchWhereClause = "WHERE (";
+            $searchWhereClause = "";
 
             $globalWhereClauses = [];
 
             // Loop through each searchable column
-            foreach ($this->searchableColumns as $column) {
+            foreach (static::$searchableColumns as $column) {
                 $searchWhereClause .= " {$column} LIKE :searchString OR {$column} LIKE :searchStringReversed OR";
 
                 if (!empty($params[$column])) {
@@ -296,19 +286,17 @@ abstract class Entity {
                     $bindings[$binding] = $params[$column];
                 }
             }
-
             $searchWhereClause = rtrim($searchWhereClause, "OR");
-            $searchWhereClause .= ")";
 
             $bindings[":searchString"] = $searchString;
             $bindings[":searchStringReversed"] = $searchStringReversed;
 
             $globalWhereClause = "";
             if (!empty($globalWhereClauses)) {
-                $globalWhereClause = "AND " . implode(" AND ", $globalWhereClauses);
+                $globalWhereClause = " AND " . implode(" AND ", $globalWhereClauses);
             }
 
-            $whereClause = $searchWhereClause . " " . $globalWhereClause;
+            $whereClause = "WHERE (" . $searchWhereClause . ") " . $globalWhereClause;
 
             return [$whereClause, $bindings];
         }
@@ -328,7 +316,7 @@ abstract class Entity {
     public function getTotalCountForSearch(array $params): int {
         [$whereClause, $bindings] = $this->generateSearchWhereQuery($params);
 
-        $query = "SELECT COUNT(*) AS total_count FROM {$this->tableName} {$whereClause};";
+        $query = "SELECT COUNT(*) AS total_count FROM " . static::$tableName . " {$whereClause};";
         $totalCountRes = $this->db->query($query, $bindings);
 
         if ($totalCountRes && count($totalCountRes["rows"]) > 0) {
@@ -346,7 +334,7 @@ abstract class Entity {
      */
     public function doSearch(array $params): array {
 
-        $this->limitBy = $this->defaultLimitBy;
+        $this->limitBy = static::$defaultLimitBy;
 
         // If user added a limit param, use this if valid, unless its bigger than 10
         if (!empty($params["limit"])) {
@@ -356,7 +344,7 @@ abstract class Entity {
 
         // If limit is invalid use default
         if ($this->limitBy < 1) {
-            $this->limitBy = $this->defaultLimitBy;
+            $this->limitBy = static::$defaultLimitBy;
         }
 
         // Generate a offset to the query, if a page was specified using page & limit values
@@ -374,16 +362,16 @@ abstract class Entity {
         }
 
         $bindings = [];
-        $whereClause = "";
+        $whereQuery = "";
 
         // Add a filter if a search was entered
         if (!empty($params)) {
-            [$whereClause, $bindings] = $this->generateSearchWhereQuery($params);
+            [$whereQuery, $bindings] = $this->generateSearchWhereQuery($params);
         }
 
-        $query = "SELECT * FROM {$this->tableName} {$whereClause}
-                    ORDER BY {$this->orderByColumn} {$this->orderByDirection}
-                    LIMIT {$this->limitBy} OFFSET {$offset};";
+        $query = "SELECT * FROM " . static::$tableName . " {$whereQuery}
+                    ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection .
+                    " LIMIT {$this->limitBy} OFFSET {$offset};";
         $response = $this->db->query($query, $bindings);
 
         $rows = array_map(function($row) {
@@ -393,6 +381,6 @@ abstract class Entity {
             return $entity;
         }, $response["rows"]);
 
-        return $rows ?? [];
+        return $rows;
     }
 }
