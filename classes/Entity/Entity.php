@@ -237,10 +237,10 @@ abstract class Entity {
      * Delete an Entity from the Database
      *
      * @param $id int The Id of the Entity to delete
-     * @return array Either an array with successful meta data or a array of error feedback meta
+     * @return bool Whether or not deletion was successful
      */
-    public function delete($id): array {
-        $response = [];
+    public function delete($id): bool {
+        $isDeleted = false;
 
         // Check the Entity trying to delete actually exists
         $this->getById($id);
@@ -252,16 +252,10 @@ abstract class Entity {
             $response = $this->db->query($query, $bindings);
 
             // Check if the deletion was ok
-            if ($response["meta"]["affected_rows"] > 0) {
-
-                $response["meta"]["ok"] = true;
-                $response["row"]["id"] = $id;
-            }
-
-            unset($response["rows"]);
+            $isDeleted = $response["meta"]["affected_rows"] > 0;
         }
 
-        return $response;
+        return $isDeleted;
     }
 
     /**

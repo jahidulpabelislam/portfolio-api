@@ -125,7 +125,7 @@ class Router {
                 ) {
                     $data["id"] = $uri[4];
                     $data["project_id"] = $uri[2];
-                    $response = $api->deleteImage($data);
+                    $response = $api->deleteProjectImage($data);
                 }
                 else if (!isset($uri[3])) {
                     $data["id"] = $uri[2];

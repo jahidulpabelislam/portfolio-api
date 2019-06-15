@@ -124,19 +124,18 @@ class Project extends Entity {
      * As these Entities are linked to many Project Images, so delete these also
      *
      * @param $id int The Id of the Entity to delete
-     * @return array Either an array with successful meta data or a array of error feedback meta
+     * @return bool Whether or not deletion was successful
      */
-    public function delete($id): array {
-        $response = parent::delete($id);
+    public function delete($id): bool {
+        $isDeleted = parent::delete($id);
 
         // Delete all the images linked to this Project from the database & from disk
-        $projectImage = new ProjectImage();
         $images = $this->getProjectImages();
         foreach ($images as $image) {
-            $projectImage->delete($image["id"], $image["file"]);
+            $image->delete($image->id);
         }
 
-        return $response;
+        return $isDeleted;
     }
 
     /**

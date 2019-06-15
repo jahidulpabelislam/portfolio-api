@@ -133,6 +133,35 @@ class Projects {
     }
 
     /**
+     * Return the response when a item was attempted to be deleted
+     */
+    public static function getItemDeletedResponse(Entity $entity, bool $isDeleted, $id): array {
+        // If the entity has no id set it means the item wasn't found, so return item 404 response
+        if (!$entity->id) {
+            return self::getItemResponse($entity, $id);
+        }
+
+        if ($isDeleted) {
+            return [
+                "meta" => [
+                    "ok" => true,
+                ],
+                "row" => [
+                    "id" => (int)$id,
+                ],
+            ];
+        }
+
+        return [
+            "meta" => [
+                "status" => 404,
+                "feedback" => "Couldn't delete {$entity::$displayName} with {$id} as ID.",
+            ],
+            "row" => [],
+        ];
+    }
+
+    /**
      * Gets all Projects but paginated, also might include search
      *
      * @param $data array Any data to aid in the search query
@@ -244,7 +273,9 @@ class Projects {
     public function deleteProject(array $data): array {
         if (Auth::isLoggedIn()) {
             $project = new Project();
-            $response = $project->delete($data["id"]);
+            $isDeleted = $project->delete($data["id"]);
+
+            $response = self::getItemDeletedResponse($project, $isDeleted, $data["id"]);
         }
         else {
             $response = Core::getNotAuthorisedResponse();
@@ -424,7 +455,7 @@ class Projects {
      * @param $data array The data sent to delete the Project Image
      * @return array The request response to send back
      */
-    public function deleteImage(array $data): array {
+    public function deleteProjectImage(array $data): array {
         if (Auth::isLoggedIn()) {
 
             $projectId = $data["project_id"];
@@ -434,16 +465,11 @@ class Projects {
             $response = $this->getProject($projectId);
             if (!empty($response["row"])) {
 
-                $response = $this->getProjectImage($projectId, $imageId);
+                // Update database to delete row
+                $projectImage = new ProjectImage();
+                $isDeleted = $projectImage->delete($imageId);
 
-                if (!empty($response["row"])) {
-
-                    $fileName = $response["row"]["file"];
-
-                    // Update database to delete row
-                    $projectImage = new ProjectImage();
-                    $response = $projectImage->delete($imageId, $fileName);
-                }
+                $response = self::getItemDeletedResponse($projectImage, $isDeleted, $imageId);
             }
         }
         else {
