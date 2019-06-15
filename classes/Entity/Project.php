@@ -30,7 +30,7 @@ class Project extends Entity {
     protected $tableName = "portfolio_project";
 
     protected $columns = [
-        "id" => 0,
+        "id" => null,
         "name" => "",
         "date" => "",
         "link" => "",
@@ -55,6 +55,8 @@ class Project extends Entity {
 
     protected $orderByColumn = "date";
 
+    private $images = [];
+
     public function toArray(): array{
         $projectArray = parent::toArray();
 
@@ -64,10 +66,10 @@ class Project extends Entity {
             $projectArray["skills"] = $skills;
         }
 
-        if (isset($projectArray["images"]) && count($projectArray["images"])) {
+        if (count($this->images)) {
             $projectArray["images"] = array_map(function(ProjectImage $image) {
                 return $image->toArray();
-            }, $projectArray["images"]);
+            }, $this->images);
         }
 
         return $projectArray;
@@ -110,58 +112,9 @@ class Project extends Entity {
 
             // If Project's Images was requested, get and add these
             if ($getImages) {
-                $this->columns["images"] = $this->getProjectImages();
+                $this->images = $this->getProjectImages();
             }
         }
-    }
-
-    /**
-     * Save values to the Entity Table in the Database
-     * Will either be a new insert or a update to an existing Entity
-     *
-     * Add extra functionality on top of default save
-     * If the save was a update, update the Order 'sort_order_number' on its Project Images
-     * The sort_order_number is based on to order the items are in
-     *
-     * @param $values array The values as an array to use for the Entity
-     * @return array Either an array with successful meta data or an array of error feedback meta
-     */
-    public function save(array $values): array {
-
-        // Transform the incoming data into the necessary data for the database
-
-        if (isset($values["date"])) {
-            $values["date"] = date("Y-m-d", strtotime($values["date"]));
-        }
-
-        if (isset($values["skills"]) && is_array($values["skills"])) {
-            $values["skills"] = implode(",", $values["skills"]);
-        }
-
-        $response = parent::save($values);
-
-        // Checks if the save was a update & update was okay
-        if (!empty($values["id"]) && !empty($response["row"]) && !empty($values["images"])) {
-
-            $images = $values["images"];
-
-            if (count($images) > 0) {
-                foreach ($images as $sortOrder => $image) {
-                    $image = json_decode($image, true);
-
-                    $imageUpdateData = [
-                        "id" => $image["id"],
-                        "sort_order_number" => $sortOrder,
-                    ];
-                    $projectImage = new ProjectImage();
-                    $projectImage->save($imageUpdateData);
-                }
-
-                $response = $this->getById($values["id"]);
-            }
-        }
-
-        return $response;
     }
 
     /**
@@ -205,7 +158,7 @@ class Project extends Entity {
         // Loop through each Project and get the Projects Images
         $projects = array_map(function(Project $project) {
 
-            $project->columns["images"] = $project->getProjectImages();
+            $project->images = $project->getProjectImages();
 
             return $project;
         }, $projects);

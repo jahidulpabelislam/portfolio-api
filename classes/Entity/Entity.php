@@ -58,21 +58,15 @@ abstract class Entity {
     }
 
     public function __get($name) {
-        if (isset($this->columns[$name])) {
+        if (array_key_exists($name, $this->columns)) {
             return $this->columns[$name];
         }
     }
 
     public function __set($name, $value) {
-        if (isset($this->columns[$name])) {
+        if (array_key_exists($name, $this->columns)) {
             if (in_array($name, $this->intColumns)) {
                 $value = (int)$value;
-            }
-            else if (in_array($name, $this->dateTimeColumns)) {
-                $datetime = DateTime::createFromFormat("Y-m-d G:i:s", $value);
-                if ($datetime) {
-                    $value = $datetime->format("Y-m-d G:i:s e");
-                }
             }
 
             $this->columns[$name] = $value;
@@ -89,7 +83,18 @@ abstract class Entity {
     }
 
     public function toArray(): array {
-        return $this->columns;
+        $array = $this->columns;
+
+        foreach ($array as $column => $value) {
+            if (in_array($column, $this->dateTimeColumns)) {
+                $datetime = DateTime::createFromFormat("Y-m-d G:i:s", $value);
+                if ($datetime) {
+                    $array[$column] = $datetime->format("Y-m-d G:i:s e");
+                }
+            }
+        }
+
+        return $array;
     }
 
     /**
@@ -131,19 +136,18 @@ abstract class Entity {
     /**
      * Helper function to generate a INSERT SQL query using the Entity's columns and provided data
      *
-     * @param $values array The values as an array to use for the new Entity
      * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
      */
-    private function generateInsertQuery(array $values): array {
+    private function generateInsertQuery(): array {
         $columnsQuery = "(";
         $valuesQuery = "(";
         $bindings = [];
 
-        foreach ($this->columns as $column) {
-            if ($column !== "id" && isset($values[$column])) {
+        foreach ($this->columns as $column => $value) {
+            if ($column !== "id") {
                 $columnsQuery .= "{$column}, ";
                 $valuesQuery .= ":{$column}, ";
-                $bindings[":{$column}"] = $values[$column];
+                $bindings[":{$column}"] = $value;
             }
         }
         $columnsQuery = rtrim($columnsQuery, ", ");
@@ -160,20 +164,17 @@ abstract class Entity {
     /**
      * Helper function to generate a UPDATE SQL query using the Entity's columns and provided data
      *
-     * @param $values array The new values as an array to use for the Entity's update
      * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
      */
-    private function generateUpdateQuery(array $values): array {
+    private function generateUpdateQuery(): array {
         $valuesQuery = "SET ";
         $bindings = [];
 
-        foreach ($this->columns as $column) {
-            if (isset($values[$column])) {
-                $bindings[":{$column}"] = $values[$column];
+        foreach ($this->columns as $column => $value) {
+            $bindings[":{$column}"] = $value;
 
-                if ($column !== "id") {
-                    $valuesQuery .= "{$column} = :{$column}, ";
-                }
+            if ($column !== "id") {
+                $valuesQuery .= "{$column} = :{$column}, ";
             }
         }
 
@@ -187,32 +188,39 @@ abstract class Entity {
     /**
      * Save values to the Entity Table in the Database
      * Will either be a new insert or a update to an existing Entity
-     *
-     * @param $values array The values as an array to use for the Entity
-     * @return array Either an array with successful meta data or an array of error feedback meta
      */
-    public function save(array $values): array {
+    public function save() {
 
-        $id = $values["id"] ?? null;
+        $id = $this->id ?? null;
 
-        if (in_array("updated_at", $this->columns)) {
-            $values["updated_at"] = date("Y-m-d H:i:s");
+        $isNew = empty($id);
+
+        if (array_key_exists("updated_at", $this->columns)) {
+            $this->updated_at = date("Y-m-d H:i:s");
         }
 
-        if (empty($id)) {
-            if (in_array("created_at", $this->columns)) {
-                $values["created_at"] = date("Y-m-d H:i:s");
+        if ($isNew) {
+            if (array_key_exists("created_at", $this->columns)) {
+                $this->created_at = date("Y-m-d H:i:s");
             }
 
-            list($query, $bindings) = $this->generateInsertQuery($values);
+            list($query, $bindings) = $this->generateInsertQuery();
         }
         else {
             // Check the Entity trying to edit actually exists
-            $this->getById($id);
-            if (empty($this->id)) {
-                return [];
+            $existingEntity = new static();
+            $existingEntity->getById($id);
+            if (empty($existingEntity->id)) {
+                $this->id = null;
+                return;
             }
-            list($query, $bindings) = $this->generateUpdateQuery($values);
+
+            if (array_key_exists("created_at", $this->columns)) {
+                $createdAt = new DateTime($this->created_at);
+                $this->created_at = $createdAt->format("Y-m-d H:i:s");
+            }
+
+            list($query, $bindings) = $this->generateUpdateQuery();
         }
 
         $response = $this->db->query($query, $bindings);
@@ -221,16 +229,8 @@ abstract class Entity {
         if ($response["meta"]["affected_rows"] > 0) {
 
             $id = $id ?? $this->db->getLastInsertedId();
-
             $this->getById($id);
-
-            if (empty($values["id"])) {
-                $response["meta"]["status"] = 201;
-                $response["meta"]["message"] = "Created";
-            }
         }
-
-        return $response;
     }
 
     /**

@@ -113,7 +113,7 @@ class Projects {
      * else if not found return necessary meta
      */
     public static function getItemResponse(Entity $entity, $id): array {
-        if ($entity->id && $entity->id == $id) {
+        if ($entity->id == $id) {
             return [
                 "meta" => [
                     "ok" => true,
@@ -158,8 +158,44 @@ class Projects {
             $requiredFields = ["name", "date", "skills", "long_description", "short_description"];
             if ($this->api->hasRequiredFields($requiredFields)) {
 
+                // Transform the incoming data into the necessary data for the database
+                if (isset($data["date"])) {
+                    $data["date"] = date("Y-m-d", strtotime($data["date"]));
+                }
+
+                if (isset($data["skills"]) && is_array($data["skills"])) {
+                    $data["skills"] = implode(",", $data["skills"]);
+                }
+
                 $project = new Project();
-                $response = $project->save($data);
+
+                if (isset($data["id"])) {
+                    $project->getById($data["id"], false);
+                }
+
+                $project->setValues($data);
+                $project->save();
+
+                // Checks if the save was a update & update was okay
+                if (!empty($project->id) && !empty($data["images"])) {
+
+                    $images = $data["images"];
+
+                    if (count($images) > 0) {
+                        foreach ($images as $sortOrder => $image) {
+                            $imageUpdateData = json_decode($image, true);
+                            $imageUpdateData["sort_order_number"] = $sortOrder + 1;
+
+                            $projectImage = new ProjectImage();
+                            $projectImage->setValues($imageUpdateData);
+                            $projectImage->save();
+                        }
+
+                        $project->getById($project->id);
+                    }
+                }
+
+                $response = $this::getItemResponse($project, $project->id);
             }
             else {
                 $response = $this->api->getInvalidFieldsResponse($requiredFields);
@@ -179,7 +215,14 @@ class Projects {
      * @return array The request response to send back
      */
     public function addProject(array $data): array {
-        return $this->saveProject($data);
+        $response = $this->saveProject($data);
+
+        if (!empty($response["row"])) {
+            $response["meta"]["status"] = 201;
+            $response["meta"]["message"] = "Created";
+        }
+
+        return $response;
     }
 
     /**
@@ -291,7 +334,15 @@ class Projects {
                     "sort_order_number" => 999, // High enough number
                 ];
                 $projectImage = new ProjectImage();
-                $response = $projectImage->save($values);
+                $projectImage->setValues($values);
+                $projectImage->save();
+
+                $response = $this::getItemResponse($projectImage, $projectImage->id);
+
+                if (!empty($response["row"])) {
+                    $response["meta"]["status"] = 201;
+                    $response["meta"]["message"] = "Created";
+                }
             }
             // Else there was a problem uploading file to server
             else {
