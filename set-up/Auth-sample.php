@@ -92,7 +92,7 @@ class Auth {
 
         }
         else {
-            $response = $api->getInvalidFieldsResponse($requiredFields);
+            $response = Responder::get()->getInvalidFieldsResponse($requiredFields);
         }
 
         return $response;
@@ -172,6 +172,6 @@ class Auth {
             ];
         }
 
-        return Core::getNotAuthorisedResponse();
+        return Responder::getNotAuthorisedResponse();
     }
 }

@@ -162,99 +162,13 @@ class Core {
      * @param $requiredFields array Array of required data keys
      * @return array An array of invalid data fields
      */
-    private function getInvalidFields(array $requiredFields): array {
+    public function getInvalidFields(array $requiredFields): array {
         // Loops through each required data field for the request and only gets invalid fields
         $invalidFields = array_filter($requiredFields, function($field) {
             return !$this->isFieldValid($field);
         });
 
         return $invalidFields;
-    }
-
-    /**
-     * Send necessary meta data back when required data/fields is not provided/valid
-     *
-     * @param $requiredFields array Array of the data required
-     * @return array Array of meta data
-     */
-    public function getInvalidFieldsResponse(array $requiredFields): array {
-        $invalidFields = $this->getInvalidFields($requiredFields);
-
-        return [
-            "meta" => [
-                "status" => 400,
-                "message" => "Bad Request",
-                "required_fields" => $requiredFields,
-                "invalid_fields" => $invalidFields,
-                "feedback" => "The necessary data was not provided, missing/invalid fields: " . implode(", ", $invalidFields) . ".",
-            ],
-        ];
-    }
-
-    /**
-     * Generate meta data to send back when the method provided is not allowed on the URI
-     *
-     * @return array Array of meta data
-     */
-    public function getMethodNotAllowedResponse(): array {
-        return [
-            "meta" => [
-                "status" => 405,
-                "message" => "Method Not Allowed.",
-                "feedback" => "Method {$this->method} not allowed on " . $this->getAPIURL() . ".",
-            ],
-        ];
-    }
-
-    /**
-     * Send necessary meta data back when user isn't logged in correctly
-     *
-     * @return array Array of meta data
-     */
-    public static function getNotAuthorisedResponse(): array {
-        return [
-            "meta" => [
-                "status" => 401,
-                "message" => "Unauthorized",
-                "feedback" => "You need to be logged in!",
-            ],
-        ];
-    }
-
-    /**
-     * Generate response data to send back when the URI provided is not recognised
-     *
-     * @return array Array of meta data
-     */
-    public function getUnrecognisedURIResponse(): array {
-        return [
-            "meta" => [
-                "status" => 404,
-                "feedback" => "Unrecognised URI (" . $this->getAPIURL() . ").",
-                "message" => "Not Found",
-            ],
-        ];
-    }
-
-    /**
-     * Generate response data to send back when the requested API version is not recognised
-     *
-     * @return array Array of meta data
-     */
-    public function getUnrecognisedAPIVersionResponse(): array {
-        $shouldBeVersion = "v" . Config::API_VERSION;
-
-        $shouldBeURI = $this->uriArray;
-        $shouldBeURI[0] = $shouldBeVersion;
-        $shouldBeURL = $this->getAPIURL($shouldBeURI);
-
-        return [
-            "meta" => [
-                "status" => 404,
-                "feedback" => "Unrecognised API version. Current version is " . Config::API_VERSION . ", so please update requested URL to {$shouldBeURL}.",
-                "message" => "Not Found",
-            ],
-        ];
     }
 
     private function setCORSHeaders(array &$response) {

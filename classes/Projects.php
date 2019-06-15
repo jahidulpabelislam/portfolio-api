@@ -16,7 +16,6 @@ if (!defined("ROOT")) {
     die();
 }
 
-use JPI\API\Entity\Entity;
 use JPI\API\Entity\Project;
 use JPI\API\Entity\ProjectImage;
 
@@ -30,137 +29,8 @@ class Projects {
     public function __construct() {
         $this->api = Core::get();
     }
-    /**
-     * Return a response when items were requested,
-     * so check if some found return the items (with necessary meta)
-     * else if not found return necessary meta
-     */
-    public static function getItemsResponse(Entity $entity, array $entities = []): array {
-        if (count($entities)) {
 
-            $rows = array_map(function(Entity $entity) {
-                return $entity->toArray();
-            }, $entities);
-
-            return [
-                "meta" => [
-                    "ok" => true,
-                    "count" => count($rows),
-                ],
-                "rows" => $rows,
-            ];
-        }
-
-        return [
-            "meta" => [
-                "count" => 0,
-                "status" => 404,
-                "feedback" => "No {$entity::$displayName}s found.",
-                "message" => "Not Found",
-            ],
-            "rows" => [],
-        ];
-    }
-
-    /**
-     * Return a response when items request was a search request,
-     * so check if some found return the items (with necessary meta)
-     * else if not found return necessary meta
-     *
-     * Use getItemsResponse function as the base response, then just adds additional meta data
-     */
-    public function getItemsSearchResponse(Entity $entity, array $entities = [], array $data = []): array {
-        // The items response is the base response, and the extra meta is added below
-        $response = self::getItemsResponse($entity, $entities);
-
-        $totalCount = $entity->getTotalCountForSearch($data);
-        $response["meta"]["total_count"] = $totalCount;
-
-        $limit = $entity->limitBy;
-        $page = $entity->page;
-
-        $lastPage = ceil($totalCount / $limit);
-        $response["meta"]["total_pages"] = $lastPage;
-
-        $pageURL = $this->api->getAPIURL();
-        if (isset($data["limit"])) {
-            $data["limit"] = $limit;
-        }
-
-        $hasPreviousPage = ($page > 1) && ($lastPage >= ($page - 1));
-        $response["meta"]["has_previous_page"] = $hasPreviousPage;
-        if ($hasPreviousPage) {
-            $data["page"] = $page - 1;
-            $response["meta"]["previous_page_url"] = $pageURL;
-            $response["meta"]["previous_page_params"] = $data;
-        }
-
-        $hasNextPage = $page < $lastPage;
-        $response["meta"]["has_next_page"] = $hasNextPage;
-        if ($response["meta"]["has_next_page"]) {
-            $data["page"] = $page + 1;
-            $response["meta"]["next_page_url"] = $pageURL;
-            $response["meta"]["next_page_params"] = $data;
-        }
-
-        return $response;
-    }
-
-    /**
-     * Return a response when a item was requested,
-     * so check if found return the item (with necessary meta)
-     * else if not found return necessary meta
-     */
-    public static function getItemResponse(Entity $entity, $id): array {
-        if ($entity->id == $id) {
-            return [
-                "meta" => [
-                    "ok" => true,
-                ],
-                "row" => $entity->toArray(),
-            ];
-        }
-
-        return [
-            "meta" => [
-                "status" => 404,
-                "feedback" => "No {$entity::$displayName} found with {$id} as ID.",
-                "message" => "Not Found",
-            ],
-            "row" => [],
-        ];
-    }
-
-    /**
-     * Return the response when a item was attempted to be deleted
-     */
-    public static function getItemDeletedResponse(Entity $entity, bool $isDeleted, $id): array {
-        // If the entity has no id set it means the item wasn't found, so return item 404 response
-        if (!$entity->id) {
-            return self::getItemResponse($entity, $id);
-        }
-
-        if ($isDeleted) {
-            return [
-                "meta" => [
-                    "ok" => true,
-                ],
-                "row" => [
-                    "id" => (int)$id,
-                ],
-            ];
-        }
-
-        return [
-            "meta" => [
-                "status" => 404,
-                "feedback" => "Couldn't delete {$entity::$displayName} with {$id} as ID.",
-            ],
-            "row" => [],
-        ];
-    }
-
-    /**
+    /*
      * Gets all Projects but paginated, also might include search
      *
      * @param $data array Any data to aid in the search query
@@ -171,7 +41,7 @@ class Projects {
         $project = new Project();
         $projects = $project->doSearch($data);
 
-        return $this->getItemsSearchResponse($project, $projects, $data);
+        return Responder::get()->getItemsSearchResponse($project, $projects, $data);
     }
 
     /**
@@ -223,14 +93,14 @@ class Projects {
                     }
                 }
 
-                $response = self::getItemResponse($project, $project->id);
+                $response = Responder::getItemResponse($project, $project->id);
             }
             else {
-                $response = $this->api->getInvalidFieldsResponse($requiredFields);
+                $response = Responder::get()->getInvalidFieldsResponse($requiredFields);
             }
         }
         else {
-            $response = Core::getNotAuthorisedResponse();
+            $response = Responder::getNotAuthorisedResponse();
         }
 
         return $response;
@@ -274,10 +144,10 @@ class Projects {
             $project = new Project();
             $isDeleted = $project->delete($data["id"]);
 
-            $response = self::getItemDeletedResponse($project, $isDeleted, $data["id"]);
+            $response = Responder::getItemDeletedResponse($project, $data["id"], $isDeleted);
         }
         else {
-            $response = Core::getNotAuthorisedResponse();
+            $response = Responder::getNotAuthorisedResponse();
         }
 
         return $response;
@@ -295,7 +165,7 @@ class Projects {
         $project = new Project();
         $project->getById($projectId, $getImages);
 
-        return self::getItemResponse($project, $projectId);
+        return Responder::getItemResponse($project, $projectId);
     }
 
     /**
@@ -313,7 +183,7 @@ class Projects {
             $projectImage = new ProjectImage();
             $projectImages = $projectImage->getByColumn("project_id", $projectId);
 
-            return self::getItemsResponse($projectImage, $projectImages);
+            return Responder::getItemsResponse($projectImage, $projectImages);
         }
 
         return $projectRes;
@@ -369,7 +239,7 @@ class Projects {
                 $projectImage->setValues($values);
                 $projectImage->save();
 
-                $response = self::getItemResponse($projectImage, $projectImage->id);
+                $response = Responder::getItemResponse($projectImage, $projectImage->id);
 
                 if (!empty($response["row"])) {
                     $response["meta"]["status"] = 201;
@@ -411,11 +281,11 @@ class Projects {
             }
             else {
                 $requiredFields = ["image"];
-                $response = $this->api->getInvalidFieldsResponse($requiredFields);
+                $response = Responder::get()->getInvalidFieldsResponse($requiredFields);
             }
         }
         else {
-            $response = Core::getNotAuthorisedResponse();
+            $response = Responder::getNotAuthorisedResponse();
         }
 
         $response["meta"]["files"] = $_FILES;
@@ -438,7 +308,7 @@ class Projects {
             $projectImage = new ProjectImage();
             $projectImage->getById($imageId);
 
-            $response = self::getItemResponse($projectImage, $imageId);
+            $response = Responder::getItemResponse($projectImage, $imageId);
 
             $projectId = (int)$projectId;
             if (!empty($projectImage->project_id) && $projectImage->project_id !== $projectId) {
@@ -470,11 +340,11 @@ class Projects {
                 $projectImage = new ProjectImage();
                 $isDeleted = $projectImage->delete($imageId);
 
-                $response = self::getItemDeletedResponse($projectImage, $isDeleted, $imageId);
+                $response = Responder::getItemDeletedResponse($projectImage, $imageId, $isDeleted);
             }
         }
         else {
-            $response = Core::getNotAuthorisedResponse();
+            $response = Responder::getNotAuthorisedResponse();
         }
 
         return $response;
