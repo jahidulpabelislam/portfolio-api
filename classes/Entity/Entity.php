@@ -262,16 +262,16 @@ abstract class Entity {
 
             // Split each word in search
             $searchWords = explode(" ", $searchString);
-
             $searchString = "%" . implode("%", $searchWords) . "%";
 
             $searchesReversed = array_reverse($searchWords);
-
             $searchStringReversed = "%" . implode("%", $searchesReversed) . "%";
 
-            $searchWhereClause = "";
+            $bindings[":searchString"] = $searchString;
+            $bindings[":searchStringReversed"] = $searchStringReversed;
 
             $globalWhereClauses = [];
+            $searchWhereClause = "";
 
             // Loop through each searchable column
             foreach (static::$searchableColumns as $column) {
@@ -285,15 +285,12 @@ abstract class Entity {
             }
             $searchWhereClause = rtrim($searchWhereClause, "OR");
 
-            $bindings[":searchString"] = $searchString;
-            $bindings[":searchStringReversed"] = $searchStringReversed;
-
             $globalWhereClause = "";
             if (!empty($globalWhereClauses)) {
                 $globalWhereClause = " AND " . implode(" AND ", $globalWhereClauses);
             }
 
-            $whereClause = "WHERE (" . $searchWhereClause . ") " . $globalWhereClause;
+            $whereClause = "WHERE ({$searchWhereClause}) {$globalWhereClause}";
 
             return [$whereClause, $bindings];
         }

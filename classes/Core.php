@@ -198,10 +198,13 @@ class Core {
 
         // Set cache for 31 days for some GET Requests
         if ($this->method === "GET" && !in_array($this->uriString, $notCachedURLs)) {
-            $secondsToCache = 2678400;
-            $expiresTime = gmdate("D, d M Y H:i:s", time() + $secondsToCache) . " GMT";
+            $secondsToCache = 2678400; // 31 days
+
             header("Cache-Control: max-age={$secondsToCache}, public");
+
+            $expiresTime = gmdate("D, d M Y H:i:s e", time() + $secondsToCache);
             header("Expires: {$expiresTime}");
+
             header("Pragma: cache");
         }
     }
