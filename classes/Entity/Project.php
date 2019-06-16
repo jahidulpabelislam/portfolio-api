@@ -84,6 +84,8 @@ class Project extends Entity {
         $projectImage = new ProjectImage();
         $images = $projectImage->getByColumn("project_id", $this->id);
 
+        $this->images = $images;
+
         return $images;
     }
 
@@ -112,7 +114,7 @@ class Project extends Entity {
 
             // If Project's Images was requested, get and add these
             if ($getImages) {
-                $this->images = $this->getProjectImages();
+                $this->getProjectImages();
             }
         }
     }
@@ -156,8 +158,7 @@ class Project extends Entity {
 
         // Loop through each Project and get the Projects Images
         $projects = array_map(function(Project $project) {
-
-            $project->images = $project->getProjectImages();
+            $project->getProjectImages();
 
             return $project;
         }, $projects);
