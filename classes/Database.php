@@ -29,8 +29,6 @@ class Database {
     private static $instance;
 
     private $db;
-    private $config;
-    private $error;
 
     /**
      * Connects to a MySQL engine
@@ -38,8 +36,6 @@ class Database {
      * defined in Config.php
      */
     public function __construct() {
-        $this->config = Config::get();
-
         $this->connectToDB();
     }
 
@@ -53,16 +49,11 @@ class Database {
         catch (PDOException $error) {
             $errorMessage = $error->getMessage();
             error_log("Error creating a connection to database: {$errorMessage}, full error: {$error}");
-            if ($this->config->debug) {
-                $this->error = $errorMessage;
-            }
         }
     }
 
     /**
      * Singleton getter
-     *
-     * @return Database
      */
     public static function get(): Database {
         if (!self::$instance) {
@@ -81,9 +72,7 @@ class Database {
      */
     public function query(string $query, array $bindings = null): array {
         $response = [
-            "meta" => [
-                "affected_rows" => 0,
-            ],
+            "affected_rows" => 0,
             "rows" => [],
         ];
 
@@ -104,22 +93,11 @@ class Database {
                 }
 
                 // Add the count of how many rows were effected
-                $response["meta"]["affected_rows"] = $executedQuery->rowCount();
+                $response["affected_rows"] = $executedQuery->rowCount();
             }
             catch (PDOException $error) {
                 $errorMessage = $error->getMessage();
                 error_log("Error executing query on database: {$errorMessage} using query: {$query} and bindings: " . print_r($bindings, true) . ", full error: {$error}");
-
-                $response["meta"]["feedback"] = "Problem with Server.";
-                if ($this->config->debug) {
-                    $response["meta"]["feedback"] = $errorMessage;
-                }
-            }
-        }
-        else {
-            $response["meta"]["feedback"] = "Problem with Server.";
-            if ($this->config->debug) {
-                $response["meta"]["feedback"] = $this->error;
             }
         }
 

@@ -21,24 +21,24 @@ if (!defined("ROOT")) {
 
 class ProjectImage extends Entity {
 
-    protected $tableName = "portfolio_project_image";
+    public static $displayName = "Project Image";
+
+    protected static $tableName = "portfolio_project_image";
 
     protected $columns = [
-        "id",
-        "project_id",
-        "sort_order_number",
-        "file",
-        "created_at",
-        "updated_at",
+        "id" => null,
+        "project_id" => 0,
+        "sort_order_number" => 0,
+        "file" => "",
+        "created_at" => "",
+        "updated_at" => "",
     ];
 
-    protected $intColumns = ["id", "project_id", "sort_order_number"];
+    protected static $intColumns = ["id", "project_id", "sort_order_number"];
 
-    protected $defaultOrderByColumn = "sort_order_number";
+    protected static $orderByColumn = "sort_order_number";
 
-    protected $defaultOrderByDirection = "ASC";
-
-    public $displayName = "Project Image";
+    protected static $orderByDirection = "ASC";
 
     /**
      * Delete an Entity from the Database
@@ -48,16 +48,17 @@ class ProjectImage extends Entity {
      * Here actually delete the file from the server
      *
      * @param $id int The Id of the Entity to delete
-     * @param $fileName string The filename of the file to delete
-     * @return array Either an array with successful meta data or a array of error feedback meta
+     * @return bool Whether or not deletion was successful
      */
-    public function delete($id, string $fileName = ""): array {
-        $response = parent::delete($id);
+    public function delete($id): bool {
+        $isDeleted = parent::delete($id);
 
         // Check if the deletion was ok
-        if (!empty($fileName) && $response["meta"]["affected_rows"] > 0) {
+        if ($isDeleted && !empty($this->file)) {
+            $fileName = $this->file;
 
-            $fileName = "/" . ltrim($fileName, "/"); // Makes sure there is a leading slash
+            // Makes sure there is a leading slash
+            $fileName = "/" . ltrim($fileName, "/");
 
             // Checks if file exists to delete the actual Image file from server
             if (file_exists(ROOT . $fileName)) {
@@ -65,24 +66,6 @@ class ProjectImage extends Entity {
             }
         }
 
-        return $response;
-    }
-
-    /**
-     * Return the response when a ProjectImage is not found
-     *
-     * @param $projectId int The Id of the Project requested
-     * @param $imageId int The Id of a Project Image requested
-     * @return array
-     */
-    public function getNotFoundResponse(int $projectId, int $imageId): array {
-        return [
-            "row" => [],
-            "meta" => [
-                "status" => 404,
-                "feedback" => "No {$this->displayName} found with {$imageId} as ID for Project: {$projectId}.",
-                "message" => "Not Found",
-            ],
-        ];
+        return $isDeleted;
     }
 }

@@ -36,7 +36,7 @@ class Router {
 
         $shouldBeVersion = "v" . Config::API_VERSION;
         if ($version !== $shouldBeVersion) {
-            $response = $this->api->getUnrecognisedAPIVersionResponse();
+            $response = Responder::get()->getUnrecognisedAPIVersionResponse();
         }
 
         return $response ?? [];
@@ -64,7 +64,7 @@ class Router {
             }
         }
         else {
-            $response = $this->api->getMethodNotAllowedResponse();
+            $response = Responder::get()->getMethodNotAllowedResponse();
         }
 
         return $response ?? [];
@@ -125,7 +125,7 @@ class Router {
                 ) {
                     $data["id"] = $uri[4];
                     $data["project_id"] = $uri[2];
-                    $response = $api->deleteImage($data);
+                    $response = $api->deleteProjectImage($data);
                 }
                 else if (!isset($uri[3])) {
                     $data["id"] = $uri[2];
@@ -134,7 +134,7 @@ class Router {
             }
         }
         else {
-            $response = $this->api->getMethodNotAllowedResponse();
+            $response = Responder::get()->getMethodNotAllowedResponse();
         }
 
         return $response ?? [];
@@ -179,7 +179,7 @@ class Router {
 
         // If at this point response is empty, we didn't recognise the action
         if (empty($response)) {
-            $response = $this->api->getUnrecognisedURIResponse();
+            $response = Responder::get()->getUnrecognisedURIResponse();
         }
 
         $this->api->sendResponse($response);

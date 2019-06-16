@@ -16,7 +16,6 @@
 namespace JPI\API\Entity;
 
 use JPI\API\Auth;
-use JPI\API\Core;
 
 if (!defined("ROOT")) {
     die();
@@ -26,25 +25,27 @@ class Project extends Entity {
 
     private const PUBLIC_STATUS = "published";
 
-    protected $tableName = "portfolio_project";
+    public static $displayName = "Project";
+
+    protected static $tableName = "portfolio_project";
 
     protected $columns = [
-        "id",
-        "name",
-        "date",
-        "link",
-        "github",
-        "download",
-        "short_description",
-        "long_description",
-        "colour",
-        "skills",
-        "status",
-        "created_at",
-        "updated_at",
+        "id" => null,
+        "name" => "",
+        "date" => "",
+        "link" => "",
+        "github" => "",
+        "download" => "",
+        "short_description" => "",
+        "long_description" => "",
+        "colour" => "",
+        "skills" => "",
+        "status" => "draft",
+        "created_at" => "",
+        "updated_at" => "",
     ];
 
-    protected $searchableColumns = [
+    protected static $searchableColumns = [
         "name",
         "skills",
         "long_description",
@@ -52,31 +53,38 @@ class Project extends Entity {
         "status",
     ];
 
-    protected $defaultOrderByColumn = "date";
+    protected static $orderByColumn = "date";
 
-    public $displayName = "Project";
+    private $images = [];
 
-    public function toArray(array $entity): array{
-        $array = parent::toArray($entity);
+    public function toArray(): array{
+        $projectArray = parent::toArray();
 
-        if (isset($array["skills"])) {
-            $array["skills"] = explode(",", $array["skills"]);
+        if (isset($projectArray["skills"])) {
+            $skills = explode(",", $projectArray["skills"]);
+            $skills = array_map("trim", $skills);
+            $projectArray["skills"] = $skills;
         }
 
-        return $array;
+        if (count($this->images)) {
+            $projectArray["images"] = array_map(function(ProjectImage $image) {
+                return $image->toArray();
+            }, $this->images);
+        }
+
+        return $projectArray;
     }
 
     /**
      * Helper function to get all Project Image Entities linked to this Project
-     *
-     * @param $id int The Project Image to find Images for
      * @return array An array of ProjectImage's (if any found)
      */
-    public function getProjectImages($id): array {
+    public function getProjectImages(): array {
         // Get all the images linked to the Project
         $projectImage = new ProjectImage();
-        $imagesResponse = $projectImage->getByColumn("project_id", $id);
-        $images = $imagesResponse["rows"];
+        $images = $projectImage->getByColumn("project_id", $this->id);
+
+        $this->images = $images;
 
         return $images;
     }
@@ -91,75 +99,24 @@ class Project extends Entity {
      * Add these to the response unless specified
      *
      * @param $id int The Id of the Entity to get
-     * @param $getImages bool Whether of not to also get and output the Project Images linked to this Project
-     * @return array The response from the SQL query
+     * @param $shouldGetImages bool Whether of not to also get and output the Project Images linked to this Project
      */
-    public function getById($id, bool $getImages = true): array {
-        $response = parent::getById($id);
+    public function getById($id, bool $shouldGetImages = true) {
+        parent::getById($id);
 
         // If Project was found
-        if (!empty($response["row"])) {
-            if ($response["row"]["status"] !== self::PUBLIC_STATUS && !Auth::isLoggedIn()) {
-                return Core::getNotAuthorisedResponse();
+        if (!empty($this->id)) {
+
+            if ($this->status !== self::PUBLIC_STATUS && !Auth::isLoggedIn()) {
+                $this->id = 0;
+                return;
             }
 
             // If Project's Images was requested, get and add these
-            if ($getImages) {
-                $getImages = $this->getProjectImages($id);
-                $response["row"]["images"] = $getImages;
+            if ($shouldGetImages) {
+                $this->getProjectImages();
             }
         }
-
-        return $response;
-    }
-
-    /**
-     * Save values to the Entity Table in the Database
-     * Will either be a new insert or a update to an existing Entity
-     *
-     * Add extra functionality on top of default save
-     * If the save was a update, update the Order 'sort_order_number' on its Project Images
-     * The sort_order_number is based on to order the items are in
-     *
-     * @param $values array The values as an array to use for the Entity
-     * @return array Either an array with successful meta data or an array of error feedback meta
-     */
-    public function save(array $values): array {
-
-        // Transform the incoming data into the necessary data for the database
-
-        if (isset($values["date"])) {
-            $values["date"] = date("Y-m-d", strtotime($values["date"]));
-        }
-
-        if (isset($values["skills"]) && is_array($values["skills"])) {
-            $values["skills"] = implode(",", $values["skills"]);
-        }
-
-        $response = parent::save($values);
-
-        // Checks if the save was a update & update was okay
-        if (!empty($values["id"]) && !empty($response["row"]) && !empty($values["images"])) {
-
-            $images = $values["images"];
-
-            if (count($images) > 0) {
-                foreach ($images as $sortOrder => $image) {
-                    $image = json_decode($image, true);
-
-                    $imageUpdateData = [
-                        "id" => $image["id"],
-                        "sort_order_number" => $sortOrder,
-                    ];
-                    $projectImage = new ProjectImage();
-                    $projectImage->save($imageUpdateData);
-                }
-
-                $response = $this->getById($values["id"]);
-            }
-        }
-
-        return $response;
     }
 
     /**
@@ -169,19 +126,20 @@ class Project extends Entity {
      * As these Entities are linked to many Project Images, so delete these also
      *
      * @param $id int The Id of the Entity to delete
-     * @return array Either an array with successful meta data or a array of error feedback meta
+     * @return bool Whether or not deletion was successful
      */
-    public function delete($id): array {
-        $response = parent::delete($id);
+    public function delete($id): bool {
+        $isDeleted = parent::delete($id);
 
-        // Delete all the images linked to this Project from the database & from disk
-        $projectImage = new ProjectImage();
-        $images = $this->getProjectImages($id);
-        foreach ($images as $image) {
-            $projectImage->delete($image["id"], $image["file"]);
+        if ($isDeleted) {
+            // Delete all the images linked to this Project from the database & from disk
+            $images = $this->getProjectImages();
+            foreach ($images as $image) {
+                $image->delete($image->id);
+            }
         }
 
-        return $response;
+        return $isDeleted;
     }
 
     /**
@@ -193,20 +151,20 @@ class Project extends Entity {
      * @return array The request response to send back
      */
     public function doSearch(array $params): array {
-
+        // As the user isn't logged in, filter by status = public
         if (!Auth::isLoggedIn()) {
             $params["status"] = self::PUBLIC_STATUS;
         }
 
-        $response = parent::doSearch($params);
+        $projects = parent::doSearch($params);
 
         // Loop through each Project and get the Projects Images
-        $response["rows"] = array_map(function($project) {
-            $project["images"] = $this->getProjectImages($project["id"]);
+        $projects = array_map(function(Project $project) {
+            $project->getProjectImages();
 
             return $project;
-        }, $response["rows"]);
+        }, $projects);
 
-        return $response;
+        return $projects;
     }
 }

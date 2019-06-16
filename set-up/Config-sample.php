@@ -23,21 +23,21 @@ class Config {
     public const API_VERSION = "3";
 
     // IP of database server
-    public const DB_IP = "localhost"; // TODO CHANGE ME
+    public const DB_IP = "localhost"; // TODO: CHANGE ME
     // Database name to use in server
-    public const DB_NAME = "jpi"; // TODO CHANGE ME
+    public const DB_NAME = "jpi"; // TODO: CHANGE ME
     // Username to database
-    public const DB_USERNAME = "root"; // TODO CHANGE ME
+    public const DB_USERNAME = "root"; // TODO: CHANGE ME
     // Password for the user above
-    public const DB_PASSWORD = ""; // TODO CHANGE ME
+    public const DB_PASSWORD = ""; // TODO: CHANGE ME
 
     // The secret key to use in Firebase's JWT
-    public const PORTFOLIO_ADMIN_SECRET_KEY = "changeme"; // TODO CHANGE ME
+    public const PORTFOLIO_ADMIN_SECRET_KEY = "changeme"; // TODO: CHANGE ME
 
     // Username for portfolio admin
-    public const PORTFOLIO_ADMIN_USERNAME = "root"; // TODO CHANGE ME
+    public const PORTFOLIO_ADMIN_USERNAME = "root"; // TODO: CHANGE ME
     // Hashed password for portfolio admin
-    public const PORTFOLIO_ADMIN_PASSWORD = "root"; // TODO CHANGE ME
+    public const PORTFOLIO_ADMIN_PASSWORD = "root"; // TODO: CHANGE ME
 
     // A list of other domains that can call this API
     public const ALLOWED_DOMAINS = [

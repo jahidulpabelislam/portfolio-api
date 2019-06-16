@@ -30,18 +30,17 @@ class Projects {
         $this->api = Core::get();
     }
 
-    /**
+    /*
      * Gets all Projects but paginated, also might include search
      *
      * @param $data array Any data to aid in the search query
      * @return array The request response to send back
      */
     public function getProjects(array $data): array {
+        $project = new Project();
+        $projects = $project->doSearch($data);
 
-        $projects = new Project();
-        $response = $projects->doSearch($data);
-
-        return $response;
+        return Responder::get()->getItemsSearchResponse($project, $projects, $data);
     }
 
     /**
@@ -51,23 +50,58 @@ class Projects {
      * @return array The request response to send back
      */
     private function saveProject(array $data): array {
-        // Checks if user is authored
         if (Auth::isLoggedIn()) {
 
-            // Checks that all data required is present and not empty
             $requiredFields = ["name", "date", "skills", "long_description", "short_description"];
             if ($this->api->hasRequiredFields($requiredFields)) {
 
+                // Transform the incoming data into the necessary data for the database
+                if (isset($data["date"])) {
+                    $data["date"] = date("Y-m-d", strtotime($data["date"]));
+                }
+
+                if (isset($data["skills"]) && is_array($data["skills"])) {
+                    $data["skills"] = implode(",", $data["skills"]);
+                }
+
                 $project = new Project();
-                $response = $project->save($data);
+
+                // If the Entity already exists, load the current values into state
+                if (isset($data["id"])) {
+                    $project->getById($data["id"], false);
+                }
+
+                $project->setValues($data);
+                $project->save();
+
+                // Checks if the save was okay, and images were passed, update the sort order on the images
+                if (!empty($project->id) && !empty($data["images"])) {
+
+                    $images = $data["images"];
+
+                    if (count($images) > 0) {
+                        foreach ($images as $i => $image) {
+                            $imageData = json_decode($image, true);
+                            $imageData["sort_order_number"] = $i + 1;
+
+                            $projectImage = new ProjectImage();
+                            $projectImage->setValues($imageData);
+                            $projectImage->save();
+                        }
+
+                        // As Project Images have been updated, refresh so the data returned is updated
+                        $project->getById($project->id);
+                    }
+                }
+
+                $response = Responder::getItemResponse($project, $project->id);
             }
-            // Else all the data required was not provided and/or valid
             else {
-                $response = $this->api->getInvalidFieldsResponse($requiredFields);
+                $response = Responder::get()->getInvalidFieldsResponse($requiredFields);
             }
         }
         else {
-            $response = Core::getNotAuthorisedResponse();
+            $response = Responder::getNotAuthorisedResponse();
         }
 
         return $response;
@@ -80,7 +114,15 @@ class Projects {
      * @return array The request response to send back
      */
     public function addProject(array $data): array {
-        return $this->saveProject($data);
+        $response = $this->saveProject($data);
+
+        // If successful, as this is a new Project creation override the meta
+        if (!empty($response["row"])) {
+            $response["meta"]["status"] = 201;
+            $response["meta"]["message"] = "Created";
+        }
+
+        return $response;
     }
 
     /**
@@ -100,14 +142,14 @@ class Projects {
      * @return array The request response to send back
      */
     public function deleteProject(array $data): array {
-
-        // Checks if user is authored
         if (Auth::isLoggedIn()) {
             $project = new Project();
-            $response = $project->delete($data["id"]);
+            $isDeleted = $project->delete($data["id"]);
+
+            $response = Responder::getItemDeletedResponse($project, $data["id"], $isDeleted);
         }
         else {
-            $response = Core::getNotAuthorisedResponse();
+            $response = Responder::getNotAuthorisedResponse();
         }
 
         return $response;
@@ -117,15 +159,14 @@ class Projects {
      * Get a particular Project defined by $projectId
      *
      * @param $projectId int The Id of the Project to get
-     * @param $getImages bool Whether the images for the Project should should be added
+     * @param $shouldGetImages bool Whether the images for the Project should should be added
      * @return array The request response to send back
      */
-    public function getProject($projectId, bool $getImages = false): array {
-
+    public function getProject($projectId, bool $shouldGetImages = false): array {
         $project = new Project();
-        $response = $project->getById($projectId, $getImages);
+        $project->getById($projectId, $shouldGetImages);
 
-        return $response;
+        return Responder::getItemResponse($project, $projectId);
     }
 
     /**
@@ -135,16 +176,17 @@ class Projects {
      * @return array The request response to send back
      */
     public function getProjectImages($projectId): array {
-
-        // Check the Project trying to get Images for
-        $response = $this->getProject($projectId);
-        if (!empty($response["row"])) {
+        // Check the Project trying to get Images for exists
+        $projectRes = $this->getProject($projectId);
+        if (!empty($projectRes["row"])) {
 
             $projectImage = new ProjectImage();
-            $response = $projectImage->getByColumn("project_id", $projectId);
+            $projectImages = $projectImage->getByColumn("project_id", (int)$projectId);
+
+            return Responder::getItemsResponse($projectImage, $projectImages);
         }
 
-        return $response;
+        return $projectRes;
     }
 
     /**
@@ -174,7 +216,7 @@ class Projects {
         $newFilename = $projectNameFormatted;
         $newFilename .= "-" . date("Ymd-His");
         $newFilename .= "-" . random_int(0, 99);
-        $newFilename .= "." . $imageFileExt;
+        $newFilename .= ".{$imageFileExt}";
 
         $newFileLocation = $directory . $newFilename;
 
@@ -187,22 +229,30 @@ class Projects {
             // Try to uploaded file
             if (move_uploaded_file($image["tmp_name"], $newImageFullPath)) {
 
-                // Update database with location of new Image
+                // Add new image with location into the database
                 $values = [
                     "file" => $newFileLocation,
                     "project_id" => $projectId,
                     "sort_order_number" => 999, // High enough number
                 ];
                 $projectImage = new ProjectImage();
-                $response = $projectImage->save($values);
+                $projectImage->setValues($values);
+                $projectImage->save();
+
+                $response = Responder::getItemResponse($projectImage, $projectImage->id);
+
+                if (!empty($response["row"])) {
+                    $response["meta"]["status"] = 201;
+                    $response["meta"]["message"] = "Created";
+                }
             }
-            // Else there was a problem uploading file to server
             else {
-                $response["meta"]["feedback"] = "Sorry, there was an error uploading your Image.";
+                // Else there was a problem uploading file to server
+                $response["meta"]["feedback"] = "Sorry, there was an error uploading your image.";
             }
         }
-        // Else bad request as file uploaded is not a image
         else {
+            // Else bad request as file uploaded is not a image
             $response["meta"] = [
                 "status" => 400,
                 "message" => "Bad Request",
@@ -220,27 +270,22 @@ class Projects {
      * @return array The request response to send back
      */
     public function addProjectImage(array $data): array {
-
-        // Checks if user is authored
         if (Auth::isLoggedIn()) {
-
-            // Checks if the data needed is present and not empty
             if (isset($_FILES["image"])) {
 
-                // Check the Project trying to add a a Image for exists
+                // Check the Project trying to add a Image for exists
                 $response = $this->getProject($data["project_id"]);
                 if (!empty($response["row"])) {
                     $response = $this->uploadProjectImage($response["row"]);
                 }
             }
-            // Else data needed was not provided
             else {
                 $requiredFields = ["image"];
-                $response = $this->api->getInvalidFieldsResponse($requiredFields);
+                $response = Responder::get()->getInvalidFieldsResponse($requiredFields);
             }
         }
         else {
-            $response = Core::getNotAuthorisedResponse();
+            $response = Responder::getNotAuthorisedResponse();
         }
 
         $response["meta"]["files"] = $_FILES;
@@ -251,21 +296,25 @@ class Projects {
     /**
      * Get a Project Image for a Project by Id
      *
-     * @param $projectId int The Id of the Project trying to get Images for
+     * @param $projectId int The Id of the Project trying to get Image for
      * @param $imageId int The Id of the Project Image to get
      * @return array The request response to send back
      */
     public function getProjectImage($projectId, $imageId): array {
 
-        // Check the Project trying to get Images for
+        // Check the Project trying to get Images for exists
         $response = $this->getProject($projectId);
         if (!empty($response["row"])) {
             $projectImage = new ProjectImage();
-            $response = $projectImage->getById($imageId);
+            $projectImage->getById($imageId);
 
+            $response = Responder::getItemResponse($projectImage, $imageId);
+
+            // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
-            if (!empty($response["row"]["project_id"]) && (int)$response["row"]["project_id"] !== $projectId) {
-                $response = $projectImage->getNotFoundResponse($projectId, $imageId);
+            if (!empty($projectImage->project_id) && $projectImage->project_id !== $projectId) {
+                $response["row"] = [];
+                $response["meta"]["feedback"] = "No {$projectImage::$displayName} found with {$imageId} as ID for Project: {$projectId}.";
             }
         }
 
@@ -278,32 +327,25 @@ class Projects {
      * @param $data array The data sent to delete the Project Image
      * @return array The request response to send back
      */
-    public function deleteImage(array $data): array {
-
-        // Checks if user is authored
+    public function deleteProjectImage(array $data): array {
         if (Auth::isLoggedIn()) {
 
             $projectId = $data["project_id"];
             $imageId = $data["id"];
 
-            // Check the Project trying to edit actually exists
+            // Check the Project of the Image trying to edit actually exists
             $response = $this->getProject($projectId);
             if (!empty($response["row"])) {
 
-                $response = $this->getProjectImage($projectId, $imageId);
+                // Delete row from database
+                $projectImage = new ProjectImage();
+                $isDeleted = $projectImage->delete($imageId);
 
-                if (!empty($response["row"])) {
-
-                    $fileName = $response["row"]["file"];
-
-                    // Update database to delete row
-                    $projectImage = new ProjectImage();
-                    $response = $projectImage->delete($imageId, $fileName);
-                }
+                $response = Responder::getItemDeletedResponse($projectImage, $imageId, $isDeleted);
             }
         }
         else {
-            $response = Core::getNotAuthorisedResponse();
+            $response = Responder::getNotAuthorisedResponse();
         }
 
         return $response;

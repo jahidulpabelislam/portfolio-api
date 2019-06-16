@@ -27,7 +27,7 @@ class Hasher {
      */
     public static function generate(string $string): string {
 
-        // TODO Generate a hashed on given string
+        // TODO: Generate a hashed on given string
 
         $hashedString = $string;
 
@@ -43,7 +43,7 @@ class Hasher {
      */
     public static function check(string $string, string $hash): bool {
 
-        // TODO Compare a raw string against a hash of what it should be
+        // TODO: Compare a raw string against a hash of what it should be
 
         return $string === $hash;
     }
