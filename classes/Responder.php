@@ -15,6 +15,10 @@ namespace JPI\API;
 
 use JPI\API\Entity\Entity;
 
+if (!defined("ROOT")) {
+    die();
+}
+
 class Responder {
 
     private $api;
