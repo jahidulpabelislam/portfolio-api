@@ -217,7 +217,7 @@ abstract class Entity {
         $response = $this->db->query($query, $bindings);
 
         // Checks if insert was ok
-        if ($response["meta"]["affected_rows"] > 0) {
+        if ($response["affected_rows"] > 0) {
             $id = $id ?? $this->db->getLastInsertedId();
             $this->getById($id);
         }
@@ -242,7 +242,7 @@ abstract class Entity {
             $response = $this->db->query($query, $bindings);
 
             // Check if the deletion was ok
-            $isDeleted = $response["meta"]["affected_rows"] > 0;
+            $isDeleted = $response["affected_rows"] > 0;
         }
 
         return $isDeleted;

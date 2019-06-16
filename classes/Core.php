@@ -213,9 +213,6 @@ class Core {
      */
     public function sendResponse(array $response) {
 
-        // Just remove any internal meta data
-        unset($response["meta"]["affected_rows"]);
-
         $this->setCORSHeaders($response);
         $this->setCacheHeaders();
 
