@@ -37,7 +37,6 @@ class Projects {
      * @return array The request response to send back
      */
     public function getProjects(array $data): array {
-
         $project = new Project();
         $projects = $project->doSearch($data);
 
@@ -67,6 +66,7 @@ class Projects {
 
                 $project = new Project();
 
+                // If the Entity already exists, load the current values into state
                 if (isset($data["id"])) {
                     $project->getById($data["id"], false);
                 }
@@ -74,21 +74,22 @@ class Projects {
                 $project->setValues($data);
                 $project->save();
 
-                // Checks if the save was a update & update was okay
+                // Checks if the save was okay, and images were passed, update the sort order on the images
                 if (!empty($project->id) && !empty($data["images"])) {
 
                     $images = $data["images"];
 
                     if (count($images) > 0) {
-                        foreach ($images as $sortOrder => $image) {
-                            $imageUpdateData = json_decode($image, true);
-                            $imageUpdateData["sort_order_number"] = $sortOrder + 1;
+                        foreach ($images as $i => $image) {
+                            $imageData = json_decode($image, true);
+                            $imageData["sort_order_number"] = $i + 1;
 
                             $projectImage = new ProjectImage();
-                            $projectImage->setValues($imageUpdateData);
+                            $projectImage->setValues($imageData);
                             $projectImage->save();
                         }
 
+                        // As Project Images have been updated, refresh so the data returned is updated
                         $project->getById($project->id);
                     }
                 }
@@ -115,6 +116,7 @@ class Projects {
     public function addProject(array $data): array {
         $response = $this->saveProject($data);
 
+        // If successful, as this is a new Project creation override the meta
         if (!empty($response["row"])) {
             $response["meta"]["status"] = 201;
             $response["meta"]["message"] = "Created";
@@ -157,13 +159,12 @@ class Projects {
      * Get a particular Project defined by $projectId
      *
      * @param $projectId int The Id of the Project to get
-     * @param $getImages bool Whether the images for the Project should should be added
+     * @param $shouldGetImages bool Whether the images for the Project should should be added
      * @return array The request response to send back
      */
-    public function getProject($projectId, bool $getImages = false): array {
-
+    public function getProject($projectId, bool $shouldGetImages = false): array {
         $project = new Project();
-        $project->getById($projectId, $getImages);
+        $project->getById($projectId, $shouldGetImages);
 
         return Responder::getItemResponse($project, $projectId);
     }
@@ -175,13 +176,12 @@ class Projects {
      * @return array The request response to send back
      */
     public function getProjectImages($projectId): array {
-
         // Check the Project trying to get Images for exists
         $projectRes = $this->getProject($projectId);
         if (!empty($projectRes["row"])) {
 
             $projectImage = new ProjectImage();
-            $projectImages = $projectImage->getByColumn("project_id", $projectId);
+            $projectImages = $projectImage->getByColumn("project_id", (int)$projectId);
 
             return Responder::getItemsResponse($projectImage, $projectImages);
         }
@@ -229,7 +229,7 @@ class Projects {
             // Try to uploaded file
             if (move_uploaded_file($image["tmp_name"], $newImageFullPath)) {
 
-                // Update database with location of new Image
+                // Add new image with location into the database
                 $values = [
                     "file" => $newFileLocation,
                     "project_id" => $projectId,
@@ -246,13 +246,13 @@ class Projects {
                     $response["meta"]["message"] = "Created";
                 }
             }
-            // Else there was a problem uploading file to server
             else {
+                // Else there was a problem uploading file to server
                 $response["meta"]["feedback"] = "Sorry, there was an error uploading your image.";
             }
         }
-        // Else bad request as file uploaded is not a image
         else {
+            // Else bad request as file uploaded is not a image
             $response["meta"] = [
                 "status" => 400,
                 "message" => "Bad Request",
@@ -296,7 +296,7 @@ class Projects {
     /**
      * Get a Project Image for a Project by Id
      *
-     * @param $projectId int The Id of the Project trying to get Images for
+     * @param $projectId int The Id of the Project trying to get Image for
      * @param $imageId int The Id of the Project Image to get
      * @return array The request response to send back
      */
@@ -310,6 +310,7 @@ class Projects {
 
             $response = Responder::getItemResponse($projectImage, $imageId);
 
+            // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
             if (!empty($projectImage->project_id) && $projectImage->project_id !== $projectId) {
                 $response["row"] = [];
@@ -332,11 +333,11 @@ class Projects {
             $projectId = $data["project_id"];
             $imageId = $data["id"];
 
-            // Check the Project trying to edit actually exists
+            // Check the Project of the Image trying to edit actually exists
             $response = $this->getProject($projectId);
             if (!empty($response["row"])) {
 
-                // Update database to delete row
+                // Delete row from database
                 $projectImage = new ProjectImage();
                 $isDeleted = $projectImage->delete($imageId);
 

@@ -94,8 +94,7 @@ abstract class Entity {
     }
 
     /**
-     * Load Entities from the Database where a column ($column) = a value ($value)
-     * Either return Entities with success meta data, or failed meta data
+     * Get Entities from the Database where a column ($column) = a value ($value)
      */
     public function getByColumn(string $column, $value): array {
         $query = "SELECT * FROM " . static::$tableName .
@@ -104,14 +103,14 @@ abstract class Entity {
         $bindings = [":value" => $value];
         $response = $this->db->query($query, $bindings);
 
-        $rows = array_map(function($row) {
+        $entities = array_map(function($row) {
             $entity = new static();
             $entity->setValues($row);
 
             return $entity;
         }, $response["rows"]);
 
-        return $rows;
+        return $entities;
     }
 
     /**
@@ -120,11 +119,11 @@ abstract class Entity {
      */
     public function getById($id) {
         if (is_numeric($id)) {
-            $rows = $this->getByColumn("id", (int)$id);
+            $entities = $this->getByColumn("id", (int)$id);
 
             // Check everything was okay, so as this /Should/ return only one, set values from first item
-            if (count($rows) > 0) {
-                $this->setValues($rows[0]->columns);
+            if (count($entities) > 0) {
+                $this->setValues($entities[0]->columns);
             }
         }
     }
@@ -216,7 +215,7 @@ abstract class Entity {
 
         $response = $this->db->query($query, $bindings);
 
-        // Checks if insert was ok
+        // If insert was ok, load the new values into entity state
         if ($response["affected_rows"] > 0) {
             $id = $id ?? $this->db->getLastInsertedId();
             $this->getById($id);
@@ -235,13 +234,12 @@ abstract class Entity {
         // Check the Entity trying to delete actually exists
         $this->getById($id);
         if (!empty($this->id) && $this->id == $id) {
-            $id = (int)$id;
 
             $query = "DELETE FROM " . static::$tableName . " WHERE id = :id;";
-            $bindings = [":id" => $id];
+            $bindings = [":id" => (int)$id];
             $response = $this->db->query($query, $bindings);
 
-            // Check if the deletion was ok
+            // Whether the deletion was ok
             $isDeleted = $response["affected_rows"] > 0;
         }
 
@@ -257,7 +255,6 @@ abstract class Entity {
      * @return array An array consisting of the generated where clause and an associative array containing any bindings to aid the Database querying
      */
     private function generateSearchWhereQuery(array $params): array {
-
         if (static::$searchableColumns) {
             $bindings = [];
 
@@ -336,7 +333,7 @@ abstract class Entity {
 
         $this->limitBy = static::$defaultLimitBy;
 
-        // If user added a limit param, use this if valid, unless its bigger than 10
+        // If user added a limit param, use this if valid, unless its bigger than default
         if (!empty($params["limit"])) {
             $limit = (int)$params["limit"];
             $this->limitBy = min($limit, $this->limitBy);
@@ -374,13 +371,13 @@ abstract class Entity {
                     " LIMIT {$this->limitBy} OFFSET {$offset};";
         $response = $this->db->query($query, $bindings);
 
-        $rows = array_map(function($row) {
+        $entities = array_map(function($row) {
             $entity = new static();
             $entity->setValues($row);
 
             return $entity;
         }, $response["rows"]);
 
-        return $rows;
+        return $entities;
     }
 }

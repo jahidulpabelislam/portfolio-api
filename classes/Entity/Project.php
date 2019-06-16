@@ -99,9 +99,9 @@ class Project extends Entity {
      * Add these to the response unless specified
      *
      * @param $id int The Id of the Entity to get
-     * @param $getImages bool Whether of not to also get and output the Project Images linked to this Project
+     * @param $shouldGetImages bool Whether of not to also get and output the Project Images linked to this Project
      */
-    public function getById($id, bool $getImages = true) {
+    public function getById($id, bool $shouldGetImages = true) {
         parent::getById($id);
 
         // If Project was found
@@ -113,7 +113,7 @@ class Project extends Entity {
             }
 
             // If Project's Images was requested, get and add these
-            if ($getImages) {
+            if ($shouldGetImages) {
                 $this->getProjectImages();
             }
         }
@@ -131,10 +131,12 @@ class Project extends Entity {
     public function delete($id): bool {
         $isDeleted = parent::delete($id);
 
-        // Delete all the images linked to this Project from the database & from disk
-        $images = $this->getProjectImages();
-        foreach ($images as $image) {
-            $image->delete($image->id);
+        if ($isDeleted) {
+            // Delete all the images linked to this Project from the database & from disk
+            $images = $this->getProjectImages();
+            foreach ($images as $image) {
+                $image->delete($image->id);
+            }
         }
 
         return $isDeleted;
@@ -149,7 +151,7 @@ class Project extends Entity {
      * @return array The request response to send back
      */
     public function doSearch(array $params): array {
-
+        // As the user isn't logged in, filter by status = public
         if (!Auth::isLoggedIn()) {
             $params["status"] = self::PUBLIC_STATUS;
         }
