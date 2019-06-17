@@ -1,15 +1,14 @@
 <?php
-/*
+/**
  * All the functions needed for this API's Authentication.
  *
  * PHP version 7
  *
- * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @version 2.1
- * @link https://github.com/jahidulpabelislam/portfolio-api/
+ * @version 2.1.1
  * @since Class available since Release: v2.0.0
+ * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
  * @copyright 2010-2019 JPI
-*/
+ */
 
 namespace JPI\API;
 
@@ -53,13 +52,9 @@ class Auth {
                     $response["meta"]["status"] = 200;
                     $response["meta"]["message"] = "OK";
 
-                    /*
-                     * TODO: Actually do the logging in here (e.g store in cookie, session or database etc.)
-                     */
+                    // TODO: Actually do the logging in here (e.g store in cookie, session or database etc.)
 
-                    /*
-                     * SAMPLE!!
-                     */
+                    // SAMPLE!!
                     $tokenId = 1; // Json Token Id: an unique identifier for the token
                     $issuedAt = time(); // Issued at: time when the token was generated
                     $expire = $issuedAt + (self::JWT_EXPIRATION_HOURS * 60 * 60); // Token expiration time
@@ -105,10 +100,7 @@ class Auth {
      * @return array
      */
     public static function logout(): array {
-
-        /*
-         * TODO: Actually do the log out here (e.g removing cookie, session or database etc.)
-         */
+        // TODO: Actually do the log out here (e.g removing cookie, session or database etc.)
 
         return [
             "meta" => [
@@ -124,14 +116,9 @@ class Auth {
      * @return bool Whether user is logged in or not
      */
     public static function isLoggedIn(): bool {
+        // TODO: Actually do the check of logged in status (e.g check against stored cookie, session or database etc.)
 
-        /*
-         * TODO: Actually do the check of logged in status (e.g check against stored cookie, session or database etc.)
-         */
-
-        /*
-         * SAMPLE!!
-         */
+        // SAMPLE!!
         $headers = apache_request_headers();
 
         $auth = $headers["Authorization"] ?? "";

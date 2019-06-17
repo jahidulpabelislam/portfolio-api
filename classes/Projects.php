@@ -1,12 +1,11 @@
 <?php
-/*
+/**
  * All the custom functions for the Projects part of the API that allow to perform all user requests.
  *
  * PHP version 7
  *
+ * @version 3.1.3
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @version 3.1.0
- * @link https://github.com/jahidulpabelislam/portfolio-api/
  * @copyright 2010-2019 JPI
 */
 
@@ -30,7 +29,7 @@ class Projects {
         $this->api = Core::get();
     }
 
-    /*
+    /**
      * Gets all Projects but paginated, also might include search
      *
      * @param $data array Any data to aid in the search query

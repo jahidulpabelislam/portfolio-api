@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Connects to a database and set up to send and receive data
  * using application specific constants defined in the Config.php file.
  *
@@ -9,11 +9,10 @@
  *
  * PHP version 7
  *
+ * @version 3.1.1
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @version 3.1.0
- * @link https://github.com/jahidulpabelislam/portfolio-api/
  * @copyright 2010-2019 JPI
-*/
+ */
 
 namespace JPI\API;
 
