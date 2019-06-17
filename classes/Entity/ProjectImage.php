@@ -1,17 +1,17 @@
 <?php
-/*
+/**
  * The Project Image Entity object class (extends the base Entity class, where most of the ORM functionality lies).
  * Within this holds and methods where it overwrites or add extra custom functionality from the base Entity class.
  * Also holds any method only custom to Project Image entities.
  *
  * PHP version 7
  *
- * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @version 1.1.0
- * @link https://github.com/jahidulpabelislam/portfolio-api/
+ * @version 1.1.2
  * @since Class available since Release: v3.0.0
+ * @link https://github.com/jahidulpabelislam/portfolio-api/
+ * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
  * @copyright 2010-2019 JPI
-*/
+ */
 
 namespace JPI\API\Entity;
 

@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Class for storing any helper functions which constructs responses
  *
  * PHP version 7
@@ -9,7 +9,7 @@
  * @link https://github.com/jahidulpabelislam/portfolio-api/
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
  * @copyright 2010-2019 JPI
-*/
+ */
 
 namespace JPI\API;
 

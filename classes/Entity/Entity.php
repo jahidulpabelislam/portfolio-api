@@ -1,16 +1,16 @@
 <?php
-/*
+/**
  * The base Entity object class for Project & Projects Images.
  * Holds all ORM style functions.
  *
  * PHP version 7
  *
- * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @version 1.1.0
- * @link https://github.com/jahidulpabelislam/portfolio-api/
+ * @version 1.1.6
  * @since Class available since Release: v3.0.0
+ * @link https://github.com/jahidulpabelislam/portfolio-api/
+ * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
  * @copyright 2010-2019 JPI
-*/
+ */
 
 namespace JPI\API\Entity;
 
