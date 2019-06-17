@@ -311,10 +311,10 @@ abstract class Entity {
         [$whereClause, $bindings] = $this->generateSearchWhereQuery($params);
 
         $query = "SELECT COUNT(*) AS total_count FROM " . static::$tableName . " {$whereClause};";
-        $totalCountRes = $this->db->query($query, $bindings);
+        $response = $this->db->query($query, $bindings);
 
-        if ($totalCountRes && count($totalCountRes["rows"]) > 0) {
-            return $totalCountRes["rows"][0]["total_count"];
+        if ($response && count($response["rows"]) > 0) {
+            return $response["rows"][0]["total_count"];
         }
 
         return 0;
