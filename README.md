@@ -43,8 +43,8 @@ Also for the Cross domain requests from the CMS for secured endpoints such as De
 
 #### Resources
 
-| URI                                                                                                    |                 Description                 | <code>GET</code> | <code>POST</code> | <code>DELETE</code> | <code>PUT</code> |
-| ------------------------------------------------------------------------------------------------------ | :-----------------------------------------: | :--------------: | :---------------: | :-----------------: | :--------------: |
+| URI                                                                                                      |                 Description                 | <code>GET</code> | <code>POST</code> | <code>DELETE</code> | <code>PUT</code> |
+| -------------------------------------------------------------------------------------------------------- | :-----------------------------------------: | :--------------: | :---------------: | :-----------------: | :--------------: |
 | [/projects/](https://api.jahidulpabelislam.com/v3.1/projects/)                                           |                All Projects                 |     &#10004;     |     &#10004;      |      &#10006;       |     &#10006;     |
 | [/projects/{projectId}/](https://api.jahidulpabelislam.com/v3.1/projects/13/)                            |              A Single Project               |     &#10004;     |     &#10006;      |      &#10004;       |     &#10004;     |
 | [/projects/{projectId}/images/](https://api.jahidulpabelislam.com/v3.1/projects/13/images/)              |     Images Attached To a Single Project     |     &#10004;     |     &#10004;      |      &#10006;       |     &#10006;     |
@@ -52,8 +52,8 @@ Also for the Cross domain requests from the CMS for secured endpoints such as De
 
 #### Auth
 
-| URI                                                        |       Description       | <code>GET</code> | <code>POST</code> | <code>DELETE</code> | <code>PUT</code> |
-| ---------------------------------------------------------- | :---------------------: | :--------------: | :---------------: | :-----------------: | :--------------: |
+| URI                                                          |       Description       | <code>GET</code> | <code>POST</code> | <code>DELETE</code> | <code>PUT</code> |
+| ------------------------------------------------------------ | :---------------------: | :--------------: | :---------------: | :-----------------: | :--------------: |
 | [/login/](https://api.jahidulpabelislam.com/v3.1/login/)     |      Log In A User      |     &#10006;     |     &#10004;      |      &#10006;       |     &#10006;     |
 | [/logout/](https://api.jahidulpabelislam.com/v3.1/logout/)   |  Log Current User Out   |     &#10006;     |     &#10006;      |      &#10004;       |     &#10006;     |
 | [/session/](https://api.jahidulpabelislam.com/v3.1/session/) | Get Current Auth Status |     &#10004;     |     &#10006;      |      &#10006;       |     &#10006;     |
@@ -69,19 +69,19 @@ Also for the Cross domain requests from the CMS for secured endpoints such as De
 
 ## Setup
 
-1. Clone repo with `git@github.com:jahidulpabelislam/portfolio-api.git`.
+1.  Clone repo with `git@github.com:jahidulpabelislam/portfolio-api.git`.
 
-2. Navigate to project folder and run `composer install`.
+2.  Navigate to project folder and run `composer install`.
 
-3. Create new database.
+3.  Create new database.
 
-4. A MySQL user with select, insert, update & delete capabilities on the new database.
+4.  A MySQL user with select, insert, update & delete capabilities on the new database.
 
-5. Import `/set-up/base-structure.sql` into the newly created database.
+5.  Import `/set-up/base-structure.sql` into the newly created database.
 
-6. Run migrations from `/migrations/*` (if any) into MySQL in the order of the number at the start of the filenames.
+6.  Run migrations from `/migrations/*` (if any) into MySQL in the order of the number at the start of the filenames.
 
-7. Copy and fill in example files (in any order).
+7.  Copy and fill in example files (in any order).
 
     - Copy `/set-up/Config-sample.php` and move to `/classes/Config.php` then fill in the 6 necessary constants.
 
