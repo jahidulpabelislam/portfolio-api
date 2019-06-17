@@ -20,6 +20,7 @@ if (!defined("ROOT")) {
 class Router {
 
     private $api;
+    private $projects;
 
     public function __construct() {
         $this->api = Core::get();
@@ -70,74 +71,97 @@ class Router {
         return $response ?? [];
     }
 
+    private function executeProjectsGetAction(array $uri, array $data): array {
+        if (isset($uri[2]) && $uri[2] !== "") {
+            $projectId = $uri[2];
+
+            if (isset($uri[3]) && $uri[3] === "images") {
+                if (isset($uri[4]) && $uri[4] !== "" && !isset($uri[5])) {
+                    $response = $this->projects->getProjectImage($projectId, $uri[4]);
+                }
+                else if (!isset($uri[4])) {
+                    $response = $this->projects->getProjectImages($projectId);
+                }
+            }
+            else if (!isset($uri[3])) {
+                $response = $this->projects->getProject($projectId, true);
+            }
+        }
+        else {
+            $response = $this->projects->getProjects($data);
+        }
+
+        return $response ?? [];
+    }
+
+    private function executeProjectsPostAction(array $uri, array $data): array {
+        if (
+            isset($uri[2]) && $uri[2] !== ""
+            && isset($uri[3]) && $uri[3] === "images"
+            && !isset($uri[4])
+        ) {
+            $data["project_id"] = $uri[2];
+            $response = $this->projects->addProjectImage($data);
+        }
+        else if (!isset($uri[2])) {
+            $response = $this->projects->addProject($data);
+        }
+
+        return $response ?? [];
+    }
+
+    private function executeProjectsPutAction(array $uri, array $data): array {
+        if (isset($uri[2]) && $uri[2] !== "" && !isset($uri[3])) {
+            $data["id"] = $uri[2];
+            $response = $this->projects->editProject($data);
+        }
+
+        return $response ?? [];
+    }
+
+    private function executeProjectsDeleteAction(array $uri, array $data): array {
+        if (isset($uri[2]) && $uri[2] !== "") {
+            if (
+                isset($uri[3]) && $uri[3] === "images"
+                && isset($uri[4]) && $uri[4] !== ""
+                && !isset($uri[5])
+            ) {
+                $data["id"] = $uri[4];
+                $data["project_id"] = $uri[2];
+                $response = $this->projects->deleteProjectImage($data);
+            }
+            else if (!isset($uri[3])) {
+                $data["id"] = $uri[2];
+                $response = $this->projects->deleteProject($data);
+            }
+        }
+
+        return $response ?? [];
+    }
+
     /**
      * @return array An appropriate response to projects request
      */
     private function executeProjectsAction(array $uri, string $method, array $data): array {
-        $api = new Projects();
+        $this->projects = new Projects();
 
         if ($method === "GET") {
-            if (isset($uri[2]) && $uri[2] !== "") {
-
-                $projectId = $uri[2];
-
-                if (isset($uri[3]) && $uri[3] === "images") {
-                    if (isset($uri[4]) && $uri[4] !== "" && !isset($uri[5])) {
-                        $response = $api->getProjectImage($projectId, $uri[4]);
-                    }
-                    else if (!isset($uri[4])) {
-                        $response = $api->getProjectImages($projectId);
-                    }
-                }
-                else if (!isset($uri[3])) {
-                    $response = $api->getProject($projectId, true);
-                }
-            }
-            else {
-                $response = $api->getProjects($data);
-            }
+            $response = $this->executeProjectsGetAction($uri, $data);
         }
         else if ($method === "POST") {
-            if (
-                isset($uri[2]) && $uri[2] !== ""
-                && isset($uri[3]) && $uri[3] === "images"
-                && !isset($uri[4])
-            ) {
-                $data["project_id"] = $uri[2];
-                $response = $api->addProjectImage($data);
-            }
-            else if (!isset($uri[2])) {
-                $response = $api->addProject($data);
-            }
+            $response = $this->executeProjectsPostAction($uri, $data);
         }
         else if ($method === "PUT") {
-            if (isset($uri[2]) && $uri[2] !== "" && !isset($uri[3])) {
-                $data["id"] = $uri[2];
-                $response = $api->editProject($data);
-            }
+            $response = $this->executeProjectsPutAction($uri, $data);
         }
         else if ($method === "DELETE") {
-            if (isset($uri[2]) && $uri[2] !== "") {
-                if (
-                    isset($uri[3]) && $uri[3] === "images"
-                    && isset($uri[4]) && $uri[4] !== ""
-                    && !isset($uri[5])
-                ) {
-                    $data["id"] = $uri[4];
-                    $data["project_id"] = $uri[2];
-                    $response = $api->deleteProjectImage($data);
-                }
-                else if (!isset($uri[3])) {
-                    $data["id"] = $uri[2];
-                    $response = $api->deleteProject($data);
-                }
-            }
+            $response = $this->executeProjectsDeleteAction($uri, $data);
         }
         else {
             $response = Responder::get()->getMethodNotAllowedResponse();
         }
 
-        return $response ?? [];
+        return $response;
     }
 
     /**
