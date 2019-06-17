@@ -219,15 +219,21 @@ class Core {
         $this->setCORSHeaders($response);
         $this->setCacheHeaders();
 
-        // Figure out the correct meta responses to return
-        $isSuccessful = $response["meta"]["ok"] = $response["meta"]["ok"] ?? false;
-        $status = $response["meta"]["status"] = $response["meta"]["status"] ?? ($isSuccessful ? 200 : 500);
-        $message = $response["meta"]["message"] = $response["meta"]["message"] ?? ($isSuccessful ? "OK" : "Internal Server Error");
+        // Set defaults 'ok', 'status' & 'message' if not set
+        $response["meta"]["ok"] = $response["meta"]["ok"] ?? false;
+
+        $isSuccessful = $response["meta"]["ok"];
+
+        $response["meta"]["status"] = $response["meta"]["status"] ?? ($isSuccessful ? 200 : 500);
+        $response["meta"]["message"] = $response["meta"]["message"] ?? ($isSuccessful ? "OK" : "Internal Server Error");
 
         // Send back all the data sent in request
         $response["meta"]["data"] = $this->data;
         $response["meta"]["method"] = $this->method;
         $response["meta"]["uri"] = $this->uriString;
+
+        $status = $response["meta"]["status"];
+        $message = $response["meta"]["message"];
 
         header("HTTP/1.1 {$status} {$message}");
         header("Content-Type: application/json");
