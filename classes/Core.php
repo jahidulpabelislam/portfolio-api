@@ -52,7 +52,7 @@ class Core {
         $uriString = trim($uriString);
         $this->uriString = $uriString;
 
-        $uriString = trim($uriString, " /");
+        $uriString = trim($uriString, "/");
         $uriString = strtolower($uriString);
 
         // Get the individual parts of the request URI as an array

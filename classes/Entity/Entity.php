@@ -284,7 +284,12 @@ abstract class Entity {
                     $bindings[$binding] = $params[$column];
                 }
             }
-            $searchWhereClause = rtrim($searchWhereClause, "OR");
+            if (!empty($searchWhereClause)) {
+                $lastTwoChars = substr($searchWhereClause, -2);
+                if ($lastTwoChars === "OR") {
+                    $searchWhereClause = substr($searchWhereClause, 0, -2);
+                }
+            }
 
             $globalWhereClause = "";
             if (!empty($globalWhereClauses)) {
