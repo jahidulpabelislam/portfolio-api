@@ -256,19 +256,20 @@ abstract class Entity {
      */
     private function generateSearchWhereQuery(array $params): array {
         if (static::$searchableColumns) {
-            $bindings = [];
 
-            $searchString = $params["search"] ?? "";
+            $searchValue = $params["search"] ?? "";
 
             // Split each word in search
-            $searchWords = explode(" ", $searchString);
+            $searchWords = explode(" ", $searchValue);
             $searchString = "%" . implode("%", $searchWords) . "%";
 
             $searchesReversed = array_reverse($searchWords);
             $searchStringReversed = "%" . implode("%", $searchesReversed) . "%";
 
-            $bindings[":searchString"] = $searchString;
-            $bindings[":searchStringReversed"] = $searchStringReversed;
+            $bindings = [
+                ":searchString" => $searchString,
+                ":searchStringReversed" => $searchStringReversed,
+            ];
 
             $globalWhereClauses = [];
             $searchWhereClause = "";
