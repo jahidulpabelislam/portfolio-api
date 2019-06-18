@@ -88,3 +88,8 @@ Also for the Cross domain requests from the CMS for secured endpoints such as De
     -   Copy `/set-up/Hasher-sample.php` and move to `/classes/Hasher.php` then update both the functions with your Hashing functionality.
 
     -   Copy `/set-up/Auth-sample.php` and move to `/classes/Auth.php` then update all 3 functions with your Auth functionality.
+
+## Related Projects
+
+-   [Portfolio](https://github.com/jahidulpabelislam/portfolio/)
+-   [CMS](https://github.com/jahidulpabelislam/portfolio-cms/)
