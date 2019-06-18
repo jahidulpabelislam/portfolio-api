@@ -6,7 +6,6 @@
  *
  * @version 1.0.0
  * @since Class available since Release: v3.3.0
- * @link https://github.com/jahidulpabelislam/portfolio-api/
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
  * @copyright 2010-2019 JPI
  */
@@ -100,8 +99,6 @@ class Responder {
 
     /**
      * Send necessary meta data back when required data/fields is not provided/valid
-     *
-     * @param $requiredFields array Array of the data required
      */
     public function getInvalidFieldsResponse(array $requiredFields): array {
         $invalidFields = $this->api->getInvalidFields($requiredFields);

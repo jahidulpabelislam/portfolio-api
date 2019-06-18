@@ -10,7 +10,6 @@
  * PHP version 7
  *
  * @version 3.1.1
- * @link https://github.com/jahidulpabelislam/portfolio-api/
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
  * @copyright 2010-2019 JPI
  */
@@ -68,7 +67,7 @@ class Database {
      *
      * @param $query string The SQL query to run
      * @param $bindings array Array of any bindings to use with the SQL query
-     * @return array Array of data or meta feedback
+     * @return array Array of rows found and/or count of total affected rows
      */
     public function query(string $query, array $bindings = null): array {
         $response = [

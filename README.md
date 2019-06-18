@@ -45,18 +45,18 @@ Also for the Cross domain requests from the CMS for secured endpoints such as De
 
 | URI                                                                                                      |                 Description                 | <code>GET</code> | <code>POST</code> | <code>DELETE</code> | <code>PUT</code> |
 | -------------------------------------------------------------------------------------------------------- | :-----------------------------------------: | :--------------: | :---------------: | :-----------------: | :--------------: |
-| [/projects/](https://api.jahidulpabelislam.com/v3.1/projects/)                                           |                All Projects                 |     &#10004;     |     &#10004;      |      &#10006;       |     &#10006;     |
-| [/projects/{projectId}/](https://api.jahidulpabelislam.com/v3.1/projects/13/)                            |              A Single Project               |     &#10004;     |     &#10006;      |      &#10004;       |     &#10004;     |
-| [/projects/{projectId}/images/](https://api.jahidulpabelislam.com/v3.1/projects/13/images/)              |     Images Attached To a Single Project     |     &#10004;     |     &#10004;      |      &#10006;       |     &#10006;     |
-| [/projects/{projectId}/images/{imageId}/](https://api.jahidulpabelislam.com/v3.1/projects/13/images/72/) | A Single Image Attached to a Single Project |     &#10004;     |     &#10006;      |      &#10004;       |     &#10004;     |
+| [/projects/](https://api.jahidulpabelislam.com/v3/projects/)                                           |                All Projects                 |     &#10004;     |     &#10004;      |      &#10006;       |     &#10006;     |
+| [/projects/{projectId}/](https://api.jahidulpabelislam.com/v3/projects/13/)                            |              A Single Project               |     &#10004;     |     &#10006;      |      &#10004;       |     &#10004;     |
+| [/projects/{projectId}/images/](https://api.jahidulpabelislam.com/v3/projects/13/images/)              |     Images Attached To a Single Project     |     &#10004;     |     &#10004;      |      &#10006;       |     &#10006;     |
+| [/projects/{projectId}/images/{imageId}/](https://api.jahidulpabelislam.com/v3/projects/13/images/72/) | A Single Image Attached to a Single Project |     &#10004;     |     &#10006;      |      &#10004;       |     &#10004;     |
 
 #### Auth
 
 | URI                                                          |       Description       | <code>GET</code> | <code>POST</code> | <code>DELETE</code> | <code>PUT</code> |
 | ------------------------------------------------------------ | :---------------------: | :--------------: | :---------------: | :-----------------: | :--------------: |
-| [/login/](https://api.jahidulpabelislam.com/v3.1/login/)     |      Log In A User      |     &#10006;     |     &#10004;      |      &#10006;       |     &#10006;     |
-| [/logout/](https://api.jahidulpabelislam.com/v3.1/logout/)   |  Log Current User Out   |     &#10006;     |     &#10006;      |      &#10004;       |     &#10006;     |
-| [/session/](https://api.jahidulpabelislam.com/v3.1/session/) | Get Current Auth Status |     &#10004;     |     &#10006;      |      &#10006;       |     &#10006;     |
+| [/login/](https://api.jahidulpabelislam.com/v3/login/)     |      Log In A User      |     &#10006;     |     &#10004;      |      &#10006;       |     &#10006;     |
+| [/logout/](https://api.jahidulpabelislam.com/v3/logout/)   |  Log Current User Out   |     &#10006;     |     &#10006;      |      &#10004;       |     &#10006;     |
+| [/session/](https://api.jahidulpabelislam.com/v3/session/) | Get Current Auth Status |     &#10004;     |     &#10006;      |      &#10006;       |     &#10006;     |
 
 ## Requirements
 

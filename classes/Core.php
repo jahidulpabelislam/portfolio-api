@@ -7,7 +7,6 @@
  * PHP version 7
  *
  * @version 3.2.1
- * @link https://github.com/jahidulpabelislam/portfolio-api/
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
  * @copyright 2010-2019 JPI
  */
@@ -29,8 +28,6 @@ class Core {
 
     /**
      * Singleton getter
-     *
-     * @return self
      */
     public static function get() {
         if (!self::$instance) {
@@ -49,11 +46,10 @@ class Core {
 
     private function extractURIFromRequest() {
         $uriString = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
-        $uriString = trim($uriString);
+        $uriString = strtolower(trim($uriString));
         $this->uriString = $uriString;
 
         $uriString = trim($uriString, "/");
-        $uriString = strtolower($uriString);
 
         // Get the individual parts of the request URI as an array
         $uriArray = explode("/", $uriString);
@@ -69,7 +65,7 @@ class Core {
             $value = $newArrayValues;
         }
         else if (is_string($value)) {
-            $value = stripslashes(urldecode(trim($value)));
+            $value = urldecode(stripslashes(trim($value)));
         }
 
         return $value;
@@ -92,26 +88,23 @@ class Core {
     }
 
     /**
-     * Generates a full url from the URI user requested
+     * Generates a full URL from the URI user requested
      *
      * @param $uriArray array The URI user request as an array
      * @return string The full URI user requested
      */
     public function getAPIURL(array $uriArray = null): string {
-        $uriString = $uriArray ? implode("/", $uriArray) : $this->uriString;
+        $uri = $uriArray ? implode("/", $uriArray) : $this->uriString;
 
-        if (!empty($uriString)) {
-            $uriString = trim($uriString, "/");
-            $uriString .= "/";
+        if (!empty($uri)) {
+            $uri = trim($uri, "/");
+            $uri .= "/";
         }
 
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
-        $url = "{$protocol}://" . $_SERVER["SERVER_NAME"];
+        $domain = rtrim($_SERVER["SERVER_NAME"], "/");
 
-        $url = rtrim($url, "/");
-        $url .= "/{$uriString}";
-
-        return $url;
+        return "{$protocol}://{$domain}/{$uri}";
     }
 
     private function isFieldValid(string $field): bool {
@@ -142,12 +135,9 @@ class Core {
      */
     public function hasRequiredFields(array $requiredFields): bool {
 
-        // Loops through each required data field for the request
+        // Loops through each required field, and bails early with false if at least one is invalid
         foreach ($requiredFields as $field) {
-
-            // Checks if the required field is provided and is not empty
             if (!$this->isFieldValid($field)) {
-                // Return false as required field is not provided or empty
                 return false;
             }
         }
@@ -163,7 +153,6 @@ class Core {
      * @return array An array of invalid data fields
      */
     public function getInvalidFields(array $requiredFields): array {
-        // Loops through each required data field for the request and only gets invalid fields
         $invalidFields = array_filter($requiredFields, function($field) {
             return !$this->isFieldValid($field);
         });
@@ -183,6 +172,7 @@ class Core {
             header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
             header("Access-Control-Allow-Headers: Process-Data, Authorization");
 
+            // Override meta data, and respond with all endpoints available
             if ($this->method === "OPTIONS") {
                 $response["meta"]["ok"] = true;
                 $response["meta"]["status"] = 200;

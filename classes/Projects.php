@@ -5,7 +5,6 @@
  * PHP version 7
  *
  * @version 3.1.3
- * @link https://github.com/jahidulpabelislam/portfolio-api/
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
  * @copyright 2010-2019 JPI
 */
@@ -72,7 +71,6 @@ class Projects {
                 }
 
                 $project->setValues($data);
-                $project->save();
 
                 // Checks if the save was okay, and images were passed, update the sort order on the images
                 if (!empty($project->id) && !empty($data["images"])) {
@@ -88,11 +86,10 @@ class Projects {
                             $projectImage->setValues($imageData);
                             $projectImage->save();
                         }
-
-                        // As Project Images have been updated, refresh so the data returned is updated
-                        $project->getById($project->id);
                     }
                 }
+
+                $project->save();
 
                 $response = Responder::getItemResponse($project, $project->id);
             }

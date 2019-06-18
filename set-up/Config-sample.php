@@ -7,7 +7,6 @@
  *
  * @version 1.1.2
  * @since Class available since Release: v3.0.0
- * @link https://github.com/jahidulpabelislam/portfolio-api/
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
  * @copyright 2010-2019 JPI
  */
