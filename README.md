@@ -52,11 +52,11 @@ Also for the Cross domain requests from the CMS for secured endpoints such as De
 
 #### Auth
 
-| URI                                                        |       Description        | <code>GET</code> | <code>POST</code> | <code>DELETE</code> | <code>PUT</code> |
-| ---------------------------------------------------------- | :----------------------: | :--------------: | :---------------: | :-----------------: | :--------------: |
-| [/login/](https://api.jahidulpabelislam.com/v3/login/)     |          Log in          |     &#10006;     |     &#10004;      |      &#10006;       |     &#10006;     |
-| [/logout/](https://api.jahidulpabelislam.com/v3/logout/)   |         Log out          |     &#10006;     |     &#10006;      |      &#10004;       |     &#10006;     |
-| [/session/](https://api.jahidulpabelislam.com/v3/session/) | Get current login status |     &#10004;     |     &#10006;      |      &#10006;       |     &#10006;     |
+| URI                                                                  |       Description        | <code>GET</code> | <code>POST</code> | <code>DELETE</code> | <code>PUT</code> |
+| -------------------------------------------------------------------- | :----------------------: | :--------------: | :---------------: | :-----------------: | :--------------: |
+| [/auth/login/](https://api.jahidulpabelislam.com/v3/auth/login/)     |          Log in          |     &#10006;     |     &#10004;      |      &#10006;       |     &#10006;     |
+| [/auth/logout/](https://api.jahidulpabelislam.com/v3/auth/logout/)   |         Log out          |     &#10006;     |     &#10006;      |      &#10004;       |     &#10006;     |
+| [/auth/session/](https://api.jahidulpabelislam.com/v3/auth/session/) | Get current login status |     &#10004;     |     &#10006;      |      &#10006;       |     &#10006;     |
 
 ## Requirements
 
