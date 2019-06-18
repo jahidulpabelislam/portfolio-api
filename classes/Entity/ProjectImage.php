@@ -4,7 +4,7 @@
  * Within this holds and methods where it overwrites or add extra custom functionality from the base Entity class.
  * Also holds any method only custom to Project Image entities.
  *
- * PHP version 7
+ * PHP version 7.1+
  *
  * @version 1.1.2
  * @since Class available since Release: v3.0.0

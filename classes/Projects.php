@@ -2,7 +2,7 @@
 /**
  * All the custom functions for the Projects part of the API that allow to perform all user requests.
  *
- * PHP version 7
+ * PHP version 7.1+
  *
  * @version 3.1.3
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>

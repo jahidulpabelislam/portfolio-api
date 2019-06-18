@@ -2,7 +2,7 @@
 /**
  * All the functions needed for this API's Authentication.
  *
- * PHP version 7
+ * PHP version 7.1+
  *
  * @version 2.1.1
  * @since Class available since Release: v2.0.0

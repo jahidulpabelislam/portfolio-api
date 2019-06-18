@@ -2,7 +2,7 @@
 /**
  * Class for storing any helper functions which constructs responses
  *
- * PHP version 7
+ * PHP version 7.1+
  *
  * @version 1.0.0
  * @since Class available since Release: v3.3.0

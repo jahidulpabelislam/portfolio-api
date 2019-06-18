@@ -2,7 +2,7 @@
 /**
  * A RESTful API router.
  *
- * PHP version 7
+ * PHP version 7.1+
  *
  * @version 2.1.2
  * @since Class available since Release: v2.0.0

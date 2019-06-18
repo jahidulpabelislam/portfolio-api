@@ -3,7 +3,7 @@
  * Sets Constants for Connection to the Database & API's Auth
  * as well as other settings.
  *
- * PHP version 7
+ * PHP version 7.1+
  *
  * @version 1.1.2
  * @since Class available since Release: v3.0.0

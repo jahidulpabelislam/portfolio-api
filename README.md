@@ -61,7 +61,7 @@ Also for the Cross domain requests from the CMS for secured endpoints such as De
 ## Requirements
 
 -   Git
--   PHP 7+
+-   PHP 7.1+
 -   PHP PDO
 -   Composer
 -   MySQL 5+

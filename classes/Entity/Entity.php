@@ -3,7 +3,7 @@
  * The base Entity object class for Project & Projects Images.
  * Holds all ORM style functions.
  *
- * PHP version 7
+ * PHP version 7.1+
  *
  * @version 1.1.6
  * @since Class available since Release: v3.0.0
