@@ -6,7 +6,7 @@
  *
  * PHP version 7.1+
  *
- * @version 3.2.1
+ * @version 4.0.0
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
  * @copyright 2010-2019 JPI
  */
@@ -29,7 +29,7 @@ class Core {
     /**
      * Singleton getter
      */
-    public static function get() {
+    public static function get(): Core {
         if (!self::$instance) {
             self::$instance = new self();
         }

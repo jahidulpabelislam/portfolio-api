@@ -5,7 +5,7 @@
  *
  * PHP version 7.1+
  *
- * @version 1.1.6
+ * @version 2.0.0
  * @since Class available since Release: v3.0.0
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
  * @copyright 2010-2019 JPI
