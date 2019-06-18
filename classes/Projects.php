@@ -71,7 +71,6 @@ class Projects {
                 }
 
                 $project->setValues($data);
-                $project->save();
 
                 // Checks if the save was okay, and images were passed, update the sort order on the images
                 if (!empty($project->id) && !empty($data["images"])) {
@@ -87,11 +86,10 @@ class Projects {
                             $projectImage->setValues($imageData);
                             $projectImage->save();
                         }
-
-                        // As Project Images have been updated, refresh so the data returned is updated
-                        $project->getById($project->id);
                     }
                 }
+
+                $project->save();
 
                 $response = Responder::getItemResponse($project, $project->id);
             }

@@ -99,8 +99,6 @@ class Responder {
 
     /**
      * Send necessary meta data back when required data/fields is not provided/valid
-     *
-     * @param $requiredFields array Array of the data required
      */
     public function getInvalidFieldsResponse(array $requiredFields): array {
         $invalidFields = $this->api->getInvalidFields($requiredFields);

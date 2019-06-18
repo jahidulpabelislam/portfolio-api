@@ -67,7 +67,7 @@ class Database {
      *
      * @param $query string The SQL query to run
      * @param $bindings array Array of any bindings to use with the SQL query
-     * @return array Array of data or meta feedback
+     * @return array Array of rows found and/or count of total affected rows
      */
     public function query(string $query, array $bindings = null): array {
         $response = [

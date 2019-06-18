@@ -106,6 +106,7 @@ class Project extends Entity {
         // If Project was found
         if (!empty($this->id)) {
 
+            // If Project isn't public and user isn't logged in, don't return Project
             if ($this->status !== self::PUBLIC_STATUS && !Auth::isLoggedIn()) {
                 $this->id = 0;
                 return;
@@ -130,10 +131,9 @@ class Project extends Entity {
     public function delete($id): bool {
         $isDeleted = parent::delete($id);
 
+        // Delete all the images linked to this Project from the database & from disk
         if ($isDeleted) {
-            // Delete all the images linked to this Project from the database & from disk
-            $images = $this->getProjectImages();
-            foreach ($images as $image) {
+            foreach ($this->images as $image) {
                 $image->delete($image->id);
             }
         }
