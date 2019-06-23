@@ -96,9 +96,9 @@ abstract class Entity {
      * Get Entities from the Database where a column ($column) = a value ($value)
      */
     public function getByColumn(string $column, $value): array {
-        $query = "SELECT * FROM " . static::$tableName .
-                    " WHERE {$column} = :value
-                    ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . ";";
+        $query = "SELECT * FROM " . static::$tableName . " 
+                         WHERE {$column} = :value
+                         ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . ";";
         $bindings = [":value" => $value];
         $rows = $this->db->getAll($query, $bindings);
 
@@ -315,7 +315,8 @@ abstract class Entity {
     public function getTotalCountForSearch(array $params): int {
         [$whereClause, $bindings] = $this->generateSearchWhereQuery($params);
 
-        $query = "SELECT COUNT(*) AS total_count FROM " . static::$tableName . " {$whereClause};";
+        $query = "SELECT COUNT(*) AS total_count
+                         FROM " . static::$tableName . " {$whereClause};";
         $row = $this->db->getOne($query, $bindings);
 
         return $row["total_count"] ?? 0;
@@ -365,8 +366,8 @@ abstract class Entity {
         }
 
         $query = "SELECT * FROM " . static::$tableName . " {$whereQuery}
-                    ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection .
-                    " LIMIT {$this->limitBy} OFFSET {$offset};";
+                         ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . "
+                         LIMIT {$this->limitBy} OFFSET {$offset};";
         $rows = $this->db->getAll($query, $bindings);
 
         $entities = array_map(function($row) {
