@@ -27,7 +27,7 @@ class Database {
 
     private static $instance;
 
-    private $db;
+    private $pdo;
 
     /**
      * Connects to a MySQL engine
@@ -43,7 +43,7 @@ class Database {
             $dsn = "mysql:host=" . Config::DB_IP . ";dbname=" . Config::DB_NAME . ";charset-UTF-8";
             $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
 
-            $this->db = new PDO($dsn, Config::DB_USERNAME, Config::DB_PASSWORD, $options);
+            $this->pdo = new PDO($dsn, Config::DB_USERNAME, Config::DB_PASSWORD, $options);
         }
         catch (PDOException $error) {
             $errorMessage = $error->getMessage();
@@ -67,32 +67,20 @@ class Database {
      *
      * @param $query string The SQL query to run
      * @param $bindings array Array of any bindings to use with the SQL query
-     * @return array Array of rows found and/or count of total affected rows
      */
-    public function query(string $query, array $bindings = null): array {
-        $response = [
-            "affected_rows" => 0,
-            "rows" => [],
-        ];
-
-        if ($this->db) {
+    private function query(string $query, ?array $bindings) {
+        if ($this->pdo) {
             try {
                 // Check if any bindings to execute
                 if (isset($bindings)) {
-                    $executedQuery = $this->db->prepare($query);
-                    $executedQuery->execute($bindings);
+                    $stmt = $this->pdo->prepare($query);
+                    $stmt->execute($bindings);
                 }
                 else {
-                    $executedQuery = $this->db->query($query);
+                    $stmt = $this->pdo->query($query);
                 }
 
-                // If query was a select, return array of data
-                if (stripos($query, "SELECT") !== false) {
-                    $response["rows"] = $executedQuery->fetchAll(PDO::FETCH_ASSOC);
-                }
-
-                // Add the count of how many rows were effected
-                $response["affected_rows"] = $executedQuery->rowCount();
+                return $stmt;
             }
             catch (PDOException $error) {
                 $errorMessage = $error->getMessage();
@@ -100,15 +88,29 @@ class Database {
             }
         }
 
-        return $response;
+        return false;
+    }
+
+    public function doQuery(string $query, array $bindings = null):? int {
+        $stmt = $this->query($query, $bindings);
+
+        return $stmt->rowCount(PDO::FETCH_ASSOC) ?? null;
+    }
+
+    public function getOne(string $query, array $bindings = null): array {
+        $stmt = $this->query($query, $bindings);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?? [];
+    }
+
+    public function getAll(string $query, array $bindings = null): array {
+        $stmt = $this->query($query, $bindings);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?? [];
     }
 
     public function getLastInsertedId(): ?int {
-        if ($this->db) {
-            return $this->db->lastInsertId();
-        }
-
-        return null;
+        return $this->pdo->lastInsertId() ?? null;
     }
 }
 

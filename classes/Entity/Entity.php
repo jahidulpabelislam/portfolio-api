@@ -100,14 +100,14 @@ abstract class Entity {
                     " WHERE {$column} = :value
                     ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . ";";
         $bindings = [":value" => $value];
-        $response = $this->db->query($query, $bindings);
+        $rows = $this->db->getAll($query, $bindings);
 
         $entities = array_map(function($row) {
             $entity = new static();
             $entity->setValues($row);
 
             return $entity;
-        }, $response["rows"]);
+        }, $rows);
 
         return $entities;
     }
@@ -212,10 +212,10 @@ abstract class Entity {
             [$query, $bindings] = $this->generateUpdateQuery();
         }
 
-        $response = $this->db->query($query, $bindings);
+        $affectedRows = $this->db->doQuery($query, $bindings);
 
         // If insert was ok, load the new values into entity state
-        if ($response["affected_rows"] > 0) {
+        if ($affectedRows) {
             $id = $id ?? $this->db->getLastInsertedId();
             $this->getById($id);
         }
@@ -236,10 +236,10 @@ abstract class Entity {
 
             $query = "DELETE FROM " . static::$tableName . " WHERE id = :id;";
             $bindings = [":id" => (int)$id];
-            $response = $this->db->query($query, $bindings);
+            $affectedRows = $this->db->doQuery($query, $bindings);
 
             // Whether the deletion was ok
-            $isDeleted = $response["affected_rows"] > 0;
+            $isDeleted = $affectedRows > 0;
         }
 
         return $isDeleted;
@@ -316,13 +316,9 @@ abstract class Entity {
         [$whereClause, $bindings] = $this->generateSearchWhereQuery($params);
 
         $query = "SELECT COUNT(*) AS total_count FROM " . static::$tableName . " {$whereClause};";
-        $response = $this->db->query($query, $bindings);
+        $row = $this->db->getOne($query, $bindings);
 
-        if ($response && count($response["rows"]) > 0) {
-            return $response["rows"][0]["total_count"];
-        }
-
-        return 0;
+        return $row["total_count"] ?? 0;
     }
 
     /**
@@ -371,14 +367,14 @@ abstract class Entity {
         $query = "SELECT * FROM " . static::$tableName . " {$whereQuery}
                     ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection .
                     " LIMIT {$this->limitBy} OFFSET {$offset};";
-        $response = $this->db->query($query, $bindings);
+        $rows = $this->db->getAll($query, $bindings);
 
         $entities = array_map(function($row) {
             $entity = new static();
             $entity->setValues($row);
 
             return $entity;
-        }, $response["rows"]);
+        }, $rows);
 
         return $entities;
     }
