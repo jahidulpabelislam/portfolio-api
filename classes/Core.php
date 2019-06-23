@@ -87,6 +87,12 @@ class Core {
         $this->extractDataFromRequest();
     }
 
+    public static function addTrailingSlash(string $url): string {
+        $url = rtrim($url, " /");
+
+        return "{$url}/";
+    }
+
     /**
      * Generates a full URL from the URI user requested
      *
@@ -96,15 +102,10 @@ class Core {
     public function getAPIURL(array $uriArray = null): string {
         $uri = $uriArray ? implode("/", $uriArray) : $this->uriString;
 
-        if (!empty($uri)) {
-            $uri = trim($uri, "/");
-            $uri .= "/";
-        }
-
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
         $domain = rtrim($_SERVER["SERVER_NAME"], "/");
 
-        return "{$protocol}://{$domain}/{$uri}";
+        return self::addTrailingSlash("{$protocol}://{$domain}/{$uri}");
     }
 
     private function isFieldValid(string $field): bool {
