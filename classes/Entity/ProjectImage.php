@@ -57,11 +57,11 @@ class ProjectImage extends Entity {
             $fileName = $this->file;
 
             // Makes sure there is a leading slash
-            $fileName = "/" . ltrim($fileName, "/");
+            $filePath = ROOT . "/" . ltrim($fileName, "/");
 
             // Checks if file exists to delete the actual Image file from server
-            if (file_exists(ROOT . $fileName)) {
-                unlink(ROOT . $fileName);
+            if (file_exists($filePath)) {
+                unlink($filePath);
             }
         }
 
