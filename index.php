@@ -9,13 +9,13 @@
  * @copyright 2010-2019 JPI
  */
 
+use JPI\API\Router;
+
 if (!defined("ROOT")) {
     define("ROOT", rtrim($_SERVER["DOCUMENT_ROOT"], " /"));
 }
 
 require_once(ROOT . "/vendor/autoload.php");
-
-use JPI\API\Router;
 
 $router = new Router();
 $router->performRequest();
