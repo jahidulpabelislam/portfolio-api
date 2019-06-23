@@ -18,6 +18,7 @@ namespace JPI\API;
 
 use PDO;
 use PDOException;
+use PDOStatement;
 
 if (!defined("ROOT")) {
     die();
@@ -68,7 +69,7 @@ class Database {
      * @param $query string The SQL query to run
      * @param $bindings array Array of any bindings to use with the SQL query
      */
-    private function query(string $query, ?array $bindings) {
+    private function _execute(string $query, ?array $bindings): ?PDOStatement {
         if ($this->pdo) {
             try {
                 // Check if any bindings to execute
@@ -88,29 +89,41 @@ class Database {
             }
         }
 
-        return false;
+        return null;
     }
 
-    public function doQuery(string $query, array $bindings = null):? int {
-        $stmt = $this->query($query, $bindings);
+    public function execute(string $query, array $bindings = null): int {
+        $stmt = $this->_execute($query, $bindings);
 
-        return $stmt->rowCount(PDO::FETCH_ASSOC) ?? null;
+        if ($stmt) {
+            return $stmt->rowCount();
+        }
+
+        return 0;
     }
 
     public function getOne(string $query, array $bindings = null): array {
-        $stmt = $this->query($query, $bindings);
+        $stmt = $this->_execute($query, $bindings);
 
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?? [];
+        if ($stmt) {
+            $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        return [];
     }
 
     public function getAll(string $query, array $bindings = null): array {
-        $stmt = $this->query($query, $bindings);
+        $stmt = $this->_execute($query, $bindings);
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?? [];
+        if ($stmt) {
+            $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return [];
     }
 
     public function getLastInsertedId(): ?int {
-        return $this->pdo->lastInsertId() ?? null;
+        return $this->pdo->lastInsertId();
     }
 }
 

@@ -67,7 +67,7 @@ class Projects {
 
                 // If the Entity already exists, load the current values into state
                 if (isset($data["id"])) {
-                    $project->getById($data["id"], false);
+                    $project->loadById($data["id"], false);
                 }
 
                 $project->setValues($data);
@@ -77,13 +77,12 @@ class Projects {
 
                     $images = $data["images"];
 
-                    if (count($images) > 0) {
+                    if (count($images)) {
                         foreach ($images as $i => $image) {
                             $imageData = json_decode($image, true);
                             $imageData["sort_order_number"] = $i + 1;
 
-                            $projectImage = new ProjectImage();
-                            $projectImage->setValues($imageData);
+                            $projectImage = ProjectImage::createEntity($imageData);
                             $projectImage->save();
                         }
                     }
@@ -141,7 +140,7 @@ class Projects {
     public function deleteProject(array $data): array {
         if (Auth::isLoggedIn()) {
             $project = new Project();
-            $isDeleted = $project->delete($data["id"]);
+            $isDeleted = $project->deleteById($data["id"]);
 
             $response = Responder::getItemDeletedResponse($project, $data["id"], $isDeleted);
         }
@@ -161,7 +160,7 @@ class Projects {
      */
     public function getProject($projectId, bool $shouldGetImages = false): array {
         $project = new Project();
-        $project->getById($projectId, $shouldGetImages);
+        $project->loadById($projectId, $shouldGetImages);
 
         return Responder::getItemResponse($project, $projectId);
     }
@@ -227,13 +226,12 @@ class Projects {
             if (move_uploaded_file($image["tmp_name"], $newImageFullPath)) {
 
                 // Add new image with location into the database
-                $values = [
+                $imageData = [
                     "file" => $newFileLocation,
                     "project_id" => $projectId,
                     "sort_order_number" => 999, // High enough number
                 ];
-                $projectImage = new ProjectImage();
-                $projectImage->setValues($values);
+                $projectImage = ProjectImage::createEntity($imageData);
                 $projectImage->save();
 
                 $response = Responder::getItemResponse($projectImage, $projectImage->id);
@@ -303,7 +301,7 @@ class Projects {
         $response = $this->getProject($projectId);
         if (!empty($response["row"])) {
             $projectImage = new ProjectImage();
-            $projectImage->getById($imageId);
+            $projectImage->loadById($imageId);
 
             $response = Responder::getItemResponse($projectImage, $imageId);
 
@@ -336,7 +334,7 @@ class Projects {
 
                 // Delete row from database
                 $projectImage = new ProjectImage();
-                $isDeleted = $projectImage->delete($imageId);
+                $isDeleted = $projectImage->deleteById($imageId);
 
                 $response = Responder::getItemDeletedResponse($projectImage, $imageId, $isDeleted);
             }

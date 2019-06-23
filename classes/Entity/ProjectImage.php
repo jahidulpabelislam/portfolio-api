@@ -26,7 +26,7 @@ class ProjectImage extends Entity {
 
     protected $columns = [
         "id" => null,
-        "project_id" => 0,
+        "project_id" => null,
         "sort_order_number" => 0,
         "file" => "",
         "created_at" => "",
@@ -49,15 +49,13 @@ class ProjectImage extends Entity {
      * @param $id int The Id of the Entity to delete
      * @return bool Whether or not deletion was successful
      */
-    public function delete($id): bool {
-        $isDeleted = parent::delete($id);
+    public function deleteById($id): bool {
+        $isDeleted = parent::deleteById($id);
 
         // Check if the deletion was ok
         if ($isDeleted && !empty($this->file)) {
-            $fileName = $this->file;
-
             // Makes sure there is a leading slash
-            $filePath = ROOT . "/" . ltrim($fileName, "/");
+            $filePath = ROOT . "/" . ltrim($this->file, "/");
 
             // Checks if file exists to delete the actual Image file from server
             if (file_exists($filePath)) {

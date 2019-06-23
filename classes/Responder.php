@@ -72,8 +72,8 @@ class Responder {
         return [
             "meta" => [
                 "status" => 404,
-                "feedback" => "Unrecognised URI (" . $this->api->getAPIURL() . ").",
                 "message" => "Not Found",
+                "feedback" => "Unrecognised URI (" . $this->api->getAPIURL() . ").",
             ],
         ];
     }
@@ -91,8 +91,8 @@ class Responder {
         return [
             "meta" => [
                 "status" => 404,
-                "feedback" => "Unrecognised API version. Current version is " . Config::API_VERSION . ", so please update requested URL to {$shouldBeURL}.",
                 "message" => "Not Found",
+                "feedback" => "Unrecognised API version. Current version is " . Config::API_VERSION . ", so please update requested URL to {$shouldBeURL}.",
             ],
         ];
     }
@@ -120,16 +120,17 @@ class Responder {
      * else if not found return necessary meta
      */
     public static function getItemsResponse(Entity $entity, array $entities = []): array {
-        if (count($entities)) {
+        $count = count($entities);
+        if ($count) {
 
-            $rows = array_map(function(Entity $entity) {
+            $rows = array_map(static function(Entity $entity) {
                 return $entity->toArray();
             }, $entities);
 
             return [
                 "meta" => [
                     "ok" => true,
-                    "count" => count($rows),
+                    "count" => $count,
                 ],
                 "rows" => $rows,
             ];
@@ -139,8 +140,8 @@ class Responder {
             "meta" => [
                 "count" => 0,
                 "status" => 404,
-                "feedback" => "No {$entity::$displayName}s found.",
                 "message" => "Not Found",
+                "feedback" => "No {$entity::$displayName}s found.",
             ],
             "rows" => [],
         ];
@@ -181,7 +182,7 @@ class Responder {
 
         $hasNextPage = $page < $lastPage;
         $response["meta"]["has_next_page"] = $hasNextPage;
-        if ($response["meta"]["has_next_page"]) {
+        if ($hasNextPage) {
             $data["page"] = $page + 1;
             $response["meta"]["next_page_url"] = $pageURL;
             $response["meta"]["next_page_params"] = $data;
@@ -208,8 +209,8 @@ class Responder {
         return [
             "meta" => [
                 "status" => 404,
-                "feedback" => "No {$entity::$displayName} found with {$id} as ID.",
                 "message" => "Not Found",
+                "feedback" => "No {$entity::$displayName} found with {$id} as ID.",
             ],
             "row" => [],
         ];
@@ -237,7 +238,8 @@ class Responder {
 
         return [
             "meta" => [
-                "status" => 404,
+                "status" => 500,
+                "message" => "Internal Server Error",
                 "feedback" => "Couldn't delete {$entity::$displayName} with {$id} as ID.",
             ],
             "row" => [],

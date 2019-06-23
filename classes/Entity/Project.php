@@ -66,7 +66,7 @@ class Project extends Entity {
         }
 
         if (count($this->images)) {
-            $projectArray["images"] = array_map(function(ProjectImage $image) {
+            $projectArray["images"] = array_map(static function(ProjectImage $image) {
                 return $image->toArray();
             }, $this->images);
         }
@@ -76,16 +76,13 @@ class Project extends Entity {
 
     /**
      * Helper function to get all Project Image Entities linked to this Project
-     * @return array An array of ProjectImage's (if any found)
      */
-    public function getProjectImages(): array {
+    public function loadProjectImages() {
         // Get all the images linked to the Project
         $projectImage = new ProjectImage();
         $images = $projectImage->getByColumn("project_id", $this->id);
 
         $this->images = $images;
-
-        return $images;
     }
 
     /**
@@ -100,8 +97,8 @@ class Project extends Entity {
      * @param $id int The Id of the Entity to get
      * @param $shouldGetImages bool Whether of not to also get and output the Project Images linked to this Project
      */
-    public function getById($id, bool $shouldGetImages = true) {
-        parent::getById($id);
+    public function loadById($id, bool $shouldGetImages = true) {
+        parent::loadById($id);
 
         // If Project was found
         if (!empty($this->id)) {
@@ -114,7 +111,7 @@ class Project extends Entity {
 
             // If Project's Images was requested, get and add these
             if ($shouldGetImages) {
-                $this->getProjectImages();
+                $this->loadProjectImages();
             }
         }
     }
@@ -128,8 +125,8 @@ class Project extends Entity {
      * @param $id int The Id of the Entity to delete
      * @return bool Whether or not deletion was successful
      */
-    public function delete($id): bool {
-        $isDeleted = parent::delete($id);
+    public function deleteById($id): bool {
+        $isDeleted = parent::deleteById($id);
 
         // Delete all the images linked to this Project from the database & from disk
         if ($isDeleted) {
@@ -158,8 +155,8 @@ class Project extends Entity {
         $projects = parent::doSearch($params);
 
         // Loop through each Project and get the Projects Images
-        $projects = array_map(function(Project $project) {
-            $project->getProjectImages();
+        $projects = array_map(static function(Project $project) {
+            $project->loadProjectImages();
 
             return $project;
         }, $projects);

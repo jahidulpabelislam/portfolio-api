@@ -67,7 +67,7 @@ class Auth {
                         "nbf" => $issuedAt,
                         "exp" => $expire,
                         "data" => [
-                            // Any extra API secific data
+                            // Any extra API specific data
                         ],
                     ];
 

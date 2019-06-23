@@ -20,7 +20,7 @@ if (!defined("ROOT")) {
 use DateTime;
 use JPI\API\Database;
 
-abstract class Entity {
+class Entity {
 
     public static $displayName = "";
 
@@ -68,7 +68,7 @@ abstract class Entity {
         }
     }
 
-    public function setValues($values) {
+    public function setValues(array $values) {
         $columns = array_keys($this->columns);
         foreach ($columns as $column) {
             if (isset($values[$column])) {
@@ -92,6 +92,17 @@ abstract class Entity {
         return $array;
     }
 
+    public static function createEntity(array $row): Entity {
+        $entity = new static();
+        $entity->setValues($row);
+
+        return $entity;
+    }
+
+    public function createEntities(array $rows): array {
+        return array_map([$this, "createEntity"], $rows);
+    }
+
     /**
      * Get Entities from the Database where a column ($column) = a value ($value)
      */
@@ -102,26 +113,19 @@ abstract class Entity {
         $bindings = [":value" => $value];
         $rows = $this->db->getAll($query, $bindings);
 
-        $entities = array_map(function($row) {
-            $entity = new static();
-            $entity->setValues($row);
-
-            return $entity;
-        }, $rows);
-
-        return $entities;
+        return $this->createEntities($rows);
     }
 
     /**
      * Load a single Entity from the Database where a Id column = a value ($id)
      * Uses helper function getByColumn
      */
-    public function getById($id) {
+    public function loadById($id) {
         if (is_numeric($id)) {
             $entities = $this->getByColumn("id", (int)$id);
 
             // Check everything was okay, so as this /Should/ return only one, set values from first item
-            if (count($entities) > 0) {
+            if (count($entities)) {
                 $this->setValues($entities[0]->columns);
             }
         }
@@ -179,7 +183,6 @@ abstract class Entity {
      * Will either be a new insert or a update to an existing Entity
      */
     public function save() {
-
         $id = $this->id ?? null;
 
         $isNew = empty($id);
@@ -198,7 +201,7 @@ abstract class Entity {
         else {
             // Check the Entity trying to edit actually exists
             $existingEntity = new static();
-            $existingEntity->getById($id);
+            $existingEntity->loadById($id);
             if (empty($existingEntity->id)) {
                 $this->id = null;
                 return;
@@ -212,12 +215,12 @@ abstract class Entity {
             [$query, $bindings] = $this->generateUpdateQuery();
         }
 
-        $affectedRows = $this->db->doQuery($query, $bindings);
+        $affectedRows = $this->db->execute($query, $bindings);
 
         // If insert was ok, load the new values into entity state
         if ($affectedRows) {
             $id = $id ?? $this->db->getLastInsertedId();
-            $this->getById($id);
+            $this->loadById($id);
         }
     }
 
@@ -227,16 +230,15 @@ abstract class Entity {
      * @param $id int The Id of the Entity to delete
      * @return bool Whether or not deletion was successful
      */
-    public function delete($id): bool {
+    public function deleteById($id): bool {
         $isDeleted = false;
 
         // Check the Entity trying to delete actually exists
-        $this->getById($id);
-        if (!empty($this->id) && $this->id == $id) {
-
+        $this->loadById($id);
+        if ($this->id == $id) {
             $query = "DELETE FROM " . static::$tableName . " WHERE id = :id;";
             $bindings = [":id" => (int)$id];
-            $affectedRows = $this->db->doQuery($query, $bindings);
+            $affectedRows = $this->db->execute($query, $bindings);
 
             // Whether the deletion was ok
             $isDeleted = $affectedRows > 0;
@@ -329,13 +331,10 @@ abstract class Entity {
      * @return array The request response to send back
      */
     public function doSearch(array $params): array {
-
-        $this->limitBy = static::$defaultLimitBy;
-
         // If user added a limit param, use this if valid, unless its bigger than default
         if (!empty($params["limit"])) {
             $limit = (int)$params["limit"];
-            $this->limitBy = min($limit, $this->limitBy);
+            $this->limitBy = min($limit, static::$defaultLimitBy);
         }
 
         // If limit is invalid use default
@@ -347,7 +346,7 @@ abstract class Entity {
         $offset = 0;
         if (!empty($params["page"])) {
             $page = (int)$params["page"];
-            if (is_int($page) && $page > 1) {
+            if ($page > 1) {
                 $offset = $this->limitBy * ($page - 1);
             }
             else {
@@ -370,13 +369,6 @@ abstract class Entity {
                          LIMIT {$this->limitBy} OFFSET {$offset};";
         $rows = $this->db->getAll($query, $bindings);
 
-        $entities = array_map(function($row) {
-            $entity = new static();
-            $entity->setValues($row);
-
-            return $entity;
-        }, $rows);
-
-        return $entities;
+        return $this->createEntities($rows);
     }
 }

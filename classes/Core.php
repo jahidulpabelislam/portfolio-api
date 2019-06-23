@@ -39,9 +39,8 @@ class Core {
 
     private function extractMethodFromRequest() {
         $method = $_SERVER["REQUEST_METHOD"];
-        $method = strtoupper($method);
 
-        $this->method = $method;
+        $this->method = strtoupper($method);
     }
 
     private function extractURIFromRequest() {
@@ -49,9 +48,8 @@ class Core {
         $uriString = strtolower(trim($uriString));
         $this->uriString = $uriString;
 
-        $uriString = trim($uriString, "/");
-
         // Get the individual parts of the request URI as an array
+        $uriString = trim($uriString, "/");
         $uriArray = explode("/", $uriString);
         $this->uriArray = $uriArray;
     }
@@ -72,13 +70,7 @@ class Core {
     }
 
     private function extractDataFromRequest() {
-        $data = [];
-
-        foreach ($_REQUEST as $field => $value) {
-            $data[$field] = $this->sanitizeData($value);
-        }
-
-        $this->data = $data;
+        $this->data = $this->sanitizeData($_REQUEST);
     }
 
     public function extractFromRequest() {
@@ -105,7 +97,10 @@ class Core {
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
         $domain = rtrim($_SERVER["SERVER_NAME"], "/");
 
-        return self::addTrailingSlash("{$protocol}://{$domain}/{$uri}");
+        $fullURL = "{$protocol}://{$domain}/{$uri}";
+        $fullURL = self::addTrailingSlash($fullURL);
+
+        return $fullURL;
     }
 
     private function isFieldValid(string $field): bool {
@@ -193,7 +188,8 @@ class Core {
 
             header("Cache-Control: max-age={$secondsToCache}, public");
 
-            $expiresTime = gmdate("D, d M Y H:i:s e", time() + $secondsToCache);
+            $expiryTimestamp = time() + $secondsToCache;
+            $expiresTime = gmdate("D, d M Y H:i:s e", $expiryTimestamp);
             header("Expires: {$expiresTime}");
 
             header("Pragma: cache");
@@ -206,7 +202,6 @@ class Core {
      * @param $response array The response generated from the request so far
      */
     public function sendResponse(array $response) {
-
         $this->setCORSHeaders($response);
         $this->setCacheHeaders();
 
