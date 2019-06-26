@@ -66,6 +66,32 @@ class Responder {
     }
 
     /**
+     * Response for whether the user is logged in or not
+     */
+    public static function getAuthStatusResponse(): array {
+        if (Auth::isLoggedIn()) {
+            return [
+                "meta" => [
+                    "ok" => true,
+                    "status" => 200,
+                    "message" => "OK",
+                ],
+            ];
+        }
+
+        return self::getNotAuthorisedResponse();
+    }
+
+    public static function getLoggedOutResponse(): array {
+        return [
+            "meta" => [
+                "ok" => true,
+                "feedback" => "Successfully logged out.",
+            ],
+        ];
+    }
+
+    /**
      * Generate response data to send back when the URI provided is not recognised
      */
     public function getUnrecognisedURIResponse(): array {
@@ -245,6 +271,7 @@ class Responder {
             "row" => [],
         ];
     }
+
 }
 
 Responder::get();

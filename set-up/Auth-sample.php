@@ -45,7 +45,6 @@ class Auth {
             $response["meta"]["message"] = "Unauthorized";
 
             if (Hasher::check($data["username"], Config::PORTFOLIO_ADMIN_USERNAME)) {
-
                 if (Hasher::check($data["password"], Config::PORTFOLIO_ADMIN_PASSWORD)) {
 
                     $response["meta"]["ok"] = true;
@@ -55,7 +54,7 @@ class Auth {
                     // TODO: Actually do the logging in here (e.g store in cookie, session or database etc.)
 
                     // SAMPLE!!
-                    $tokenId = 1; // Json Token Id: an unique identifier for the token
+                    $tokenId = 1; // JSON Token Id: an unique identifier for the token
                     $issuedAt = time(); // Issued at: time when the token was generated
                     $expire = $issuedAt + (self::JWT_EXPIRATION_HOURS * 60 * 60); // Token expiration time
                     $serverName = "https://jahidulpabelislam.com/"; // Issuer
@@ -84,7 +83,6 @@ class Auth {
             else {
                 $response["meta"]["feedback"] = "Wrong username and/or password.";
             }
-
         }
         else {
             $response = Responder::get()->getInvalidFieldsResponse($requiredFields);
@@ -102,12 +100,7 @@ class Auth {
     public static function logout(): array {
         // TODO: Actually do the log out here (e.g removing cookie, session or database etc.)
 
-        return [
-            "meta" => [
-                "ok" => true,
-                "feedback" => "Successfully logged out.",
-            ],
-        ];
+        return Responder::getLoggedOutResponse();
     }
 
     /**
@@ -143,22 +136,4 @@ class Auth {
         return false;
     }
 
-    /**
-     * Check whether the user is logged or not
-     *
-     * @return array The request response to send back
-     */
-    public static function getAuthStatus(): array {
-        if (self::isLoggedIn()) {
-            return [
-                "meta" => [
-                    "ok" => true,
-                    "status" => 200,
-                    "message" => "OK",
-                ],
-            ];
-        }
-
-        return Responder::getNotAuthorisedResponse();
-    }
 }
