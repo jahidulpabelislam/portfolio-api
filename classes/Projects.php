@@ -63,15 +63,6 @@ class Projects {
                     $data["skills"] = implode(",", $data["skills"]);
                 }
 
-                $project = new Project();
-
-                // If the Entity already exists, load the current values into state
-                if (isset($data["id"])) {
-                    $project->loadById($data["id"], false);
-                }
-
-                $project->setValues($data);
-
                 // Checks if the save was okay, and images were passed, update the sort order on the images
                 if (!empty($project->id) && !empty($data["images"])) {
 
@@ -82,13 +73,12 @@ class Projects {
                             $imageData = json_decode($image, true);
                             $imageData["sort_order_number"] = $i + 1;
 
-                            $projectImage = ProjectImage::createEntity($imageData);
-                            $projectImage->save();
+                            ProjectImage::save($imageData);
                         }
                     }
                 }
 
-                $project->save();
+                $project = Project::save($data);
 
                 $response = Responder::getItemResponse($project, $project->id);
             }
@@ -159,8 +149,7 @@ class Projects {
      * @return array The request response to send back
      */
     public function getProject($projectId, bool $shouldGetImages = false): array {
-        $project = new Project();
-        $project->loadById($projectId, $shouldGetImages);
+        $project = Project::getById($projectId, $shouldGetImages);
 
         return Responder::getItemResponse($project, $projectId);
     }
@@ -231,8 +220,7 @@ class Projects {
                     "project_id" => $projectId,
                     "sort_order_number" => 999, // High enough number
                 ];
-                $projectImage = ProjectImage::createEntity($imageData);
-                $projectImage->save();
+                $projectImage = ProjectImage::save($imageData);
 
                 $response = Responder::getItemResponse($projectImage, $projectImage->id);
 
@@ -300,8 +288,7 @@ class Projects {
         // Check the Project trying to get Images for exists
         $response = $this->getProject($projectId);
         if (!empty($response["row"])) {
-            $projectImage = new ProjectImage();
-            $projectImage->loadById($imageId);
+            $projectImage = ProjectImage::getById($imageId);
 
             $response = Responder::getItemResponse($projectImage, $imageId);
 

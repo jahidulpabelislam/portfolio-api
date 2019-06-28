@@ -120,15 +120,19 @@ class Entity {
      * Load a single Entity from the Database where a Id column = a value ($id)
      * Uses helper function getByColumn
      */
-    public function loadById($id) {
+    public static function getById($id): Entity {
+        $entity = new static();
+
         if (is_numeric($id)) {
-            $entities = $this->getByColumn("id", (int)$id);
+            $entities = $entity->getByColumn("id", (int)$id);
 
             // Check everything was okay, so as this /Should/ return only one, set values from first item
             if (count($entities)) {
-                $this->setValues($entities[0]->columns);
+                $entity->setValues($entities[0]->columns);
             }
         }
+
+        return $entity;
     }
 
     /**
@@ -182,45 +186,49 @@ class Entity {
      * Save values to the Entity Table in the Database
      * Will either be a new insert or a update to an existing Entity
      */
-    public function save() {
-        $id = $this->id ?? null;
+    public static function save($data): Entity {
+        $id = $data['id'] ?? null;
 
         $isNew = empty($id);
 
-        if (array_key_exists("updated_at", $this->columns)) {
-            $this->updated_at = date("Y-m-d H:i:s");
+        // If its a update check the Entity trying to edit actually exists
+        if (!$isNew) {
+            $entity = static::getById($id);
+            if (empty($entity->id)) {
+                $entity->id = null;
+                return $entity;
+            }
+        }
+
+        $entity = new static();
+        $entity->setValues($data);
+
+        if (array_key_exists("updated_at", $entity->columns)) {
+            $entity->updated_at = date("Y-m-d H:i:s");
         }
 
         if ($isNew) {
-            if (array_key_exists("created_at", $this->columns)) {
-                $this->created_at = date("Y-m-d H:i:s");
+            if (array_key_exists("created_at", $entity->columns)) {
+                $entity->created_at = date("Y-m-d H:i:s");
             }
 
-            [$query, $bindings] = $this->generateInsertQuery();
+            [$query, $bindings] = $entity->generateInsertQuery();
         }
         else {
-            // Check the Entity trying to edit actually exists
-            $existingEntity = new static();
-            $existingEntity->loadById($id);
-            if (empty($existingEntity->id)) {
-                $this->id = null;
-                return;
+            if (array_key_exists("created_at", $entity->columns)) {
+                $createdAt = new DateTime($entity->created_at);
+                $entity->created_at = $createdAt->format("Y-m-d H:i:s");
             }
 
-            if (array_key_exists("created_at", $this->columns)) {
-                $createdAt = new DateTime($this->created_at);
-                $this->created_at = $createdAt->format("Y-m-d H:i:s");
-            }
-
-            [$query, $bindings] = $this->generateUpdateQuery();
+            [$query, $bindings] = $entity->generateUpdateQuery();
         }
 
-        $affectedRows = $this->db->execute($query, $bindings);
+        $affectedRows = $entity->db->execute($query, $bindings);
 
         // If insert was ok, load the new values into entity state
         if ($affectedRows) {
-            $id = $id ?? $this->db->getLastInsertedId();
-            $this->loadById($id);
+            $id = $id ?? $entity->db->getLastInsertedId();
+            return self::getById($id);
         }
     }
 
@@ -234,8 +242,8 @@ class Entity {
         $isDeleted = false;
 
         // Check the Entity trying to delete actually exists
-        $this->loadById($id);
-        if ($this->id == $id) {
+        $entity = self::getById($id);
+        if ($entity->id == $id) {
             $query = "DELETE FROM " . static::$tableName . " WHERE id = :id;";
             $bindings = [":id" => (int)$id];
             $affectedRows = $this->db->execute($query, $bindings);

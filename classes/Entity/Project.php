@@ -97,23 +97,25 @@ class Project extends Entity {
      * @param $id int The Id of the Entity to get
      * @param $shouldGetImages bool Whether of not to also get and output the Project Images linked to this Project
      */
-    public function loadById($id, bool $shouldGetImages = true) {
-        parent::loadById($id);
+    public static function getById($id, bool $shouldGetImages = true): Entity {
+        $project = parent::getById($id);
 
         // If Project was found
-        if (!empty($this->id)) {
+        if (!empty($project->id)) {
 
             // If Project isn't public and user isn't logged in, don't return Project
-            if ($this->status !== self::PUBLIC_STATUS && !Auth::isLoggedIn()) {
-                $this->id = 0;
-                return;
+            if ($project->status !== self::PUBLIC_STATUS && !Auth::isLoggedIn()) {
+                $project->id = 0;
+                return $project;
             }
 
             // If Project's Images was requested, get and add these
             if ($shouldGetImages) {
-                $this->loadProjectImages();
+                $project->loadProjectImages();
             }
         }
+
+        return $project;
     }
 
     /**
