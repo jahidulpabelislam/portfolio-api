@@ -256,54 +256,52 @@ class Entity {
      * @return array An array consisting of the generated where clause and an associative array containing any bindings to aid the Database querying
      */
     private function generateSearchWhereQuery(array $params): array {
-        if (static::$searchableColumns) {
-
-            $searchValue = $params["search"] ?? "";
-
-            // Split each word in search
-            $searchWords = explode(" ", $searchValue);
-            $searchString = "%" . implode("%", $searchWords) . "%";
-
-            $searchesReversed = array_reverse($searchWords);
-            $searchStringReversed = "%" . implode("%", $searchesReversed) . "%";
-
-            $bindings = [
-                ":searchString" => $searchString,
-                ":searchStringReversed" => $searchStringReversed,
-            ];
-
-            $globalWhereClauses = [];
-            $searchWhereClause = "";
-
-            // Loop through each searchable column
-            foreach (static::$searchableColumns as $column) {
-                $searchWhereClause .= " {$column} LIKE :searchString OR {$column} LIKE :searchStringReversed OR";
-
-                if (!empty($params[$column])) {
-                    $binding = ":{$column}";
-                    $globalWhereClauses[] = " {$column} = {$binding}";
-                    $bindings[$binding] = $params[$column];
-                }
-            }
-            if (!empty($searchWhereClause)) {
-                $lastTwoChars = substr($searchWhereClause, -2);
-                if ($lastTwoChars === "OR") {
-                    $searchWhereClause = substr($searchWhereClause, 0, -2);
-                }
-            }
-
-            $globalWhereClause = "";
-            if (!empty($globalWhereClauses)) {
-                $globalWhereClause = " AND " . implode(" AND ", $globalWhereClauses);
-            }
-
-            $whereClause = "WHERE ({$searchWhereClause}) {$globalWhereClause}";
-
-            return [$whereClause, $bindings];
-        }
-        else {
+        if (!static::$searchableColumns) {
             return ["", []];
         }
+
+        $searchValue = $params["search"] ?? "";
+
+        // Split each word in search
+        $searchWords = explode(" ", $searchValue);
+        $searchString = "%" . implode("%", $searchWords) . "%";
+
+        $searchesReversed = array_reverse($searchWords);
+        $searchStringReversed = "%" . implode("%", $searchesReversed) . "%";
+
+        $bindings = [
+            ":searchString" => $searchString,
+            ":searchStringReversed" => $searchStringReversed,
+        ];
+
+        $globalWhereClauses = [];
+        $searchWhereClause = "";
+
+        // Loop through each searchable column
+        foreach (static::$searchableColumns as $column) {
+            $searchWhereClause .= " {$column} LIKE :searchString OR {$column} LIKE :searchStringReversed OR";
+
+            if (!empty($params[$column])) {
+                $binding = ":{$column}";
+                $globalWhereClauses[] = " {$column} = {$binding}";
+                $bindings[$binding] = $params[$column];
+            }
+        }
+        if (!empty($searchWhereClause)) {
+            $lastTwoChars = substr($searchWhereClause, -2);
+            if ($lastTwoChars === "OR") {
+                $searchWhereClause = substr($searchWhereClause, 0, -2);
+            }
+        }
+
+        $globalWhereClause = "";
+        if (!empty($globalWhereClauses)) {
+            $globalWhereClause = " AND " . implode(" AND ", $globalWhereClauses);
+        }
+
+        $whereClause = "WHERE ({$searchWhereClause}) {$globalWhereClause}";
+
+        return [$whereClause, $bindings];
     }
 
     /**
