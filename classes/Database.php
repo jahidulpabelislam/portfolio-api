@@ -106,7 +106,7 @@ class Database {
         $stmt = $this->_execute($query, $bindings);
 
         if ($stmt) {
-            $stmt->fetch(PDO::FETCH_ASSOC);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
         }
 
         return [];
@@ -116,7 +116,7 @@ class Database {
         $stmt = $this->_execute($query, $bindings);
 
         if ($stmt) {
-            $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         return [];
