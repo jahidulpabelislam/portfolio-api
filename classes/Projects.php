@@ -20,22 +20,13 @@ use JPI\API\Entity\ProjectImage;
 
 class Projects {
 
-    private $api;
-
-    /**
-     * Projects constructor.
-     */
-    public function __construct() {
-        $this->api = Core::get();
-    }
-
     /**
      * Gets all Projects but paginated, also might include search
      *
      * @param $data array Any data to aid in the search query
      * @return array The request response to send back
      */
-    public function getProjects(array $data): array {
+    public static function getProjects(array $data): array {
         $project = new Project();
         $projects = $project->doSearch($data);
 
@@ -48,11 +39,11 @@ class Projects {
      * @param $data array The data to insert/update into the database for the Project
      * @return array The request response to send back
      */
-    private function saveProject(array $data): array {
+    private static function saveProject(array $data): array {
         if (Auth::isLoggedIn()) {
 
             $requiredFields = ["name", "date", "skills", "long_description", "short_description"];
-            if ($this->api->hasRequiredFields($requiredFields)) {
+            if (Core::get()->hasRequiredFields($requiredFields)) {
 
                 // Transform the incoming data into the necessary data for the database
                 if (isset($data["date"])) {
@@ -64,17 +55,14 @@ class Projects {
                 }
 
                 // Checks if the save was okay, and images were passed, update the sort order on the images
-                if (!empty($project->id) && !empty($data["images"])) {
+                if (!empty($data["images"])) {
 
                     $images = $data["images"];
+                    foreach ($images as $i => $image) {
+                        $imageData = json_decode($image, true);
+                        $imageData["sort_order_number"] = $i + 1;
 
-                    if (count($images)) {
-                        foreach ($images as $i => $image) {
-                            $imageData = json_decode($image, true);
-                            $imageData["sort_order_number"] = $i + 1;
-
-                            ProjectImage::save($imageData);
-                        }
+                        ProjectImage::save($imageData);
                     }
                 }
 
@@ -99,8 +87,8 @@ class Projects {
      * @param $data array The data to insert into the database for this new Project
      * @return array The request response to send back
      */
-    public function addProject(array $data): array {
-        $response = $this->saveProject($data);
+    public static function addProject(array $data): array {
+        $response = self::saveProject($data);
 
         // If successful, as this is a new Project creation override the meta
         if (!empty($response["row"])) {
@@ -117,8 +105,8 @@ class Projects {
      * @param $data array The new data entered to use to update the Project with
      * @return array The request response to send back
      */
-    public function editProject(array $data): array {
-        return $this->saveProject($data);
+    public static function editProject(array $data): array {
+        return self::saveProject($data);
     }
 
     /**
@@ -127,7 +115,7 @@ class Projects {
      * @param $data array The data sent to aid in the deletion of the Project
      * @return array The request response to send back
      */
-    public function deleteProject(array $data): array {
+    public static function deleteProject(array $data): array {
         if (Auth::isLoggedIn()) {
             $project = Project::getById($data["id"]);
             $isDeleted = $project->delete();
@@ -148,7 +136,7 @@ class Projects {
      * @param $shouldGetImages bool Whether the images for the Project should should be added
      * @return array The request response to send back
      */
-    public function getProject($projectId, bool $shouldGetImages = false): array {
+    public static function getProject($projectId, bool $shouldGetImages = false): array {
         $project = Project::getById($projectId, $shouldGetImages);
 
         return Responder::getItemResponse($project, $projectId);
@@ -160,13 +148,13 @@ class Projects {
      * @param $projectId int The Id of the Project
      * @return array The request response to send back
      */
-    public function getProjectImages($projectId): array {
+    public static function getProjectImages($projectId): array {
         // Check the Project trying to get Images for exists
-        $projectRes = $this->getProject($projectId);
+        $projectRes = self::getProject($projectId);
         if (!empty($projectRes["row"])) {
 
             $projectImage = new ProjectImage();
-            $projectImages = $projectImage->getByColumn("project_id", (int)$projectId);
+            $projectImages = ProjectImage::getByColumn("project_id", (int)$projectId);
 
             return Responder::getItemsResponse($projectImage, $projectImages);
         }
@@ -180,7 +168,7 @@ class Projects {
      * @param $project array The Project trying to upload image for
      * @return array The request response to send back
      */
-    private function uploadProjectImage(array $project): array {
+    private static function uploadProjectImage(array $project): array {
         $response = [];
 
         $projectId = $project["id"];
@@ -252,14 +240,14 @@ class Projects {
      * @param $data array The data sent to aid in Inserting Project Image
      * @return array The request response to send back
      */
-    public function addProjectImage(array $data): array {
+    public static function addProjectImage(array $data): array {
         if (Auth::isLoggedIn()) {
             if (isset($_FILES["image"])) {
 
                 // Check the Project trying to add a Image for exists
-                $response = $this->getProject($data["project_id"]);
+                $response = self::getProject($data["project_id"]);
                 if (!empty($response["row"])) {
-                    $response = $this->uploadProjectImage($response["row"]);
+                    $response = self::uploadProjectImage($response["row"]);
                 }
             }
             else {
@@ -283,10 +271,10 @@ class Projects {
      * @param $imageId int The Id of the Project Image to get
      * @return array The request response to send back
      */
-    public function getProjectImage($projectId, $imageId): array {
+    public static function getProjectImage($projectId, $imageId): array {
 
         // Check the Project trying to get Images for exists
-        $response = $this->getProject($projectId);
+        $response = self::getProject($projectId);
         if (!empty($response["row"])) {
             $projectImage = ProjectImage::getById($imageId);
 
@@ -309,14 +297,14 @@ class Projects {
      * @param $data array The data sent to delete the Project Image
      * @return array The request response to send back
      */
-    public function deleteProjectImage(array $data): array {
+    public static function deleteProjectImage(array $data): array {
         if (Auth::isLoggedIn()) {
 
             $projectId = $data["project_id"];
             $imageId = $data["id"];
 
             // Check the Project of the Image trying to edit actually exists
-            $response = $this->getProject($projectId);
+            $response = self::getProject($projectId);
             if (!empty($response["row"])) {
 
                 // Delete row from database

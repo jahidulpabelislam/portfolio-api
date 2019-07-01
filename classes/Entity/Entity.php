@@ -42,12 +42,6 @@ class Entity {
     public $limitBy = 10;
     public $page = 1;
 
-    private $db;
-
-    public function __construct() {
-        $this->db = Database::get();
-    }
-
     public function __isset($name) {
         return isset($this->columns[$name]);
     }
@@ -99,21 +93,21 @@ class Entity {
         return $entity;
     }
 
-    public function createEntities(array $rows): array {
-        return array_map([$this, "createEntity"], $rows);
+    public static function createEntities(array $rows): array {
+        return array_map(['self', "createEntity"], $rows);
     }
 
     /**
      * Get Entities from the Database where a column ($column) = a value ($value)
      */
-    public function getByColumn(string $column, $value): array {
+    public static function getByColumn(string $column, $value): array {
         $query = "SELECT * FROM " . static::$tableName . " 
                          WHERE {$column} = :value
                          ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . ";";
         $bindings = [":value" => $value];
-        $rows = $this->db->getAll($query, $bindings);
+        $rows = Database::get()->getAll($query, $bindings);
 
-        return $this->createEntities($rows);
+        return self::createEntities($rows);
     }
 
     /**
@@ -124,7 +118,7 @@ class Entity {
         $entity = new static();
 
         if (is_numeric($id)) {
-            $entities = $entity->getByColumn("id", (int)$id);
+            $entities = self::getByColumn("id", (int)$id);
 
             // Check everything was okay, so as this /Should/ return only one, set values from first item
             if (count($entities)) {
@@ -198,9 +192,10 @@ class Entity {
                 $entity->id = null;
                 return $entity;
             }
+        } else {
+            $entity = new static();
         }
 
-        $entity = new static();
         $entity->setValues($data);
 
         if (array_key_exists("updated_at", $entity->columns)) {
@@ -223,11 +218,13 @@ class Entity {
             [$query, $bindings] = $entity->generateUpdateQuery();
         }
 
-        $affectedRows = $entity->db->execute($query, $bindings);
+        $db = Database::get();
+
+        $affectedRows = $db->execute($query, $bindings);
 
         // If insert was ok, load the new values into entity state
         if ($affectedRows) {
-            $id = $id ?? $entity->db->getLastInsertedId();
+            $id = $id ?? $db->getLastInsertedId();
             return self::getById($id);
         }
     }
@@ -256,7 +253,7 @@ class Entity {
      * @param $params array The fields to search for within searchable columns (if any)
      * @return array An array consisting of the generated where clause and an associative array containing any bindings to aid the Database querying
      */
-    private function generateSearchWhereQuery(array $params): array {
+    private static function generateSearchWhereQuery(array $params): array {
         if (!static::$searchableColumns) {
             return ["", []];
         }
@@ -313,12 +310,12 @@ class Entity {
      * @param $params array Any data to aid in the search query
      * @return int
      */
-    public function getTotalCountForSearch(array $params): int {
-        [$whereClause, $bindings] = $this->generateSearchWhereQuery($params);
+    public static function getTotalCountForSearch(array $params): int {
+        [$whereClause, $bindings] = self::generateSearchWhereQuery($params);
 
         $query = "SELECT COUNT(*) AS total_count
                          FROM " . static::$tableName . " {$whereClause};";
-        $row = $this->db->getOne($query, $bindings);
+        $row = Database::get()->getOne($query, $bindings);
 
         return $row["total_count"] ?? 0;
     }
@@ -360,14 +357,14 @@ class Entity {
 
         // Add a filter if a search was entered
         if (!empty($params)) {
-            [$whereQuery, $bindings] = $this->generateSearchWhereQuery($params);
+            [$whereQuery, $bindings] = self::generateSearchWhereQuery($params);
         }
 
         $query = "SELECT * FROM " . static::$tableName . " {$whereQuery}
                          ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . "
                          LIMIT {$this->limitBy} OFFSET {$offset};";
-        $rows = $this->db->getAll($query, $bindings);
+        $rows = Database::get()->getAll($query, $bindings);
 
-        return $this->createEntities($rows);
+        return self::createEntities($rows);
     }
 }

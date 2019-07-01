@@ -19,7 +19,6 @@ if (!defined("ROOT")) {
 class Router {
 
     private $api;
-    private $projects;
 
     public function __construct() {
         $this->api = Core::get();
@@ -76,18 +75,18 @@ class Router {
 
             if (isset($uri[3]) && $uri[3] === "images") {
                 if (isset($uri[4]) && $uri[4] !== "" && !isset($uri[5])) {
-                    $response = $this->projects->getProjectImage($projectId, $uri[4]);
+                    $response = Projects::getProjectImage($projectId, $uri[4]);
                 }
                 else if (!isset($uri[4])) {
-                    $response = $this->projects->getProjectImages($projectId);
+                    $response = Projects::getProjectImages($projectId);
                 }
             }
             else if (!isset($uri[3])) {
-                $response = $this->projects->getProject($projectId, true);
+                $response = Projects::getProject($projectId, true);
             }
         }
         else {
-            $response = $this->projects->getProjects($data);
+            $response = Projects::getProjects($data);
         }
 
         return $response ?? [];
@@ -100,10 +99,10 @@ class Router {
             && !isset($uri[4])
         ) {
             $data["project_id"] = $uri[2];
-            $response = $this->projects->addProjectImage($data);
+            $response = Projects::addProjectImage($data);
         }
         else if (!isset($uri[2])) {
-            $response = $this->projects->addProject($data);
+            $response = Projects::addProject($data);
         }
 
         return $response ?? [];
@@ -112,7 +111,7 @@ class Router {
     private function executeProjectsPutAction(array $uri, array $data): array {
         if (isset($uri[2]) && $uri[2] !== "" && !isset($uri[3])) {
             $data["id"] = $uri[2];
-            $response = $this->projects->editProject($data);
+            $response = Projects::editProject($data);
         }
 
         return $response ?? [];
@@ -127,11 +126,11 @@ class Router {
             ) {
                 $data["id"] = $uri[4];
                 $data["project_id"] = $uri[2];
-                $response = $this->projects->deleteProjectImage($data);
+                $response = Projects::deleteProjectImage($data);
             }
             else if (!isset($uri[3])) {
                 $data["id"] = $uri[2];
-                $response = $this->projects->deleteProject($data);
+                $response = Projects::deleteProject($data);
             }
         }
 
@@ -142,8 +141,6 @@ class Router {
      * @return array An appropriate response to projects request
      */
     private function executeProjectsAction(array $uri, string $method, array $data): array {
-        $this->projects = new Projects();
-
         if ($method === "GET") {
             $response = $this->executeProjectsGetAction($uri, $data);
         }

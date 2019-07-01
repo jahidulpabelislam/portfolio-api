@@ -126,5 +126,3 @@ class Database {
         return $this->pdo->lastInsertId();
     }
 }
-
-Database::get();

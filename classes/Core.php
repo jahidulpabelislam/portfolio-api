@@ -232,5 +232,3 @@ class Core {
         die();
     }
 }
-
-Core::get();

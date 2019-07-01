@@ -79,10 +79,7 @@ class Project extends Entity {
      */
     public function loadProjectImages() {
         // Get all the images linked to the Project
-        $projectImage = new ProjectImage();
-        $images = $projectImage->getByColumn("project_id", $this->id);
-
-        $this->images = $images;
+        $this->images = ProjectImage::getByColumn("project_id", $this->id);
     }
 
     /**

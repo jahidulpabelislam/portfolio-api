@@ -273,5 +273,3 @@ class Responder {
     }
 
 }
-
-Responder::get();

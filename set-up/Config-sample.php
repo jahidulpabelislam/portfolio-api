@@ -71,5 +71,3 @@ class Config {
         return self::$instance;
     }
 }
-
-Config::get();
