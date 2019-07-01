@@ -46,11 +46,10 @@ class ProjectImage extends Entity {
      * As these Entities are linked to a file on the server
      * Here actually delete the file from the server
      *
-     * @param $id int The Id of the Entity to delete
      * @return bool Whether or not deletion was successful
      */
-    public function deleteById($id): bool {
-        $isDeleted = parent::deleteById($id);
+    public function delete(): bool {
+        $isDeleted = parent::delete();
 
         // Check if the deletion was ok
         if ($isDeleted && !empty($this->file)) {

@@ -235,22 +235,15 @@ class Entity {
     /**
      * Delete an Entity from the Database
      *
-     * @param $id int The Id of the Entity to delete
      * @return bool Whether or not deletion was successful
      */
-    public function deleteById($id): bool {
-        $isDeleted = false;
+    public function delete(): bool {
+        $query = "DELETE FROM " . static::$tableName . " WHERE id = :id;";
+        $bindings = [":id" => $this->id];
+        $affectedRows = Database::get()->execute($query, $bindings);
 
-        // Check the Entity trying to delete actually exists
-        $entity = self::getById($id);
-        if ($entity->id == $id) {
-            $query = "DELETE FROM " . static::$tableName . " WHERE id = :id;";
-            $bindings = [":id" => (int)$id];
-            $affectedRows = $this->db->execute($query, $bindings);
-
-            // Whether the deletion was ok
-            $isDeleted = $affectedRows > 0;
-        }
+        // Whether the deletion was ok
+        $isDeleted = $affectedRows > 0;
 
         return $isDeleted;
     }

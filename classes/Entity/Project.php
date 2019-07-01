@@ -124,16 +124,15 @@ class Project extends Entity {
      * Add extra functionality on top of default delete function
      * As these Entities are linked to many Project Images, so delete these also
      *
-     * @param $id int The Id of the Entity to delete
      * @return bool Whether or not deletion was successful
      */
-    public function deleteById($id): bool {
-        $isDeleted = parent::deleteById($id);
+    public function delete(): bool {
+        $isDeleted = parent::delete();
 
         // Delete all the images linked to this Project from the database & from disk
         if ($isDeleted) {
             foreach ($this->images as $image) {
-                $image->delete($image->id);
+                $image->delete();
             }
         }
 

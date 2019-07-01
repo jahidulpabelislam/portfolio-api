@@ -129,8 +129,8 @@ class Projects {
      */
     public function deleteProject(array $data): array {
         if (Auth::isLoggedIn()) {
-            $project = new Project();
-            $isDeleted = $project->deleteById($data["id"]);
+            $project = Project::getById($data["id"]);
+            $isDeleted = $project->delete();
 
             $response = Responder::getItemDeletedResponse($project, $data["id"], $isDeleted);
         }
@@ -320,8 +320,8 @@ class Projects {
             if (!empty($response["row"])) {
 
                 // Delete row from database
-                $projectImage = new ProjectImage();
-                $isDeleted = $projectImage->deleteById($imageId);
+                $projectImage = ProjectImage::getById($imageId);
+                $isDeleted = $projectImage->delete();
 
                 $response = Responder::getItemDeletedResponse($projectImage, $imageId, $isDeleted);
             }
