@@ -62,11 +62,15 @@ class Projects {
                         $imageData = json_decode($image, true);
                         $imageData["sort_order_number"] = $i + 1;
 
-                        ProjectImage::save($imageData);
+                        ProjectImage::update($imageData);
                     }
                 }
 
-                $project = Project::save($data);
+                if (empty($data["id"])) {
+                    $project = Project::insert($data);
+                } else {
+                    $project = Project::update($data);
+                }
 
                 $response = Responder::getItemResponse($project, $project->id);
             }
@@ -206,7 +210,7 @@ class Projects {
                     "project_id" => $projectId,
                     "sort_order_number" => 999, // High enough number
                 ];
-                $projectImage = ProjectImage::save($imageData);
+                $projectImage = ProjectImage::insert($imageData);
 
                 $response = Responder::getItemResponse($projectImage, $projectImage->id);
 

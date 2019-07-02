@@ -180,46 +180,25 @@ class Entity {
      * Save values to the Entity Table in the Database
      * Will either be a new insert or a update to an existing Entity
      */
-    public static function save($data): Entity {
-        $id = $data["id"] ?? null;
+    private function save(array $data): Entity {
+        $id = $this->id ?? null;
 
         $isNew = empty($id);
 
-        // If its a update check the Entity trying to edit actually exists
-        if (!$isNew) {
-            $entity = static::getById($id);
-            if (empty($entity->id)) {
-                $entity->id = null;
-                return $entity;
-            }
-        } else {
-            $entity = new static();
+        if (array_key_exists("updated_at", $this->columns)) {
+            $data["updated_at"] = date("Y-m-d H:i:s");
         }
 
-        $entity->setValues($data);
-
-        if (array_key_exists("updated_at", $entity->columns)) {
-            $entity->updated_at = date("Y-m-d H:i:s");
-        }
+        $this->setValues($data);
 
         if ($isNew) {
-            if (array_key_exists("created_at", $entity->columns)) {
-                $entity->created_at = date("Y-m-d H:i:s");
-            }
-
-            [$query, $bindings] = $entity->generateInsertQuery();
+            [$query, $bindings] = $this->generateInsertQuery();
         }
         else {
-            if (array_key_exists("created_at", $entity->columns)) {
-                $createdAt = new DateTime($entity->created_at);
-                $entity->created_at = $createdAt->format("Y-m-d H:i:s");
-            }
-
-            [$query, $bindings] = $entity->generateUpdateQuery();
+            [$query, $bindings] = $this->generateUpdateQuery();
         }
 
         $db = Database::get();
-
         $affectedRows = $db->execute($query, $bindings);
 
         // If insert was ok, load the new values into entity state
@@ -227,6 +206,35 @@ class Entity {
             $id = $id ?? $db->getLastInsertedId();
             return self::getById($id);
         }
+
+        // Saving failed so reset id
+        $this->id = null;
+        return $this;
+    }
+
+    public static function insert(array $data): Entity {
+        $entity = new static();
+
+        if (array_key_exists("created_at", $entity->columns)) {
+            $data["created_at"] = date("Y-m-d H:i:s");
+        }
+
+        return $entity->save($data);
+    }
+
+    public static function update(array $data): Entity {
+        $entity = static::getById($data["id"]);
+        if (empty($entity->id)) {
+            $entity->id = null;
+            return $entity;
+        }
+
+        if (array_key_exists("created_at", $entity->columns)) {
+            $createdAt = new DateTime($entity->created_at);
+            $data["created_at"] = $createdAt->format("Y-m-d H:i:s");
+        }
+
+        return $entity->save($data);
     }
 
     /**
