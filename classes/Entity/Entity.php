@@ -94,7 +94,7 @@ class Entity {
     }
 
     public static function createEntities(array $rows): array {
-        return array_map(['self', "createEntity"], $rows);
+        return array_map(["self", "createEntity"], $rows);
     }
 
     /**
@@ -181,7 +181,7 @@ class Entity {
      * Will either be a new insert or a update to an existing Entity
      */
     public static function save($data): Entity {
-        $id = $data['id'] ?? null;
+        $id = $data["id"] ?? null;
 
         $isNew = empty($id);
 
