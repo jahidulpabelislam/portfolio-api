@@ -99,7 +99,7 @@ class Router {
             && !isset($uri[4])
         ) {
             $data["project_id"] = $uri[2];
-            $response = Projects::addProjectImage($data);
+            $response = Projects::addProjectImage($data, $this->api->files);
         }
         else if (!isset($uri[2])) {
             $response = Projects::addProject($data);

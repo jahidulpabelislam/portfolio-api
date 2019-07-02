@@ -23,6 +23,7 @@ class Core {
     public $uriArray = [];
     public $uriString = "";
     public $data = [];
+    public $files = [];
 
     private static $instance;
 
@@ -73,10 +74,15 @@ class Core {
         $this->data = $this->sanitizeData($_REQUEST);
     }
 
+    private function extractFilesFromRequest() {
+        $this->files = $_FILES;
+    }
+
     public function extractFromRequest() {
         $this->extractMethodFromRequest();
         $this->extractURIFromRequest();
         $this->extractDataFromRequest();
+        $this->extractFilesFromRequest();
     }
 
     public static function addTrailingSlash(string $url): string {
@@ -214,9 +220,13 @@ class Core {
         $response["meta"]["message"] = $response["meta"]["message"] ?? ($isSuccessful ? "OK" : "Internal Server Error");
 
         // Send back all the data sent in request
-        $response["meta"]["data"] = $this->data;
         $response["meta"]["method"] = $this->method;
         $response["meta"]["uri"] = $this->uriString;
+        $response["meta"]["data"] = $this->data;
+
+        if (count($this->files)) {
+            $response["meta"]["files"] = $this->files;
+        }
 
         $status = $response["meta"]["status"];
         $message = $response["meta"]["message"];

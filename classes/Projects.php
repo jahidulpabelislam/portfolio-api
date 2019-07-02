@@ -168,7 +168,7 @@ class Projects {
      * @param $project array The Project trying to upload image for
      * @return array The request response to send back
      */
-    private static function uploadProjectImage(array $project): array {
+    private static function uploadProjectImage(array $project, array $image): array {
         $response = [];
 
         $projectId = $project["id"];
@@ -176,8 +176,6 @@ class Projects {
 
         $projectNameFormatted = strtolower($projectName);
         $projectNameFormatted = preg_replace("/[^a-z0-9]+/", "-", $projectNameFormatted);
-
-        $image = $_FILES["image"];
 
         // Get the file ext
         $imageFileExt = pathinfo(basename($image["name"]), PATHINFO_EXTENSION);
@@ -240,14 +238,14 @@ class Projects {
      * @param $data array The data sent to aid in Inserting Project Image
      * @return array The request response to send back
      */
-    public static function addProjectImage(array $data): array {
+    public static function addProjectImage(array $data, array $files): array {
         if (Auth::isLoggedIn()) {
-            if (isset($_FILES["image"])) {
+            if (isset($files["image"])) {
 
                 // Check the Project trying to add a Image for exists
                 $response = self::getProject($data["project_id"]);
                 if (!empty($response["row"])) {
-                    $response = self::uploadProjectImage($response["row"]);
+                    $response = self::uploadProjectImage($response["row"], $files["image"]);
                 }
             }
             else {
@@ -258,8 +256,6 @@ class Projects {
         else {
             $response = Responder::getNotAuthorisedResponse();
         }
-
-        $response["meta"]["files"] = $_FILES;
 
         return $response;
     }
