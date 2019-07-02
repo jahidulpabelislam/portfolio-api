@@ -65,11 +65,9 @@ class Project extends Entity {
             $projectArray["skills"] = $skills;
         }
 
-        if (count($this->images)) {
-            $projectArray["images"] = array_map(static function(ProjectImage $image) {
-                return $image->toArray();
-            }, $this->images);
-        }
+        $projectArray["images"] = array_map(static function(ProjectImage $image) {
+            return $image->toArray();
+        }, $this->images);
 
         return $projectArray;
     }
