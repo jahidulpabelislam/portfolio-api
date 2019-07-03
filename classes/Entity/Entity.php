@@ -130,36 +130,11 @@ class Entity {
     }
 
     /**
-     * Helper function to generate a INSERT SQL query using the Entity's columns and provided data
-     *
-     * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
-     */
-    private function generateInsertQuery(): array {
-        $columnsQueries = $valuesQueries = $bindings = [];
-
-        foreach ($this->columns as $column => $value) {
-            if ($column !== "id") {
-                $columnsQuery[] = $column;
-
-                $placeholder = ":{$column}";
-                $valuesQuery[] = $placeholder;
-                $bindings[$placeholder] = $value;
-            }
-        }
-        $columnsQuery = implode(", ", $columnsQueries);
-        $valuesQuery = implode(", ", $valuesQueries);
-
-        $query = "INSERT INTO " . static::$tableName . " ({$columnsQuery}) VALUES ({$valuesQuery});";
-
-        return [$query, $bindings];
-    }
-
-    /**
      * Helper function to generate a UPDATE SQL query using the Entity's columns and provided data
      *
      * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
      */
-    private function generateUpdateQuery(): array {
+    private function generateSaveQuery(): array {
         $valuesQueries = $bindings= [];
 
         foreach ($this->columns as $column => $value) {
@@ -173,7 +148,10 @@ class Entity {
         }
         $valuesQuery = implode(", ", $valuesQueries);
 
-        $query = "UPDATE " . static::$tableName . " SET {$valuesQuery} WHERE id = :id;";
+        $isNew = empty($this->id);
+        $query = $isNew ? "INSERT INTO" : "UPDATE";
+        $query .= " " . static::$tableName . " SET {$valuesQuery} ";
+        $query .= $isNew ? ";" : "WHERE id = :id;";
 
         return [$query, $bindings];
     }
@@ -183,29 +161,19 @@ class Entity {
      * Will either be a new insert or a update to an existing Entity
      */
     private function save(array $data): Entity {
-        $id = $this->id ?? null;
-
-        $isNew = empty($id);
-
         if (array_key_exists("updated_at", $this->columns)) {
             $data["updated_at"] = date("Y-m-d H:i:s");
         }
-
         $this->setValues($data);
 
-        if ($isNew) {
-            [$query, $bindings] = $this->generateInsertQuery();
-        }
-        else {
-            [$query, $bindings] = $this->generateUpdateQuery();
-        }
+        [$query, $bindings] = $this->generateSaveQuery();
 
         $db = Database::get();
         $affectedRows = $db->execute($query, $bindings);
 
         // If insert was ok, load the new values into entity state
         if ($affectedRows) {
-            $id = $id ?? $db->getLastInsertedId();
+            $id = $this->id ?? $db->getLastInsertedId();
             return self::getById($id);
         }
 
