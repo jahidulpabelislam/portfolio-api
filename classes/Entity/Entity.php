@@ -135,18 +135,19 @@ class Entity {
      * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
      */
     private function generateInsertQuery(): array {
-        $columnsQuery = $valuesQuery = "";
-        $bindings = [];
+        $columnsQueries = $valuesQueries = $bindings = [];
 
         foreach ($this->columns as $column => $value) {
             if ($column !== "id") {
-                $columnsQuery .= "{$column}, ";
-                $valuesQuery .= ":{$column}, ";
-                $bindings[":{$column}"] = $value;
+                $columnsQuery[] = $column;
+
+                $placeholder = ":{$column}";
+                $valuesQuery[] = $placeholder;
+                $bindings[$placeholder] = $value;
             }
         }
-        $columnsQuery = rtrim($columnsQuery, " ,");
-        $valuesQuery = rtrim($valuesQuery, " ,");
+        $columnsQuery = implode(", ", $columnsQueries);
+        $valuesQuery = implode(", ", $valuesQueries);
 
         $query = "INSERT INTO " . static::$tableName . " ({$columnsQuery}) VALUES ({$valuesQuery});";
 
@@ -159,17 +160,18 @@ class Entity {
      * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
      */
     private function generateUpdateQuery(): array {
-        $valuesQuery = "";
-        $bindings = [];
+        $valuesQueries = $bindings= [];
 
         foreach ($this->columns as $column => $value) {
-            $bindings[":{$column}"] = $value;
+            $placeholder = ":{$column}";
+
+            $bindings[$placeholder] = $value;
 
             if ($column !== "id") {
-                $valuesQuery .= "{$column} = :{$column}, ";
+                $valuesQueries[] = "{$column} = {$placeholder}";
             }
         }
-        $valuesQuery = rtrim($valuesQuery, " ,");
+        $valuesQuery = implode(", ", $valuesQueries);
 
         $query = "UPDATE " . static::$tableName . " SET {$valuesQuery} WHERE id = :id;";
 
