@@ -26,12 +26,29 @@ IndexIgnore *
 
 DirectoryIndex index.php index.html
 
-# Add caching for API responses
+# Add caching for API responses & resources
 <IfModule mod_expires.c>
     ExpiresActive On
     ExpiresDefault "access plus 1 seconds"
     ExpiresByType application/json "access plus 2678400 seconds"
     ExpiresByType text/plain "access plus 2678400 seconds"
+    ExpiresByType image/gif "access plus 2678400 seconds"
+    ExpiresByType image/jpeg "access plus 2678400 seconds"
+    ExpiresByType image/png "access plus 2678400 seconds"
+    ExpiresByType image/svg+xml "access plus 2678400 seconds"
+</IfModule>
+<IfModule mod_headers.c>
+    # Cache project image files for 31 days
+    <FilesMatch "\.(ico|jpg|jpeg|png|gif|svg)$">
+        Header set Cache-Control "max-age=2678400, public"
+    </FilesMatch>
+</IfModule>
+
+# Deflate API responses
+<IfModule mod_deflate.c>
+    <IfModule mod_filter.c>
+       AddOutputFilterByType DEFLATE application/json
+    </IfModule>
 </IfModule>
 
 RewriteEngine On
