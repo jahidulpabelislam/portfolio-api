@@ -96,11 +96,11 @@ class Project extends Entity {
         $project = parent::getById($id);
 
         // If Project was found
-        if (!empty($project->id)) {
+        if ($project->id) {
 
             // If Project isn't public and user isn't logged in, don't return Project
             if ($project->status !== self::PUBLIC_STATUS && !Auth::isLoggedIn()) {
-                $project->id = 0;
+                $project->id = null;
                 return $project;
             }
 

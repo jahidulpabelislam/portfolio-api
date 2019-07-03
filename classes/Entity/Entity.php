@@ -102,8 +102,8 @@ class Entity {
      */
     public static function getByColumn(string $column, $value): array {
         $query = "SELECT * FROM " . static::$tableName . " 
-                         WHERE {$column} = :value
-                         ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . ";";
+                           WHERE {$column} = :value
+                           ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . ";";
         $bindings = [":value" => $value];
         $rows = Database::get()->getAll($query, $bindings);
 
@@ -115,18 +115,16 @@ class Entity {
      * Uses helper function getByColumn
      */
     public static function getById($id): Entity {
-        $entity = new static();
-
         if (is_numeric($id)) {
             $entities = self::getByColumn("id", (int)$id);
 
             // Check everything was okay, so as this /Should/ return only one, set values from first item
             if (count($entities)) {
-                $entity->setValues($entities[0]->columns);
+                return $entities[0];
             }
         }
 
-        return $entity;
+        return new static();
     }
 
     /**
@@ -194,8 +192,7 @@ class Entity {
 
     public static function update(array $data): Entity {
         $entity = static::getById($data["id"]);
-        if (empty($entity->id)) {
-            $entity->id = null;
+        if (!$entity->id) {
             return $entity;
         }
 
@@ -339,8 +336,8 @@ class Entity {
         }
 
         $query = "SELECT * FROM " . static::$tableName . " {$whereQuery}
-                         ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . "
-                         LIMIT {$this->limitBy} OFFSET {$offset};";
+                           ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . "
+                           LIMIT {$this->limitBy} OFFSET {$offset};";
         $rows = Database::get()->getAll($query, $bindings);
 
         return self::createEntities($rows);
