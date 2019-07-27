@@ -31,6 +31,7 @@ class Entity {
     protected static $intColumns = ["id"];
 
     protected static $dateTimeColumns = ["created_at", "updated_at"];
+    protected static $dateTimeFormat = "Y-m-d H:i:s";
 
     protected static $searchableColumns = [];
 
@@ -76,9 +77,9 @@ class Entity {
 
         foreach ($array as $column => $value) {
             if (in_array($column, static::$dateTimeColumns)) {
-                $datetime = DateTime::createFromFormat("Y-m-d G:i:s", $value);
+                $datetime = DateTime::createFromFormat(self::$dateTimeFormat, $value);
                 if ($datetime) {
-                    $array[$column] = $datetime->format("Y-m-d G:i:s e");
+                    $array[$column] = $datetime->format("Y-m-d H:i:s e");
                 }
             }
         }
@@ -160,7 +161,7 @@ class Entity {
      */
     private function save(array $data): Entity {
         if (array_key_exists("updated_at", $this->columns)) {
-            $data["updated_at"] = date("Y-m-d H:i:s");
+            $data["updated_at"] = date(self::$dateTimeFormat);
         }
         $this->setValues($data);
 
@@ -184,7 +185,7 @@ class Entity {
         $entity = new static();
 
         if (array_key_exists("created_at", $entity->columns)) {
-            $data["created_at"] = date("Y-m-d H:i:s");
+            $data["created_at"] = date(self::$dateTimeFormat);
         }
 
         return $entity->save($data);
@@ -198,7 +199,7 @@ class Entity {
 
         if (array_key_exists("created_at", $entity->columns)) {
             $createdAt = new DateTime($entity->created_at);
-            $data["created_at"] = $createdAt->format("Y-m-d H:i:s");
+            $data["created_at"] = $createdAt->format(self::$dateTimeFormat);
         }
 
         return $entity->save($data);
