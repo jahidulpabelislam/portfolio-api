@@ -9,7 +9,7 @@
  *
  * PHP version 7.1+
  *
- * @version 4.0.0
+ * @version 5.0.0
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
  * @copyright 2010-2019 JPI
  */
