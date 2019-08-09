@@ -103,6 +103,7 @@ class Core {
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
         $domain = rtrim($_SERVER["SERVER_NAME"], "/");
 
+        $uri = trim($uri, "/");
         $fullURL = "{$protocol}://{$domain}/{$uri}";
         $fullURL = self::addTrailingSlash($fullURL);
 
