@@ -65,7 +65,7 @@ class Config {
      */
     public static function get(): Config {
         if (!self::$instance) {
-            self::$instance = new self();
+            self::$instance = new Config();
         }
 
         return self::$instance;

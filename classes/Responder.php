@@ -33,7 +33,7 @@ class Responder {
      */
     public static function get(): Responder {
         if (!self::$instance) {
-            self::$instance = new self();
+            self::$instance = new Responder();
         }
 
         return self::$instance;

@@ -57,7 +57,7 @@ class Database {
      */
     public static function get(): Database {
         if (!self::$instance) {
-            self::$instance = new self();
+            self::$instance = new Database();
         }
 
         return self::$instance;

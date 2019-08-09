@@ -32,7 +32,7 @@ class Core {
      */
     public static function get(): Core {
         if (!self::$instance) {
-            self::$instance = new self();
+            self::$instance = new Core();
         }
 
         return self::$instance;
