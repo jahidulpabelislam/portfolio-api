@@ -163,6 +163,10 @@ class Core {
         return $invalidFields;
     }
 
+    private static function setHeader($header, $value) {
+        header("{$header}: {$value}");
+    }
+
     private function setCORSHeaders(array &$response) {
         $originURL = $_SERVER["HTTP_ORIGIN"] ?? "";
 
@@ -171,9 +175,9 @@ class Core {
 
         // If the domain if allowed send correct header response back
         if (in_array($originDomain, Config::ALLOWED_DOMAINS)) {
-            header("Access-Control-Allow-Origin: {$originURL}");
-            header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-            header("Access-Control-Allow-Headers: Process-Data, Authorization");
+            self::setHeader("Access-Control-Allow-Origin", $originURL);
+            self::setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            self::setHeader("Access-Control-Allow-Headers", "Process-Data, Authorization");
 
             // Override meta data, and respond with all endpoints available
             if ($this->method === "OPTIONS") {
@@ -193,13 +197,13 @@ class Core {
         if ($this->method === "GET" && !in_array($this->uriString, $notCachedURLs)) {
             $secondsToCache = 2678400; // 31 days
 
-            header("Cache-Control: max-age={$secondsToCache}, public");
+            self::setHeader("Cache-Control", "max-age={$secondsToCache}, public");
 
             $expiryTimestamp = time() + $secondsToCache;
             $expiresTime = gmdate("D, d M Y H:i:s e", $expiryTimestamp);
-            header("Expires: {$expiresTime}");
+            self::setHeader("Expires", $expiresTime);
 
-            header("Pragma: cache");
+            self::setHeader("Pragma", "cache");
         }
     }
 
@@ -233,7 +237,7 @@ class Core {
         $message = $response["meta"]["message"];
 
         header("HTTP/1.1 {$status} {$message}");
-        header("Content-Type: application/json");
+        self::setHeader("Content-Type", "application/json");
 
         // Check if requested to send json
         $isSendingJson = (stripos($_SERVER["HTTP_ACCEPT"], "application/json") !== false);
