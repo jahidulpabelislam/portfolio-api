@@ -3,8 +3,8 @@
         "firebase/php-jwt": "^5.0"
     },
     "autoload": {
-        "classmap": [
-            "src/"
-        ]
+        "psr-4": {
+            "JPI\\API\\": "src/"
+        }
     }
 }
