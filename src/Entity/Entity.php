@@ -134,12 +134,16 @@ class Entity {
      * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
      */
     private function generateSaveQuery(): array {
+        $isNew = empty($this->id);
+
         $valuesQueries = $bindings= [];
 
         foreach ($this->columns as $column => $value) {
             $placeholder = ":{$column}";
 
-            $bindings[$placeholder] = $value;
+            if ($column !== "id" || !$isNew) {
+                $bindings[$placeholder] = $value;
+            }
 
             if ($column !== "id") {
                 $valuesQueries[] = "{$column} = {$placeholder}";
@@ -147,7 +151,6 @@ class Entity {
         }
         $valuesQuery = implode(", ", $valuesQueries);
 
-        $isNew = empty($this->id);
         $query = $isNew ? "INSERT INTO" : "UPDATE";
         $query .= " " . static::$tableName . " SET {$valuesQuery} ";
         $query .= $isNew ? ";" : "WHERE id = :id;";

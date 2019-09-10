@@ -217,21 +217,16 @@ class Responder {
         return $response;
     }
 
-    /**
-     * Return a response when a item was requested,
-     * so check if found return the item (with necessary meta)
-     * else if not found return necessary meta
-     */
-    public static function getItemResponse(Entity $entity, $id): array {
-        if ($id && $entity->id && $entity->id == $id) {
-            return [
-                "meta" => [
-                    "ok" => true,
-                ],
-                "row" => $entity->toArray(),
-            ];
-        }
+    private static function getItemFoundResponse(Entity $entity): array {
+        return [
+            "meta" => [
+                "ok" => true,
+            ],
+            "row" => $entity->toArray(),
+        ];
+    }
 
+    public static function getItemNotFoundResponse(Entity $entity, $id): array {
         return [
             "meta" => [
                 "status" => 404,
@@ -243,12 +238,60 @@ class Responder {
     }
 
     /**
+     * Return a response when a item was requested,
+     * so check if found return the item (with necessary meta)
+     * else if not found return necessary meta
+     */
+    public static function getItemResponse(Entity $entity, $id): array {
+        if ($id && $entity->id && $entity->id == $id) {
+            return self::getItemFoundResponse($entity);
+        }
+
+        return self::getItemNotFoundResponse($entity, $id);
+    }
+
+    public static function getInsertResponse(Entity $entity): array {
+        if ($entity->id) {
+            $response = self::getItemFoundResponse($entity);
+
+            $response["meta"]["status"] = 201;
+            $response["meta"]["message"] = "Created";
+
+            return $response;
+        }
+
+        return [
+            "meta" => [
+                "status" => 500,
+                "message" => "Internal Server Error",
+                "feedback" => "Failed to insert the new {$entity::$displayName}.",
+            ],
+            "row" => [],
+        ];
+    }
+
+    public static function getUpdateResponse(Entity $entity, $id): array {
+        if ($id && $entity->id && $entity->id == $id) {
+            return self::getItemFoundResponse($entity);
+        }
+
+        return [
+            "meta" => [
+                "status" => 500,
+                "message" => "Internal Server Error",
+                "feedback" => "Failed to update the {$entity::$displayName} identified by {$id}.",
+            ],
+            "row" => [],
+        ];
+    }
+
+    /**
      * Return the response when a item was attempted to be deleted
      */
     public static function getItemDeletedResponse(Entity $entity, $id, bool $isDeleted = false): array {
         // If the entity has no id set it means the item wasn't found, so return item 404 response
         if (!$entity->id) {
-            return self::getItemResponse($entity, $id);
+            return self::getItemNotFoundResponse($entity, $id);
         }
 
         if ($isDeleted) {

@@ -70,13 +70,14 @@ class Projects {
 
                 if ($projectId) {
                     $project = Project::update($data);
+
+                    $response = Responder::getUpdateResponse($project, $projectId);
                 }
                 else {
                     $project = Project::insert($data);
-                    $projectId = empty($project->id) ? $project->id : null;
-                }
 
-                $response = Responder::getItemResponse($project, $projectId);
+                    $response = Responder::getInsertResponse($project);
+                }
             }
             else {
                 $response = Responder::get()->getInvalidFieldsResponse($requiredFields);
@@ -216,12 +217,7 @@ class Projects {
                 ];
                 $projectImage = ProjectImage::insert($imageData);
 
-                $response = Responder::getItemResponse($projectImage, $projectImage->id);
-
-                if (!empty($response["row"])) {
-                    $response["meta"]["status"] = 201;
-                    $response["meta"]["message"] = "Created";
-                }
+                $response = Responder::getInsertResponse($projectImage);
             }
             else {
                 // Else there was a problem uploading file to server
