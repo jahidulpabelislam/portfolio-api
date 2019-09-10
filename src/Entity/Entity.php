@@ -66,7 +66,7 @@ class Entity {
     public function setValues(array $values) {
         $columns = array_keys($this->columns);
         foreach ($columns as $column) {
-            if (isset($values[$column])) {
+            if (array_key_exists($column, $values)) {
                 $this->{$column} = $values[$column];
             }
         }
@@ -163,6 +163,7 @@ class Entity {
         if (array_key_exists("updated_at", $this->columns)) {
             $data["updated_at"] = date(self::$dateTimeFormat);
         }
+
         $this->setValues($data);
 
         [$query, $bindings] = $this->generateSaveQuery();
@@ -170,7 +171,7 @@ class Entity {
         $db = Database::get();
         $affectedRows = $db->execute($query, $bindings);
 
-        // If insert was ok, load the new values into entity state
+        // If insert/update was ok, load the new values into entity state
         if ($affectedRows) {
             $id = $this->id ?? $db->getLastInsertedId();
             return self::getById($id);
@@ -198,8 +199,13 @@ class Entity {
         }
 
         if (array_key_exists("created_at", $entity->columns)) {
-            $createdAt = new DateTime($entity->created_at);
-            $data["created_at"] = $createdAt->format(self::$dateTimeFormat);
+            $createdAtVal = null;
+            if (!empty($entity->created_at)) {
+                $createdAt = new DateTime($entity->created_at);
+                $createdAtVal = $createdAt->format(self::$dateTimeFormat);
+            }
+
+            $data["created_at"] = $createdAtVal;
         }
 
         return $entity->save($data);
