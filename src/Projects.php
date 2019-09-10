@@ -66,13 +66,17 @@ class Projects {
                     }
                 }
 
-                if (empty($data["id"])) {
-                    $project = Project::insert($data);
-                } else {
+                $projectId = !empty($data["id"]) ? $data["id"] : null;
+
+                if ($projectId) {
                     $project = Project::update($data);
                 }
+                else {
+                    $project = Project::insert($data);
+                    $projectId = empty($project->id) ? $project->id : null;
+                }
 
-                $response = Responder::getItemResponse($project, $project->id);
+                $response = Responder::getItemResponse($project, $projectId);
             }
             else {
                 $response = Responder::get()->getInvalidFieldsResponse($requiredFields);

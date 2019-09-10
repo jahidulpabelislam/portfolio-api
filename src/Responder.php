@@ -223,7 +223,7 @@ class Responder {
      * else if not found return necessary meta
      */
     public static function getItemResponse(Entity $entity, $id): array {
-        if ($entity->id == $id) {
+        if ($id && $entity->id && $entity->id == $id) {
             return [
                 "meta" => [
                     "ok" => true,
