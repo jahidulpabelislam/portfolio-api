@@ -29,8 +29,8 @@ class ProjectImage extends Entity {
         "project_id" => null,
         "sort_order_number" => 0,
         "file" => "",
-        "created_at" => "",
-        "updated_at" => "",
+        "created_at" => null,
+        "updated_at" => null,
     ];
 
     protected static $intColumns = ["id", "project_id", "sort_order_number"];

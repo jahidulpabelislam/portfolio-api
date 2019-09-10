@@ -40,8 +40,8 @@ class Project extends Entity {
         "colour" => "",
         "skills" => "",
         "status" => "draft",
-        "created_at" => "",
-        "updated_at" => "",
+        "created_at" => null,
+        "updated_at" => null,
     ];
 
     protected static $searchableColumns = [
