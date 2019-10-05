@@ -42,7 +42,7 @@ class Projects {
     private static function saveProject(array $data): array {
         if (Auth::isLoggedIn()) {
 
-            $requiredFields = ["name", "date", "skills", "long_description", "short_description"];
+            $requiredFields = ["name", "date", "type", "skills", "long_description", "short_description"];
             if (Core::get()->hasRequiredFields($requiredFields)) {
 
                 // Transform the incoming data into the necessary data for the database

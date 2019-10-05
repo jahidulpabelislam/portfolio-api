@@ -32,6 +32,7 @@ class Project extends Entity {
         "id" => null,
         "name" => "",
         "date" => "",
+        "type" => "",
         "link" => "",
         "github" => "",
         "download" => "",
@@ -46,6 +47,7 @@ class Project extends Entity {
 
     protected static $searchableColumns = [
         "name",
+        "type",
         "skills",
         "long_description",
         "short_description",
