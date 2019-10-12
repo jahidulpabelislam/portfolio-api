@@ -20,7 +20,7 @@ if (!defined("ROOT")) {
 use DateTime;
 use JPI\API\Database;
 
-class Entity {
+abstract class Entity {
 
     public static $displayName = "";
 
