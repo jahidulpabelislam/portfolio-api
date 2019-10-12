@@ -193,7 +193,44 @@ class Core {
         }
     }
 
-    private function setCacheHeaders() {
+    private static function setLastModifiedHeader($response) {
+        if (empty($response["rows"]) && empty($response["row"])) {
+            return;
+        }
+
+        $gmtTimeZone = new DateTimeZone(self::CACHE_TIMEZONE);
+        $rowDateFormat = "Y-m-d H:i:s e";
+
+        $latestRow = $response["row"] ?? $response["rows"][0] ?? null;
+
+        if (!empty($response["rows"])  && count($response["rows"]) > 1) {
+            $latestDate = 0;
+            foreach($response["rows"] as $row) {
+                if (empty($row["updated_at"])) {
+                    continue;
+                }
+
+                $updatedAtDate = DateTime::createFromFormat($rowDateFormat, $row["updated_at"]);
+                $updatedAtDate = $updatedAtDate->setTimezone($gmtTimeZone);
+                $updatedAt = $updatedAtDate->getTimestamp();
+
+                if ($updatedAt > $latestDate) {
+                    $latestDate = $updatedAt;
+                    $latestRow = $row;
+                }
+            }
+        }
+
+        if (!empty($latestRow["updated_at"])) {
+            $updatedAt = DateTime::createFromFormat($rowDateFormat, $latestRow["updated_at"]);
+            $updatedAt = $updatedAt->setTimezone($gmtTimeZone);
+            $lastModified = $updatedAt->format("D, j M Y H:i:s");
+
+            self::setHeader("Last-Modified", $lastModified . " GMT");
+        }
+    }
+
+    private function setCacheHeaders(array $response) {
         $notCachedURLs = [
             "/v" . Config::API_VERSION . "/auth/session/",
         ];
@@ -204,12 +241,15 @@ class Core {
 
             self::setHeader("Cache-Control", "max-age={$secondsToCache}, public");
 
+            $gmtTimeZone = new DateTimeZone(self::CACHE_TIMEZONE);
             $nowDate = new DateTime("+{$secondsToCache} seconds");
-            $nowDate = $nowDate->setTimezone(new DateTimeZone(self::CACHE_TIMEZONE));
+            $nowDate = $nowDate->setTimezone($gmtTimeZone);
             $expiresTime = $nowDate->format("D, d M Y H:i:s");
             self::setHeader("Expires", "{$expiresTime} GMT");
 
             self::setHeader("Pragma", "cache");
+
+            self::setLastModifiedHeader($response);
         }
     }
 
@@ -220,7 +260,7 @@ class Core {
      */
     public function sendResponse(array $response) {
         $this->setCORSHeaders($response);
-        $this->setCacheHeaders();
+        $this->setCacheHeaders($response);
 
         // Set defaults 'ok', 'status' & 'message' if not set
         $response["meta"]["ok"] = $response["meta"]["ok"] ?? false;
