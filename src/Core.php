@@ -13,11 +13,16 @@
 
 namespace JPI\API;
 
+use DateTime;
+use DateTimeZone;
+
 if (!defined("ROOT")) {
     die();
 }
 
 class Core {
+
+    private const CACHE_TIMEZONE = "Europe/London";
 
     public $method = "GET";
     public $uriArray = [];
@@ -199,9 +204,10 @@ class Core {
 
             self::setHeader("Cache-Control", "max-age={$secondsToCache}, public");
 
-            $expiryTimestamp = time() + $secondsToCache;
-            $expiresTime = gmdate("D, d M Y H:i:s e", $expiryTimestamp);
-            self::setHeader("Expires", $expiresTime);
+            $nowDate = new DateTime("+{$secondsToCache} seconds");
+            $nowDate = $nowDate->setTimezone(new DateTimeZone(self::CACHE_TIMEZONE));
+            $expiresTime = $nowDate->format("D, d M Y H:i:s");
+            self::setHeader("Expires", "{$expiresTime} GMT");
 
             self::setHeader("Pragma", "cache");
         }
