@@ -227,6 +227,7 @@ class Core {
             $lastModified = $updatedAt->format("D, j M Y H:i:s");
 
             self::setHeader("Last-Modified", $lastModified . " GMT");
+            self::setHeader("ETag", md5($latestRow["id"] . $latestRow["updated_at"]));
         }
     }
 
