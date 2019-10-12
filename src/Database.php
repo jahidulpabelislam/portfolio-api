@@ -68,6 +68,7 @@ class Database {
      *
      * @param $query string The SQL query to run
      * @param $bindings array Array of any bindings to use with the SQL query
+     * @return PDOStatement|null
      */
     private function _execute(string $query, ?array $bindings): ?PDOStatement {
         if ($this->pdo) {
