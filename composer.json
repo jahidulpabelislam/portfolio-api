@@ -1,6 +1,7 @@
 {
     "require": {
-        "firebase/php-jwt": "^5.0"
+        "firebase/php-jwt": "^5.0",
+        "ext-pdo": "*"
     },
     "autoload": {
         "psr-4": {
