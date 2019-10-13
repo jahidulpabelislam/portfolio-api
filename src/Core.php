@@ -24,6 +24,8 @@ class Core {
 
     private const CACHE_TIMEZONE = "Europe/London";
 
+    private $response = [];
+
     public $method = "GET";
     public $uriArray = [];
     public $uriString = "";
@@ -37,7 +39,7 @@ class Core {
      */
     public static function get(): Core {
         if (!self::$instance) {
-            self::$instance = new Core();
+            self::$instance = new self();
         }
 
         return self::$instance;
@@ -172,7 +174,7 @@ class Core {
         header("{$header}: {$value}");
     }
 
-    private function setCORSHeaders(array &$response) {
+    private function setCORSHeaders() {
         $originURL = $_SERVER["HTTP_ORIGIN"] ?? "";
 
         // Strip the protocol from domain
@@ -186,14 +188,16 @@ class Core {
 
             // Override meta data, and respond with all endpoints available
             if ($this->method === "OPTIONS") {
-                $response["meta"]["ok"] = true;
-                $response["meta"]["status"] = 200;
-                $response["meta"]["message"] = "OK";
+                $this->response["meta"]["ok"] = true;
+                $this->response["meta"]["status"] = 200;
+                $this->response["meta"]["message"] = "OK";
             }
         }
     }
 
-    private static function setLastModifiedHeader($response) {
+    private function setLastModifiedHeaders() {
+        $response = $this->response;
+
         if (empty($response["rows"]) && empty($response["row"])) {
             return;
         }
@@ -231,7 +235,7 @@ class Core {
         }
     }
 
-    private function setCacheHeaders(array $response) {
+    private function setCacheHeaders() {
         $notCachedURLs = [
             "/v" . Config::API_VERSION . "/auth/session/",
         ];
@@ -250,7 +254,7 @@ class Core {
 
             self::setHeader("Pragma", "cache");
 
-            self::setLastModifiedHeader($response);
+            $this->setLastModifiedHeaders();
         }
     }
 
@@ -260,28 +264,25 @@ class Core {
      * @param $response array The response generated from the request so far
      */
     public function sendResponse(array $response) {
-        $this->setCORSHeaders($response);
-        $this->setCacheHeaders($response);
+        $isSuccessful = $response["meta"]["ok"] ?? false;
+        $defaults = [
+            "meta" => [
+                "ok" => false,
+                "status" => ($isSuccessful ? 200 : 500),
+                "message" => ($isSuccessful ? "OK" : "Internal Server Error"),
+                "uri" => $this->uriString,
+                "method" => $this->method,
+                "data" => $this->data,
+                "files" => $this->files,
+            ],
+        ];
+        $this->response = array_replace_recursive($defaults, $response);
 
-        // Set defaults 'ok', 'status' & 'message' if not set
-        $response["meta"]["ok"] = $response["meta"]["ok"] ?? false;
+        $this->setCORSHeaders();
+        $this->setCacheHeaders();
 
-        $isSuccessful = $response["meta"]["ok"];
-
-        $response["meta"]["status"] = $response["meta"]["status"] ?? ($isSuccessful ? 200 : 500);
-        $response["meta"]["message"] = $response["meta"]["message"] ?? ($isSuccessful ? "OK" : "Internal Server Error");
-
-        // Send back all the data sent in request
-        $response["meta"]["method"] = $this->method;
-        $response["meta"]["uri"] = $this->uriString;
-        $response["meta"]["data"] = $this->data;
-
-        if (count($this->files)) {
-            $response["meta"]["files"] = $this->files;
-        }
-
-        $status = $response["meta"]["status"];
-        $message = $response["meta"]["message"];
+        $status = $this->response["meta"]["status"];
+        $message = $this->response["meta"]["message"];
 
         header("HTTP/1.1 {$status} {$message}");
         self::setHeader("Content-Type", "application/json");
@@ -290,7 +291,7 @@ class Core {
         $isSendingJson = (stripos($_SERVER["HTTP_ACCEPT"], "application/json") !== false);
 
         $encodeParams = $isSendingJson ? 0 : JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
-        echo json_encode($response, $encodeParams);
+        echo json_encode($this->response, $encodeParams);
         die();
     }
 }
