@@ -22,7 +22,7 @@ class Config {
     public const API_VERSION = "3";
 
     // IP of database server
-    public const DB_IP = "localhost"; // TODO: CHANGE ME
+    public const DB_IP = "127.0.0.1"; // TODO: CHANGE ME
     // Database name to use in server
     public const DB_NAME = "jpi"; // TODO: CHANGE ME
     // Username to database
