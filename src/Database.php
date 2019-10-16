@@ -1,9 +1,6 @@
 <?php
 /**
  * Connects to a database and set up to send and receive data
- * using application specific constants defined in the Config.php file.
- *
- * A reusable file for other projects.
  *
  * MySQL & PDO specific.
  *
@@ -26,41 +23,22 @@ if (!defined("ROOT")) {
 
 class Database {
 
-    private static $instance;
-
     private $pdo;
 
     /**
-     * Connects to a MySQL engine
-     * using application constants DB_IP, DB_USERNAME, and DB_PASSWORD
-     * defined in Config.php
+     * Connects to a MySQL engine using PDO
      */
-    public function __construct() {
-        $this->connectToDB();
-    }
-
-    private function connectToDB() {
+    public function __construct(string $databaseName, string $username, string $password, string $host = "127.0.0.1") {
         try {
-            $dsn = "mysql:host=" . Config::DB_IP . ";dbname=" . Config::DB_NAME . ";charset-UTF-8";
+            $dsn = "mysql:host={$host};dbname={$databaseName};charset-UTF-8";
             $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
 
-            $this->pdo = new PDO($dsn, Config::DB_USERNAME, Config::DB_PASSWORD, $options);
+            $this->pdo = new PDO($dsn, $username, $password, $options);
         }
         catch (PDOException $error) {
             $errorMessage = $error->getMessage();
             error_log("Error creating a connection to database: {$errorMessage}, full error: {$error}");
         }
-    }
-
-    /**
-     * Singleton getter
-     */
-    public static function get(): Database {
-        if (!self::$instance) {
-            self::$instance = new Database();
-        }
-
-        return self::$instance;
     }
 
     /**

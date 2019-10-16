@@ -18,9 +18,12 @@ if (!defined("ROOT")) {
 }
 
 use DateTime;
+use JPI\API\Config;
 use JPI\API\Database;
 
 abstract class Entity {
+
+    protected static $db;
 
     public static $displayName = "";
 
@@ -42,6 +45,14 @@ abstract class Entity {
 
     public $limitBy = 10;
     public $page = 1;
+
+    protected static function getDB(): Database {
+        if (!self::$db) {
+            self::$db = new Database(Config::DB_NAME, Config::DB_USERNAME, Config::DB_PASSWORD);
+        }
+
+        return self::$db;
+    }
 
     public function __isset($name) {
         return isset($this->columns[$name]);
@@ -106,7 +117,7 @@ abstract class Entity {
                            WHERE {$column} = :value
                            ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . ";";
         $bindings = [":value" => $value];
-        $rows = Database::get()->getAll($query, $bindings);
+        $rows = self::getDB()->getAll($query, $bindings);
 
         return self::createEntities($rows);
     }
@@ -171,7 +182,7 @@ abstract class Entity {
 
         [$query, $bindings] = $this->generateSaveQuery();
 
-        $db = Database::get();
+        $db = self::getDB();
         $affectedRows = $db->execute($query, $bindings);
 
         // If insert/update was ok, load the new values into entity state
@@ -222,7 +233,7 @@ abstract class Entity {
     public function delete(): bool {
         $query = "DELETE FROM " . static::$tableName . " WHERE id = :id;";
         $bindings = [":id" => $this->id];
-        $affectedRows = Database::get()->execute($query, $bindings);
+        $affectedRows = self::getDB()->execute($query, $bindings);
 
         // Whether the deletion was ok
         $isDeleted = $affectedRows > 0;
@@ -300,7 +311,7 @@ abstract class Entity {
 
         $query = "SELECT COUNT(*) AS total_count
                          FROM " . static::$tableName . " {$whereClause};";
-        $row = Database::get()->getOne($query, $bindings);
+        $row = self::getDB()->getOne($query, $bindings);
 
         return $row["total_count"] ?? 0;
     }
@@ -348,7 +359,7 @@ abstract class Entity {
         $query = "SELECT * FROM " . static::$tableName . " {$whereQuery}
                            ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . "
                            LIMIT {$this->limitBy} OFFSET {$offset};";
-        $rows = Database::get()->getAll($query, $bindings);
+        $rows = self::getDB()->getAll($query, $bindings);
 
         return self::createEntities($rows);
     }
