@@ -144,7 +144,7 @@ abstract class Entity {
      *
      * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
      */
-    private function generateSaveQuery(): array {
+    protected function generateSaveQuery(): array {
         $isNew = empty($this->id);
 
         $valuesQueries = $bindings= [];
@@ -173,7 +173,7 @@ abstract class Entity {
      * Save values to the Entity Table in the Database
      * Will either be a new insert or a update to an existing Entity
      */
-    private function save(array $data): Entity {
+    protected function save(array $data): Entity {
         if (array_key_exists("updated_at", $this->columns)) {
             $data["updated_at"] = date(self::$dateTimeFormat);
         }
@@ -249,7 +249,7 @@ abstract class Entity {
      * @param $params array The fields to search for within searchable columns (if any)
      * @return array An array consisting of the generated where clause and an associative array containing any bindings to aid the Database querying
      */
-    private static function generateSearchWhereQuery(array $params): array {
+    protected static function generateSearchWhereQuery(array $params): array {
         if (!static::$searchableColumns) {
             return ["", []];
         }
