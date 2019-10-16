@@ -88,7 +88,7 @@ abstract class Entity {
 
         foreach ($array as $column => $value) {
             if (in_array($column, static::$dateTimeColumns)) {
-                $datetime = DateTime::createFromFormat(self::$dateTimeFormat, $value);
+                $datetime = DateTime::createFromFormat(static::$dateTimeFormat, $value);
                 if ($datetime) {
                     $array[$column] = $datetime->format("Y-m-d H:i:s e");
                 }
@@ -106,7 +106,7 @@ abstract class Entity {
     }
 
     public static function createEntities(array $rows): array {
-        return array_map(["self", "createEntity"], $rows);
+        return array_map(["static", "createEntity"], $rows);
     }
 
     /**
@@ -119,7 +119,7 @@ abstract class Entity {
         $bindings = [":value" => $value];
         $rows = self::getDB()->getAll($query, $bindings);
 
-        return self::createEntities($rows);
+        return static::createEntities($rows);
     }
 
     /**
@@ -128,7 +128,7 @@ abstract class Entity {
      */
     public static function getById($id): Entity {
         if (is_numeric($id)) {
-            $entities = self::getByColumn("id", (int)$id);
+            $entities = static::getByColumn("id", (int)$id);
 
             // Check everything was okay, so as this /Should/ return only one, set values from first item
             if (count($entities)) {
@@ -175,7 +175,7 @@ abstract class Entity {
      */
     protected function save(array $data): Entity {
         if (array_key_exists("updated_at", $this->columns)) {
-            $data["updated_at"] = date(self::$dateTimeFormat);
+            $data["updated_at"] = date(static::$dateTimeFormat);
         }
 
         $this->setValues($data);
@@ -188,7 +188,7 @@ abstract class Entity {
         // If insert/update was ok, load the new values into entity state
         if ($affectedRows) {
             $id = $this->id ?? $db->getLastInsertedId();
-            return self::getById($id);
+            return static::getById($id);
         }
 
         // Saving failed so reset id
@@ -200,7 +200,7 @@ abstract class Entity {
         $entity = new static();
 
         if (array_key_exists("created_at", $entity->columns)) {
-            $data["created_at"] = date(self::$dateTimeFormat);
+            $data["created_at"] = date(static::$dateTimeFormat);
         }
 
         return $entity->save($data);
@@ -216,7 +216,7 @@ abstract class Entity {
             $createdAtVal = null;
             if (!empty($entity->created_at)) {
                 $createdAt = new DateTime($entity->created_at);
-                $createdAtVal = $createdAt->format(self::$dateTimeFormat);
+                $createdAtVal = $createdAt->format(static::$dateTimeFormat);
             }
 
             $data["created_at"] = $createdAtVal;
@@ -307,7 +307,7 @@ abstract class Entity {
      * @return int
      */
     public static function getTotalCountForSearch(array $params): int {
-        [$whereClause, $bindings] = self::generateSearchWhereQuery($params);
+        [$whereClause, $bindings] = static::generateSearchWhereQuery($params);
 
         $query = "SELECT COUNT(*) AS total_count
                          FROM " . static::$tableName . " {$whereClause};";
@@ -353,7 +353,7 @@ abstract class Entity {
 
         // Add a filter if a search was entered
         if (!empty($params)) {
-            [$whereQuery, $bindings] = self::generateSearchWhereQuery($params);
+            [$whereQuery, $bindings] = static::generateSearchWhereQuery($params);
         }
 
         $query = "SELECT * FROM " . static::$tableName . " {$whereQuery}
@@ -361,6 +361,6 @@ abstract class Entity {
                            LIMIT {$this->limitBy} OFFSET {$offset};";
         $rows = self::getDB()->getAll($query, $bindings);
 
-        return self::createEntities($rows);
+        return static::createEntities($rows);
     }
 }
