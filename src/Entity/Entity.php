@@ -38,8 +38,14 @@ abstract class Entity {
 
     protected static $intColumns = ["id"];
 
-    protected static $dateTimeColumns = ["created_at", "updated_at"];
+    protected static $dateTimeColumns = [];
     protected static $dateTimeFormat = "Y-m-d H:i:s";
+
+    protected static $hasCreatedAt = true;
+    protected static $createdAtColumn = "created_at";
+
+    protected static $hasUpdatedAt = true;
+    protected static $updatedAtColumn = "updated_at";
 
     protected static $searchableColumns = [];
 
@@ -62,6 +68,30 @@ abstract class Entity {
         }
 
         return static::$db;
+    }
+
+    public function __construct() {
+        if (static::$hasCreatedAt) {
+            $this->setValue(static::$createdAtColumn, null);
+        }
+
+        if (static::$hasUpdatedAt) {
+            $this->setValue(static::$updatedAtColumn, null);
+        }
+    }
+
+    private static function getDataTimeColumns(): array {
+        $columns = static::$dateTimeColumns;
+
+        if (static::$hasCreatedAt) {
+            $columns[] = static::$createdAtColumn;
+        }
+
+        if (static::$hasUpdatedAt) {
+            $columns[] = static::$updatedAtColumn;
+        }
+
+        return $columns;
     }
 
     public function __isset($name) {
@@ -100,8 +130,10 @@ abstract class Entity {
     public function toArray(): array {
         $array = $this->columns;
 
+        $dateTimeColumns = static::getDataTimeColumns();
+
         foreach ($array as $column => $value) {
-            if (in_array($column, static::$dateTimeColumns)) {
+            if (in_array($column, $dateTimeColumns)) {
                 $datetime = DateTime::createFromFormat(static::$dateTimeFormat, $value);
                 if ($datetime) {
                     $array[$column] = $datetime->format("Y-m-d H:i:s e");
@@ -188,8 +220,8 @@ abstract class Entity {
      * Will either be a new insert or a update to an existing Entity
      */
     protected function save(array $data): Entity {
-        if (array_key_exists("updated_at", $this->columns)) {
-            $data["updated_at"] = date(static::$dateTimeFormat);
+        if (static::$hasUpdatedAt) {
+            $data[static::$updatedAtColumn] = date(static::$dateTimeFormat);
         }
 
         $this->setValues($data);
@@ -213,8 +245,8 @@ abstract class Entity {
     public static function insert(array $data): Entity {
         $entity = new static();
 
-        if (array_key_exists("created_at", $entity->columns)) {
-            $data["created_at"] = date(static::$dateTimeFormat);
+        if (static::$hasCreatedAt) {
+            $data[static::$createdAtColumn] = date(static::$dateTimeFormat);
         }
 
         return $entity->save($data);
@@ -226,14 +258,14 @@ abstract class Entity {
             return $entity;
         }
 
-        if (array_key_exists("created_at", $entity->columns)) {
+        if (static::$hasCreatedAt) {
             $createdAtVal = null;
-            if (!empty($entity->created_at)) {
-                $createdAt = new DateTime($entity->created_at);
+            if (!empty($entity->{static::$createdAtColumn})) {
+                $createdAt = new DateTime($entity->{static::$createdAtColumn});
                 $createdAtVal = $createdAt->format(static::$dateTimeFormat);
             }
 
-            $data["created_at"] = $createdAtVal;
+            $data[static::$createdAtColumn] = $createdAtVal;
         }
 
         return $entity->save($data);
