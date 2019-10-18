@@ -219,12 +219,12 @@ abstract class Entity {
      * Save values to the Entity Table in the Database
      * Will either be a new insert or a update to an existing Entity
      */
-    protected function save(array $data): Entity {
-        if (static::$hasUpdatedAt) {
-            $data[static::$updatedAtColumn] = date(static::$dateTimeFormat);
-        }
-
+    protected function save(array $data): bool {
         $this->setValues($data);
+
+        if (static::$hasUpdatedAt) {
+            $this->setValue(static::$updatedAtColumn, date(static::$dateTimeFormat));
+        }
 
         [$query, $bindings] = $this->generateSaveQuery();
 
@@ -234,12 +234,14 @@ abstract class Entity {
         // If insert/update was ok, load the new values into entity state
         if ($affectedRows) {
             $id = $this->id ?? $db->getLastInsertedId();
-            return static::getById($id);
+            $updatedEntity = static::getById($id);
+            $this->columns = $updatedEntity->columns;
+            return true;
         }
 
         // Saving failed so reset id
         $this->id = null;
-        return $this;
+        return false;
     }
 
     public static function insert(array $data): Entity {
@@ -249,26 +251,28 @@ abstract class Entity {
             $data[static::$createdAtColumn] = date(static::$dateTimeFormat);
         }
 
-        return $entity->save($data);
+        $entity->save($data);
+
+        return $entity;
     }
 
-    public static function update(array $data): Entity {
-        $entity = static::getById($data["id"]);
-        if (!$entity->id) {
-            return $entity;
+    public function update(array $data): bool {
+        if (empty($this->id)) {
+            return false;
         }
 
+        // Just format the value for DB
         if (static::$hasCreatedAt) {
             $createdAtVal = null;
-            if (!empty($entity->{static::$createdAtColumn})) {
-                $createdAt = new DateTime($entity->{static::$createdAtColumn});
+            if (!empty($this->{static::$createdAtColumn})) {
+                $createdAt = new DateTime($this->{static::$createdAtColumn});
                 $createdAtVal = $createdAt->format(static::$dateTimeFormat);
             }
 
             $data[static::$createdAtColumn] = $createdAtVal;
         }
 
-        return $entity->save($data);
+        return $this->save($data);
     }
 
     /**

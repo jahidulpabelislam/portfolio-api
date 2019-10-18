@@ -56,27 +56,24 @@ class Projects {
 
                 // Checks if the save was okay, and images were passed, update the sort order on the images
                 if (!empty($data["images"])) {
-
-                    $images = $data["images"];
-                    foreach ($images as $i => $image) {
+                    foreach ($data["images"] as $i => $image) {
                         $imageData = json_decode($image, true);
-                        $imageData["sort_order_number"] = $i + 1;
 
-                        ProjectImage::update($imageData);
+                        $projectImage = ProjectImage::getById($imageData["id"]);
+                        $projectImage->update(["sort_order_number" => $i + 1]);
                     }
                 }
 
                 $projectId = !empty($data["id"]) ? $data["id"] : null;
 
-                if ($projectId) {
-                    $project = Project::update($data);
-
-                    $response = Responder::getUpdateResponse($project, $projectId);
+                if (empty($projectId)) {
+                    $project = Project::insert($data);
+                    $response = Responder::getInsertResponse($project);
                 }
                 else {
-                    $project = Project::insert($data);
-
-                    $response = Responder::getInsertResponse($project);
+                    $project = Project::getById($projectId);
+                    $project->update($data);
+                    $response = Responder::getUpdateResponse($project, $projectId);
                 }
             }
             else {
