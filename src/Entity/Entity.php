@@ -74,13 +74,17 @@ abstract class Entity {
         }
     }
 
+    private function setValue($column, $value) {
+        if (in_array($column, static::$intColumns)) {
+            $value = (int)$value;
+        }
+
+        $this->columns[$column] = $value;
+    }
+
     public function __set($name, $value) {
         if (array_key_exists($name, $this->columns)) {
-            if (in_array($name, static::$intColumns)) {
-                $value = (int)$value;
-            }
-
-            $this->columns[$name] = $value;
+            $this->setValue($name, $value);
         }
     }
 
@@ -88,7 +92,7 @@ abstract class Entity {
         $columns = array_keys($this->columns);
         foreach ($columns as $column) {
             if (array_key_exists($column, $values)) {
-                $this->{$column} = $values[$column];
+                $this->setValue($column, $values[$column]);
             }
         }
     }
