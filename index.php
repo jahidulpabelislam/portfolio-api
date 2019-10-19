@@ -9,13 +9,9 @@
  * @copyright 2010-2019 JPI
  */
 
+require_once(__DIR__ . "/bootstrap.php");
+
 use JPI\API\Router;
-
-if (!defined("ROOT")) {
-    define("ROOT", rtrim($_SERVER["DOCUMENT_ROOT"], " /"));
-}
-
-require_once(ROOT . "/vendor/autoload.php");
 
 $router = new Router();
 $router->performRequest();
