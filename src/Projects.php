@@ -39,7 +39,7 @@ class Projects {
      * @param $data array The data to insert/update into the database for the Project
      * @return array The request response to send back
      */
-    private static function saveProject(array $data): array {
+    private static function _saveProject(array $data): array {
         if (Auth::isLoggedIn()) {
 
             $requiredFields = ["name", "date", "type", "skills", "long_description", "short_description"];
@@ -49,7 +49,6 @@ class Projects {
                 if (isset($data["date"])) {
                     $data["date"] = date("Y-m-d", strtotime($data["date"]));
                 }
-
                 if (isset($data["skills"]) && is_array($data["skills"])) {
                     $data["skills"] = implode(",", $data["skills"]);
                 }
@@ -65,7 +64,6 @@ class Projects {
                 }
 
                 $projectId = !empty($data["id"]) ? $data["id"] : null;
-
                 if (empty($projectId)) {
                     $project = Project::insert($data);
                     $response = Responder::getInsertResponse($project);
@@ -94,7 +92,7 @@ class Projects {
      * @return array The request response to send back
      */
     public static function addProject(array $data): array {
-        $response = self::saveProject($data);
+        $response = self::_saveProject($data);
 
         // If successful, as this is a new Project creation override the meta
         if (!empty($response["row"])) {
@@ -111,8 +109,8 @@ class Projects {
      * @param $data array The new data entered to use to update the Project with
      * @return array The request response to send back
      */
-    public static function editProject(array $data): array {
-        return self::saveProject($data);
+    public static function updateProject(array $data): array {
+        return self::_saveProject($data);
     }
 
     /**
@@ -174,7 +172,7 @@ class Projects {
      * @param $project array The Project trying to upload image for
      * @return array The request response to send back
      */
-    private static function uploadProjectImage(array $project, array $image): array {
+    private static function _uploadProjectImage(array $project, array $image): array {
         $response = [];
 
         $projectId = $project["id"];
@@ -246,7 +244,7 @@ class Projects {
                 // Check the Project trying to add a Image for exists
                 $response = self::getProject($data["project_id"]);
                 if (!empty($response["row"])) {
-                    $response = self::uploadProjectImage($response["row"], $files["image"]);
+                    $response = self::_uploadProjectImage($response["row"], $files["image"]);
                 }
             }
             else {
@@ -269,7 +267,6 @@ class Projects {
      * @return array The request response to send back
      */
     public static function getProjectImage($projectId, $imageId): array {
-
         // Check the Project trying to get Images for exists
         $response = self::getProject($projectId);
         if (!empty($response["row"])) {

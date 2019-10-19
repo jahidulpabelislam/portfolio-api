@@ -111,7 +111,7 @@ class Router {
     private function executeProjectsPutAction(array $uri, array $data): array {
         if (isset($uri[2]) && $uri[2] !== "" && !isset($uri[3])) {
             $data["id"] = $uri[2];
-            $response = Projects::editProject($data);
+            $response = Projects::updateProject($data);
         }
 
         return $response ?? [];
