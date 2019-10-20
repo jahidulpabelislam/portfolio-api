@@ -28,7 +28,7 @@ class Router {
      * Check that the requested API version is valid, if so return empty array
      * else return appropriate response (array)
      */
-    private function checkAPIVersion(): array {
+    private function checkAPIVersion(): ?array {
         $uri = $this->api->uriArray;
 
         $version = $uri[0] ?? "";
@@ -38,13 +38,13 @@ class Router {
             $response = Responder::get()->getUnrecognisedAPIVersionResponse();
         }
 
-        return $response ?? [];
+        return $response ?? null;
     }
 
     /**
      * @return array An appropriate response to auth request
      */
-    private function executeAuthAction(array $uri, string $method): array {
+    private function executeAuthAction(array $uri, string $method): ?array {
         $authAction = $uri[2] ?? "";
 
         if ($method === "POST") {
@@ -66,10 +66,10 @@ class Router {
             $response = Responder::get()->getMethodNotAllowedResponse();
         }
 
-        return $response ?? [];
+        return $response ?? null;
     }
 
-    private function executeProjectsGetAction(array $uri): array {
+    private function executeProjectsGetAction(array $uri): ?array {
         if (isset($uri[2]) && $uri[2] !== "") {
             $projectId = $uri[2];
 
@@ -89,10 +89,10 @@ class Router {
             $response = Projects::getProjects();
         }
 
-        return $response ?? [];
+        return $response ?? null;
     }
 
-    private function executeProjectsPostAction(array $uri): array {
+    private function executeProjectsPostAction(array $uri): ?array {
         if (
             isset($uri[2]) && $uri[2] !== ""
             && isset($uri[3]) && $uri[3] === "images"
@@ -104,18 +104,18 @@ class Router {
             $response = Projects::addProject();
         }
 
-        return $response ?? [];
+        return $response ?? null;
     }
 
-    private function executeProjectsPutAction(array $uri): array {
+    private function executeProjectsPutAction(array $uri): ?array {
         if (isset($uri[2]) && $uri[2] !== "" && !isset($uri[3])) {
             $response = Projects::updateProject($uri[2]);
         }
 
-        return $response ?? [];
+        return $response ?? null;
     }
 
-    private function executeProjectsDeleteAction(array $uri): array {
+    private function executeProjectsDeleteAction(array $uri): ?array {
         if (isset($uri[2]) && $uri[2] !== "") {
             if (
                 isset($uri[3]) && $uri[3] === "images"
@@ -129,13 +129,13 @@ class Router {
             }
         }
 
-        return $response ?? [];
+        return $response ?? null;
     }
 
     /**
      * @return array An appropriate response to projects request
      */
-    private function executeProjectsAction(array $uri, string $method): array {
+    private function executeProjectsAction(array $uri, string $method): ?array {
         $methodFormatted = ucfirst(strtolower($method));
         $functionName = "executeProjects{$methodFormatted}Action";
         if (method_exists($this, $functionName)) {
@@ -150,7 +150,7 @@ class Router {
      *
      * @return array An appropriate response to request
      */
-    private function executeAction(): array {
+    private function executeAction(): ?array {
         $method = $this->api->method;
         $uri = $this->api->uriArray;
 
@@ -162,7 +162,7 @@ class Router {
             return $this->{$functionName}($uri, $method);
         }
 
-        return [];
+        return null;
     }
 
     /**
