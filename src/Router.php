@@ -136,23 +136,13 @@ class Router {
      * @return array An appropriate response to projects request
      */
     private function executeProjectsAction(array $uri, string $method): array {
-        if ($method === "GET") {
-            $response = $this->executeProjectsGetAction($uri);
-        }
-        else if ($method === "POST") {
-            $response = $this->executeProjectsPostAction($uri);
-        }
-        else if ($method === "PUT") {
-            $response = $this->executeProjectsPutAction($uri);
-        }
-        else if ($method === "DELETE") {
-            $response = $this->executeProjectsDeleteAction($uri);
-        }
-        else {
-            $response = Responder::get()->getMethodNotAllowedResponse();
+        $methodFormatted = ucfirst(strtolower($method));
+        $functionName = "executeProjects{$methodFormatted}Action";
+        if (method_exists($this, $functionName)) {
+            return $this->{$functionName}($uri);
         }
 
-        return $response;
+        return Responder::get()->getMethodNotAllowedResponse();
     }
 
     /**
@@ -166,14 +156,13 @@ class Router {
 
         $entity = $uri[1] ?? "";
 
-        if ($entity === "auth") {
-            $response = $this->executeAuthAction($uri, $method);
-        }
-        else if ($entity === "projects") {
-            $response = $this->executeProjectsAction($uri, $method);
+        $entityFormatted = ucfirst(strtolower($entity));
+        $functionName = "execute{$entityFormatted}Action";
+        if (method_exists($this, $functionName)) {
+            return $this->{$functionName}($uri, $method);
         }
 
-        return $response ?? [];
+        return [];
     }
 
     /**
