@@ -44,12 +44,12 @@ class Router {
     /**
      * @return array An appropriate response to auth request
      */
-    private function executeAuthAction(array $uri, string $method, array $data): array {
+    private function executeAuthAction(array $uri, string $method): array {
         $authAction = $uri[2] ?? "";
 
         if ($method === "POST") {
             if ($authAction === "login" && (!isset($uri[3]) || $uri[3] === "")) {
-                $response = Auth::login($data);
+                $response = Auth::login();
             }
         }
         else if ($method === "DELETE") {
@@ -69,7 +69,7 @@ class Router {
         return $response ?? [];
     }
 
-    private function executeProjectsGetAction(array $uri, array $data): array {
+    private function executeProjectsGetAction(array $uri): array {
         if (isset($uri[2]) && $uri[2] !== "") {
             $projectId = $uri[2];
 
@@ -86,51 +86,46 @@ class Router {
             }
         }
         else {
-            $response = Projects::getProjects($data);
+            $response = Projects::getProjects();
         }
 
         return $response ?? [];
     }
 
-    private function executeProjectsPostAction(array $uri, array $data): array {
+    private function executeProjectsPostAction(array $uri): array {
         if (
             isset($uri[2]) && $uri[2] !== ""
             && isset($uri[3]) && $uri[3] === "images"
             && !isset($uri[4])
         ) {
-            $data["project_id"] = $uri[2];
-            $response = Projects::addProjectImage($data, $this->api->files);
+            $response = Projects::addProjectImage($uri[2]);
         }
         else if (!isset($uri[2])) {
-            $response = Projects::addProject($data);
+            $response = Projects::addProject();
         }
 
         return $response ?? [];
     }
 
-    private function executeProjectsPutAction(array $uri, array $data): array {
+    private function executeProjectsPutAction(array $uri): array {
         if (isset($uri[2]) && $uri[2] !== "" && !isset($uri[3])) {
-            $data["id"] = $uri[2];
-            $response = Projects::updateProject($data);
+            $response = Projects::updateProject($uri[2]);
         }
 
         return $response ?? [];
     }
 
-    private function executeProjectsDeleteAction(array $uri, array $data): array {
+    private function executeProjectsDeleteAction(array $uri): array {
         if (isset($uri[2]) && $uri[2] !== "") {
             if (
                 isset($uri[3]) && $uri[3] === "images"
                 && isset($uri[4]) && $uri[4] !== ""
                 && !isset($uri[5])
             ) {
-                $data["id"] = $uri[4];
-                $data["project_id"] = $uri[2];
-                $response = Projects::deleteProjectImage($data);
+                $response = Projects::deleteProjectImage($uri[2], $uri[4]);
             }
             else if (!isset($uri[3])) {
-                $data["id"] = $uri[2];
-                $response = Projects::deleteProject($data);
+                $response = Projects::deleteProject($uri[2]);
             }
         }
 
@@ -140,18 +135,18 @@ class Router {
     /**
      * @return array An appropriate response to projects request
      */
-    private function executeProjectsAction(array $uri, string $method, array $data): array {
+    private function executeProjectsAction(array $uri, string $method): array {
         if ($method === "GET") {
-            $response = $this->executeProjectsGetAction($uri, $data);
+            $response = $this->executeProjectsGetAction($uri);
         }
         else if ($method === "POST") {
-            $response = $this->executeProjectsPostAction($uri, $data);
+            $response = $this->executeProjectsPostAction($uri);
         }
         else if ($method === "PUT") {
-            $response = $this->executeProjectsPutAction($uri, $data);
+            $response = $this->executeProjectsPutAction($uri);
         }
         else if ($method === "DELETE") {
-            $response = $this->executeProjectsDeleteAction($uri, $data);
+            $response = $this->executeProjectsDeleteAction($uri);
         }
         else {
             $response = Responder::get()->getMethodNotAllowedResponse();
@@ -168,15 +163,14 @@ class Router {
     private function executeAction(): array {
         $method = $this->api->method;
         $uri = $this->api->uriArray;
-        $data = $this->api->data;
 
         $entity = $uri[1] ?? "";
 
         if ($entity === "auth") {
-            $response = $this->executeAuthAction($uri, $method, $data);
+            $response = $this->executeAuthAction($uri, $method);
         }
         else if ($entity === "projects") {
-            $response = $this->executeProjectsAction($uri, $method, $data);
+            $response = $this->executeProjectsAction($uri, $method);
         }
 
         return $response ?? [];

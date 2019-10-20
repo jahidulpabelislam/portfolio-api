@@ -23,10 +23,11 @@ class Projects {
     /**
      * Gets all Projects but paginated, also might include search
      *
-     * @param $data array Any data to aid in the search query
      * @return array The request response to send back
      */
-    public static function getProjects(array $data): array {
+    public static function getProjects(): array {
+        $data = Core::get()->data;
+
         $project = new Project();
         $projects = $project->doSearch($data);
 
@@ -36,14 +37,16 @@ class Projects {
     /**
      * Try to either insert or update a Project
      *
-     * @param $data array The data to insert/update into the database for the Project
+     * @param null $projectId int The Id of the Project to update (Only if a update request)
      * @return array The request response to send back
      */
-    private static function _saveProject(array $data): array {
+    private static function _saveProject($projectId = null): array {
         if (Auth::isLoggedIn()) {
 
             $requiredFields = ["name", "date", "type", "skills", "long_description", "short_description"];
             if (Core::get()->hasRequiredFields($requiredFields)) {
+
+                $data = Core::get()->data;
 
                 // Transform the incoming data into the necessary data for the database
                 if (isset($data["date"])) {
@@ -63,7 +66,7 @@ class Projects {
                     }
                 }
 
-                $projectId = !empty($data["id"]) ? $data["id"] : null;
+                $projectId = !empty($projectId) ? $projectId : null;
                 if (empty($projectId)) {
                     $project = Project::insert($data);
                     $response = Responder::getInsertResponse($project);
@@ -88,11 +91,10 @@ class Projects {
     /**
      * Try and add a Project a user has attempted to add
      *
-     * @param $data array The data to insert into the database for this new Project
      * @return array The request response to send back
      */
-    public static function addProject(array $data): array {
-        $response = self::_saveProject($data);
+    public static function addProject(): array {
+        $response = self::_saveProject();
 
         // If successful, as this is a new Project creation override the meta
         if (!empty($response["row"])) {
@@ -106,25 +108,25 @@ class Projects {
     /**
      * Try to edit a Project a user has added before
      *
-     * @param $data array The new data entered to use to update the Project with
+     * @param $projectId int The Id of the Project to update
      * @return array The request response to send back
      */
-    public static function updateProject(array $data): array {
-        return self::_saveProject($data);
+    public static function updateProject($projectId): array {
+        return self::_saveProject($projectId);
     }
 
     /**
      * Try to delete a Project a user has added before
      *
-     * @param $data array The data sent to aid in the deletion of the Project
+     * @param $projectId int The Id of the Project to delete
      * @return array The request response to send back
      */
-    public static function deleteProject(array $data): array {
+    public static function deleteProject($projectId): array {
         if (Auth::isLoggedIn()) {
-            $project = Project::getById($data["id"]);
+            $project = Project::getById($projectId);
             $isDeleted = $project->delete();
 
-            $response = Responder::getItemDeletedResponse($project, $data["id"], $isDeleted);
+            $response = Responder::getItemDeletedResponse($project, $projectId, $isDeleted);
         }
         else {
             $response = Responder::getNotAuthorisedResponse();
@@ -234,15 +236,16 @@ class Projects {
     /**
      * Try to upload a Image user has tried to add as a Project Image
      *
-     * @param $data array The data sent to aid in Inserting Project Image
+     * @param $projectId int The Project Id to add this Image for
      * @return array The request response to send back
      */
-    public static function addProjectImage(array $data, array $files): array {
+    public static function addProjectImage($projectId): array {
         if (Auth::isLoggedIn()) {
+            $files = Core::get()->files;
             if (isset($files["image"])) {
 
                 // Check the Project trying to add a Image for exists
-                $response = self::getProject($data["project_id"]);
+                $response = self::getProject($projectId);
                 if (!empty($response["row"])) {
                     $response = self::_uploadProjectImage($response["row"], $files["image"]);
                 }
@@ -288,15 +291,12 @@ class Projects {
     /**
      * Try to delete a Image linked to a Project
      *
-     * @param $data array The data sent to delete the Project Image
+     * @param $projectId int The Id of the Project trying to delete Image for
+     * @param $imageId int The Id of the Project Image to delete
      * @return array The request response to send back
      */
-    public static function deleteProjectImage(array $data): array {
+    public static function deleteProjectImage($projectId, $imageId): array {
         if (Auth::isLoggedIn()) {
-
-            $projectId = $data["project_id"];
-            $imageId = $data["id"];
-
             // Check the Project of the Image trying to edit actually exists
             $response = self::getProject($projectId);
             if (!empty($response["row"])) {

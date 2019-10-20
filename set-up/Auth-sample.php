@@ -29,10 +29,9 @@ class Auth {
      * If successful store status (e.g store in cookie, session or database etc.) and output appropriate success message
      * If failed output appropriate error message
      *
-     * @param $data array The data provided when trying to login
      * @return array Response with meta data given to ajax call after trying to login
      */
-    public static function login(array $data): array {
+    public static function login(): array {
         $response = [];
 
         $api = Core::get();
@@ -40,6 +39,8 @@ class Auth {
         // Checks if data needed are present and not empty
         $requiredFields = ["username", "password"];
         if ($api->hasRequiredFields($requiredFields)) {
+
+            $data = $api->data;
 
             $response["meta"]["status"] = 401;
             $response["meta"]["message"] = "Unauthorized";
