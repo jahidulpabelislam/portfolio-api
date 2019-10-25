@@ -201,7 +201,7 @@ class Projects {
 
         // Check if file is a actual image
         $fileType = mime_content_type($image["tmp_name"]);
-        if (stripos($fileType, "image/") !== false) {
+        if (strpos($fileType, "image/") !== false) {
 
             // Try to uploaded file
             if (move_uploaded_file($image["tmp_name"], $newImageFullPath)) {
