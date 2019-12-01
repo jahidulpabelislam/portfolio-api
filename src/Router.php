@@ -12,6 +12,9 @@
 
 namespace JPI\API;
 
+use JPI\API\Controller\Auth;
+use JPI\API\Controller\Projects;
+
 if (!defined("ROOT")) {
     die();
 }

@@ -10,7 +10,7 @@
  * @copyright 2010-2019 JPI
  */
 
-namespace JPI\API;
+namespace JPI\API\Controller;
 
 if (!defined("ROOT")) {
     die();
@@ -18,6 +18,10 @@ if (!defined("ROOT")) {
 
 use Exception;
 use Firebase\JWT\JWT;
+use JPI\API\Config;
+use JPI\API\Core as API;
+use JPI\API\Hasher;
+use JPI\API\Responder;
 
 class Auth {
 
@@ -34,7 +38,7 @@ class Auth {
     public static function login(): array {
         $response = [];
 
-        $api = Core::get();
+        $api = API::get();
 
         // Checks if data needed are present and not empty
         $requiredFields = ["username", "password"];

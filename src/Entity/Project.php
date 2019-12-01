@@ -14,7 +14,7 @@
 
 namespace JPI\API\Entity;
 
-use JPI\API\Auth;
+use JPI\API\Controller\Auth;
 
 if (!defined("ROOT")) {
     die();

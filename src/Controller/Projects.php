@@ -9,12 +9,14 @@
  * @copyright 2010-2019 JPI
 */
 
-namespace JPI\API;
+namespace JPI\API\Controller;
 
 if (!defined("ROOT")) {
     die();
 }
 
+use JPI\API\Core as API;
+use JPI\API\Responder;
 use JPI\API\Entity\Project;
 use JPI\API\Entity\ProjectImage;
 
@@ -26,7 +28,7 @@ class Projects {
      * @return array The request response to send back
      */
     public static function getProjects(): array {
-        $data = Core::get()->data;
+        $data = API::get()->data;
 
         $project = new Project();
         $projects = $project->doSearch($data);
@@ -44,9 +46,9 @@ class Projects {
         if (Auth::isLoggedIn()) {
 
             $requiredFields = ["name", "date", "type", "skills", "long_description", "short_description"];
-            if (Core::get()->hasRequiredFields($requiredFields)) {
+            if (API::get()->hasRequiredFields($requiredFields)) {
 
-                $data = Core::get()->data;
+                $data = API::get()->data;
 
                 // Transform the incoming data into the necessary data for the database
                 if (isset($data["date"])) {
@@ -241,7 +243,7 @@ class Projects {
      */
     public static function addProjectImage($projectId): array {
         if (Auth::isLoggedIn()) {
-            $files = Core::get()->files;
+            $files = API::get()->files;
             if (isset($files["image"])) {
 
                 // Check the Project trying to add a Image for exists
