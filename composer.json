@@ -7,5 +7,10 @@
         "psr-4": {
             "JPI\\API\\": "src/"
         }
+    },
+    "config": {
+        "platform": {
+            "php": "7.3"
+        }
     }
 }
