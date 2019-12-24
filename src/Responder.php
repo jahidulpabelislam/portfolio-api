@@ -12,7 +12,6 @@
 
 namespace JPI\API;
 
-use JPI\API\Controller\Auth;
 use JPI\API\Entity\Entity;
 
 if (!defined("ROOT")) {
@@ -64,23 +63,6 @@ class Responder {
                 "feedback" => "You need to be logged in!",
             ],
         ];
-    }
-
-    /**
-     * Response for whether the user is logged in or not
-     */
-    public static function getAuthStatusResponse(): array {
-        if (Auth::isLoggedIn()) {
-            return [
-                "meta" => [
-                    "ok" => true,
-                    "status" => 200,
-                    "message" => "OK",
-                ],
-            ];
-        }
-
-        return self::getNotAuthorisedResponse();
     }
 
     public static function getLoggedOutResponse(): array {

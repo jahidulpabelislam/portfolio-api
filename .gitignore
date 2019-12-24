@@ -6,6 +6,6 @@ vendor/*
 
 Config.php
 Hasher.php
-Auth.php
+User.php
 
 project-images/*

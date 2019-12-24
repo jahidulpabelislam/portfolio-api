@@ -17,6 +17,7 @@ if (!defined("ROOT")) {
 
 use JPI\API\Core as API;
 use JPI\API\Responder;
+use JPI\API\Entity\User;
 use JPI\API\Entity\Project;
 use JPI\API\Entity\ProjectImage;
 
@@ -43,7 +44,7 @@ class Projects {
      * @return array The request response to send back
      */
     private static function _saveProject($projectId = null): array {
-        if (Auth::isLoggedIn()) {
+        if (User::isLoggedIn()) {
 
             $requiredFields = ["name", "date", "type", "skills", "long_description", "short_description"];
             if (API::get()->hasRequiredFields($requiredFields)) {
@@ -124,7 +125,7 @@ class Projects {
      * @return array The request response to send back
      */
     public static function deleteProject($projectId): array {
-        if (Auth::isLoggedIn()) {
+        if (User::isLoggedIn()) {
             $project = Project::getById($projectId);
             $isDeleted = $project->delete();
 
@@ -242,7 +243,7 @@ class Projects {
      * @return array The request response to send back
      */
     public static function addProjectImage($projectId): array {
-        if (Auth::isLoggedIn()) {
+        if (User::isLoggedIn()) {
             $files = API::get()->files;
             if (isset($files["image"])) {
 
@@ -298,7 +299,7 @@ class Projects {
      * @return array The request response to send back
      */
     public static function deleteProjectImage($projectId, $imageId): array {
-        if (Auth::isLoggedIn()) {
+        if (User::isLoggedIn()) {
             // Check the Project of the Image trying to edit actually exists
             $response = self::getProject($projectId);
             if (!empty($response["row"])) {

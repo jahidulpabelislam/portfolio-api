@@ -14,8 +14,6 @@
 
 namespace JPI\API\Entity;
 
-use JPI\API\Controller\Auth;
-
 if (!defined("ROOT")) {
     die();
 }
@@ -99,7 +97,7 @@ class Project extends Entity {
         if ($project->id) {
 
             // If Project isn't public and user isn't logged in, don't return Project
-            if ($project->status !== self::PUBLIC_STATUS && !Auth::isLoggedIn()) {
+            if ($project->status !== self::PUBLIC_STATUS && !User::isLoggedIn()) {
                 $project->id = null;
                 return $project;
             }
@@ -144,7 +142,7 @@ class Project extends Entity {
      */
     public function doSearch(array $params): array {
         // As the user isn't logged in, filter by status = public
-        if (!Auth::isLoggedIn()) {
+        if (!User::isLoggedIn()) {
             $params["status"] = self::PUBLIC_STATUS;
         }
 

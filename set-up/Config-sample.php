@@ -33,11 +33,6 @@ class Config {
     // The secret key to use in Firebase's JWT
     public const PORTFOLIO_ADMIN_SECRET_KEY = "changeme"; // TODO: CHANGE ME
 
-    // Username for portfolio admin
-    public const PORTFOLIO_ADMIN_USERNAME = "root"; // TODO: CHANGE ME
-    // Hashed password for portfolio admin
-    public const PORTFOLIO_ADMIN_PASSWORD = "root"; // TODO: CHANGE ME
-
     // A list of other domains that can call this API
     public const ALLOWED_DOMAINS = [
         "jahidulpabelislam.com",
