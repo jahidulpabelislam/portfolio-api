@@ -74,6 +74,16 @@ class Responder {
         ];
     }
 
+    public static function getUnsuccessfulLogoutResponse(): array {
+        return [
+            "meta" => [
+                "status" => 500,
+                "message" => "Internal Server Error",
+                "feedback" => "Couldn't successfully process your logout request!",
+            ],
+        ];
+    }
+
     /**
      * Generate response data to send back when the URI provided is not recognised
      */

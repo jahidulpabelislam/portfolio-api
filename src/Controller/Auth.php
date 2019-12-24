@@ -66,12 +66,12 @@ class Auth {
      *
      * @return array
      */
-    public static function logout(): ?array {
+    public static function logout(): array {
         if (User::logout()) {
             return Responder::getLoggedOutResponse();
         }
 
-        return null;
+        return Responder::getUnsuccessfulLogOutResponse();
     }
 
     /**
