@@ -46,41 +46,39 @@ class Projects {
     private static function _saveProject($projectId = null): array {
         if (User::isLoggedIn()) {
 
-            if (Project::hasRequiredFields()) {
+            // Only validate on creation
+            if (empty($projectId) && !Project::hasRequiredFields()) {
+                return Project::getInvalidFieldsResponse();
+            }
 
-                $data = API::get()->data;
+            $data = API::get()->data;
 
-                // Transform the incoming data into the necessary data for the database
-                if (isset($data["date"])) {
-                    $data["date"] = date("Y-m-d", strtotime($data["date"]));
-                }
-                if (isset($data["skills"]) && is_array($data["skills"])) {
-                    $data["skills"] = implode(",", $data["skills"]);
-                }
+            // Transform the incoming data into the necessary data for the database
+            if (isset($data["date"])) {
+                $data["date"] = date("Y-m-d", strtotime($data["date"]));
+            }
+            if (isset($data["skills"]) && is_array($data["skills"])) {
+                $data["skills"] = implode(",", $data["skills"]);
+            }
 
-                // Checks if the save was okay, and images were passed, update the sort order on the images
-                if (!empty($data["images"])) {
-                    foreach ($data["images"] as $i => $image) {
-                        $imageData = json_decode($image, true);
+            // Checks if the save was okay, and images were passed, update the sort order on the images
+            if (!empty($data["images"])) {
+                foreach ($data["images"] as $i => $image) {
+                    $imageData = json_decode($image, true);
 
-                        $projectImage = ProjectImage::getById($imageData["id"]);
-                        $projectImage->update(["sort_order_number" => $i + 1]);
-                    }
-                }
-
-                $projectId = !empty($projectId) ? $projectId : null;
-                if (empty($projectId)) {
-                    $project = Project::insert($data);
-                    $response = Responder::getInsertResponse($project);
-                }
-                else {
-                    $project = Project::getById($projectId);
-                    $project->update($data);
-                    $response = Responder::getUpdateResponse($project, $projectId);
+                    $projectImage = ProjectImage::getById($imageData["id"]);
+                    $projectImage->update(["sort_order_number" => $i + 1]);
                 }
             }
+
+            if (empty($projectId)) {
+                $project = Project::insert($data);
+                $response = Responder::getInsertResponse($project);
+            }
             else {
-                $response = Project::getInvalidFieldsResponse();
+                $project = Project::getById($projectId);
+                $project->update($data);
+                $response = Responder::getUpdateResponse($project, $projectId);
             }
         }
         else {
