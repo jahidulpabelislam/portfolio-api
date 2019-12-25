@@ -164,29 +164,38 @@ abstract class Entity {
     }
 
     /**
-     * Get Entities from the Database where a column ($column) = a value ($value)
+     * Generate and return SQL query (and bindings) for getting rows by single column value clause
      */
-    public static function getByColumn(string $column, $value): array {
+    protected static function generateGetByColumnQuery(string $column, $value): array {
         $query = "SELECT * FROM " . static::$tableName . " 
                            WHERE {$column} = :value
                            ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . ";";
         $bindings = [":value" => $value];
+
+        return [$query, $bindings];
+    }
+
+    /**
+     * Get Entities from the Database where a column ($column) = a value ($value)
+     */
+    public static function getByColumn(string $column, $value): array {
+        [$query, $bindings] = static::generateGetByColumnQuery($column, $value);
         $rows = static::getDB()->getAll($query, $bindings);
 
         return static::createEntities($rows);
     }
 
     /**
-     * Load a single Entity from the Database where a Id column = a value ($id)
-     * Uses helper function getByColumn
+     * Load a single Entity from the Database where a Id column = a value ($id).
+     * Uses helper function generateGetByColumnQuery to generate the necessary SQL query and bindings
      */
     public static function getById($id): Entity {
         if (is_numeric($id)) {
-            $entities = static::getByColumn("id", (int)$id);
+            [$query, $bindings] = static::generateGetByColumnQuery("id", (int)$id);
+            $row = static::getDB()->getOne($query, $bindings);
 
-            // Check everything was okay, so as this /Should/ return only one, set values from first item
-            if (count($entities)) {
-                return $entities[0];
+            if (!empty($row)) {
+                return static::createEntity($row);
             }
         }
 
