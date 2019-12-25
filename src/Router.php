@@ -10,10 +10,10 @@
  * @copyright 2010-2019 JPI
  */
 
-namespace JPI\API;
+namespace App;
 
-use JPI\API\Controller\Auth;
-use JPI\API\Controller\Projects;
+use App\Controller\Auth;
+use App\Controller\Projects;
 
 if (!defined("ROOT")) {
     die();

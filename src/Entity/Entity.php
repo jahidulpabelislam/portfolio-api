@@ -11,17 +11,17 @@
  * @copyright 2010-2019 JPI
  */
 
-namespace JPI\API\Entity;
+namespace App\Entity;
 
 if (!defined("ROOT")) {
     die();
 }
 
 use DateTime;
-use JPI\API\Config;
-use JPI\API\Core as API;
-use JPI\API\Database;
-use JPI\API\Responder;
+use App\Config;
+use App\Core as API;
+use App\Database;
+use App\Responder;
 
 abstract class Entity {
 

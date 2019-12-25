@@ -10,12 +10,12 @@
  * @copyright 2010-2020 JPI
  */
 
-namespace JPI\API\Entity;
+namespace App\Entity;
 
 use Exception;
 use Firebase\JWT\JWT;
-use JPI\API\Config;
-use JPI\API\Core as API;
+use App\Config;
+use App\Core as API;
 
 class User extends Entity {
 

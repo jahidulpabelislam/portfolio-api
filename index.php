@@ -11,7 +11,7 @@
 
 require_once(__DIR__ . "/bootstrap.php");
 
-use JPI\API\Router;
+use App\Router;
 
 $router = new Router();
 $router->performRequest();

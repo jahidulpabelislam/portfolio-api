@@ -10,9 +10,9 @@
  * @copyright 2010-2019 JPI
  */
 
-namespace JPI\API;
+namespace App;
 
-use JPI\API\Entity\Entity;
+use App\Entity\Entity;
 
 if (!defined("ROOT")) {
     die();

@@ -9,17 +9,17 @@
  * @copyright 2010-2019 JPI
 */
 
-namespace JPI\API\Controller;
+namespace App\Controller;
 
 if (!defined("ROOT")) {
     die();
 }
 
-use JPI\API\Core as API;
-use JPI\API\Responder;
-use JPI\API\Entity\User;
-use JPI\API\Entity\Project;
-use JPI\API\Entity\ProjectImage;
+use App\Core as API;
+use App\Responder;
+use App\Entity\User;
+use App\Entity\Project;
+use App\Entity\ProjectImage;
 
 class Projects {
 

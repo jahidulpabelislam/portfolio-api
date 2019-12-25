@@ -11,7 +11,7 @@
  * @copyright 2010-2019 JPI
  */
 
-namespace JPI\API;
+namespace App;
 
 use PDO;
 use PDOException;
