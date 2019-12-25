@@ -81,14 +81,17 @@ class Database {
         return 0;
     }
 
-    public function getOne(string $query, array $bindings = null): array {
+    public function getOne(string $query, array $bindings = null): ?array {
         $stmt = $this->_execute($query, $bindings);
 
         if ($stmt) {
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!empty($row)) {
+                return $row;
+            }
         }
 
-        return [];
+        return null;
     }
 
     public function getAll(string $query, array $bindings = null): array {
