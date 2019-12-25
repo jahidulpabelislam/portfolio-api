@@ -46,8 +46,7 @@ class Projects {
     private static function _saveProject($projectId = null): array {
         if (User::isLoggedIn()) {
 
-            $requiredFields = ["name", "date", "type", "skills", "long_description", "short_description"];
-            if (API::get()->hasRequiredFields($requiredFields)) {
+            if (Project::hasRequiredFields()) {
 
                 $data = API::get()->data;
 
@@ -81,7 +80,7 @@ class Projects {
                 }
             }
             else {
-                $response = Responder::get()->getInvalidFieldsResponse($requiredFields);
+                $response = Project::getInvalidFieldsResponse();
             }
         }
         else {

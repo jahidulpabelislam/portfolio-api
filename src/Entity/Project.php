@@ -41,6 +41,15 @@ class Project extends Entity {
         "status" => "draft",
     ];
 
+    protected static $requiredColumns = [
+        "name",
+        "date",
+        "type",
+        "skills",
+        "long_description",
+        "short_description"
+    ];
+
     protected static $searchableColumns = [
         "name",
         "type",

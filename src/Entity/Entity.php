@@ -19,7 +19,9 @@ if (!defined("ROOT")) {
 
 use DateTime;
 use JPI\API\Config;
+use JPI\API\Core as API;
 use JPI\API\Database;
+use JPI\API\Responder;
 
 abstract class Entity {
 
@@ -35,6 +37,8 @@ abstract class Entity {
     protected static $tableName = "";
 
     protected $columns = [];
+
+    protected static $requiredColumns = [];
 
     protected static $intColumns = ["id"];
 
@@ -92,6 +96,14 @@ abstract class Entity {
         }
 
         return $columns;
+    }
+
+    public static function hasRequiredFields(): bool {
+        return API::get()->hasRequiredFields(static::$requiredColumns);
+    }
+
+    public static function getInvalidFieldsResponse(): array {
+        return Responder::get()->getInvalidFieldsResponse(static::$requiredColumns);
     }
 
     public function __isset($name) {

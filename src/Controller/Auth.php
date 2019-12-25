@@ -31,11 +31,7 @@ class Auth {
      * @return array
      */
     public static function login(): array {
-        $api = API::get();
-
-        // Checks if data needed are present and not empty
-        $requiredFields = ["username", "password"];
-        if ($api->hasRequiredFields($requiredFields)) {
+        if (User::hasRequiredFields()) {
 
             $jwt = User::login();
             if ($jwt) {
@@ -58,7 +54,7 @@ class Auth {
             ];
         }
 
-        return Responder::get()->getInvalidFieldsResponse($requiredFields);
+        return User::getInvalidFieldsResponse();
     }
 
     /**
