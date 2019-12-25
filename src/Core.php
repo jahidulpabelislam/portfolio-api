@@ -140,13 +140,13 @@ class Core {
      * Check if all the required data is provided
      * And data provided is not empty
      *
-     * @param $requiredFields array Array of required data keys
+     * @param $entity string the Entity class
      * @return bool Whether data required is provided & is valid or not
      */
-    public function hasRequiredFields(array $requiredFields): bool {
+    public function hasRequiredFields(string $entity): bool {
 
         // Loops through each required field, and bails early with false if at least one is invalid
-        foreach ($requiredFields as $field) {
+        foreach ($entity::getRequiredFields() as $field) {
             if (!$this->isFieldValid($field)) {
                 return false;
             }

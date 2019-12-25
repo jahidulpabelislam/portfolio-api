@@ -47,8 +47,8 @@ class Projects {
         if (User::isLoggedIn()) {
 
             // Only validate on creation
-            if (empty($projectId) && !Project::hasRequiredFields()) {
-                return Project::getInvalidFieldsResponse();
+            if (empty($projectId) && !API::get()->hasRequiredFields(Project::class)) {
+                return Responder::get()->getInvalidFieldsResponse(Project::class);
             }
 
             $data = API::get()->data;
@@ -252,7 +252,7 @@ class Projects {
             }
             else {
                 $requiredFields = ["image"];
-                $response = Responder::get()->getInvalidFieldsResponse($requiredFields);
+                $response = Responder::get()->getInvalidFieldsResponse(User::class, $requiredFields);
             }
         }
         else {

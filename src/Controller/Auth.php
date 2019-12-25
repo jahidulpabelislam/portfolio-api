@@ -31,7 +31,7 @@ class Auth {
      * @return array
      */
     public static function login(): array {
-        if (User::hasRequiredFields()) {
+        if (API::get()->hasRequiredFields(User::class)) {
 
             $jwt = User::login();
             if ($jwt) {
@@ -54,7 +54,7 @@ class Auth {
             ];
         }
 
-        return User::getInvalidFieldsResponse();
+        return Responder::get()->getInvalidFieldsResponse(User::class);
     }
 
     /**

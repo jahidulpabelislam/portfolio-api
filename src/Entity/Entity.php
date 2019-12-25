@@ -98,12 +98,8 @@ abstract class Entity {
         return $columns;
     }
 
-    public static function hasRequiredFields(): bool {
-        return API::get()->hasRequiredFields(static::$requiredColumns);
-    }
-
-    public static function getInvalidFieldsResponse(): array {
-        return Responder::get()->getInvalidFieldsResponse(static::$requiredColumns);
+    public static function getRequiredFields(): array {
+        return static::$requiredColumns;
     }
 
     public function __isset($name) {
