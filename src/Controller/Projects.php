@@ -43,7 +43,7 @@ class Projects {
      * @param null $projectId int The Id of the Project to update (Only if a update request)
      * @return array The request response to send back
      */
-    private static function _saveProject($projectId = null): array {
+    private static function saveProject($projectId = null): array {
         if (User::isLoggedIn()) {
 
             // Only validate on creation
@@ -96,7 +96,7 @@ class Projects {
      * @return array The request response to send back
      */
     public static function addProject(): array {
-        $response = self::_saveProject();
+        $response = self::saveProject();
 
         // If successful, as this is a new Project creation override the meta
         if (!empty($response["row"])) {
@@ -114,7 +114,7 @@ class Projects {
      * @return array The request response to send back
      */
     public static function updateProject($projectId): array {
-        return self::_saveProject($projectId);
+        return self::saveProject($projectId);
     }
 
     /**
@@ -174,7 +174,7 @@ class Projects {
      * @param $project array The Project trying to upload image for
      * @return array The request response to send back
      */
-    private static function _uploadProjectImage(array $project, array $image): array {
+    private static function uploadProjectImage(array $project, array $image): array {
         $response = [];
 
         $projectId = $project["id"];
@@ -247,7 +247,7 @@ class Projects {
                 // Check the Project trying to add a Image for exists
                 $response = self::getProject($projectId, false);
                 if (!empty($response["row"])) {
-                    $response = self::_uploadProjectImage($response["row"], $files["image"]);
+                    $response = self::uploadProjectImage($response["row"], $files["image"]);
                 }
             }
             else {
