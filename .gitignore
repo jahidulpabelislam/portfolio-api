@@ -4,8 +4,9 @@ logs/*.log
 
 vendor/*
 
-src/Config.php
 Hasher.php
 User.php
 
 project-images/*
+
+config.local.php

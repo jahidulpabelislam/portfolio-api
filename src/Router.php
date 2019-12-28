@@ -36,7 +36,7 @@ class Router {
 
         $version = $uri[0] ?? "";
 
-        $shouldBeVersion = "v" . Config::API_VERSION;
+        $shouldBeVersion = "v" . Config::get()->api_version;
         if ($version !== $shouldBeVersion) {
             $response = Responder::get()->getUnrecognisedAPIVersionResponse();
         }

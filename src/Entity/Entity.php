@@ -23,11 +23,6 @@ use App\Database;
 
 abstract class Entity {
 
-    protected const DB_NAME = Config::DB_NAME;
-    protected const DB_USERNAME = Config::DB_USERNAME;
-    protected const DB_PASSWORD = Config::DB_PASSWORD;
-    protected const DB_HOST = Config::DB_HOST;
-
     protected static $db;
 
     public static $displayName = "";
@@ -61,11 +56,12 @@ abstract class Entity {
 
     protected static function getDB(): Database {
         if (!static::$db) {
+            $config = Config::get();
             static::$db = new Database(
-                static::DB_NAME,
-                static::DB_USERNAME,
-                static::DB_PASSWORD,
-                static::DB_HOST
+                $config->db_name,
+                $config->db_username,
+                $config->db_password,
+                $config->db_host
             );
         }
 

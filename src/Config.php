@@ -5,10 +5,10 @@
  *
  * PHP version 7.1+
  *
- * @version 1.1.3
+ * @version 2.0.0
  * @since Class available since Release: v3.0.0
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @copyright 2010-2019 JPI
+ * @copyright 2010-2020 JPI
  */
 
 namespace App;
@@ -19,26 +19,6 @@ if (!defined("ROOT")) {
 
 class Config {
 
-    public const API_VERSION = "3";
-
-    // The Host/IP of database server
-    public const DB_HOST = "127.0.0.1"; // TODO: CHANGE ME
-    // Database name to use in server
-    public const DB_NAME = "jpi"; // TODO: CHANGE ME
-    // Username to database
-    public const DB_USERNAME = "root"; // TODO: CHANGE ME
-    // Password for the user above
-    public const DB_PASSWORD = ""; // TODO: CHANGE ME
-
-    // The secret key to use in Firebase's JWT
-    public const PORTFOLIO_ADMIN_SECRET_KEY = "changeme"; // TODO: CHANGE ME
-
-    // A list of other domains that can call this API
-    public const ALLOWED_DOMAINS = [
-        "jahidulpabelislam.com",
-        "cms.jahidulpabelislam.com",
-    ];
-
     private static $instance;
 
     public $debug = false;
@@ -47,7 +27,6 @@ class Config {
         $environment = getenv("APPLICATION_ENV") ?? "production";
 
         // Only want debugging on development site
-        $this->debug = false;
         if ($environment === "development") {
             $this->debug = true;
         }
@@ -64,5 +43,14 @@ class Config {
         }
 
         return self::$instance;
+    }
+
+    public function __get($name) {
+        $name = strtoupper($name);
+        if (defined($name)) {
+            return constant($name);
+        }
+
+        return null;
     }
 }

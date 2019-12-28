@@ -101,17 +101,17 @@ class Responder {
      * Generate response data to send back when the requested API version is not recognised
      */
     public function getUnrecognisedAPIVersionResponse(): array {
-        $shouldBeVersion = "v" . Config::API_VERSION;
+        $shouldBeVersion = Config::get()->api_version;
 
         $shouldBeURI = $this->api->uriArray;
-        $shouldBeURI[0] = $shouldBeVersion;
+        $shouldBeURI[0] = "v" . $shouldBeVersion;
         $shouldBeURL = $this->api->getAPIURL($shouldBeURI);
 
         return [
             "meta" => [
                 "status" => 404,
                 "message" => "Not Found",
-                "feedback" => "Unrecognised API version. Current version is " . Config::API_VERSION . ", so please update requested URL to {$shouldBeURL}.",
+                "feedback" => "Unrecognised API version. Current version is {$shouldBeVersion}, so please update requested URL to {$shouldBeURL}.",
             ],
         ];
     }

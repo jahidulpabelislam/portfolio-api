@@ -56,7 +56,7 @@ class User extends Entity {
             ],
         ];
 
-        $secretKey = Config::PORTFOLIO_ADMIN_SECRET_KEY;
+        $secretKey = Config::get()->portfolio_admin_secret_key;
 
         $jwt = JWT::encode($jwtData, $secretKey, self::JWT_ALG);
         return $jwt;
@@ -87,7 +87,7 @@ class User extends Entity {
 
         if (!empty($jwt)) {
             try {
-                $secretKey = Config::PORTFOLIO_ADMIN_SECRET_KEY;
+                $secretKey = Config::get()->portfolio_admin_secret_key;
 
                 $token = JWT::decode($jwt, $secretKey, [self::JWT_ALG]);
 

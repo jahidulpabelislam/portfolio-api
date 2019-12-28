@@ -181,7 +181,7 @@ class Core {
         $originDomain = str_replace(["http://", "https://"], "", $originURL);
 
         // If the domain if allowed send correct header response back
-        if (in_array($originDomain, Config::ALLOWED_DOMAINS)) {
+        if (in_array($originDomain, Config::get()->allowed_domains)) {
             self::setHeader("Access-Control-Allow-Origin", $originURL);
             self::setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             self::setHeader("Access-Control-Allow-Headers", "Process-Data, Authorization");
@@ -237,7 +237,7 @@ class Core {
 
     private function setCacheHeaders() {
         $notCachedURLs = [
-            "/v" . Config::API_VERSION . "/auth/session/",
+            "/v" . Config::get()->api_version . "/auth/session/",
         ];
 
         // Set cache for 31 days for some GET Requests
