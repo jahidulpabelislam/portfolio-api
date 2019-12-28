@@ -278,17 +278,6 @@ abstract class Entity {
             return false;
         }
 
-        // Just format the value for DB
-        if (static::$hasCreatedAt) {
-            $createdAtVal = null;
-            if (!empty($this->{static::$createdAtColumn})) {
-                $createdAt = new DateTime($this->{static::$createdAtColumn});
-                $createdAtVal = $createdAt->format(static::$dateTimeFormat);
-            }
-
-            $data[static::$createdAtColumn] = $createdAtVal;
-        }
-
         return $this->save($data);
     }
 
