@@ -12,13 +12,13 @@
 
 namespace App\Controller;
 
-if (!defined("ROOT")) {
-    die();
-}
-
 use App\Core as API;
 use App\Responder;
 use App\Entity\User;
+
+if (!defined("ROOT")) {
+    die();
+}
 
 class Auth {
 

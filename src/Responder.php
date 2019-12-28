@@ -12,11 +12,11 @@
 
 namespace App;
 
-use App\Entity\Entity;
-
 if (!defined("ROOT")) {
     die();
 }
+
+use App\Entity\Entity;
 
 class Responder {
 

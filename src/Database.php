@@ -13,13 +13,13 @@
 
 namespace App;
 
-use PDO;
-use PDOException;
-use PDOStatement;
-
 if (!defined("ROOT")) {
     die();
 }
+
+use PDO;
+use PDOException;
+use PDOStatement;
 
 class Database {
 

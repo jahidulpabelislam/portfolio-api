@@ -12,6 +12,10 @@
 
 namespace App\Entity;
 
+if (!defined("ROOT")) {
+    die();
+}
+
 use Exception;
 use Firebase\JWT\JWT;
 use App\Config;

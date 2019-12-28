@@ -13,12 +13,12 @@
 
 namespace App;
 
-use DateTime;
-use DateTimeZone;
-
 if (!defined("ROOT")) {
     die();
 }
+
+use DateTime;
+use DateTimeZone;
 
 class Core {
 

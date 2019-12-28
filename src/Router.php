@@ -12,12 +12,12 @@
 
 namespace App;
 
-use App\Controller\Auth;
-use App\Controller\Projects;
-
 if (!defined("ROOT")) {
     die();
 }
+
+use App\Controller\Auth;
+use App\Controller\Projects;
 
 class Router {
 
