@@ -259,7 +259,7 @@ abstract class Entity {
         return false;
     }
 
-    public static function insert(array $data): Entity {
+    public static function insert(array $data = []): Entity {
         $entity = new static();
 
         if (static::$hasCreatedAt) {
