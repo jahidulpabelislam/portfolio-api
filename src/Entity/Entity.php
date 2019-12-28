@@ -237,6 +237,9 @@ abstract class Entity {
      * Will either be a new insert or a update to an existing Entity
      */
     public function save(): bool {
+        if (empty($this->id) && static::$hasCreatedAt) {
+            $this->setValue(static::$createdAtColumn, date(static::$dateTimeFormat));
+        }
         if (static::$hasUpdatedAt) {
             $this->setValue(static::$updatedAtColumn, date(static::$dateTimeFormat));
         }
@@ -261,10 +264,6 @@ abstract class Entity {
 
     public static function insert(array $data = []): Entity {
         $entity = new static();
-
-        if (static::$hasCreatedAt) {
-            $data[static::$createdAtColumn] = date(static::$dateTimeFormat);
-        }
 
         $entity->setValues($data);
         $entity->save();
