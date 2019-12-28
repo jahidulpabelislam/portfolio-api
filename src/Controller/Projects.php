@@ -67,7 +67,8 @@ class Projects {
                     $imageData = json_decode($image, true);
 
                     $projectImage = ProjectImage::getById($imageData["id"]);
-                    $projectImage->update(["sort_order_number" => $i + 1]);
+                    $projectImage->sort_order_number = $i + 1;
+                    $projectImage->save();
                 }
             }
 
@@ -77,7 +78,8 @@ class Projects {
             }
             else {
                 $project = Project::getById($projectId);
-                $project->update($data);
+                $project->setValues($data);
+                $project->save();
                 $response = Responder::getUpdateResponse($project, $projectId);
             }
         }

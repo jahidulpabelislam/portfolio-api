@@ -236,9 +236,7 @@ abstract class Entity {
      * Save values to the Entity Table in the Database
      * Will either be a new insert or a update to an existing Entity
      */
-    protected function save(array $data): bool {
-        $this->setValues($data);
-
+    public function save(): bool {
         if (static::$hasUpdatedAt) {
             $this->setValue(static::$updatedAtColumn, date(static::$dateTimeFormat));
         }
@@ -268,17 +266,10 @@ abstract class Entity {
             $data[static::$createdAtColumn] = date(static::$dateTimeFormat);
         }
 
-        $entity->save($data);
+        $entity->setValues($data);
+        $entity->save();
 
         return $entity;
-    }
-
-    public function update(array $data): bool {
-        if (empty($this->id)) {
-            return false;
-        }
-
-        return $this->save($data);
     }
 
     /**
