@@ -140,7 +140,7 @@ class Responder {
      * so check if some found return the items (with necessary meta)
      * else if not found return necessary meta
      */
-    public static function getItemsResponse(Entity $entity, array $entities = []): array {
+    public static function getItemsResponse(string $entity, array $entities = []): array {
         $count = count($entities);
         if ($count) {
 
@@ -177,7 +177,7 @@ class Responder {
      */
     public function getItemsSearchResponse(Entity $entity, array $entities = [], array $data = []): array {
         // The items response is the base response, and the extra meta is added below
-        $response = self::getItemsResponse($entity, $entities);
+        $response = self::getItemsResponse(get_class($entity), $entities);
 
         $totalCount = $entity->getTotalCountForSearch($data);
         $response["meta"]["total_count"] = $totalCount;
@@ -221,7 +221,7 @@ class Responder {
         ];
     }
 
-    public static function getItemNotFoundResponse(Entity $entity, $id): array {
+    public static function getItemNotFoundResponse(string $entity, $id): array {
         return [
             "meta" => [
                 "status" => 404,
@@ -242,7 +242,7 @@ class Responder {
             return self::getItemFoundResponse($entity);
         }
 
-        return self::getItemNotFoundResponse($entity, $id);
+        return self::getItemNotFoundResponse(get_class($entity), $id);
     }
 
     public static function getInsertResponse(Entity $entity): array {

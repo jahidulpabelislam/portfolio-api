@@ -160,11 +160,9 @@ class Projects {
         // Check the Project trying to get Images for exists
         $projectRes = self::getProject($projectId, false);
         if (!empty($projectRes["row"])) {
-
-            $projectImage = new ProjectImage();
             $projectImages = ProjectImage::getByColumn("project_id", (int)$projectId);
 
-            return Responder::getItemsResponse($projectImage, $projectImages);
+            return Responder::getItemsResponse(ProjectImage::class, $projectImages);
         }
 
         return $projectRes;
