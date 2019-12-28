@@ -97,9 +97,9 @@ class Project extends Entity {
      * Add these to the response unless specified
      *
      * @param $id int The Id of the Entity to get
-     * @param $shouldGetImages bool Whether of not to also get and output the Project Images linked to this Project
+     * @param $includeLinkedData bool Whether to also get and include linked entity/data (images)
      */
-    public static function getById($id, bool $shouldGetImages = true): Entity {
+    public static function getById($id, bool $includeLinkedData = true): Entity {
         $project = parent::getById($id);
 
         // If Project was found
@@ -112,7 +112,7 @@ class Project extends Entity {
             }
 
             // If Project's Images was requested, get and add these
-            if ($shouldGetImages) {
+            if ($includeLinkedData) {
                 $project->loadProjectImages();
             }
         }

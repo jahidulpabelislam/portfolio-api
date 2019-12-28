@@ -139,11 +139,11 @@ class Projects {
      * Get a particular Project defined by $projectId
      *
      * @param $projectId int The Id of the Project to get
-     * @param $shouldGetImages bool Whether the images for the Project should should be added
+     * @param $includeLinkedData bool Whether to also get and include linked entity/data (images)
      * @return array The request response to send back
      */
-    public static function getProject($projectId, bool $shouldGetImages = false): array {
-        $project = Project::getById($projectId, $shouldGetImages);
+    public static function getProject($projectId, bool $includeLinkedData = false): array {
+        $project = Project::getById($projectId, $includeLinkedData);
 
         return Responder::getItemResponse($project, $projectId);
     }
