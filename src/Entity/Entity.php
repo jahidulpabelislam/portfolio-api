@@ -19,9 +19,7 @@ if (!defined("ROOT")) {
 
 use DateTime;
 use App\Config;
-use App\Core as API;
 use App\Database;
-use App\Responder;
 
 abstract class Entity {
 
