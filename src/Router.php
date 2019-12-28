@@ -85,7 +85,7 @@ class Router {
                 }
             }
             else if (!isset($uri[3])) {
-                $response = Projects::getProject($projectId, true);
+                $response = Projects::getProject($projectId);
             }
         }
         else {

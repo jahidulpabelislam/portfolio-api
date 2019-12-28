@@ -142,7 +142,7 @@ class Projects {
      * @param $includeLinkedData bool Whether to also get and include linked entity/data (images)
      * @return array The request response to send back
      */
-    public static function getProject($projectId, bool $includeLinkedData = false): array {
+    public static function getProject($projectId, bool $includeLinkedData = true): array {
         $project = Project::getById($projectId, $includeLinkedData);
 
         return Responder::getItemResponse($project, $projectId);
@@ -156,7 +156,7 @@ class Projects {
      */
     public static function getProjectImages($projectId): array {
         // Check the Project trying to get Images for exists
-        $projectRes = self::getProject($projectId);
+        $projectRes = self::getProject($projectId, false);
         if (!empty($projectRes["row"])) {
 
             $projectImage = new ProjectImage();
@@ -245,7 +245,7 @@ class Projects {
             if (isset($files["image"])) {
 
                 // Check the Project trying to add a Image for exists
-                $response = self::getProject($projectId);
+                $response = self::getProject($projectId, false);
                 if (!empty($response["row"])) {
                     $response = self::_uploadProjectImage($response["row"], $files["image"]);
                 }
@@ -271,7 +271,7 @@ class Projects {
      */
     public static function getProjectImage($projectId, $imageId): array {
         // Check the Project trying to get Images for exists
-        $response = self::getProject($projectId);
+        $response = self::getProject($projectId, false);
         if (!empty($response["row"])) {
             $projectImage = ProjectImage::getById($imageId);
 
@@ -298,7 +298,7 @@ class Projects {
     public static function deleteProjectImage($projectId, $imageId): array {
         if (User::isLoggedIn()) {
             // Check the Project of the Image trying to edit actually exists
-            $response = self::getProject($projectId);
+            $response = self::getProject($projectId, false);
             if (!empty($response["row"])) {
 
                 // Delete row from database
