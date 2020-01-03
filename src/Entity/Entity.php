@@ -320,7 +320,7 @@ abstract class Entity {
 
             if (!empty($params[$column])) {
                 $binding = ":{$column}";
-                $globalWhereClauses[] = " {$column} = {$binding}";
+                $globalWhereClauses[] = "{$column} = {$binding}";
                 $bindings[$binding] = $params[$column];
             }
         }
@@ -329,14 +329,16 @@ abstract class Entity {
             if ($lastTwoChars === "OR") {
                 $searchWhereClause = substr($searchWhereClause, 0, -2);
             }
+            $searchWhereClause = trim($searchWhereClause);
         }
 
         $globalWhereClause = "";
         if (!empty($globalWhereClauses)) {
-            $globalWhereClause = "\n AND " . implode(" AND ", $globalWhereClauses);
+            $globalWhereClause = "\n AND " . implode("\n AND ", $globalWhereClauses);
+            $globalWhereClause = trim($globalWhereClause, " ");
         }
 
-        $whereClause = "WHERE ({$searchWhereClause}) {$globalWhereClause}";
+        $whereClause = "WHERE ({$searchWhereClause}){$globalWhereClause}";
 
         return [$whereClause, $bindings];
     }
