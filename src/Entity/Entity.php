@@ -161,7 +161,8 @@ abstract class Entity {
      * Generate and return SQL query (and bindings) for getting rows by single column value clause
      */
     protected static function generateGetByColumnQuery(string $column, $value): array {
-        $query = "SELECT * FROM " . static::$tableName . " 
+        $query = "SELECT *
+                           FROM " . static::$tableName . " 
                            WHERE {$column} = :{$column}
                            ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . ";";
         $bindings = [":{$column}" => $value];
@@ -223,7 +224,7 @@ abstract class Entity {
 
         $query = $isNew ? "INSERT INTO" : "UPDATE";
         $query .= " " . static::$tableName . " SET {$valuesQuery} ";
-        $query .= $isNew ? ";" : "WHERE id = :id;";
+        $query .= $isNew ? ";" : "\n WHERE id = :id;";
 
         return [$query, $bindings];
     }
@@ -332,7 +333,7 @@ abstract class Entity {
 
         $globalWhereClause = "";
         if (!empty($globalWhereClauses)) {
-            $globalWhereClause = " AND " . implode(" AND ", $globalWhereClauses);
+            $globalWhereClause = "\n AND " . implode(" AND ", $globalWhereClauses);
         }
 
         $whereClause = "WHERE ({$searchWhereClause}) {$globalWhereClause}";
@@ -352,7 +353,8 @@ abstract class Entity {
         [$whereClause, $bindings] = static::generateSearchWhereQuery($params);
 
         $query = "SELECT COUNT(*)
-                         FROM " . static::$tableName . " {$whereClause};";
+                         FROM " . static::$tableName . "
+                         {$whereClause};";
         return static::getDB()->getColumn($query, $bindings) ?? 0;
     }
 
@@ -396,7 +398,9 @@ abstract class Entity {
             [$whereQuery, $bindings] = static::generateSearchWhereQuery($params);
         }
 
-        $query = "SELECT * FROM " . static::$tableName . " {$whereQuery}
+        $query = "SELECT *
+                           FROM " . static::$tableName . " 
+                           {$whereQuery}
                            ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . "
                            LIMIT {$this->limitBy} OFFSET {$offset};";
         $rows = static::getDB()->getAll($query, $bindings);
