@@ -351,11 +351,9 @@ abstract class Entity {
     public static function getTotalCountForSearch(array $params): int {
         [$whereClause, $bindings] = static::generateSearchWhereQuery($params);
 
-        $query = "SELECT COUNT(*) AS total_count
+        $query = "SELECT COUNT(*)
                          FROM " . static::$tableName . " {$whereClause};";
-        $row = static::getDB()->getOne($query, $bindings);
-
-        return $row["total_count"] ?? 0;
+        return static::getDB()->getColumn($query, $bindings) ?? 0;
     }
 
     /**
