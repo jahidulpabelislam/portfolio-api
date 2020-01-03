@@ -186,6 +186,8 @@ abstract class Entity {
     public static function getById($id): Entity {
         if (is_numeric($id)) {
             [$query, $bindings] = static::generateGetByColumnQuery("id", (int)$id);
+            $query = rtrim($query, ";");
+            $query .= "\n LIMIT 1;";
             $row = static::getDB()->getOne($query, $bindings);
 
             if (!empty($row)) {
