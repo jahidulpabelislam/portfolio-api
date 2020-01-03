@@ -137,9 +137,27 @@ class Project extends Entity {
     }
 
     /**
+     * @inheritDoc
+     *
+     * Override to filter by public projects if (admin) user isn't currently logged in
+     *
+     * @param array $params
+     * @return int
+     */
+    public static function getTotalCountForSearch(array $params): int {
+        // As the user isn't logged in, filter by status = public
+        if (!Auth::isLoggedIn()) {
+            $params["status"] = self::PUBLIC_STATUS;
+        }
+        return parent::getTotalCountForSearch($params);
+    }
+
+    /**
      * Gets all Entities but paginated, also might include search
      *
-     * Adds extra functionality to include any Images linked to all Projects found in search
+     * Adds extra functionality to:
+     * - filter by public projects if (admin) user isn't currently logged in
+     * - include any Images linked to all Projects found in search
      *
      * @param $params array Any data to aid in the search query
      * @return array The request response to send back
