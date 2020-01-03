@@ -162,9 +162,9 @@ abstract class Entity {
      */
     protected static function generateGetByColumnQuery(string $column, $value): array {
         $query = "SELECT * FROM " . static::$tableName . " 
-                           WHERE {$column} = :value
+                           WHERE {$column} = :{$column}
                            ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . ";";
-        $bindings = [":value" => $value];
+        $bindings = [":{$column}" => $value];
 
         return [$query, $bindings];
     }
