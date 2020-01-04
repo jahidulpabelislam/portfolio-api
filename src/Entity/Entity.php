@@ -47,7 +47,7 @@ abstract class Entity {
     protected static $searchableColumns = [];
 
     protected static $orderByColumn = "id";
-    protected static $orderByDESC = true;
+    protected static $orderByASC = true;
 
     protected static $defaultLimitBy = 10;
 
@@ -165,7 +165,7 @@ abstract class Entity {
                . "FROM " . static::$tableName . " \n"
                . "WHERE {$column} = :{$column} \n"
                . "ORDER BY " . static::$orderByColumn . " "
-               . (static::$orderByDESC ? "DESC" : "ASC") . ";";
+               . (static::$orderByASC ? "ASC" : "DESC") . ";";
         $bindings = [":{$column}" => $value];
 
         return [$query, $bindings];
@@ -405,7 +405,7 @@ abstract class Entity {
                . "FROM " . static::$tableName . " \n"
                . "{$whereQuery} \n"
                . "ORDER BY " . static::$orderByColumn . " "
-               . (static::$orderByDESC ? "DESC" : "ASC") . " \n"
+               . (static::$orderByASC ? "ASC" : "DESC") . " \n"
                . "LIMIT {$this->limitBy} OFFSET {$offset};";
         $rows = static::getDB()->getAll($query, $bindings);
 

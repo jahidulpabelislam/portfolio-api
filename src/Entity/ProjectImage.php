@@ -34,7 +34,6 @@ class ProjectImage extends Entity {
     protected static $intColumns = ["id", "project_id", "sort_order_number"];
 
     protected static $orderByColumn = "sort_order_number";
-    protected static $orderByDESC = false;
 
     /**
      * Delete an Entity from the Database
