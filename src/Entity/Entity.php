@@ -158,7 +158,11 @@ abstract class Entity {
     }
 
     protected static function getOrderByQuery(): string {
-        return "ORDER BY " . static::$orderByColumn . " " . (static::$orderByASC ? "ASC" : "DESC");
+        if (static::$orderByColumn) {
+            return "ORDER BY " . static::$orderByColumn . " " . (static::$orderByASC ? "ASC" : "DESC");
+        }
+
+        return "";
     }
 
     /**
