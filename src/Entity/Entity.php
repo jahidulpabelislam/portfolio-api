@@ -159,7 +159,16 @@ abstract class Entity {
 
     protected static function getOrderByQuery(): string {
         if (static::$orderByColumn) {
-            return "ORDER BY " . static::$orderByColumn . " " . (static::$orderByASC ? "ASC" : "DESC");
+            $orderBys = [
+                static::$orderByColumn . " " . (static::$orderByASC ? "ASC" : "DESC")
+            ];
+
+            // Sort by id if not already to stop any randomness on rows with same value on above
+            if (static::$orderByColumn !== "id") {
+                $orderBys[] = "id ASC";
+            }
+
+            return "ORDER BY " . implode(", ", $orderBys);
         }
 
         return "";
