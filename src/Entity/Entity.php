@@ -157,6 +157,10 @@ abstract class Entity {
         return array_map(["static", "createEntity"], $rows);
     }
 
+    protected static function getOrderByQuery(): string {
+        return "ORDER BY " . static::$orderByColumn . " " . (static::$orderByASC ? "ASC" : "DESC");
+    }
+
     /**
      * Generate and return SQL query (and bindings) for getting rows by single column value clause
      */
@@ -164,8 +168,7 @@ abstract class Entity {
         $query = "SELECT * \n"
                . "FROM " . static::$tableName . " \n"
                . "WHERE {$column} = :{$column} \n"
-               . "ORDER BY " . static::$orderByColumn . " "
-               . (static::$orderByASC ? "ASC" : "DESC") . ";";
+               . static::getOrderByQuery() . ";";
         $bindings = [":{$column}" => $value];
 
         return [$query, $bindings];
@@ -404,8 +407,7 @@ abstract class Entity {
         $query = "SELECT * \n"
                . "FROM " . static::$tableName . " \n"
                . "{$whereQuery} \n"
-               . "ORDER BY " . static::$orderByColumn . " "
-               . (static::$orderByASC ? "ASC" : "DESC") . " \n"
+               . static::getOrderByQuery() . " \n"
                . "LIMIT {$this->limitBy} OFFSET {$offset};";
         $rows = static::getDB()->getAll($query, $bindings);
 
