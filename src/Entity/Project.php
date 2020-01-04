@@ -151,7 +151,7 @@ class Project extends Entity {
      */
     public static function getTotalCountForSearch(array $params): int {
         // As the user isn't logged in, filter by status = public
-        if (!Auth::isLoggedIn()) {
+        if (!User::isLoggedIn()) {
             $params["status"] = self::PUBLIC_STATUS;
         }
         return parent::getTotalCountForSearch($params);
