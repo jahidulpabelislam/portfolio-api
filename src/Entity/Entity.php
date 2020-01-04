@@ -161,10 +161,10 @@ abstract class Entity {
      * Generate and return SQL query (and bindings) for getting rows by single column value clause
      */
     protected static function generateGetByColumnQuery(string $column, $value): array {
-        $query = "SELECT *
-                           FROM " . static::$tableName . " 
-                           WHERE {$column} = :{$column}
-                           ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . ";";
+        $query = "SELECT * \n"
+               . "FROM " . static::$tableName . " \n"
+               . "WHERE {$column} = :{$column} \n"
+               . "ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . ";";
         $bindings = [":{$column}" => $value];
 
         return [$query, $bindings];
@@ -188,7 +188,7 @@ abstract class Entity {
         if (is_numeric($id)) {
             [$query, $bindings] = static::generateGetByColumnQuery("id", (int)$id);
             $query = rtrim($query, ";");
-            $query .= "\n LIMIT 1;";
+            $query .= "\nLIMIT 1;";
             $row = static::getDB()->getOne($query, $bindings);
 
             if (!empty($row)) {
@@ -217,14 +217,15 @@ abstract class Entity {
             }
 
             if ($column !== "id") {
-                $valuesQueries[] = "{$column} = {$placeholder}";
+                $valuesQueries[] = "\n\t{$column} = {$placeholder}";
             }
         }
         $valuesQuery = implode(", ", $valuesQueries);
 
         $query = $isNew ? "INSERT INTO" : "UPDATE";
-        $query .= " " . static::$tableName . " SET {$valuesQuery} ";
-        $query .= $isNew ? ";" : "\n WHERE id = :id;";
+        $query .= " " . static::$tableName . "\n";
+        $query .= "SET {$valuesQuery}";
+        $query .= $isNew ? ";" : "\nWHERE id = :id;";
 
         return [$query, $bindings];
     }
@@ -316,7 +317,8 @@ abstract class Entity {
 
         // Loop through each searchable column
         foreach (static::$searchableColumns as $column) {
-            $searchWhereClause .= " {$column} LIKE :searchString OR {$column} LIKE :searchStringReversed OR";
+            $searchWhereClause .= "\n\t\tOR {$column} LIKE :searchString";
+            $searchWhereClause .= "\n\t\tOR {$column} LIKE :searchStringReversed";
 
             if (!empty($params[$column])) {
                 $binding = ":{$column}";
@@ -325,20 +327,21 @@ abstract class Entity {
             }
         }
         if (!empty($searchWhereClause)) {
-            $lastTwoChars = substr($searchWhereClause, -2);
-            if ($lastTwoChars === "OR") {
-                $searchWhereClause = substr($searchWhereClause, 0, -2);
-            }
             $searchWhereClause = trim($searchWhereClause);
+            $lastTwoChars = substr($searchWhereClause, 0, 2);
+            if ($lastTwoChars === "OR") {
+                $searchWhereClause = substr($searchWhereClause, 2);
+            }
+            $searchWhereClause = "\n\t(\n\t\t" . trim($searchWhereClause) . "\n\t)";
         }
 
         $globalWhereClause = "";
         if (!empty($globalWhereClauses)) {
-            $globalWhereClause = "\n AND " . implode("\n AND ", $globalWhereClauses);
+            $globalWhereClause = "\n\tAND " . implode("\n\tAND ", $globalWhereClauses);
             $globalWhereClause = trim($globalWhereClause, " ");
         }
 
-        $whereClause = "WHERE ({$searchWhereClause}){$globalWhereClause}";
+        $whereClause = trim("WHERE {$searchWhereClause} {$globalWhereClause}");
 
         return [$whereClause, $bindings];
     }
@@ -354,9 +357,9 @@ abstract class Entity {
     public static function getTotalCountForSearch(array $params): int {
         [$whereClause, $bindings] = static::generateSearchWhereQuery($params);
 
-        $query = "SELECT COUNT(*)
-                         FROM " . static::$tableName . "
-                         {$whereClause};";
+        $query = "SELECT COUNT(*) \n"
+               . "FROM " . static::$tableName . " \n"
+               . "{$whereClause};";
         return static::getDB()->getColumn($query, $bindings) ?? 0;
     }
 
@@ -400,11 +403,11 @@ abstract class Entity {
             [$whereQuery, $bindings] = static::generateSearchWhereQuery($params);
         }
 
-        $query = "SELECT *
-                           FROM " . static::$tableName . " 
-                           {$whereQuery}
-                           ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . "
-                           LIMIT {$this->limitBy} OFFSET {$offset};";
+        $query = "SELECT * \n"
+               . "FROM " . static::$tableName . " \n"
+               . "{$whereQuery} \n"
+               . "ORDER BY " . static::$orderByColumn . " " . static::$orderByDirection . " \n"
+               . "LIMIT {$this->limitBy} OFFSET {$offset};";
         $rows = static::getDB()->getAll($query, $bindings);
 
         return static::createEntities($rows);
