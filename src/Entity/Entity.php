@@ -313,12 +313,12 @@ abstract class Entity {
         ];
 
         $globalWhereClauses = [];
-        $searchWhereClause = "";
+        $searchWhereClauses = [];
 
         // Loop through each searchable column
         foreach (static::$searchableColumns as $column) {
-            $searchWhereClause .= "\n\t\tOR {$column} LIKE :searchString";
-            $searchWhereClause .= "\n\t\tOR {$column} LIKE :searchStringReversed";
+            $searchWhereClauses[] = "{$column} LIKE :searchString";
+            $searchWhereClauses[] = "{$column} LIKE :searchStringReversed";
 
             if (!empty($params[$column])) {
                 $binding = ":{$column}";
@@ -326,13 +326,10 @@ abstract class Entity {
                 $bindings[$binding] = $params[$column];
             }
         }
-        if (!empty($searchWhereClause)) {
-            $searchWhereClause = trim($searchWhereClause);
-            $lastTwoChars = substr($searchWhereClause, 0, 2);
-            if ($lastTwoChars === "OR") {
-                $searchWhereClause = substr($searchWhereClause, 2);
-            }
-            $searchWhereClause = "\n\t(\n\t\t" . trim($searchWhereClause) . "\n\t)";
+
+        $searchWhereClause = "";
+        if (!empty($searchWhereClauses)) {
+            $searchWhereClause = "\n\t(\n\t\t" . implode("\n\t\tOR ", $searchWhereClauses) . "\n\t)";
         }
 
         $globalWhereClause = "";
