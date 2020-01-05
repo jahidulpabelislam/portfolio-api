@@ -182,7 +182,7 @@ abstract class Entity {
      * @return string
      */
     protected static function getSelectQuery($select = "*", $where = null, int $limit = null, int $offset = null): string {
-        $_select = $select ? $select : "*";
+        $_select = $select ?: "*";
         if ($select && is_array($select)) {
             $_select = implode(", ", $select);
         }
