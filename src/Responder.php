@@ -179,7 +179,7 @@ class Responder {
         // The items response is the base response, and the extra meta is added below
         $response = self::getItemsResponse(get_class($entity), $entities);
 
-        $totalCount = $entity->getTotalCountForSearch($data);
+        $totalCount = $entity->totalCount;
         $response["meta"]["total_count"] = $totalCount;
 
         $limit = $entity->limitBy;

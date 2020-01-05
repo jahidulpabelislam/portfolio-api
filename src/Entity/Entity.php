@@ -51,6 +51,7 @@ abstract class Entity {
 
     protected static $defaultLimitBy = 10;
 
+    public $totalCount = 0;
     public $limitBy = 10;
     public $page = 1;
 
@@ -417,12 +418,9 @@ abstract class Entity {
      * Used together with Entity::doSearch, as this return a limited Entities
      * but we want to get a number of total items without limit
      *
-     * @param $params array Any data to aid in the search query
      * @return int
      */
-    public static function getTotalCountForSearch(array $params): int {
-        [$whereClauses, $bindings] = static::generateSearchWhereClauses($params);
-
+    public static function getTotalCount($whereClauses, $bindings): int {
         $query = static::getSelectQuery("COUNT(*)", $whereClauses);
         return static::getDB()->getColumn($query, $bindings) ?? 0;
     }
@@ -469,6 +467,8 @@ abstract class Entity {
 
         $query = static::getSelectQuery("*", $whereClauses, $this->limitBy, $offset);
         $rows = static::getDB()->getAll($query, $bindings);
+
+        $this->totalCount = static::getTotalCount($whereClauses, $bindings);
 
         return static::createEntities($rows);
     }
