@@ -197,6 +197,10 @@ abstract class Entity {
                 return $query;
             }
 
+            if (is_array($where) && count($where) === 1) {
+                $where = array_shift($where);
+            }
+
             if (is_array($where)) {
                 $query .= "WHERE \n\t" . implode("\n\tAND ", $where) . "\n";
             }
