@@ -33,7 +33,7 @@ abstract class Entity {
 
     protected static $requiredColumns = [];
 
-    protected static $intColumns = ["id"];
+    protected static $intColumns = [];
 
     protected static $dateTimeColumns = [];
     protected static $dateTimeFormat = "Y-m-d H:i:s";
@@ -70,6 +70,10 @@ abstract class Entity {
     }
 
     public function __construct() {
+        // Slight hack so id is the first item...
+        $columns = ["id" => null];
+        $this->columns = array_merge($columns, $this->columns);
+
         if (static::$hasCreatedAt) {
             $this->setValue(static::$createdAtColumn, null);
         }
@@ -91,6 +95,13 @@ abstract class Entity {
         }
 
         return $value;
+    }
+
+    private static function getIntColumns(): array {
+        $intColumns = static::$intColumns;
+        $intColumns[] = "id";
+
+        return $intColumns;
     }
 
     private static function getDataTimeColumns(): array {
@@ -122,7 +133,7 @@ abstract class Entity {
     }
 
     private function setValue($column, $value) {
-        if (in_array($column, static::$intColumns)) {
+        if (in_array($column, static::getIntColumns())) {
             $value = (int)$value;
         }
 
