@@ -484,8 +484,8 @@ abstract class Entity {
             $this->page = $page;
         }
 
-        $bindings = [];
         $where = "";
+        $bindings = [];
 
         // Add a filter if a search was entered
         if (!empty($params)) {
