@@ -39,10 +39,8 @@ abstract class Entity {
     protected static $dateTimeFormat = "Y-m-d H:i:s";
 
     protected static $hasCreatedAt = true;
-    protected static $createdAtColumn = "created_at";
 
     protected static $hasUpdatedAt = true;
-    protected static $updatedAtColumn = "updated_at";
 
     protected static $searchableColumns = [];
 
@@ -75,11 +73,11 @@ abstract class Entity {
         $this->columns = array_merge($columns, $this->columns);
 
         if (static::$hasCreatedAt) {
-            $this->setValue(static::$createdAtColumn, null);
+            $this->setValue("created_at", null);
         }
 
         if (static::$hasUpdatedAt) {
-            $this->setValue(static::$updatedAtColumn, null);
+            $this->setValue("updated_at", null);
         }
     }
 
@@ -108,11 +106,11 @@ abstract class Entity {
         $columns = static::$dateTimeColumns;
 
         if (static::$hasCreatedAt) {
-            $columns[] = static::$createdAtColumn;
+            $columns[] = "created_at";
         }
 
         if (static::$hasUpdatedAt) {
-            $columns[] = static::$updatedAtColumn;
+            $columns[] = "updated_at";
         }
 
         return $columns;
@@ -320,10 +318,10 @@ abstract class Entity {
      */
     public function save(): bool {
         if (empty($this->id) && static::$hasCreatedAt) {
-            $this->setValue(static::$createdAtColumn, date(static::$dateTimeFormat));
+            $this->setValue("created_at", date(static::$dateTimeFormat));
         }
         if (static::$hasUpdatedAt) {
-            $this->setValue(static::$updatedAtColumn, date(static::$dateTimeFormat));
+            $this->setValue("updated_at", date(static::$dateTimeFormat));
         }
 
         [$query, $bindings] = $this->generateSaveQuery();
