@@ -175,23 +175,57 @@ abstract class Entity {
     }
 
     /**
-     * Generate and return SQL query (and bindings) for getting rows by single column value clause
+     * @param array|string $select
+     * @param array|string|int $where
+     * @param int|null $limit
+     * @param int|null $offset
+     * @return string
      */
-    protected static function generateGetByColumnQuery(string $column, $value): array {
-        $query = "SELECT * \n"
-               . "FROM " . static::$tableName . " \n"
-               . "WHERE {$column} = :{$column} \n"
-               . static::getOrderByQuery() . ";";
-        $bindings = [":{$column}" => $value];
+    protected static function getSelectQuery($select = "*", $where = null, int $limit = null, int $offset = null): string {
+        $_select = $select ? $select : "*";
+        if ($select && is_array($select)) {
+            $_select = implode(", ", $select);
+        }
 
-        return [$query, $bindings];
+        $query = "SELECT {$_select} \n"
+               . "FROM " . static::$tableName . " \n";
+
+        if ($where) {
+            if (is_numeric($where)) {
+                $query .= "WHERE id = :id \n"
+                    . "LIMIT 1;";
+                return $query;
+            }
+
+            if (is_array($where)) {
+                $query .= "WHERE \n\t" . implode("\n\tAND ", $where) . "\n";
+            }
+            else if (is_string($where)) {
+                $query .= "WHERE {$where} \n";
+            }
+        }
+
+        $orderBy = static::getOrderByQuery();
+        if ($orderBy) {
+            $query .= "{$orderBy} \n";
+        }
+
+        if ($limit) {
+            $query .= "LIMIT {$limit}";
+        }
+        if ($offset) {
+            $query .= " OFFSET {$offset}";
+        }
+
+        return trim($query) . ";";
     }
 
     /**
      * Get Entities from the Database where a column ($column) = a value ($value)
      */
     public static function getByColumn(string $column, $value): array {
-        [$query, $bindings] = static::generateGetByColumnQuery($column, $value);
+        $query = static::getSelectQuery("*", "{$column} = :{$column}");
+        $bindings = [":{$column}" => $value];
         $rows = static::getDB()->getAll($query, $bindings);
 
         return static::createEntities($rows);
@@ -203,10 +237,9 @@ abstract class Entity {
      */
     public static function getById($id): Entity {
         if (is_numeric($id)) {
-            [$query, $bindings] = static::generateGetByColumnQuery("id", (int)$id);
-            $query = rtrim($query, ";");
-            $query .= "\nLIMIT 1;";
-            $row = static::getDB()->getOne($query, $bindings);
+            $id = (int)$id;
+            $query = static::getSelectQuery("*", $id);
+            $row = static::getDB()->getOne($query, [":id" => $id]);
 
             if (!empty($row)) {
                 return static::createEntity($row);
@@ -310,7 +343,7 @@ abstract class Entity {
      * @param $params array The fields to search for within searchable columns (if any)
      * @return array An array consisting of the generated where clause and an associative array containing any bindings to aid the Database querying
      */
-    protected static function generateSearchWhereQuery(array $params): array {
+    protected static function generateSearchWhereClauses(array $params): array {
         if (!static::$searchableColumns) {
             return ["", []];
         }
@@ -344,20 +377,13 @@ abstract class Entity {
             }
         }
 
-        $searchWhereClause = "";
+        $whereClauses = $globalWhereClauses;
+
         if (!empty($searchWhereClauses)) {
-            $searchWhereClause = "\n\t(\n\t\t" . implode("\n\t\tOR ", $searchWhereClauses) . "\n\t)";
+            array_unshift($whereClauses, "(\n\t\t" . implode("\n\t\tOR ", $searchWhereClauses) . "\n\t)");
         }
 
-        $globalWhereClause = "";
-        if (!empty($globalWhereClauses)) {
-            $globalWhereClause = "\n\tAND " . implode("\n\tAND ", $globalWhereClauses);
-            $globalWhereClause = trim($globalWhereClause, " ");
-        }
-
-        $whereClause = trim("WHERE {$searchWhereClause} {$globalWhereClause}");
-
-        return [$whereClause, $bindings];
+        return [$whereClauses, $bindings];
     }
 
     /**
@@ -369,11 +395,9 @@ abstract class Entity {
      * @return int
      */
     public static function getTotalCountForSearch(array $params): int {
-        [$whereClause, $bindings] = static::generateSearchWhereQuery($params);
+        [$whereClauses, $bindings] = static::generateSearchWhereClauses($params);
 
-        $query = "SELECT COUNT(*) \n"
-               . "FROM " . static::$tableName . " \n"
-               . "{$whereClause};";
+        $query = static::getSelectQuery("COUNT(*)", $whereClauses);
         return static::getDB()->getColumn($query, $bindings) ?? 0;
     }
 
@@ -410,18 +434,14 @@ abstract class Entity {
         }
 
         $bindings = [];
-        $whereQuery = "";
+        $whereClauses = "";
 
         // Add a filter if a search was entered
         if (!empty($params)) {
-            [$whereQuery, $bindings] = static::generateSearchWhereQuery($params);
+            [$whereClauses, $bindings] = static::generateSearchWhereClauses($params);
         }
 
-        $query = "SELECT * \n"
-               . "FROM " . static::$tableName . " \n"
-               . "{$whereQuery} \n"
-               . static::getOrderByQuery() . " \n"
-               . "LIMIT {$this->limitBy} OFFSET {$offset};";
+        $query = static::getSelectQuery("*", $whereClauses, $this->limitBy, $offset);
         $rows = static::getDB()->getAll($query, $bindings);
 
         return static::createEntities($rows);
