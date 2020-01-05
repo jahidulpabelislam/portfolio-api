@@ -246,9 +246,9 @@ abstract class Entity {
 
         if ($limit) {
             $query .= "LIMIT {$limit}";
-        }
-        if ($offset) {
-            $query .= " OFFSET {$offset}";
+            if ($offset) {
+                $query .= " OFFSET {$offset}";
+            }
         }
 
         return trim($query) . ";";
