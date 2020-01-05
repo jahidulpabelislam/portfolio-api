@@ -253,14 +253,38 @@ abstract class Entity {
     }
 
     /**
+     * @param array|string $select
+     * @param array|string|int $where
+     * @param null $bindings
+     * @param int|null $limit
+     * @param int|null $offset
+     * @return Entity|array[Entity]
+     */
+    public static function get($select = "*", $where = null, $bindings = null, int $limit = null, int $offset = null) {
+        $query = static::getSelectQuery($select, $where, $limit, $offset);
+
+        if (($where && is_numeric($where)) || $limit == 1) {
+            if (is_numeric($where)) {
+                $bindings =[":id" => $where];
+            }
+            $row = static::getDB()->getOne($query, $bindings);
+            if (!empty($row)) {
+                return static::createEntity($row);
+            }
+
+            return new static();
+        }
+
+        $rows = static::getDB()->getAll($query, $bindings);
+        return static::createEntities($rows);
+    }
+
+    /**
      * Get Entities from the Database where a column ($column) = a value ($value)
      */
     public static function getByColumn(string $column, $value): array {
-        $query = static::getSelectQuery("*", "{$column} = :{$column}");
         $bindings = [":{$column}" => $value];
-        $rows = static::getDB()->getAll($query, $bindings);
-
-        return static::createEntities($rows);
+        return static::get("*", "{$column} = :{$column}", $bindings);
     }
 
     /**
@@ -269,13 +293,7 @@ abstract class Entity {
      */
     public static function getById($id): Entity {
         if (is_numeric($id)) {
-            $id = (int)$id;
-            $query = static::getSelectQuery("*", $id);
-            $row = static::getDB()->getOne($query, [":id" => $id]);
-
-            if (!empty($row)) {
-                return static::createEntity($row);
-            }
+            return static::get("*", (int)$id);
         }
 
         return new static();
@@ -474,11 +492,8 @@ abstract class Entity {
             [$whereClauses, $bindings] = static::generateSearchWhereClauses($params);
         }
 
-        $query = static::getSelectQuery("*", $whereClauses, $this->limitBy, $offset);
-        $rows = static::getDB()->getAll($query, $bindings);
-
         $this->totalCount = static::getTotalCount($whereClauses, $bindings);
 
-        return static::createEntities($rows);
+        return static::get("*", $whereClauses, $bindings, $this->limitBy, $offset);
     }
 }
