@@ -196,9 +196,10 @@ abstract class Entity {
      * @return string
      */
     protected static function getSelectQuery($select = "*", $where = null, int $limit = null, int $offset = null): string {
+        $select = self::singleArrayValue($select);
         $_select = $select ?: "*";
         if ($select && is_array($select)) {
-            $_select = implode(", ", $select);
+            $_select = "\n\t" . implode(",\n\t", $select);
         }
 
         $query = "SELECT {$_select} \n"
