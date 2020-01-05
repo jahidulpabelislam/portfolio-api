@@ -78,6 +78,20 @@ abstract class Entity {
         }
     }
 
+    /**
+     * Convenient function to get the single value from an array if it's the only value
+     *
+     * @param $value
+     * @return array|mixed
+     */
+    private static function singleArrayValue($value) {
+        if ($value && is_array($value) && count($value) === 1) {
+            return array_shift($value);
+        }
+
+        return $value;
+    }
+
     private static function getDataTimeColumns(): array {
         $columns = static::$dateTimeColumns;
 
@@ -197,10 +211,7 @@ abstract class Entity {
                 return $query;
             }
 
-            if (is_array($where) && count($where) === 1) {
-                $where = array_shift($where);
-            }
-
+            $where = self::singleArrayValue($where);
             if (is_array($where)) {
                 $query .= "WHERE \n\t" . implode("\n\tAND ", $where) . "\n";
             }
