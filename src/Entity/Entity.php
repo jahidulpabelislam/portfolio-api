@@ -211,7 +211,7 @@ abstract class Entity {
      * @param int|null $offset
      * @return string
      */
-    protected static function getSelectQuery($select = "*", $where = null, int $limit = null, int $offset = null): string {
+    protected static function generateSelectQuery($select = "*", $where = null, int $limit = null, int $offset = null): string {
         $select = self::singleArrayValue($select);
         $_select = $select ?: "*";
         if ($select && is_array($select)) {
@@ -261,7 +261,7 @@ abstract class Entity {
      * @return Entity|array[Entity]
      */
     public static function get($select = "*", $where = null, $bindings = null, int $limit = null, int $offset = null) {
-        $query = static::getSelectQuery($select, $where, $limit, $offset);
+        $query = static::generateSelectQuery($select, $where, $limit, $offset);
 
         if (($where && is_numeric($where)) || $limit == 1) {
             if (is_numeric($where)) {
@@ -447,8 +447,8 @@ abstract class Entity {
      *
      * @return int
      */
-    public static function getTotalCount($whereClauses, $bindings): int {
-        $query = static::getSelectQuery("COUNT(*)", $whereClauses);
+    public static function getCount($where, $bindings): int {
+        $query = static::generateSelectQuery("COUNT(*)", $where);
         return static::getDB()->getColumn($query, $bindings) ?? 0;
     }
 
@@ -485,15 +485,15 @@ abstract class Entity {
         }
 
         $bindings = [];
-        $whereClauses = "";
+        $where = "";
 
         // Add a filter if a search was entered
         if (!empty($params)) {
-            [$whereClauses, $bindings] = static::generateSearchWhereClauses($params);
+            [$where, $bindings] = static::generateSearchWhereClauses($params);
         }
 
-        $this->totalCount = static::getTotalCount($whereClauses, $bindings);
+        $this->totalCount = static::getCount($where, $bindings);
 
-        return static::get("*", $whereClauses, $bindings, $this->limitBy, $offset);
+        return static::get("*", $where, $bindings, $this->limitBy, $offset);
     }
 }
