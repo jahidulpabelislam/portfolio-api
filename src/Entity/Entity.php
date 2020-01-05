@@ -366,7 +366,7 @@ abstract class Entity {
             ];
         }
 
-        $globalWhereClauses = [];
+        $whereClauses = [];
         $searchWhereClauses = [];
 
         // Loop through each searchable column
@@ -378,12 +378,10 @@ abstract class Entity {
 
             if (!empty($params[$column])) {
                 $binding = ":{$column}";
-                $globalWhereClauses[] = "{$column} = {$binding}";
+                $whereClauses[] = "{$column} = {$binding}";
                 $bindings[$binding] = $params[$column];
             }
         }
-
-        $whereClauses = $globalWhereClauses;
 
         if (!empty($searchWhereClauses)) {
             array_unshift($whereClauses, "(\n\t\t" . implode("\n\t\tOR ", $searchWhereClauses) . "\n\t)");
