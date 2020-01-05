@@ -193,7 +193,7 @@ abstract class Entity {
         if ($where) {
             if (is_numeric($where)) {
                 $query .= "WHERE id = :id \n"
-                    . "LIMIT 1;";
+                        . "LIMIT 1;";
                 return $query;
             }
 
