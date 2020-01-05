@@ -40,7 +40,7 @@ class Projects {
     /**
      * Try to either insert or update a Project
      *
-     * @param null $projectId int The Id of the Project to update (Only if a update request)
+     * @param $projectId int|null The Id of the Project to update (Only if a update request)
      * @return array The request response to send back
      */
     private static function saveProject($projectId = null): array {

@@ -205,10 +205,10 @@ abstract class Entity {
     }
 
     /**
-     * @param array|string $select
-     * @param array|string|int $where
-     * @param int|null $limit
-     * @param int|null $offset
+     * @param $select array|string
+     * @param $where array|string|int
+     * @param $limit int|null
+     * @param $offset int|null
      * @return string
      */
     protected static function generateSelectQuery($select = "*", $where = null, int $limit = null, int $offset = null): string {
@@ -253,11 +253,11 @@ abstract class Entity {
     }
 
     /**
-     * @param array|string $select
-     * @param array|string|int $where
-     * @param null $bindings
-     * @param int|null $limit
-     * @param int|null $offset
+     * @param $select array|string
+     * @param $where array|string|int
+     * @param $bindings array|null
+     * @param $limit int|null
+     * @param $offset int|null
      * @return Entity|array[Entity]
      */
     public static function get($select = "*", $where = null, $bindings = null, int $limit = null, int $offset = null) {
