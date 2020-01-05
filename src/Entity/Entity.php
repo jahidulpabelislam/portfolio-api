@@ -348,27 +348,33 @@ abstract class Entity {
             return ["", []];
         }
 
-        $searchValue = $params["search"] ?? "";
+        $searchValue = $params["search"] ?? null;
 
-        // Split each word in search
-        $searchWords = explode(" ", $searchValue);
-        $searchString = "%" . implode("%", $searchWords) . "%";
+        $bindings = [];
 
-        $searchesReversed = array_reverse($searchWords);
-        $searchStringReversed = "%" . implode("%", $searchesReversed) . "%";
+        if ($searchValue) {
+            // Split each word in search
+            $searchWords = explode(" ", $searchValue);
+            $searchString = "%" . implode("%", $searchWords) . "%";
 
-        $bindings = [
-            ":searchString" => $searchString,
-            ":searchStringReversed" => $searchStringReversed,
-        ];
+            $searchesReversed = array_reverse($searchWords);
+            $searchStringReversed = "%" . implode("%", $searchesReversed) . "%";
+
+            $bindings = [
+                ":searchString" => $searchString,
+                ":searchStringReversed" => $searchStringReversed,
+            ];
+        }
 
         $globalWhereClauses = [];
         $searchWhereClauses = [];
 
         // Loop through each searchable column
         foreach (static::$searchableColumns as $column) {
-            $searchWhereClauses[] = "{$column} LIKE :searchString";
-            $searchWhereClauses[] = "{$column} LIKE :searchStringReversed";
+            if ($searchValue) {
+                $searchWhereClauses[] = "{$column} LIKE :searchString";
+                $searchWhereClauses[] = "{$column} LIKE :searchStringReversed";
+            }
 
             if (!empty($params[$column])) {
                 $binding = ":{$column}";
