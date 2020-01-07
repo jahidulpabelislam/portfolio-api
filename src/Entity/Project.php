@@ -88,13 +88,10 @@ class Project extends Entity {
     }
 
     /**
-     * Load a single Entity from the Database where a Id column = a value ($id)
-     * Either return Entity with success meta data, or failed meta data
-     * Uses helper function getByColumn();
+     * @inheritDoc
      *
-     * As extra functionality on top of default function
-     * As Project is linked to Multiple Project Images
-     * Add these to the response unless specified
+     * Adds extra functionality as a Project is linked to multiple Project Images
+     * add these to the entity unless specified
      *
      * @param $id int The Id of the Entity to get
      * @param $includeLinkedData bool Whether to also get and include linked entity/data (images)
@@ -121,10 +118,9 @@ class Project extends Entity {
     }
 
     /**
-     * Delete an Entity from the Database
+     * @inheritDoc
      *
-     * Add extra functionality on top of default delete function
-     * As these Entities are linked to many Project Images, so delete these also
+     * Add extra functionality as a Project is linked to many Project Images, so delete these also
      *
      * @return bool Whether or not deletion was successful
      */
@@ -144,8 +140,7 @@ class Project extends Entity {
     /**
      * @inheritDoc
      *
-     * Adds extra functionality to:
-     * - filter by public projects if (admin) user isn't currently logged in
+     * Adds extra functionality to filter by public projects if (admin) user isn't currently logged in
      *
      * @param $params array Any data to aid in the search query
      * @return array
@@ -159,10 +154,9 @@ class Project extends Entity {
     }
 
     /**
-     * Gets all Entities but paginated, also might include search
+     * @inheritDoc
      *
-     * Adds extra functionality to:
-     * - include any Images linked to all Projects found in search
+     * Adds extra functionality to include any Images linked to all Projects found in search
      *
      * @param $params array Any data to aid in the search query
      * @return array The request response to send back

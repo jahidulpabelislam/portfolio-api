@@ -37,7 +37,7 @@ class ProjectImage extends Entity {
     protected static $defaultLimitBy = null;
 
     /**
-     * Delete an Entity from the Database
+     * @inheritDoc
      *
      * Add extra functionality on top of default delete function
      * As these Entities are linked to a file on the server
