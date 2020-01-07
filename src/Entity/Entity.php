@@ -49,10 +49,6 @@ abstract class Entity {
 
     protected static $defaultLimitBy = 10;
 
-    public $totalCount = 0;
-    public $limitBy = 10;
-    public $page = 1;
-
     protected static function getDB(): Database {
         if (!static::$db) {
             $config = Config::get();
@@ -179,6 +175,48 @@ abstract class Entity {
 
     public static function createEntities(array $rows): array {
         return array_map(["static", "createEntity"], $rows);
+    }
+
+    /**
+     * Get the limit to use for a SQL query
+     * Can specify a limit and it will make sure it is not above the max/default
+     *
+     * @param $limit int|string|null
+     * @return int
+     */
+    public static function getLimit($limit = null): int {
+        // If limit specified use unless it's bigger than default
+        if (is_numeric($limit)) {
+            $limit = (int)$limit;
+            $limit = min($limit, static::$defaultLimitBy);
+        }
+
+        // If invalid use default
+        if (!$limit || $limit < 1) {
+            $limit = static::$defaultLimitBy;
+        }
+
+        return $limit;
+    }
+
+    /**
+     * Get the page to use for a SQL query
+     * Can specify the page and it will make sure it is valid
+     *
+     * @param $page int|string|null
+     * @return int
+     */
+    public static function getPage($page = null): int {
+        if (is_numeric($page)) {
+            $page = (int)$page;
+        }
+
+        // If invalid use page 1
+        if (!$page || $page <= 1) {
+            $page = 1;
+        }
+
+        return $page;
     }
 
     protected static function getOrderByQuery(): string {
@@ -393,7 +431,7 @@ abstract class Entity {
      * @param $params array The fields to search for within searchable columns (if any)
      * @return array An array consisting of the generated where clause and an associative array containing any bindings to aid the Database querying
      */
-    protected static function generateSearchWhereClauses(array $params): array {
+    public static function generateSearchWhereClauses(array $params): array {
         if (!static::$searchableColumns) {
             return ["", []];
         }
@@ -458,42 +496,19 @@ abstract class Entity {
      * @param $params array Any data to aid in the search query
      * @return array The request response to send back
      */
-    public function doSearch(array $params): array {
-        // If user added a limit param, use this if valid, unless its bigger than default
-        if (!empty($params["limit"])) {
-            $limit = (int)$params["limit"];
-            $this->limitBy = min($limit, static::$defaultLimitBy);
-        }
-
-        // If limit is invalid use default
-        if ($this->limitBy < 1) {
-            $this->limitBy = static::$defaultLimitBy;
-        }
+    public static function doSearch(array $params): array {
+        $limit = static::getLimit($params["limit"] ?? null);
 
         // Generate a offset to the query, if a page was specified using page & limit values
         $offset = 0;
-        if (!empty($params["page"])) {
-            $page = (int)$params["page"];
-            if ($page > 1) {
-                $offset = $this->limitBy * ($page - 1);
-            }
-            else {
-                $page = 1;
-            }
-
-            $this->page = $page;
+        $page = static::getPage($params["page"] ?? null);
+        if ($page > 1) {
+            $offset = $limit * ($page - 1);
         }
 
-        $where = "";
-        $bindings = [];
+        // Add filters/wheres if a search was entered
+        [$where, $bindings] = static::generateSearchWhereClauses($params);
 
-        // Add a filter if a search was entered
-        if (!empty($params)) {
-            [$where, $bindings] = static::generateSearchWhereClauses($params);
-        }
-
-        $this->totalCount = static::getCount($where, $bindings);
-
-        return static::get("*", $where, $bindings, $this->limitBy, $offset);
+        return static::get("*", $where, $bindings, $limit, $offset);
     }
 }

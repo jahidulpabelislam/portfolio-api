@@ -142,21 +142,32 @@ class Project extends Entity {
     }
 
     /**
-     * Gets all Entities but paginated, also might include search
+     * @inheritDoc
      *
      * Adds extra functionality to:
      * - filter by public projects if (admin) user isn't currently logged in
+     *
+     * @param $params array Any data to aid in the search query
+     * @return array
+     */
+    public static function generateSearchWhereClauses(array $params): array {
+        // As the user isn't logged in, filter by status = public
+        if (!User::isLoggedIn()) {
+            $params["status"] = self::PUBLIC_STATUS;
+        }
+        return parent::generateSearchWhereClauses($params);
+    }
+
+    /**
+     * Gets all Entities but paginated, also might include search
+     *
+     * Adds extra functionality to:
      * - include any Images linked to all Projects found in search
      *
      * @param $params array Any data to aid in the search query
      * @return array The request response to send back
      */
-    public function doSearch(array $params): array {
-        // As the user isn't logged in, filter by status = public
-        if (!User::isLoggedIn()) {
-            $params["status"] = self::PUBLIC_STATUS;
-        }
-
+    public static function doSearch(array $params): array {
         $projects = parent::doSearch($params);
 
         // Loop through each Project and get the Projects Images

@@ -175,15 +175,16 @@ class Responder {
      *
      * Use getItemsResponse function as the base response, then just adds additional meta data
      */
-    public function getItemsSearchResponse(Entity $entity, array $entities = [], array $data = []): array {
+    public function getItemsSearchResponse(string $entity, array $entities = [], array $params = []): array {
         // The items response is the base response, and the extra meta is added below
-        $response = self::getItemsResponse(get_class($entity), $entities);
+        $response = self::getItemsResponse($entity, $entities);
 
-        $totalCount = $entity->totalCount;
+        [$where, $bindings] = $entity::generateSearchWhereClauses($params);
+        $totalCount = $entity::getCount($where, $bindings);
         $response["meta"]["total_count"] = $totalCount;
 
-        $limit = $entity->limitBy;
-        $page = $entity->page;
+        $limit = $entity::getLimit($params["limit"] ?? null);
+        $page = $entity::getPage($params["page"] ?? null);
 
         $lastPage = ceil($totalCount / $limit);
         $response["meta"]["total_pages"] = $lastPage;
