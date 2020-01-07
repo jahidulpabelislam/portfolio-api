@@ -246,10 +246,10 @@ abstract class Entity {
      * @param $select array|string
      * @param $where array|string|int
      * @param $limit int|null
-     * @param $offset int|null
+     * @param $page int|null
      * @return string
      */
-    protected static function generateSelectQuery($select = "*", $where = null, int $limit = null, int $offset = null): string {
+    protected static function generateSelectQuery($select = "*", $where = null, int $limit = null, int $page = null): string {
         $select = self::singleArrayValue($select);
         $_select = $select ?: "*";
         if ($select && is_array($select)) {
@@ -282,7 +282,9 @@ abstract class Entity {
 
         if ($limit) {
             $query .= "LIMIT {$limit}";
-            if ($offset) {
+
+            if ($page > 1) {
+                $offset = $limit * ($page - 1);
                 $query .= " OFFSET {$offset}";
             }
         }
@@ -299,11 +301,7 @@ abstract class Entity {
      * @return Entity|array[Entity]
      */
     public static function get($select = "*", $where = null, $bindings = null, int $limit = null, int $page = null) {
-        $offset = 0;
-        if ($page > 1) {
-            $offset = $limit * ($page - 1);
-        }
-        $query = static::generateSelectQuery($select, $where, $limit, $offset);
+        $query = static::generateSelectQuery($select, $where, $limit, $page);
 
         if (($where && is_numeric($where)) || $limit == 1) {
             if (is_numeric($where)) {
