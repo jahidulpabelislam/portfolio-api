@@ -302,6 +302,9 @@ abstract class Entity {
      * @return Entity|array[Entity]
      */
     public static function get($select = "*", $where = null, $bindings = null, ?int $limit = null, ?int $page = null) {
+        $limit = static::getLimit($limit);
+        $page = static::getPage($page);
+
         $query = static::generateSelectQuery($select, $where, $limit, $page);
 
         if (($where && is_numeric($where)) || $limit == 1) {
@@ -500,8 +503,8 @@ abstract class Entity {
      * @return array The request response to send back
      */
     public static function doSearch(array $params): array {
-        $limit = static::getLimit($params["limit"] ?? null);
-        $page = static::getPage($params["page"] ?? null);
+        $limit = $params["limit"] ?? null;
+        $page = $params["page"] ?? null;
 
         // Add filters/wheres if a search was entered
         [$where, $bindings] = static::generateSearchWhereClauses($params);
