@@ -150,12 +150,12 @@ class Project extends Entity {
      * @param $params array Any data to aid in the search query
      * @return array
      */
-    public static function generateSearchWhereClauses(array $params): array {
+    public static function generateWhereClausesForSearch(array $params): array {
         // As the user isn't logged in, filter by status = public
         if (!User::isLoggedIn()) {
             $params["status"] = self::PUBLIC_STATUS;
         }
-        return parent::generateSearchWhereClauses($params);
+        return parent::generateWhereClausesForSearch($params);
     }
 
     /**

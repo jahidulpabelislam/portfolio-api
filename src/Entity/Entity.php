@@ -433,7 +433,7 @@ abstract class Entity {
      * @param $params array The fields to search for within searchable columns (if any)
      * @return array An array consisting of the generated where clause and an associative array containing any bindings to aid the Database querying
      */
-    public static function generateSearchWhereClauses(array $params): array {
+    public static function generateWhereClausesForSearch(array $params): array {
         if (!static::$searchableColumns) {
             return ["", []];
         }
@@ -503,7 +503,7 @@ abstract class Entity {
         $page = $params["page"] ?? null;
 
         // Add filters/wheres if a search was entered
-        [$where, $bindings] = static::generateSearchWhereClauses($params);
+        [$where, $bindings] = static::generateWhereClausesForSearch($params);
 
         return static::get("*", $where, $bindings, $limit, $page);
     }
