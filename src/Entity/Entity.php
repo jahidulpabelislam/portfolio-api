@@ -284,6 +284,7 @@ abstract class Entity {
             $query .= "LIMIT {$limit}";
 
             // Generate a offset, using limit & page values
+            $page = static::getPage($page);
             if ($page > 1) {
                 $offset = $limit * ($page - 1);
                 $query .= " OFFSET {$offset}";
@@ -303,8 +304,6 @@ abstract class Entity {
      */
     public static function get($select = "*", $where = null, $bindings = null, ?int $limit = null, ?int $page = null) {
         $limit = static::getLimit($limit);
-        $page = static::getPage($page);
-
         $query = static::generateSelectQuery($select, $where, $limit, $page);
 
         if (($where && is_numeric($where)) || $limit == 1) {
