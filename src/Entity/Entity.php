@@ -488,7 +488,7 @@ abstract class Entity {
      * @return int
      */
     public static function getCount($where = null, $bindings = null): int {
-        $query = static::generateSelectQuery("COUNT(*) as total_count", $where);
+        $query = static::generateSelectQuery("COUNT(*) as total_count", $where, 1);
         $row = static::getDB()->getOne($query, $bindings);
         return $row['total_count'] ?? 0;
     }
