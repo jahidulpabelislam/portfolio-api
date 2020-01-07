@@ -283,6 +283,7 @@ abstract class Entity {
         if ($limit) {
             $query .= "LIMIT {$limit}";
 
+            // Generate a offset, using limit & page values
             if ($page > 1) {
                 $offset = $limit * ($page - 1);
                 $query .= " OFFSET {$offset}";
@@ -500,8 +501,6 @@ abstract class Entity {
      */
     public static function doSearch(array $params): array {
         $limit = static::getLimit($params["limit"] ?? null);
-
-        // Generate a offset to the query, if a page was specified using page & limit values
         $page = static::getPage($params["page"] ?? null);
 
         // Add filters/wheres if a search was entered
