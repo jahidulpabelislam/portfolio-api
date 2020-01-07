@@ -428,7 +428,7 @@ abstract class Entity {
     /**
      * Helper function
      * Used to generate a where clause for a search on a entity along with any binding needed
-     * Used with Entity::doSearch();
+     * Used with Entity::getBySearch();
      *
      * @param $params array The fields to search for within searchable columns (if any)
      * @return array An array consisting of the generated where clause and an associative array containing any bindings to aid the Database querying
@@ -482,7 +482,7 @@ abstract class Entity {
 
     /**
      * Used to get a total count of Entities using a where clause
-     * Used together with Entity::doSearch, as this return a limited Entities
+     * Used together with Entity::getBySearch, as this return a limited Entities
      * but we want to get a number of total items without limit
      *
      * @return int
@@ -498,7 +498,7 @@ abstract class Entity {
      * @param $params array Any data to aid in the search query
      * @return array The request response to send back
      */
-    public static function doSearch(array $params): array {
+    public static function getBySearch(array $params): array {
         $limit = $params["limit"] ?? null;
         $page = $params["page"] ?? null;
 
