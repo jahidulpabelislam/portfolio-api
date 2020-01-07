@@ -31,7 +31,9 @@ class Projects {
     public static function getProjects(): array {
         $data = API::get()->data;
 
-        $projects = Project::getBySearch($data);
+        $limit = $data["limit"] ?? null;
+        $page = $data["page"] ?? null;
+        $projects = Project::getBySearch($data, $limit, $page);
 
         return Responder::get()->getItemsSearchResponse(Project::class, $projects, $data);
     }

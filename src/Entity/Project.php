@@ -167,8 +167,8 @@ class Project extends Entity {
      * @param $params array Any data to aid in the search query
      * @return array The request response to send back
      */
-    public static function getBySearch(array $params): array {
-        $projects = parent::getBySearch($params);
+    public static function getBySearch(array $params, $limit = null, $page = null): array {
+        $projects = parent::getBySearch($params, $limit, $page);
 
         // Loop through each Project and get the Projects Images
         $projects = array_map(static function(Project $project) {

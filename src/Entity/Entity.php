@@ -499,10 +499,7 @@ abstract class Entity {
      * @param $params array Any data to aid in the search query
      * @return array The request response to send back
      */
-    public static function getBySearch(array $params): array {
-        $limit = $params["limit"] ?? null;
-        $page = $params["page"] ?? null;
-
+    public static function getBySearch(array $params, $limit = null, $page = null): array {
         // Add filters/wheres if a search was entered
         [$where, $bindings] = static::generateWhereClausesForSearch($params);
 
