@@ -320,7 +320,7 @@ abstract class Entity {
     /**
      * Get Entities from the Database where a column ($column) = a value ($value)
      */
-    public static function getByColumn(string $column, $value, int $limit = null, int $offset = null): array {
+    public static function getByColumn(string $column, $value, int $limit = null, int $offset = null) {
         $bindings = [":{$column}" => $value];
         return static::get("*", "{$column} = :{$column}", $bindings, $limit, $offset);
     }
