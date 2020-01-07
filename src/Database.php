@@ -81,19 +81,6 @@ class Database {
         return 0;
     }
 
-    public function getColumn(string $query, array $bindings = null) {
-        $stmt = $this->_execute($query, $bindings);
-
-        if ($stmt) {
-            $column = $stmt->fetch(PDO::FETCH_COLUMN);
-            if (!empty($column)) {
-                return $column;
-            }
-        }
-
-        return null;
-    }
-
     public function getOne(string $query, array $bindings = null): ?array {
         $stmt = $this->_execute($query, $bindings);
 
