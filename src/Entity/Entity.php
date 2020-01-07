@@ -307,9 +307,6 @@ abstract class Entity {
         $query = static::generateSelectQuery($select, $where, $limit, $page);
 
         if (($where && is_numeric($where)) || $limit == 1) {
-            if (is_numeric($where)) {
-                $bindings =[":id" => $where];
-            }
             $row = static::getDB()->getOne($query, $bindings);
             if (!empty($row)) {
                 return static::createEntity($row);
@@ -336,7 +333,7 @@ abstract class Entity {
      */
     public static function getById($id): Entity {
         if (is_numeric($id)) {
-            return static::get("*", (int)$id);
+            return static::getByColumn("id", (int)$id, 1);
         }
 
         return new static();
