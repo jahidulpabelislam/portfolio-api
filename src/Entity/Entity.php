@@ -184,7 +184,7 @@ abstract class Entity {
      * @param $limit int|string|null
      * @return int
      */
-    public static function getLimit($limit = null): int {
+    public static function getLimit($limit = null): ?int {
         // If limit specified use unless it's bigger than default
         if (is_numeric($limit)) {
             $limit = (int)$limit;
@@ -206,7 +206,7 @@ abstract class Entity {
      * @param $page int|string|null
      * @return int
      */
-    public static function getPage($page = null): int {
+    public static function getPage($page = null): ?int {
         if (is_numeric($page)) {
             $page = (int)$page;
         }
@@ -301,7 +301,7 @@ abstract class Entity {
      * @param $page int|null
      * @return Entity|array[Entity]
      */
-    public static function get($select = "*", $where = null, $bindings = null, int $limit = null, int $page = null) {
+    public static function get($select = "*", $where = null, $bindings = null, ?int $limit = null, ?int $page = null) {
         $query = static::generateSelectQuery($select, $where, $limit, $page);
 
         if (($where && is_numeric($where)) || $limit == 1) {
