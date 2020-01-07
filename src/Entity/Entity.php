@@ -295,10 +295,14 @@ abstract class Entity {
      * @param $where array|string|int
      * @param $bindings array|null
      * @param $limit int|null
-     * @param $offset int|null
+     * @param $page int|null
      * @return Entity|array[Entity]
      */
-    public static function get($select = "*", $where = null, $bindings = null, int $limit = null, int $offset = null) {
+    public static function get($select = "*", $where = null, $bindings = null, int $limit = null, int $page = null) {
+        $offset = 0;
+        if ($page > 1) {
+            $offset = $limit * ($page - 1);
+        }
         $query = static::generateSelectQuery($select, $where, $limit, $offset);
 
         if (($where && is_numeric($where)) || $limit == 1) {
@@ -320,9 +324,9 @@ abstract class Entity {
     /**
      * Get Entities from the Database where a column ($column) = a value ($value)
      */
-    public static function getByColumn(string $column, $value, int $limit = null, int $offset = null) {
+    public static function getByColumn(string $column, $value, int $limit = null, int $page = null) {
         $bindings = [":{$column}" => $value];
-        return static::get("*", "{$column} = :{$column}", $bindings, $limit, $offset);
+        return static::get("*", "{$column} = :{$column}", $bindings, $limit, $page);
     }
 
     /**
@@ -500,15 +504,11 @@ abstract class Entity {
         $limit = static::getLimit($params["limit"] ?? null);
 
         // Generate a offset to the query, if a page was specified using page & limit values
-        $offset = 0;
         $page = static::getPage($params["page"] ?? null);
-        if ($page > 1) {
-            $offset = $limit * ($page - 1);
-        }
 
         // Add filters/wheres if a search was entered
         [$where, $bindings] = static::generateSearchWhereClauses($params);
 
-        return static::get("*", $where, $bindings, $limit, $offset);
+        return static::get("*", $where, $bindings, $limit, $page);
     }
 }
