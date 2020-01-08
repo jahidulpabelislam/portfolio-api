@@ -80,8 +80,8 @@ abstract class Entity {
     /**
      * Convenient function to get the single value from an array if it's the only value
      *
-     * @param $value
-     * @return array|mixed
+     * @param $value string[]|string
+     * @return string[]|string
      */
     private static function singleArrayValue($value) {
         if ($value && is_array($value) && count($value) === 1) {
@@ -116,17 +116,19 @@ abstract class Entity {
         return static::$requiredColumns;
     }
 
-    public function __isset($name) {
+    public function __isset(string $name): bool {
         return isset($this->columns[$name]);
     }
 
-    public function __get($name) {
+    public function __get(string $name) {
         if (array_key_exists($name, $this->columns)) {
             return $this->columns[$name];
         }
+
+        return null;
     }
 
-    private function setValue($column, $value) {
+    private function setValue(string $column, $value) {
         if (in_array($column, static::getIntColumns())) {
             $value = (int)$value;
         }
@@ -134,7 +136,7 @@ abstract class Entity {
         $this->columns[$column] = $value;
     }
 
-    public function __set($name, $value) {
+    public function __set(string $name, $value) {
         if (array_key_exists($name, $this->columns)) {
             $this->setValue($name, $value);
         }
@@ -173,6 +175,10 @@ abstract class Entity {
         return $entity;
     }
 
+    /**
+     * @param $rows array
+     * @return Entity[]
+     */
     public static function createEntities(array $rows): array {
         return array_map(["static", "createEntity"], $rows);
     }
@@ -182,7 +188,7 @@ abstract class Entity {
      * Can specify a limit and it will make sure it is not above the max/default
      *
      * @param $limit int|string|null
-     * @return int
+     * @return int|null
      */
     public static function getLimit($limit = null): ?int {
         // If limit specified use unless it's bigger than default
@@ -204,7 +210,7 @@ abstract class Entity {
      * Can specify the page and it will make sure it is valid
      *
      * @param $page int|string|null
-     * @return int
+     * @return int|null
      */
     public static function getPage($page = null): ?int {
         if (is_numeric($page)) {
@@ -243,13 +249,13 @@ abstract class Entity {
     }
 
     /**
-     * @param $select array|string
-     * @param $where array|string|int
-     * @param $limit int|null
+     * @param $select string[]|string
+     * @param $where string[]|string|int
+     * @param $limit int|string|null
      * @param $page int|string|null
      * @return string
      */
-    protected static function generateSelectQuery($select = "*", $where = null, ?int $limit = null, $page = null): string {
+    protected static function generateSelectQuery($select = "*", $where = null, $limit = null, $page = null): string {
         $select = self::singleArrayValue($select);
         $_select = $select ?: "*";
         if ($select && is_array($select)) {
@@ -295,14 +301,14 @@ abstract class Entity {
     }
 
     /**
-     * @param $select array|string
-     * @param $where array|string|int
+     * @param $select string[]|string
+     * @param $where string[]|string|int
      * @param $bindings array|null
      * @param $limit int|string|null
      * @param $page int|string|null
-     * @return Entity|array[Entity]
+     * @return Entity[]|Entity
      */
-    public static function get($select = "*", $where = null, $bindings = null, $limit = null, $page = null) {
+    public static function get($select = "*", $where = null, ?array $bindings = null, $limit = null, $page = null) {
         $limit = static::getLimit($limit);
         $query = static::generateSelectQuery($select, $where, $limit, $page);
 
@@ -322,14 +328,13 @@ abstract class Entity {
     /**
      * Get Entities from the Database where a column ($column) = a value ($value)
      */
-    public static function getByColumn(string $column, $value, int $limit = null, int $page = null) {
+    public static function getByColumn(string $column, $value, $limit = null, $page = null) {
         $bindings = [":{$column}" => $value];
         return static::get("*", "{$column} = :{$column}", $bindings, $limit, $page);
     }
 
     /**
      * Load a single Entity from the Database where a Id column = a value ($id).
-     * Uses helper function generateGetByColumnQuery to generate the necessary SQL query and bindings
      */
     public static function getById($id): Entity {
         if (is_numeric($id)) {
@@ -347,7 +352,7 @@ abstract class Entity {
     protected function generateSaveQuery(): array {
         $isNew = empty($this->id);
 
-        $valuesQueries = $bindings= [];
+        $valuesQueries = $bindings = [];
 
         foreach ($this->columns as $column => $value) {
             $placeholder = ":{$column}";
@@ -431,7 +436,7 @@ abstract class Entity {
      * Used with Entity::getBySearch();
      *
      * @param $params array The fields to search for within searchable columns (if any)
-     * @return array An array consisting of the generated where clause and an associative array containing any bindings to aid the Database querying
+     * @return array [string, array] Generated SQL where clause(s) and an associative array containing any bindings for query
      */
     public static function generateWhereClausesForSearch(array $params): array {
         if (!static::$searchableColumns) {
@@ -487,7 +492,7 @@ abstract class Entity {
      *
      * @return int
      */
-    public static function getCount($where = null, $bindings = null): int {
+    public static function getCount($where = null, ?array $bindings = null): int {
         $query = static::generateSelectQuery("COUNT(*) as total_count", $where, 1);
         $row = static::getDB()->getOne($query, $bindings);
         return $row['total_count'] ?? 0;
@@ -497,7 +502,9 @@ abstract class Entity {
      * Gets all Entities but paginated, also might include search
      *
      * @param $params array Any data to aid in the search query
-     * @return array The request response to send back
+     * @param $limit int|string|null
+     * @param $page int|string|null
+     * @return Entity[]|Entity
      */
     public static function getBySearch(array $params, $limit = null, $page = null): array {
         // Add filters/wheres if a search was entered

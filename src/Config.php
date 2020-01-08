@@ -45,7 +45,7 @@ class Config {
         return self::$instance;
     }
 
-    public function __get($name) {
+    public function __get(string $name) {
         $name = strtoupper($name);
         if (defined($name)) {
             return constant($name);

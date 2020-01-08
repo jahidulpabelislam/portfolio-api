@@ -142,8 +142,8 @@ class Project extends Entity {
      *
      * Adds extra functionality to filter by public projects if (admin) user isn't currently logged in
      *
-     * @param $params array Any data to aid in the search query
-     * @return array
+     * @param $params array The fields to search for within searchable columns (if any)
+     * @return array [string, array] Generated SQL where clause(s) and an associative array containing any bindings for query
      */
     public static function generateWhereClausesForSearch(array $params): array {
         // As the user isn't logged in, filter by status = public

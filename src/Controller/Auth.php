@@ -28,7 +28,7 @@ class Auth {
      * If successful return appropriate success message with JWT
      * else return appropriate error message
      *
-     * @return array
+     * @return array The request response to send back
      */
     public static function login(): array {
         if (API::get()->hasRequiredFields(User::class)) {
@@ -60,7 +60,7 @@ class Auth {
     /**
      * Call logout, then return appropriate success or error message
      *
-     * @return array
+     * @return array The request response to send back
      */
     public static function logout(): array {
         if (User::logout()) {
@@ -74,7 +74,7 @@ class Auth {
      * Check whether the current user is logged in
      * then return appropriate response depending on check
      *
-     * @return array
+     * @return array The request response to send back
      */
     public static function getAuthStatus(): array {
         if (User::isLoggedIn()) {

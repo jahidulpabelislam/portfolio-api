@@ -71,7 +71,7 @@ class Database {
         return null;
     }
 
-    public function execute(string $query, array $bindings = null): int {
+    public function execute(string $query, ?array $bindings = null): int {
         $stmt = $this->_execute($query, $bindings);
 
         if ($stmt) {
@@ -81,7 +81,7 @@ class Database {
         return 0;
     }
 
-    public function getOne(string $query, array $bindings = null): ?array {
+    public function getOne(string $query, ?array $bindings = null): ?array {
         $stmt = $this->_execute($query, $bindings);
 
         if ($stmt) {
@@ -94,7 +94,7 @@ class Database {
         return null;
     }
 
-    public function getAll(string $query, array $bindings = null): array {
+    public function getAll(string $query, ?array $bindings = null): array {
         $stmt = $this->_execute($query, $bindings);
 
         if ($stmt) {

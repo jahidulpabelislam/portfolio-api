@@ -170,7 +170,7 @@ class Core {
         return $invalidFields;
     }
 
-    private static function setHeader($header, $value) {
+    private static function setHeader(string $header, string $value) {
         header("{$header}: {$value}");
     }
 
