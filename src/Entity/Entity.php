@@ -236,13 +236,12 @@ abstract class Entity {
                 $orderBys[] = "id ASC";
             }
 
-            $orderBys = self::singleArrayValue($orderBys);
-
-            if (is_array($orderBys)) {
-                return "ORDER BY \n\t" . implode(",\n\t", $orderBys);
+            $orderBy = self::singleArrayValue($orderBys);
+            if (is_array($orderBy)) {
+                $orderBy = "\n\t" . implode(",\n\t", $orderBys);
             }
 
-            return "ORDER BY {$orderBys}";
+            return "ORDER BY {$orderBy}";
         }
 
         return "";
