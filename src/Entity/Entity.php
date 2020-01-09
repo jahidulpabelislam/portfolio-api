@@ -256,12 +256,12 @@ abstract class Entity {
      */
     protected static function generateSelectQuery($select = "*", $where = null, $limit = null, $page = null): string {
         $select = self::singleArrayValue($select);
-        $_select = $select ?: "*";
+        $select = $select ?: "*";
         if ($select && is_array($select)) {
-            $_select = "\n\t" . implode(",\n\t", $select);
+            $select = "\n\t" . implode(",\n\t", $select);
         }
 
-        $query = "SELECT {$_select} \n"
+        $query = "SELECT {$select} \n"
                . "FROM " . static::$tableName . " \n";
 
         if ($where) {
