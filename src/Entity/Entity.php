@@ -273,9 +273,10 @@ abstract class Entity {
 
             $where = self::singleArrayValue($where);
             if (is_array($where)) {
-                $query .= "WHERE \n\t" . implode("\n\tAND ", $where) . "\n";
+                $where = "\n\t" . implode("\n\tAND ", $where);
             }
-            else if (is_string($where)) {
+
+            if (is_string($where)) {
                 $query .= "WHERE {$where} \n";
             }
         }
