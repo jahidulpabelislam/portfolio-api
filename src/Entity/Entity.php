@@ -317,11 +317,7 @@ abstract class Entity {
 
         if (($where && is_numeric($where)) || $limit == 1) {
             $row = static::getDB()->getOne($query, $bindings);
-            if (!empty($row)) {
-                return static::createEntity($row);
-            }
-
-            return new static();
+            return static::createEntity($row);
         }
 
         $rows = static::getDB()->getAll($query, $bindings);
