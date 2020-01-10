@@ -168,9 +168,9 @@ abstract class Entity {
         return $array;
     }
 
-    public static function createEntity(array $row): Entity {
+    public static function createEntity(?array $row = null): Entity {
         $entity = new static();
-        
+
         if (!empty($row)) {
             $entity->setValues($row);
         }
@@ -408,7 +408,7 @@ abstract class Entity {
         return false;
     }
 
-    public static function insert(array $data = []): Entity {
+    public static function insert(array $data = null): Entity {
         $entity = static::createEntity($data);
         $entity->save();
 
