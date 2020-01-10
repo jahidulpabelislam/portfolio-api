@@ -83,8 +83,6 @@ Also for the Cross domain requests from the CMS for secured endpoints such as De
 
 7.  Copy and fill in example files (in any order).
 
-    -   Copy `/set-up/Config-sample.php` and move to `/classes/Config.php` then fill in the 6 necessary constants.
-
     -   Copy `/set-up/User-sample.php` and move to `/src/Entity/User.php` then update all 3 functions with your Auth functionality.
 
 ## Related Projects
