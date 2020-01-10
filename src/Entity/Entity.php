@@ -406,9 +406,7 @@ abstract class Entity {
     }
 
     public static function insert(array $data = []): Entity {
-        $entity = new static();
-
-        $entity->setValues($data);
+        $entity = static::createEntity($data);
         $entity->save();
 
         return $entity;
