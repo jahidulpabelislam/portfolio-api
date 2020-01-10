@@ -170,7 +170,10 @@ abstract class Entity {
 
     public static function createEntity(array $row): Entity {
         $entity = new static();
-        $entity->setValues($row);
+        
+        if (!empty($row)) {
+            $entity->setValues($row);
+        }
 
         return $entity;
     }
