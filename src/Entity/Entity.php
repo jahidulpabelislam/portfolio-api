@@ -221,7 +221,7 @@ abstract class Entity {
         }
 
         // If invalid use page 1
-        if (!$page || $page <= 1) {
+        if (!$page || $page < 1) {
             $page = 1;
         }
 
