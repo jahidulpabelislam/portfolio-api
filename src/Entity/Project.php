@@ -68,7 +68,7 @@ class Project extends Entity {
 
         if (isset($projectArray["skills"])) {
             $skills = explode(",", $projectArray["skills"]);
-            $skills = array_map("trim", $skills);
+            array_walk($skills, "trim");
             $projectArray["skills"] = $skills;
         }
 
@@ -165,11 +165,9 @@ class Project extends Entity {
         $projects = parent::getBySearch($params, $limit, $page);
 
         // Loop through each Project and get the Projects Images
-        $projects = array_map(static function(Project $project) {
+        array_walk($projects, static function(Project $project) {
             $project->loadProjectImages();
-
-            return $project;
-        }, $projects);
+        });
 
         return $projects;
     }
