@@ -163,7 +163,7 @@ class Core {
      * @return array An array of invalid data fields
      */
     public function getInvalidFields(array $requiredFields): array {
-        $invalidFields = array_filter($requiredFields, function(string $field) {
+        $invalidFields = array_filter($requiredFields, static function(string $field) {
             return !$this->isFieldValid($field);
         });
 
@@ -207,9 +207,9 @@ class Core {
 
         $latestRow = $response["row"] ?? $response["rows"][0] ?? null;
 
-        if (!empty($response["rows"])  && count($response["rows"]) > 1) {
+        if (!empty($response["rows"]) && count($response["rows"]) > 1) {
             $latestDate = 0;
-            foreach($response["rows"] as $row) {
+            foreach ($response["rows"] as $row) {
                 if (empty($row["updated_at"])) {
                     continue;
                 }

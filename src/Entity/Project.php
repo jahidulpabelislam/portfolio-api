@@ -46,7 +46,7 @@ class Project extends Entity {
         "type",
         "skills",
         "long_description",
-        "short_description"
+        "short_description",
     ];
 
     protected static $searchableColumns = [
@@ -63,7 +63,7 @@ class Project extends Entity {
 
     private $images = [];
 
-    public function toArray(): array{
+    public function toArray(): array {
         $projectArray = parent::toArray();
 
         if (isset($projectArray["skills"])) {

@@ -231,7 +231,7 @@ abstract class Entity {
     protected static function getOrderByQuery(): string {
         if (static::$orderByColumn) {
             $orderBys = [
-                static::$orderByColumn . " " . (static::$orderByASC ? "ASC" : "DESC")
+                static::$orderByColumn . " " . (static::$orderByASC ? "ASC" : "DESC"),
             ];
 
             // Sort by id if not already to stop any randomness on rows with same value on above

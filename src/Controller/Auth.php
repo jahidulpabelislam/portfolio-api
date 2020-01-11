@@ -8,7 +8,7 @@
  * @version 2.2.2
  * @since Class available since Release: v2.0.0
  * @copyright 2010-2019 JPI
-*/
+ */
 
 namespace App\Controller;
 
