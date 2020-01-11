@@ -190,24 +190,24 @@ class Responder {
         $response["meta"]["total_pages"] = $lastPage;
 
         $pageURL = $this->api->getAPIURL();
-        if (isset($data["limit"])) {
-            $data["limit"] = $limit;
+        if (isset($params["limit"])) {
+            $params["limit"] = $limit;
         }
 
         $hasPreviousPage = ($page > 1) && ($lastPage >= ($page - 1));
         $response["meta"]["has_previous_page"] = $hasPreviousPage;
         if ($hasPreviousPage) {
-            $data["page"] = $page - 1;
+            $params["page"] = $page - 1;
             $response["meta"]["previous_page_url"] = $pageURL;
-            $response["meta"]["previous_page_params"] = $data;
+            $response["meta"]["previous_page_params"] = $params;
         }
 
         $hasNextPage = $page < $lastPage;
         $response["meta"]["has_next_page"] = $hasNextPage;
         if ($hasNextPage) {
-            $data["page"] = $page + 1;
+            $params["page"] = $page + 1;
             $response["meta"]["next_page_url"] = $pageURL;
-            $response["meta"]["next_page_params"] = $data;
+            $response["meta"]["next_page_params"] = $params;
         }
 
         return $response;
