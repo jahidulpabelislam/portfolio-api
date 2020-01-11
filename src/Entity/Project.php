@@ -99,19 +99,8 @@ class Project extends Entity {
     public static function getById($id, bool $includeLinkedData = true): Entity {
         $project = parent::getById($id);
 
-        // If Project was found
-        if ($project->id) {
-
-            // If Project isn't public and user isn't logged in, don't return Project
-            if ($project->status !== self::PUBLIC_STATUS && !User::isLoggedIn()) {
-                $project->id = null;
-                return $project;
-            }
-
-            // If Project's Images was requested, get and add these
-            if ($includeLinkedData) {
-                $project->loadProjectImages();
-            }
+        if ($project->id && $includeLinkedData) {
+            $project->loadProjectImages();
         }
 
         return $project;
@@ -138,19 +127,36 @@ class Project extends Entity {
     }
 
     /**
-     * @inheritDoc
-     *
-     * Adds extra functionality to filter by public projects if (admin) user isn't currently logged in
-     *
-     * @param $params array The fields to search for within searchable columns (if any)
-     * @return array [string, array] Generated SQL where clause(s) and an associative array containing any bindings for query
+     * Adds filter by public projects if (admin) user isn't currently logged in
      */
-    public static function generateWhereClausesForSearch(array $params): array {
+    private static function addStatusWhere($where, ?array $bindings, $limit = null): array {
         // As the user isn't logged in, filter by status = public
         if (!User::isLoggedIn()) {
-            $params["status"] = self::PUBLIC_STATUS;
+            if (is_numeric($where)) {
+                $where = [
+                    "id = :id",
+                ];
+                $limit = 1;
+            }
+            elseif (is_string($where)) {
+                $where = [$where];
+            } else {
+                $where = [];
+            }
+
+            if ($bindings === null) {
+                $bindings = [];
+            }
+
+            $where[] = "status = :status";
+            $bindings[":status"] = self::PUBLIC_STATUS;
         }
-        return parent::generateWhereClausesForSearch($params);
+        return [$where, $bindings, $limit];
+    }
+
+    public static function get($select = "*", $where = null, ?array $bindings = null, $limit = null, $page = null) {
+        [$where, $bindings, $limit] = static::addStatusWhere($where, $bindings, $limit);
+        return parent::get($select, $where, $bindings, $limit, $page);
     }
 
     /**
@@ -170,5 +176,10 @@ class Project extends Entity {
         });
 
         return $projects;
+    }
+
+    public static function getCount($where = null, ?array $bindings = null): int {
+        [$where, $bindings] = static::addStatusWhere($where, $bindings);
+        return parent::getCount($where, $bindings);
     }
 }
