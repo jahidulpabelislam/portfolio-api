@@ -34,7 +34,7 @@ class ProjectImage extends Entity {
 
     protected static $orderByColumn = "sort_order_number";
 
-    protected static $defaultLimitBy = null;
+    protected static $defaultLimit = null;
 
     /**
      * @inheritDoc

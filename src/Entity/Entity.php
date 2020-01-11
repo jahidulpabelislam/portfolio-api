@@ -47,7 +47,7 @@ abstract class Entity {
     protected static $orderByColumn = "id";
     protected static $orderByASC = true;
 
-    protected static $defaultLimitBy = 10;
+    protected static $defaultLimit = 10;
 
     protected static function getDB(): Database {
         if (!static::$db) {
@@ -197,12 +197,12 @@ abstract class Entity {
         // If limit specified use unless it's bigger than default
         if (is_numeric($limit)) {
             $limit = (int)$limit;
-            $limit = min($limit, static::$defaultLimitBy);
+            $limit = min($limit, static::$defaultLimit);
         }
 
         // If invalid use default
         if (!$limit || $limit < 1) {
-            $limit = static::$defaultLimitBy;
+            $limit = static::$defaultLimit;
         }
 
         return $limit;
