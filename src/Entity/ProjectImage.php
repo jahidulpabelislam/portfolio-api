@@ -52,8 +52,6 @@ class ProjectImage extends Entity {
         if ($isDeleted && !empty($this->file)) {
             // Makes sure there is a leading slash
             $filePath = ROOT . "/" . ltrim($this->file, "/");
-
-            // Checks if file exists to delete the actual Image file from server
             if (file_exists($filePath)) {
                 unlink($filePath);
             }

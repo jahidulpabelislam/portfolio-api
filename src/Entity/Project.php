@@ -100,7 +100,6 @@ class Project extends Entity {
     public function delete(): bool {
         $isDeleted = parent::delete();
 
-        // Delete all the images linked to this Project from the database & from disk
         if ($isDeleted) {
             $this->loadProjectImages();
             foreach ($this->images as $image) {
