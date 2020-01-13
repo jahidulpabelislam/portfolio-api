@@ -345,6 +345,13 @@ abstract class Entity {
         return new static();
     }
 
+    public function refresh() {
+        $id = $this->id;
+        $query = static::generateSelectQuery("*", $id);
+        $row = static::getDB()->getOne($query, [":id" => $id]);
+        $this->setValues($row);
+    }
+
     /**
      * Helper function to generate a UPDATE SQL query using the Entity's columns and provided data
      *
@@ -381,7 +388,8 @@ abstract class Entity {
      * Will either be a new insert or a update to an existing Entity
      */
     public function save(): bool {
-        if (empty($this->id) && static::$hasCreatedAt) {
+        $isNew = empty($this->id);
+        if ($isNew && static::$hasCreatedAt) {
             $this->setValue("created_at", date(static::$dateTimeFormat));
         }
         if (static::$hasUpdatedAt) {
@@ -395,9 +403,10 @@ abstract class Entity {
 
         // If insert/update was ok, load the new values into entity state
         if ($affectedRows) {
-            $id = $this->id ?? $db->getLastInsertedId();
-            $updatedEntity = static::getById($id);
-            $this->columns = $updatedEntity->columns;
+            if ($isNew) {
+                $this->id = $db->getLastInsertedId();
+            }
+            $this->refresh();
             return true;
         }
 
