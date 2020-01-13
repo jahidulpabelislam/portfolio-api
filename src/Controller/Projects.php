@@ -47,8 +47,10 @@ class Projects {
     private static function saveProject($projectId = null): array {
         if (User::isLoggedIn()) {
 
+            $isNew = empty($projectId);
+
             // Only validate on creation
-            if (empty($projectId) && !API::get()->hasRequiredFields(Project::class)) {
+            if ($isNew && !API::get()->hasRequiredFields(Project::class)) {
                 return Responder::get()->getInvalidFieldsResponse(Project::class);
             }
 
@@ -73,7 +75,7 @@ class Projects {
                 }
             }
 
-            if (empty($projectId)) {
+            if ($isNew) {
                 $project = Project::insert($data);
                 $response = Responder::getInsertResponse($project);
             }
