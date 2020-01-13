@@ -197,7 +197,9 @@ abstract class Entity {
         // If limit specified use unless it's bigger than default
         if (is_numeric($limit)) {
             $limit = (int)$limit;
-            $limit = min($limit, static::$defaultLimit);
+            if (static::$defaultLimit && static::$defaultLimit < $limit) {
+                $limit = static::$defaultLimit;
+            }
         }
 
         // If invalid use default
