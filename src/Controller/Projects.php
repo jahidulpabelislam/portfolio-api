@@ -35,6 +35,10 @@ class Projects {
         $page = $data["page"] ?? null;
         $projects = Project::getBySearch($data, $limit, $page);
 
+        array_walk($projects, static function(Project $project) {
+            $project->loadProjectImages();
+        });
+
         return Responder::get()->getItemsSearchResponse(Project::class, $projects, $data);
     }
 
@@ -83,6 +87,7 @@ class Projects {
                 $project = Project::getById($projectId);
                 $project->setValues($data);
                 $project->save();
+                $project->loadProjectImages();
                 $response = Responder::getUpdateResponse($project, $projectId);
             }
         }
@@ -148,7 +153,10 @@ class Projects {
      * @return array The request response to send back
      */
     public static function getProject($projectId, bool $includeLinkedData = true): array {
-        $project = Project::getById($projectId, $includeLinkedData);
+        $project = Project::getById($projectId);
+        if ($includeLinkedData) {
+            $project->loadProjectImages();
+        }
 
         return Responder::getItemResponse($project, $projectId);
     }

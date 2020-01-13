@@ -61,7 +61,7 @@ class Project extends Entity {
     protected static $orderByColumn = "date";
     protected static $orderByASC = false;
 
-    private $images = [];
+    private $images = null;
 
     public function toArray(): array {
         $projectArray = parent::toArray();
@@ -72,9 +72,11 @@ class Project extends Entity {
             $projectArray["skills"] = $skills;
         }
 
-        $projectArray["images"] = array_map(static function(ProjectImage $image) {
-            return $image->toArray();
-        }, $this->images);
+        if ($this->images !== null) {
+            $projectArray["images"] = array_map(static function(ProjectImage $image) {
+                return $image->toArray();
+            }, $this->images);
+        }
 
         return $projectArray;
     }
@@ -90,25 +92,6 @@ class Project extends Entity {
     /**
      * @inheritDoc
      *
-     * Adds extra functionality as a Project is linked to multiple Project Images
-     * add these to the entity unless specified
-     *
-     * @param $id int The Id of the Entity to get
-     * @param $includeLinkedData bool Whether to also get and include linked entity/data (images)
-     */
-    public static function getById($id, bool $includeLinkedData = true): Entity {
-        $project = parent::getById($id);
-
-        if ($project->id && $includeLinkedData) {
-            $project->loadProjectImages();
-        }
-
-        return $project;
-    }
-
-    /**
-     * @inheritDoc
-     *
      * Add extra functionality as a Project is linked to many Project Images, so delete these also
      *
      * @return bool Whether or not deletion was successful
@@ -118,6 +101,7 @@ class Project extends Entity {
 
         // Delete all the images linked to this Project from the database & from disk
         if ($isDeleted) {
+            $this->loadProjectImages();
             foreach ($this->images as $image) {
                 $image->delete();
             }
@@ -158,25 +142,6 @@ class Project extends Entity {
     public static function get($select = "*", $where = null, ?array $bindings = null, $limit = null, $page = null) {
         [$where, $bindings, $limit] = static::addStatusWhere($where, $bindings, $limit);
         return parent::get($select, $where, $bindings, $limit, $page);
-    }
-
-    /**
-     * @inheritDoc
-     *
-     * Adds extra functionality to include any Images linked to all Projects found in search
-     *
-     * @param $params array Any data to aid in the search query
-     * @return array The request response to send back
-     */
-    public static function getBySearch(array $params, $limit = null, $page = null): array {
-        $projects = parent::getBySearch($params, $limit, $page);
-
-        // Loop through each Project and get the Projects Images
-        array_walk($projects, static function(Project $project) {
-            $project->loadProjectImages();
-        });
-
-        return $projects;
     }
 
     public static function getCount($where = null, ?array $bindings = null): int {
