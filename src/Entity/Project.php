@@ -140,7 +140,8 @@ class Project extends Entity {
             }
             elseif (is_string($where)) {
                 $where = [$where];
-            } else {
+            }
+            else {
                 $where = [];
             }
 
