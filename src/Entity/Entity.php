@@ -167,6 +167,10 @@ abstract class Entity {
         return $array;
     }
 
+    /**
+     * @param $row array|null
+     * @return static
+     */
     public static function createEntity(?array $row = null): Entity {
         $entity = new static();
 
@@ -179,7 +183,7 @@ abstract class Entity {
 
     /**
      * @param $rows array
-     * @return Entity[]
+     * @return static[]
      */
     public static function createEntities(array $rows): array {
         return array_map(["static", "createEntity"], $rows);
@@ -310,7 +314,7 @@ abstract class Entity {
      * @param $bindings array|null
      * @param $limit int|string|null
      * @param $page int|string|null
-     * @return Entity[]|Entity
+     * @return static[]|static
      */
     public static function get($select = "*", $where = null, ?array $bindings = null, $limit = null, $page = null) {
         $limit = static::getLimit($limit);
@@ -335,6 +339,7 @@ abstract class Entity {
 
     /**
      * Load a single Entity from the Database where a Id column = a value ($id).
+     * @return static
      */
     public static function getById($id): Entity {
         if (is_numeric($id)) {
@@ -414,6 +419,10 @@ abstract class Entity {
         return false;
     }
 
+    /**
+     * @param array|null $data
+     * @return static
+     */
     public static function insert(array $data = null): Entity {
         $entity = static::createEntity($data);
         $entity->save();
@@ -511,7 +520,7 @@ abstract class Entity {
      * @param $params array Any data to aid in the search query
      * @param $limit int|string|null
      * @param $page int|string|null
-     * @return Entity[]|Entity
+     * @return static[]|static
      */
     public static function getBySearch(array $params, $limit = null, $page = null): array {
         // Add filters/wheres if a search was entered
