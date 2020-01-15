@@ -6,9 +6,8 @@
  *
  * PHP version 7.1+
  *
- * @version 4.1.0
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @copyright 2010-2019 JPI
+ * @copyright 2010-2020 JPI
  */
 
 namespace App;

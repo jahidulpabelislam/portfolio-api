@@ -5,9 +5,8 @@
  * PHP version 7.1+
  *
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @version 2.2.2
  * @since Class available since Release: v2.0.0
- * @copyright 2010-2019 JPI
+ * @copyright 2010-2020 JPI
  */
 
 namespace App\Controller;

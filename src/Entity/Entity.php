@@ -5,10 +5,9 @@
  *
  * PHP version 7.1+
  *
- * @version 3.0.0
- * @since Class available since Release: v3.0.0
  * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @copyright 2010-2019 JPI
+ * @since Class available since Release: v3.0.0
+ * @copyright 2010-2020 JPI
  */
 
 namespace App\Entity;
