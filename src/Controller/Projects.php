@@ -32,7 +32,7 @@ class Projects {
 
         $limit = $data["limit"] ?? null;
         $page = $data["page"] ?? null;
-        $projects = Project::getBySearch($data, $limit, $page);
+        $projects = Project::getByParams($data, $limit, $page);
 
         array_walk($projects, static function(Project $project) {
             $project->loadProjectImages();

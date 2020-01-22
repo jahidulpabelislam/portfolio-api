@@ -454,12 +454,12 @@ abstract class Entity {
     /**
      * Helper function
      * Used to generate a where clause for a search on a entity along with any binding needed
-     * Used with Entity::getBySearch();
+     * Used with Entity::getByParams();
      *
      * @param $params array The fields to search for within searchable columns (if any)
      * @return array [string, array] Generated SQL where clause(s) and an associative array containing any bindings for query
      */
-    public static function generateWhereClausesForSearch(array $params): array {
+    public static function generateWhereClausesFromParams(array $params): array {
         if (!static::$searchableColumns) {
             return ["", []];
         }
@@ -508,7 +508,7 @@ abstract class Entity {
 
     /**
      * Used to get a total count of Entities using a where clause
-     * Used together with Entity::getBySearch, as this return a limited Entities
+     * Used together with Entity::getByParams, as this return a limited Entities
      * but we want to get a number of total items without limit
      *
      * @return int
@@ -527,9 +527,9 @@ abstract class Entity {
      * @param $page int|string|null
      * @return static[]|static
      */
-    public static function getBySearch(array $params, $limit = null, $page = null): array {
+    public static function getByParams(array $params, $limit = null, $page = null): array {
         // Add filters/wheres if a search was entered
-        [$where, $bindings] = static::generateWhereClausesForSearch($params);
+        [$where, $bindings] = static::generateWhereClausesFromParams($params);
 
         return static::get("*", $where, $bindings, $limit, $page);
     }

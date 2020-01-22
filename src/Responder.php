@@ -178,7 +178,7 @@ class Responder {
         // The items response is the base response, and the extra meta is added below
         $response = self::getItemsResponse($entity, $entities);
 
-        [$where, $bindings] = $entity::generateWhereClausesForSearch($params);
+        [$where, $bindings] = $entity::generateWhereClausesFromParams($params);
         $totalCount = $entity::getCount($where, $bindings);
         $response["meta"]["total_count"] = $totalCount;
 
