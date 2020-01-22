@@ -167,26 +167,31 @@ abstract class Entity {
         return $array;
     }
 
+    public static function create(?array $data = null): Entity {
+        $entity = new static();
+
+        if (!empty($data)) {
+            $entity->setValues($data);
+        }
+
+        return $entity;
+
+    }
+
     /**
      * @param $row array|null
      * @return static
      */
-    public static function createEntity(?array $row = null): Entity {
-        $entity = new static();
-
-        if (!empty($row)) {
-            $entity->setValues($row);
-        }
-
-        return $entity;
+    private static function populateFromDB(?array $row = null): Entity {
+        return static::create($row);
     }
 
     /**
      * @param $rows array
      * @return static[]
      */
-    public static function createEntities(array $rows): array {
-        return array_map(["static", "createEntity"], $rows);
+    private static function populateEntitiesFromDB(array $rows): array {
+        return array_map(["static", "populateFromDB"], $rows);
     }
 
     /**
@@ -322,11 +327,11 @@ abstract class Entity {
 
         if (($where && is_numeric($where)) || $limit == 1) {
             $row = static::getDB()->getOne($query, $bindings);
-            return static::createEntity($row);
+            return static::populateFromDB($row);
         }
 
         $rows = static::getDB()->getAll($query, $bindings);
-        return static::createEntities($rows);
+        return static::populateEntitiesFromDB($rows);
     }
 
     /**
@@ -424,7 +429,7 @@ abstract class Entity {
      * @return static
      */
     public static function insert(array $data = null): Entity {
-        $entity = static::createEntity($data);
+        $entity = static::create($data);
         $entity->save();
 
         return $entity;
