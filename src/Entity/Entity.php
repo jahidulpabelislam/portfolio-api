@@ -77,12 +77,13 @@ abstract class Entity {
     }
 
     /**
-     * Convenient function to get the single value from an array if it's the only value
+     * Convenient function to pluck/get out the single value from an array if it's the only value
+     * Else return the original - single value or array
      *
      * @param $value string[]|string
      * @return string[]|string
      */
-    private static function singleArrayValue($value) {
+    private static function pluckSingleValue($value) {
         if ($value && is_array($value) && count($value) === 1) {
             return array_shift($value);
         }
@@ -249,7 +250,7 @@ abstract class Entity {
                 $orderBys[] = "id ASC";
             }
 
-            $orderBy = self::singleArrayValue($orderBys);
+            $orderBy = self::pluckSingleValue($orderBys);
             if (is_array($orderBy)) {
                 $orderBy = "\n\t" . implode(",\n\t", $orderBys);
             }
@@ -268,8 +269,8 @@ abstract class Entity {
      * @return string
      */
     protected static function generateSelectQuery($select = "*", $where = null, $limit = null, $page = null): string {
-        $select = self::singleArrayValue($select);
-        $select = $select ?: "*";
+        $select = self::pluckSingleValue($select);
+        $select = $select?: "*";
         if ($select && is_array($select)) {
             $select = "\n\t" . implode(",\n\t", $select);
         }
@@ -284,7 +285,7 @@ abstract class Entity {
                 return $query;
             }
 
-            $where = self::singleArrayValue($where);
+            $where = self::pluckSingleValue($where);
             if (is_array($where)) {
                 $where = "\n\t" . implode("\n\tAND ", $where);
             }
