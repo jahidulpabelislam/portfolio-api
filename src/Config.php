@@ -33,8 +33,6 @@ class Config {
 
     /**
      * Singleton getter
-     *
-     * @return Config
      */
     public static function get(): Config {
         if (!self::$instance) {
