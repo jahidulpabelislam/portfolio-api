@@ -18,7 +18,7 @@ if (!defined("ROOT")) {
 
 use DateTime;
 use App\Config;
-use App\Database;
+use App\Database\Connection;
 
 abstract class Entity {
 
@@ -48,10 +48,10 @@ abstract class Entity {
 
     protected static $defaultLimit = 10;
 
-    protected static function getDB(): Database {
+    protected static function getDB(): Connection {
         if (!static::$db) {
             $config = Config::get();
-            static::$db = new Database(
+            static::$db = new Connection(
                 $config->db_name,
                 $config->db_username,
                 $config->db_password,

@@ -10,7 +10,7 @@
  * @copyright 2010-2020 JPI
  */
 
-namespace App;
+namespace App\Database;
 
 if (!defined("ROOT")) {
     die();
@@ -20,7 +20,7 @@ use PDO;
 use PDOException;
 use PDOStatement;
 
-class Database {
+class Connection {
 
     private $pdo;
 
