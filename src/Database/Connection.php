@@ -47,7 +47,7 @@ class Connection {
      * @param $params array Array of any params/bindings to use with the SQL query
      * @return PDOStatement|null
      */
-    private function _execute(string $query, ?array $params): ?PDOStatement {
+    private function run(string $query, ?array $params): ?PDOStatement {
         if ($this->pdo) {
             try {
                 // Check if any params/bindings to execute
@@ -75,7 +75,7 @@ class Connection {
     }
 
     public function execute(string $query, ?array $params = null): int {
-        $stmt = $this->_execute($query, $params);
+        $stmt = $this->run($query, $params);
 
         if ($stmt) {
             return $stmt->rowCount();
@@ -85,7 +85,7 @@ class Connection {
     }
 
     public function getOne(string $query, ?array $params = null): ?array {
-        $stmt = $this->_execute($query, $params);
+        $stmt = $this->run($query, $params);
 
         if ($stmt) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -98,7 +98,7 @@ class Connection {
     }
 
     public function getAll(string $query, ?array $params = null): array {
-        $stmt = $this->_execute($query, $params);
+        $stmt = $this->run($query, $params);
 
         if ($stmt) {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
