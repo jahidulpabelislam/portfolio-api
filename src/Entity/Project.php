@@ -116,15 +116,13 @@ class Project extends Entity {
         // As the user isn't logged in, filter by status = public
         if (!User::isLoggedIn()) {
             if (is_numeric($where)) {
-                $where = [
-                    "id = :id",
-                ];
+                $where = ["id = :id"];
                 $limit = 1;
             }
-            elseif (is_string($where)) {
+            else if (is_string($where)) {
                 $where = [$where];
             }
-            else {
+            else if (!is_array($where)) {
                 $where = [];
             }
 
