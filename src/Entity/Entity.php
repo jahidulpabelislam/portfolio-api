@@ -51,12 +51,12 @@ abstract class Entity {
     protected static function getDB(): Connection {
         if (!static::$db) {
             $config = Config::get();
-            static::$db = new Connection(
-                $config->db_name,
-                $config->db_username,
-                $config->db_password,
-                $config->db_host
-            );
+            static::$db = new Connection([
+                "host" => $config->db_host,
+                "database" => $config->db_name,
+                "username" => $config->db_username,
+                "password" => $config->db_password,
+            ]);
         }
 
         return static::$db;

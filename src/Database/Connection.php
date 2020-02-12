@@ -27,11 +27,25 @@ class Connection {
     /**
      * Connects to a MySQL engine using PDO
      */
-    public function __construct(string $databaseName, string $username, string $password, string $host = "127.0.0.1") {
-        try {
-            $dsn = "mysql:host={$host};dbname={$databaseName};charset-UTF-8";
-            $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
+    public function __construct(array $config = []) {
+        $defaults = [
+            "host" => "127.0.0.1",
+            "database" => "",
+            "username" => "root",
+            "password" => "root",
+        ];
 
+        $config = array_merge($defaults, $config);
+
+        $host = $config['host'];
+        $database = $config['database'];
+        $username = $config['username'];
+        $password = $config['password'];
+
+        $dsn = "mysql:host={$host};dbname={$database};charset-UTF-8";
+        $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
+
+        try {
             $this->pdo = new PDO($dsn, $username, $password, $options);
         }
         catch (PDOException $error) {
