@@ -327,21 +327,21 @@ abstract class Entity {
     /**
      * @param $select string[]|string
      * @param $where string[]|string|int
-     * @param $bindings array|null
+     * @param $params array|null
      * @param $limit int|string|null
      * @param $page int|string|null
      * @return static[]|static
      */
-    public static function get($select = "*", $where = null, ?array $bindings = null, $limit = null, $page = null) {
+    public static function get($select = "*", $where = null, ?array $params = null, $limit = null, $page = null) {
         $limit = static::getLimit($limit);
         $query = static::generateSelectQuery($select, $where, $limit, $page);
 
         if (($where && is_numeric($where)) || $limit == 1) {
-            $row = static::getDB()->getOne($query, $bindings);
+            $row = static::getDB()->getOne($query, $params);
             return static::populateFromDB($row);
         }
 
-        $rows = static::getDB()->getAll($query, $bindings);
+        $rows = static::getDB()->getAll($query, $params);
         return static::populateEntitiesFromDB($rows);
     }
 
@@ -349,8 +349,8 @@ abstract class Entity {
      * Get Entities from the Database where a column ($column) = a value ($value)
      */
     public static function getByColumn(string $column, $value, $limit = null, $page = null) {
-        $bindings = [":{$column}" => $value];
-        return static::get("*", "{$column} = :{$column}", $bindings, $limit, $page);
+        $params = [$column => $value];
+        return static::get("*", "{$column} = :{$column}", $params, $limit, $page);
     }
 
     /**
@@ -368,28 +368,27 @@ abstract class Entity {
     public function refresh() {
         $id = $this->id;
         $query = static::generateSelectQuery("*", $id);
-        $row = static::getDB()->getOne($query, [":id" => $id]);
+        $row = static::getDB()->getOne($query, ["id" => $id]);
         $this->setValues($row);
     }
 
     /**
      * Helper function to generate a UPDATE SQL query using the Entity's columns and provided data
      *
-     * @return array [string, array] Return the raw SQL query and an array of bindings to use with query
+     * @return array [string, array] Return the raw SQL query and an array of params to use with query
      */
     protected function generateSaveQuery(): array {
         $isNew = empty($this->id);
 
-        $valuesQueries = $bindings = [];
+        $valuesQueries = $params = [];
 
         foreach ($this->columns as $column => $value) {
-            $placeholder = ":{$column}";
-
             if ($column !== "id" || !$isNew) {
-                $bindings[$placeholder] = $value;
+                $params[$column] = $value;
             }
 
             if ($column !== "id") {
+                $placeholder = ":{$column}";
                 $valuesQueries[] = "\n\t{$column} = {$placeholder}";
             }
         }
@@ -400,7 +399,7 @@ abstract class Entity {
         $query .= "SET {$valuesQuery}";
         $query .= $isNew ? ";" : "\nWHERE id = :id;";
 
-        return [$query, $bindings];
+        return [$query, $params];
     }
 
     /**
@@ -416,10 +415,10 @@ abstract class Entity {
             $this->setValue("updated_at", date(static::$dateTimeFormat));
         }
 
-        [$query, $bindings] = $this->generateSaveQuery();
+        [$query, $params] = $this->generateSaveQuery();
 
         $db = static::getDB();
-        $affectedRows = $db->execute($query, $bindings);
+        $affectedRows = $db->execute($query, $params);
 
         // If insert/update was ok, load the new values into entity state
         if ($affectedRows) {
@@ -454,8 +453,8 @@ abstract class Entity {
      */
     public function delete(): bool {
         $query = "DELETE FROM " . static::$tableName . " WHERE id = :id;";
-        $bindings = [":id" => $this->id];
-        $affectedRows = static::getDB()->execute($query, $bindings);
+        $params = ["id" => $this->id];
+        $affectedRows = static::getDB()->execute($query, $params);
 
         // Whether the deletion was ok
         $isDeleted = $affectedRows > 0;
@@ -465,11 +464,11 @@ abstract class Entity {
 
     /**
      * Helper function
-     * Used to generate a where clause for a search on a entity along with any binding needed
+     * Used to generate a where clause for a search on a entity along with any params needed
      * Used with Entity::getByParams();
      *
      * @param $params array The fields to search for within searchable columns (if any)
-     * @return array [string, array] Generated SQL where clause(s) and an associative array containing any bindings for query
+     * @return array [string, array] Generated SQL where clause(s) and an associative array containing any params for query
      */
     public static function generateWhereClausesFromParams(array $params): array {
         if (!static::$searchableColumns) {
@@ -478,7 +477,7 @@ abstract class Entity {
 
         $searchValue = $params["search"] ?? null;
 
-        $bindings = [];
+        $queryParams = [];
 
         if ($searchValue) {
             // Split each word in search
@@ -488,10 +487,8 @@ abstract class Entity {
             $searchesReversed = array_reverse($searchWords);
             $searchStringReversed = "%" . implode("%", $searchesReversed) . "%";
 
-            $bindings = [
-                ":searchString" => $searchString,
-                ":searchStringReversed" => $searchStringReversed,
-            ];
+            $queryParams["searchString"] = $searchString;
+            $queryParams["searchStringReversed"] = $searchStringReversed;
         }
 
         $whereClauses = [];
@@ -505,9 +502,8 @@ abstract class Entity {
             }
 
             if (!empty($params[$column])) {
-                $binding = ":{$column}";
-                $whereClauses[] = "{$column} = {$binding}";
-                $bindings[$binding] = $params[$column];
+                $whereClauses[] = "{$column} = :{$column}";
+                $queryParams[$column] = $params[$column];
             }
         }
 
@@ -515,7 +511,7 @@ abstract class Entity {
             array_unshift($whereClauses, "(\n\t\t" . implode("\n\t\tOR ", $searchWhereClauses) . "\n\t)");
         }
 
-        return [$whereClauses, $bindings];
+        return [$whereClauses, $queryParams];
     }
 
     /**
@@ -525,9 +521,9 @@ abstract class Entity {
      *
      * @return int
      */
-    public static function getCount($where = null, ?array $bindings = null): int {
+    public static function getCount($where = null, ?array $params = null): int {
         $query = static::generateSelectQuery("COUNT(*) as total_count", $where, 1);
-        $row = static::getDB()->getOne($query, $bindings);
+        $row = static::getDB()->getOne($query, $params);
         return $row['total_count'] ?? 0;
     }
 
@@ -541,8 +537,8 @@ abstract class Entity {
      */
     public static function getByParams(array $params, $limit = null, $page = null): array {
         // Add filters/wheres if a search was entered
-        [$where, $bindings] = static::generateWhereClausesFromParams($params);
+        [$where, $queryParams] = static::generateWhereClausesFromParams($params);
 
-        return static::get("*", $where, $bindings, $limit, $page);
+        return static::get("*", $where, $queryParams, $limit, $page);
     }
 }

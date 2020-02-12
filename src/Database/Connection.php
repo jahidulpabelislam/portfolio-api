@@ -44,14 +44,18 @@ class Connection {
      * Executes a SQL query
      *
      * @param $query string The SQL query to run
-     * @param $bindings array Array of any bindings to use with the SQL query
+     * @param $params array Array of any params/bindings to use with the SQL query
      * @return PDOStatement|null
      */
-    private function _execute(string $query, ?array $bindings): ?PDOStatement {
+    private function _execute(string $query, ?array $params): ?PDOStatement {
         if ($this->pdo) {
             try {
-                // Check if any bindings to execute
-                if (isset($bindings)) {
+                // Check if any params/bindings to execute
+                if (isset($params)) {
+                    $bindings = [];
+                    foreach ($params as $key => $value) {
+                        $bindings[":{$key}"] = $value;
+                    }
                     $stmt = $this->pdo->prepare($query);
                     $stmt->execute($bindings);
                 }
@@ -70,8 +74,8 @@ class Connection {
         return null;
     }
 
-    public function execute(string $query, ?array $bindings = null): int {
-        $stmt = $this->_execute($query, $bindings);
+    public function execute(string $query, ?array $params = null): int {
+        $stmt = $this->_execute($query, $params);
 
         if ($stmt) {
             return $stmt->rowCount();
@@ -80,8 +84,8 @@ class Connection {
         return 0;
     }
 
-    public function getOne(string $query, ?array $bindings = null): ?array {
-        $stmt = $this->_execute($query, $bindings);
+    public function getOne(string $query, ?array $params = null): ?array {
+        $stmt = $this->_execute($query, $params);
 
         if ($stmt) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -93,8 +97,8 @@ class Connection {
         return null;
     }
 
-    public function getAll(string $query, ?array $bindings = null): array {
-        $stmt = $this->_execute($query, $bindings);
+    public function getAll(string $query, ?array $params = null): array {
+        $stmt = $this->_execute($query, $params);
 
         if ($stmt) {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);

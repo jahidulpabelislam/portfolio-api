@@ -112,7 +112,7 @@ class Project extends Entity {
     /**
      * Adds filter by public projects if (admin) user isn't currently logged in
      */
-    private static function addStatusWhere($where, ?array $bindings, $limit = null): array {
+    private static function addStatusWhere($where, ?array $params, $limit = null): array {
         // As the user isn't logged in, filter by status = public
         if (!User::isLoggedIn()) {
             if (is_numeric($where)) {
@@ -126,23 +126,23 @@ class Project extends Entity {
                 $where = [];
             }
 
-            if ($bindings === null) {
-                $bindings = [];
+            if ($params === null) {
+                $params = [];
             }
 
             $where[] = "status = :status";
-            $bindings[":status"] = self::PUBLIC_STATUS;
+            $params["status"] = self::PUBLIC_STATUS;
         }
-        return [$where, $bindings, $limit];
+        return [$where, $params, $limit];
     }
 
-    public static function get($select = "*", $where = null, ?array $bindings = null, $limit = null, $page = null) {
-        [$where, $bindings, $limit] = static::addStatusWhere($where, $bindings, $limit);
-        return parent::get($select, $where, $bindings, $limit, $page);
+    public static function get($select = "*", $where = null, ?array $params = null, $limit = null, $page = null) {
+        [$where, $params, $limit] = static::addStatusWhere($where, $params, $limit);
+        return parent::get($select, $where, $params, $limit, $page);
     }
 
-    public static function getCount($where = null, ?array $bindings = null): int {
-        [$where, $bindings] = static::addStatusWhere($where, $bindings);
-        return parent::getCount($where, $bindings);
+    public static function getCount($where = null, ?array $params = null): int {
+        [$where, $params] = static::addStatusWhere($where, $params);
+        return parent::getCount($where, $params);
     }
 }
