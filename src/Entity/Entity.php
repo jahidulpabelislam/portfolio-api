@@ -128,7 +128,15 @@ abstract class Entity {
         return null;
     }
 
+    private function setId(?int $id) {
+        $this->columns["id"] = $id;
+    }
+
     private function setValue(string $column, $value) {
+        if ($column === "id") {
+            return;
+        }
+
         if (in_array($column, static::getIntColumns())) {
             $value = (int)$value;
         }
@@ -184,7 +192,9 @@ abstract class Entity {
      * @return static
      */
     private static function populateFromDB(?array $row = null): Entity {
-        return static::create($row);
+        $entity = static::create($row);
+        $entity->setId($row["id"]);
+        return $entity;
     }
 
     /**
@@ -414,14 +424,15 @@ abstract class Entity {
         // If insert/update was ok, load the new values into entity state
         if ($affectedRows) {
             if ($isNew) {
-                $this->id = $db->getLastInsertedId();
+                $newId = $db->getLastInsertedId();
+                $this->setId($newId);
             }
             $this->refresh();
             return true;
         }
 
         // Saving failed so reset id
-        $this->id = null;
+        $this->setId(null);
         return false;
     }
 
