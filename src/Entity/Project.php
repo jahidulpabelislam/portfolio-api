@@ -136,9 +136,9 @@ class Project extends Entity {
         return [$where, $params, $limit];
     }
 
-    public static function get($select = "*", $where = null, ?array $params = null, $limit = null, $page = null) {
+    public static function get($where = null, ?array $params = null, $limit = null, $page = null) {
         [$where, $params, $limit] = static::addStatusWhere($where, $params, $limit);
-        return parent::get($select, $where, $params, $limit, $page);
+        return parent::get($where, $params, $limit, $page);
     }
 
     public static function getCount($where = null, ?array $params = null): int {

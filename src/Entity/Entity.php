@@ -19,6 +19,7 @@ if (!defined("ROOT")) {
 use DateTime;
 use App\Config;
 use App\Database\Connection;
+use App\Database\Query;
 
 abstract class Entity {
 
@@ -62,6 +63,10 @@ abstract class Entity {
         return static::$db;
     }
 
+    public static function getQuery(): Query {
+        return new Query(static::getDB(), static::$tableName);
+    }
+
     public function __construct() {
         // Slight hack so id is the first item...
         $columns = ["id" => null];
@@ -74,21 +79,6 @@ abstract class Entity {
         if (static::$hasUpdatedAt) {
             $this->setValue("updated_at", null);
         }
-    }
-
-    /**
-     * Convenient function to pluck/get out the single value from an array if it's the only value
-     * Else return the original - single value or array
-     *
-     * @param $value string[]|string
-     * @return string[]|string
-     */
-    private static function pluckSingleValue($value) {
-        if ($value && is_array($value) && count($value) === 1) {
-            return array_shift($value);
-        }
-
-        return $value;
     }
 
     private static function getIntColumns(): array {
@@ -249,7 +239,7 @@ abstract class Entity {
         return $page;
     }
 
-    protected static function getOrderByQuery(): string {
+    protected static function getOrderBy(): ?array {
         if (static::$orderByColumn) {
             $orderBys = [
                 static::$orderByColumn . " " . (static::$orderByASC ? "ASC" : "DESC"),
@@ -260,88 +250,30 @@ abstract class Entity {
                 $orderBys[] = "id ASC";
             }
 
-            $orderBy = self::pluckSingleValue($orderBys);
-            if (is_array($orderBy)) {
-                $orderBy = "\n\t" . implode(",\n\t", $orderBys);
-            }
-
-            return "ORDER BY {$orderBy}";
+            return $orderBys;
         }
 
-        return "";
+        return null;
     }
 
     /**
-     * @param $select string[]|string
-     * @param $where string[]|string|int
-     * @param $limit int|string|null
-     * @param $page int|string|null
-     * @return string
-     */
-    protected static function generateSelectQuery($select = "*", $where = null, $limit = null, $page = null): string {
-        $select = self::pluckSingleValue($select);
-        $select = $select?: "*";
-        if ($select && is_array($select)) {
-            $select = "\n\t" . implode(",\n\t", $select);
-        }
-
-        $query = "SELECT {$select} \n"
-               . "FROM " . static::$tableName . " \n";
-
-        if ($where) {
-            if (is_numeric($where)) {
-                $query .= "WHERE id = :id \n"
-                        . "LIMIT 1;";
-                return $query;
-            }
-
-            $where = self::pluckSingleValue($where);
-            if (is_array($where)) {
-                $where = "\n\t" . implode("\n\tAND ", $where);
-            }
-
-            if (is_string($where)) {
-                $query .= "WHERE {$where} \n";
-            }
-        }
-
-        $orderBy = static::getOrderByQuery();
-        if ($orderBy) {
-            $query .= "{$orderBy} \n";
-        }
-
-        if ($limit) {
-            $query .= "LIMIT {$limit}";
-
-            // Generate a offset, using limit & page values
-            $page = static::getPage($page);
-            if ($page > 1) {
-                $offset = $limit * ($page - 1);
-                $query .= " OFFSET {$offset}";
-            }
-        }
-
-        return trim($query) . ";";
-    }
-
-    /**
-     * @param $select string[]|string
      * @param $where string[]|string|int
      * @param $params array|null
      * @param $limit int|string|null
      * @param $page int|string|null
      * @return static[]|static
      */
-    public static function get($select = "*", $where = null, ?array $params = null, $limit = null, $page = null) {
+    public static function get($where = null, ?array $params = null, $limit = null, $page = null) {
+        $orderBy = static::getOrderBy();
         $limit = static::getLimit($limit);
-        $query = static::generateSelectQuery($select, $where, $limit, $page);
+        $page = static::getPage($page);
+
+        $rows = static::getQuery()->select("*", $where, $orderBy, $params, $limit, $page);
 
         if (($where && is_numeric($where)) || $limit == 1) {
-            $row = static::getDB()->getOne($query, $params);
-            return static::populateFromDB($row);
+            return static::populateFromDB($rows);
         }
 
-        $rows = static::getDB()->getAll($query, $params);
         return static::populateEntitiesFromDB($rows);
     }
 
@@ -350,7 +282,7 @@ abstract class Entity {
      */
     public static function getByColumn(string $column, $value, $limit = null, $page = null) {
         $params = [$column => $value];
-        return static::get("*", "{$column} = :{$column}", $params, $limit, $page);
+        return static::get("{$column} = :{$column}", $params, $limit, $page);
     }
 
     /**
@@ -367,39 +299,20 @@ abstract class Entity {
 
     public function refresh() {
         $id = $this->id;
-        $query = static::generateSelectQuery("*", $id);
-        $row = static::getDB()->getOne($query, ["id" => $id]);
+        $row = static::getQuery()->select("*", $id, null, null, 1);
         $this->setValues($row);
     }
 
-    /**
-     * Helper function to generate a UPDATE SQL query using the Entity's columns and provided data
-     *
-     * @return array [string, array] Return the raw SQL query and an array of params to use with query
-     */
-    protected function generateSaveQuery(): array {
-        $isNew = empty($this->id);
-
-        $valuesQueries = $params = [];
+    protected function getValuesToSave(): array {
+        $values = [];
 
         foreach ($this->columns as $column => $value) {
-            if ($column !== "id" || !$isNew) {
-                $params[$column] = $value;
-            }
-
             if ($column !== "id") {
-                $placeholder = ":{$column}";
-                $valuesQueries[] = "\n\t{$column} = {$placeholder}";
+                $values[$column] = $value;
             }
         }
-        $valuesQuery = implode(", ", $valuesQueries);
 
-        $query = $isNew ? "INSERT INTO" : "UPDATE";
-        $query .= " " . static::$tableName . "\n";
-        $query .= "SET {$valuesQuery}";
-        $query .= $isNew ? ";" : "\nWHERE id = :id;";
-
-        return [$query, $params];
+        return $values;
     }
 
     /**
@@ -415,17 +328,23 @@ abstract class Entity {
             $this->setValue("updated_at", date(static::$dateTimeFormat));
         }
 
-        [$query, $params] = $this->generateSaveQuery();
-
-        $db = static::getDB();
-        $affectedRows = $db->execute($query, $params);
+        $wasSuccessful = false;
+        $query = static::getQuery();
+        $values = $this->getValuesToSave();
+        if ($isNew) {
+            $newId = $query->insert($values);
+            if ($newId) {
+                $this->setId($newId);
+                $wasSuccessful = true;
+            }
+        }
+        else {
+            $rowsAffected = $query->update($values, $this->id);
+            $wasSuccessful = $rowsAffected > 0;
+        }
 
         // If insert/update was ok, load the new values into entity state
-        if ($affectedRows) {
-            if ($isNew) {
-                $newId = $db->getLastInsertedId();
-                $this->setId($newId);
-            }
+        if ($wasSuccessful) {
             $this->refresh();
             return true;
         }
@@ -452,14 +371,8 @@ abstract class Entity {
      * @return bool Whether or not deletion was successful
      */
     public function delete(): bool {
-        $query = "DELETE FROM " . static::$tableName . " WHERE id = :id;";
-        $params = ["id" => $this->id];
-        $affectedRows = static::getDB()->execute($query, $params);
-
-        // Whether the deletion was ok
-        $isDeleted = $affectedRows > 0;
-
-        return $isDeleted;
+        $rowsAffected = static::getQuery()->delete($this->id);
+        return $rowsAffected > 0;
     }
 
     /**
@@ -522,9 +435,7 @@ abstract class Entity {
      * @return int
      */
     public static function getCount($where = null, ?array $params = null): int {
-        $query = static::generateSelectQuery("COUNT(*) as total_count", $where, 1);
-        $row = static::getDB()->getOne($query, $params);
-        return $row['total_count'] ?? 0;
+        return static::getQuery()->count($where, $params);
     }
 
     /**
@@ -539,6 +450,6 @@ abstract class Entity {
         // Add filters/wheres if a search was entered
         [$where, $queryParams] = static::generateWhereClausesFromParams($params);
 
-        return static::get("*", $where, $queryParams, $limit, $page);
+        return static::get($where, $queryParams, $limit, $page);
     }
 }
