@@ -120,7 +120,7 @@ class Query {
             $sqlParts[] = $whereClause;
 
             if (is_numeric($where)) {
-                $sqlParts[] = "LIMIT 1;";
+                $sqlParts[] = "LIMIT 1";
                 return [$sqlParts, $params];
             }
         }
