@@ -111,8 +111,10 @@ class Query {
         $select = $select?: "*";
         $select = static::arrayToQueryString($select);
 
-        $sqlParts = ["SELECT {$select}"];
-        $sqlParts[] = "FROM {$table}";
+        $sqlParts = [
+            "SELECT {$select}",
+            "FROM {$table}",
+        ];
 
         [$whereClause, $params] = static::generateWhereClause($where, $params);
 
@@ -193,8 +195,8 @@ class Query {
 
         $sqlParts = [
             ($isInsert ? "INSERT INTO " : "UPDATE ") . $this->table,
+            "SET {$valuesQuery}",
         ];
-        $sqlParts[] = "SET {$valuesQuery}";
 
         [$whereClause, $params] = static::generateWhereClause($where, $params);
         if ($whereClause) {
