@@ -59,7 +59,7 @@ class Query {
      * @return array
      */
     private static function initArray($value): array {
-        if (is_array($value))  {
+        if (is_array($value)) {
             return $value;
         }
 
@@ -93,7 +93,7 @@ class Query {
 
         return [
             null,
-            $params
+            $params,
         ];
     }
 
