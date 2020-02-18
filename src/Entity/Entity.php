@@ -256,6 +256,10 @@ abstract class Entity {
         return null;
     }
 
+    public static function select($select = "*", $where = null, $orderBy = null, ?array $params = null, ?int $limit = null, ?int $page = null): ?array {
+        return static::getQuery()->select($select, $where, $orderBy, $params, $limit, $page);
+    }
+
     /**
      * @param $where string[]|string|int
      * @param $params array|null
@@ -268,7 +272,7 @@ abstract class Entity {
         $limit = static::getLimit($limit);
         $page = static::getPage($page);
 
-        $rows = static::getQuery()->select("*", $where, $orderBy, $params, $limit, $page);
+        $rows = static::select("*", $where, $orderBy, $params, $limit, $page);
 
         if (($where && is_numeric($where)) || $limit == 1) {
             return static::populateFromDB($rows);
@@ -299,7 +303,7 @@ abstract class Entity {
 
     public function refresh() {
         $id = $this->id;
-        $row = static::getQuery()->select("*", $id, null, null, 1);
+        $row = static::select("*", $id, null, null, 1);
         $this->setValues($row);
     }
 
