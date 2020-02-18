@@ -295,7 +295,7 @@ abstract class Entity {
      */
     public static function getById($id): Entity {
         if (is_numeric($id)) {
-            return static::getByColumn("id", (int)$id, 1);
+            return static::get((int)$id);
         }
 
         return new static();
