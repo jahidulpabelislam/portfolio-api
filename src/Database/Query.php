@@ -22,6 +22,12 @@ class Query {
         $this->table = $table;
     }
 
+    private function execute(array $parts, ?array $params, string $function = "execute") {
+        $query = implode("\n", $parts);
+        $query .= ";";
+        return $this->connection->{$function}($query, $params);
+    }
+
     /**
      * Convenient function to pluck/get out the single value from an array if it's the only value.
      * Then build a string value if an array.
@@ -80,7 +86,7 @@ class Query {
             $where = static::arrayToQueryString($where, "\n\tAND ");
 
             return [
-                "WHERE {$where}\n",
+                "WHERE {$where}",
                 $params,
             ];
         }
@@ -105,36 +111,38 @@ class Query {
         $select = $select?: "*";
         $select = static::arrayToQueryString($select);
 
-        $query = "SELECT {$select}\n"
-               . "FROM {$table}\n";
+        $sqlParts = ["SELECT {$select}"];
+        $sqlParts[] = "FROM {$table}";
 
         [$whereClause, $params] = static::generateWhereClause($where, $params);
 
         if ($whereClause) {
-            $query .= $whereClause;
+            $sqlParts[] = $whereClause;
 
             if (is_numeric($where)) {
-                $query .= "LIMIT 1;";
-                return [$query, $params];
+                $sqlParts[] = "LIMIT 1;";
+                return [$sqlParts, $params];
             }
         }
 
         $orderBy = static::arrayToQueryString($orderBy);
         if ($orderBy) {
-            $query .= "ORDER BY {$orderBy}\n";
+            $sqlParts[] = "ORDER BY {$orderBy}";
         }
 
         if ($limit) {
-            $query .= "LIMIT {$limit}";
+            $limitPart = "LIMIT {$limit}";
 
             // Generate a offset, using limit & page values
             if ($page > 1) {
                 $offset = $limit * ($page - 1);
-                $query .= " OFFSET {$offset}";
+                $limitPart .= " OFFSET {$offset}";
             }
+
+            $sqlParts[] = $limitPart;
         }
 
-        return [trim($query) . ";", $params];
+        return [$sqlParts, $params];
     }
 
     /**
@@ -147,13 +155,13 @@ class Query {
      * @return array|null
      */
     public function select($select = "*", $where = null, $orderBy = null, ?array $params = null, ?int $limit = null, ?int $page = null): ?array {
-        [$query, $params] = static::generateSelectQuery($this->table, $select, $where, $orderBy, $params, $limit, $page);
+        [$sqlParts, $params] = static::generateSelectQuery($this->table, $select, $where, $orderBy, $params, $limit, $page);
 
         if (($where && is_numeric($where)) || $limit == 1) {
-            return $this->connection->getOne($query, $params);
+            return $this->execute($sqlParts, $params, "getOne");
         }
 
-        return $this->connection->getAll($query, $params);
+        return $this->execute($sqlParts, $params, "getAll");
     }
 
     /**
@@ -183,17 +191,17 @@ class Query {
         }
         $valuesQuery = static::arrayToQueryString($valuesQueries);
 
-        $query = $isInsert ? "INSERT INTO " : "UPDATE ";
-        $query .= "{$this->table}\n";
-        $query .= "SET {$valuesQuery}";
+        $sqlParts = [
+            ($isInsert ? "INSERT INTO " : "UPDATE ") . $this->table,
+        ];
+        $sqlParts[] = "SET {$valuesQuery}";
 
         [$whereClause, $params] = static::generateWhereClause($where, $params);
         if ($whereClause) {
-            $query .= "\n{$whereClause}";
+            $sqlParts[] = $whereClause;
         }
-        $query = trim($query) . ";";
 
-        return $this->connection->execute($query, $params);
+        return $this->execute($sqlParts, $params);
     }
 
     /**
@@ -225,16 +233,14 @@ class Query {
      * @return int
      */
     public function delete($where = null, ?array $params = null): int {
-        $query = "DELETE FROM {$this->table}";
+        $sqlParts = ["DELETE FROM {$this->table}"];
 
         [$whereClause, $params] = static::generateWhereClause($where, $params);
         if ($whereClause) {
-            $query .= "\n{$whereClause}";
+            $sqlParts[] = $whereClause;
         }
 
-        $query = trim($query) . ";";
-
-        $rowsDeleted = $this->connection->execute($query, $params);
+        $rowsDeleted = $this->execute($sqlParts, $params);
 
         return $rowsDeleted;
     }
