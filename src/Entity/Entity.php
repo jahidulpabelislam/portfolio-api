@@ -274,7 +274,7 @@ abstract class Entity {
 
         $rows = static::select("*", $where, $orderBy, $params, $limit, $page);
 
-        if (($where && is_numeric($where)) || $limit == 1) {
+        if (($where && is_numeric($where)) || $limit === 1) {
             return static::populateFromDB($rows);
         }
 

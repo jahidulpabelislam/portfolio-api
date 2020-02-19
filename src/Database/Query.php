@@ -107,7 +107,7 @@ class Query {
      * @param $page int|string|null
      * @return array[string, array|null]
      */
-    protected static function generateSelectQuery(string $table, $select = "*", $where = null, $orderBy = null, ?array $params = [], $limit = null, $page = null): array {
+    protected static function generateSelectQuery(string $table, $select = "*", $where = null, $orderBy = null, ?array $params = [], ?int $limit = null, ?int $page = null): array {
         $select = $select?: "*";
         $select = static::arrayToQueryString($select);
 
@@ -159,7 +159,7 @@ class Query {
     public function select($select = "*", $where = null, $orderBy = null, ?array $params = null, ?int $limit = null, ?int $page = null): ?array {
         [$sqlParts, $params] = static::generateSelectQuery($this->table, $select, $where, $orderBy, $params, $limit, $page);
 
-        if (($where && is_numeric($where)) || $limit == 1) {
+        if (($where && is_numeric($where)) || $limit === 1) {
             return $this->execute($sqlParts, $params, "getOne");
         }
 
