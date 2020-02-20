@@ -197,9 +197,11 @@ class Query {
             "SET {$valuesQuery}",
         ];
 
-        [$whereClause, $params] = static::generateWhereClause($where, $params);
-        if ($whereClause) {
-            $sqlParts[] = $whereClause;
+        if (!$isInsert) {
+            [$whereClause, $params] = static::generateWhereClause($where, $params);
+            if ($whereClause) {
+                $sqlParts[] = $whereClause;
+            }
         }
 
         return $this->execute($sqlParts, $params);
