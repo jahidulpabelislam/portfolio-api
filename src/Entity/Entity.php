@@ -255,7 +255,7 @@ abstract class Entity {
         return null;
     }
 
-    private static function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, ?int $page = null): ?array {
+    public static function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, ?int $page = null): ?array {
         return static::getQuery()->select($columns, $where, $params, $orderBy, $limit, $page);
     }
 
