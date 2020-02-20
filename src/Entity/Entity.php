@@ -255,8 +255,8 @@ abstract class Entity {
         return null;
     }
 
-    private static function select($columns = "*", $where = null, $orderBy = null, ?array $params = null, ?int $limit = null, ?int $page = null): ?array {
-        return static::getQuery()->select($columns, $where, $orderBy, $params, $limit, $page);
+    private static function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, ?int $page = null): ?array {
+        return static::getQuery()->select($columns, $where, $params, $orderBy, $limit, $page);
     }
 
     /**
@@ -271,7 +271,7 @@ abstract class Entity {
         $limit = static::getLimit($limit);
         $page = static::getPage($page);
 
-        $rows = static::select("*", $where, $orderBy, $params, $limit, $page);
+        $rows = static::select("*", $where, $params, $orderBy, $limit, $page);
 
         if (($where && is_numeric($where)) || $limit === 1) {
             return static::populateFromDB($rows);

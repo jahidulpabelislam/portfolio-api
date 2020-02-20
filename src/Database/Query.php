@@ -101,13 +101,13 @@ class Query {
      * @param $table string
      * @param $columns string[]|string|null
      * @param $where string[]|string|int|null
-     * @param $orderBy string[]|string|null
      * @param $params array|null
+     * @param $orderBy string[]|string|null
      * @param $limit int|string|null
      * @param $page int|string|null
      * @return array[string, array|null]
      */
-    protected static function generateSelectQuery(string $table, $columns = "*", $where = null, $orderBy = null, ?array $params = [], ?int $limit = null, ?int $page = null): array {
+    protected static function generateSelectQuery(string $table, $columns = "*", $where = null, ?array $params = [], $orderBy = null, ?int $limit = null, ?int $page = null): array {
         $columns = $columns?: "*";
         $columns = static::arrayToQueryString($columns);
 
@@ -149,14 +149,15 @@ class Query {
     /**
      * @param $columns string[]|string|null
      * @param $where string[]|string|int|null
-     * @param $orderBy string[]|string|null
      * @param $params array|null
+     * @param $orderBy string[]|string|null
      * @param $limit int|string|null
      * @param $page int|string|null
      * @return array|null
      */
-    public function select($columns = "*", $where = null, $orderBy = null, ?array $params = null, ?int $limit = null, ?int $page = null): ?array {
-        [$sqlParts, $params] = static::generateSelectQuery($this->table, $columns, $where, $orderBy, $params, $limit, $page);
+    public function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, ?int $page = null): ?array {
+        [$sqlParts,
+            $params] = static::generateSelectQuery($this->table, $columns, $where, $params, $orderBy, $limit, $page);
 
         if (($where && is_numeric($where)) || $limit === 1) {
             return $this->execute($sqlParts, $params, "getOne");
