@@ -73,7 +73,7 @@ class Query {
     /**
      * @param $where array|string|int|null
      * @param $params array|null
-     * @return array[string, array|null]
+     * @return array[string|null, array|null]
      */
     private static function generateWhereClause($where, ?array $params): array {
         if ($where) {
@@ -117,7 +117,6 @@ class Query {
         ];
 
         [$whereClause, $params] = static::generateWhereClause($where, $params);
-
         if ($whereClause) {
             $sqlParts[] = $whereClause;
 
@@ -194,7 +193,7 @@ class Query {
         $valuesQuery = static::arrayToQueryString($valuesQueries);
 
         $sqlParts = [
-            ($isInsert ? "INSERT INTO " : "UPDATE ") . $this->table,
+            ($isInsert ? "INSERT INTO" : "UPDATE") . " {$this->table}",
             "SET {$valuesQuery}",
         ];
 
