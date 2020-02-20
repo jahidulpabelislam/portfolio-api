@@ -45,7 +45,7 @@ class Query {
             $value = "\n\t" . implode($separator, $value);
         }
 
-        if (!$value && !is_string($value)) {
+        if (!$value || !is_string($value)) {
             return "";
         }
 
