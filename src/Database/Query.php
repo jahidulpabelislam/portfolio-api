@@ -41,7 +41,7 @@ class Query {
             $value = array_shift($value);
         }
 
-        if (is_array($value)) {
+        if (is_array($value) && count($value)) {
             $value = "\n\t" . implode($separator, $value);
         }
 
