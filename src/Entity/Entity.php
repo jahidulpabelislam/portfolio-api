@@ -174,7 +174,6 @@ abstract class Entity {
         }
 
         return $entity;
-
     }
 
     /**
@@ -256,7 +255,7 @@ abstract class Entity {
         return null;
     }
 
-    public static function select($columns = "*", $where = null, $orderBy = null, ?array $params = null, ?int $limit = null, ?int $page = null): ?array {
+    private static function select($columns = "*", $where = null, $orderBy = null, ?array $params = null, ?int $limit = null, ?int $page = null): ?array {
         return static::getQuery()->select($columns, $where, $orderBy, $params, $limit, $page);
     }
 
