@@ -99,7 +99,7 @@ class Query {
 
     /**
      * @param $table string
-     * @param $select string[]|string|null
+     * @param $columns string[]|string|null
      * @param $where string[]|string|int|null
      * @param $orderBy string[]|string|null
      * @param $params array|null
@@ -107,12 +107,12 @@ class Query {
      * @param $page int|string|null
      * @return array[string, array|null]
      */
-    protected static function generateSelectQuery(string $table, $select = "*", $where = null, $orderBy = null, ?array $params = [], ?int $limit = null, ?int $page = null): array {
-        $select = $select?: "*";
-        $select = static::arrayToQueryString($select);
+    protected static function generateSelectQuery(string $table, $columns = "*", $where = null, $orderBy = null, ?array $params = [], ?int $limit = null, ?int $page = null): array {
+        $columns = $columns?: "*";
+        $columns = static::arrayToQueryString($columns);
 
         $sqlParts = [
-            "SELECT {$select}",
+            "SELECT {$columns}",
             "FROM {$table}",
         ];
 
@@ -148,7 +148,7 @@ class Query {
     }
 
     /**
-     * @param $select string[]|string|null
+     * @param $columns string[]|string|null
      * @param $where string[]|string|int|null
      * @param $orderBy string[]|string|null
      * @param $params array|null
@@ -156,8 +156,8 @@ class Query {
      * @param $page int|string|null
      * @return array|null
      */
-    public function select($select = "*", $where = null, $orderBy = null, ?array $params = null, ?int $limit = null, ?int $page = null): ?array {
-        [$sqlParts, $params] = static::generateSelectQuery($this->table, $select, $where, $orderBy, $params, $limit, $page);
+    public function select($columns = "*", $where = null, $orderBy = null, ?array $params = null, ?int $limit = null, ?int $page = null): ?array {
+        [$sqlParts, $params] = static::generateSelectQuery($this->table, $columns, $where, $orderBy, $params, $limit, $page);
 
         if (($where && is_numeric($where)) || $limit === 1) {
             return $this->execute($sqlParts, $params, "getOne");
