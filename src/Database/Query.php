@@ -171,7 +171,7 @@ class Query {
      * @return int
      */
     public function count($where = null, ?array $params = null): int {
-        $row = $this->select("COUNT(*) as total_count", $where, null, $params, 1);
+        $row = $this->select("COUNT(*) as total_count", $where, $params, null, 1);
         return $row['total_count'] ?? 0;
     }
 
