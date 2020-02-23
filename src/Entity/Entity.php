@@ -384,11 +384,11 @@ abstract class Entity {
      * Used with Entity::getByParams();
      *
      * @param $params array The fields to search for within searchable columns (if any)
-     * @return array [string, array] Generated SQL where clause(s) and an associative array containing any params for query
+     * @return array [string|null, array|null] Generated SQL where clause(s) and an associative array containing any params for query
      */
     public static function generateWhereClausesFromParams(array $params): array {
         if (!static::$searchableColumns) {
-            return ["", []];
+            return [null, null];
         }
 
         $searchValue = $params["search"] ?? null;
