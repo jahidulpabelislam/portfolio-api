@@ -70,6 +70,7 @@ class Connection {
                     foreach ($params as $key => $value) {
                         $bindings[":{$key}"] = $value;
                     }
+
                     $stmt = $this->pdo->prepare($query);
                     $stmt->execute($bindings);
                 }
