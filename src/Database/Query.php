@@ -73,7 +73,7 @@ class Query {
     /**
      * @param $where array|string|int|null
      * @param $params array|null
-     * @return array[string|null, array|null]
+     * @return array [string|null, array|null]
      */
     private static function generateWhereClause($where, ?array $params): array {
         if ($where) {
@@ -105,7 +105,7 @@ class Query {
      * @param $orderBy string[]|string|null
      * @param $limit int|string|null
      * @param $page int|string|null
-     * @return array[string, array|null]
+     * @return array [array, array|null]
      */
     protected static function generateSelectQuery(string $table, $columns = "*", $where = null, ?array $params = [], $orderBy = null, ?int $limit = null, ?int $page = null): array {
         $columns = $columns?: "*";
@@ -156,8 +156,7 @@ class Query {
      * @return array|null
      */
     public function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, ?int $page = null): ?array {
-        [$sqlParts,
-            $params] = static::generateSelectQuery($this->table, $columns, $where, $params, $orderBy, $limit, $page);
+        [$sqlParts, $params] = static::generateSelectQuery($this->table, $columns, $where, $params, $orderBy, $limit, $page);
 
         if (($where && is_numeric($where)) || $limit === 1) {
             return $this->execute($sqlParts, $params, "getOne");
