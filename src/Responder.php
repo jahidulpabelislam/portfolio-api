@@ -178,8 +178,8 @@ class Responder {
         // The items response is the base response, and the extra meta is added below
         $response = self::getItemsResponse($entity, $entities);
 
-        [$where, $queryParams] = $entity::generateWhereClausesFromParams($params);
-        $totalCount = $entity::getCount($where, $queryParams);
+        $resultFromGeneration = $entity::generateWhereClausesFromParams($params);
+        $totalCount = $entity::getCount($resultFromGeneration["where"] ?? null, $resultFromGeneration["params"] ?? null);
         $response["meta"]["total_count"] = $totalCount;
 
         $limit = $entity::getLimit($params["limit"] ?? null);
