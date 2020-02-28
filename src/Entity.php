@@ -376,8 +376,12 @@ abstract class Entity {
      * @return bool Whether or not deletion was successful
      */
     public function delete(): bool {
-        $rowsAffected = static::getQuery()->delete($this->id);
-        return $rowsAffected > 0;
+        if (!empty($this->id)) {
+            $rowsAffected = static::getQuery()->delete($this->id);
+            return $rowsAffected > 0;
+        }
+
+        return false;
     }
 
     /**
