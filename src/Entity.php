@@ -300,8 +300,7 @@ abstract class Entity {
     }
 
     public function refresh() {
-        $id = $this->id;
-        $row = static::select("*", $id, null, null, 1);
+        $row = static::select("*", $this->id, null, null, 1);
         $this->setValues($row);
     }
 
