@@ -115,7 +115,13 @@ class Project extends Entity {
     private static function addStatusWhere($where, ?array $params, $limit = null): array {
         // As the user isn't logged in, filter by status = public
         if (!User::isLoggedIn()) {
+
+            if ($params === null) {
+                $params = [];
+            }
+
             if (is_numeric($where)) {
+                $params["id"] = $where;
                 $where = ["id = :id"];
                 $limit = 1;
             }
@@ -124,10 +130,6 @@ class Project extends Entity {
             }
             else if (!is_array($where)) {
                 $where = [];
-            }
-
-            if ($params === null) {
-                $params = [];
             }
 
             $where[] = "status = :status";
