@@ -15,10 +15,11 @@ if (!defined("ROOT")) {
     die();
 }
 
-use Exception;
-use Firebase\JWT\JWT;
 use App\Config;
 use App\Core as API;
+use App\Entity;
+use Exception;
+use Firebase\JWT\JWT;
 
 class User extends Entity {
 

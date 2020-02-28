@@ -17,6 +17,8 @@ if (!defined("ROOT")) {
     die();
 }
 
+use App\Entity;
+
 class Project extends Entity {
 
     private const PUBLIC_STATUS = "published";

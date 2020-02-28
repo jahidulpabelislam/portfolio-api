@@ -10,14 +10,13 @@
  * @copyright 2010-2020 JPI
  */
 
-namespace App\Entity;
+namespace App;
 
 if (!defined("ROOT")) {
     die();
 }
 
 use DateTime;
-use App\Config;
 use App\Database\Connection;
 use App\Database\Query;
 

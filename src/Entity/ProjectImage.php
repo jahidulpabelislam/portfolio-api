@@ -17,6 +17,8 @@ if (!defined("ROOT")) {
     die();
 }
 
+use App\Entity;
+
 class ProjectImage extends Entity {
 
     public static $displayName = "Project Image";
