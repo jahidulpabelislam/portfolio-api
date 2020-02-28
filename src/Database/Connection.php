@@ -112,14 +112,14 @@ class Connection {
         return null;
     }
 
-    public function getAll(string $query, ?array $params = null): array {
+    public function getAll(string $query, ?array $params = null): ?array {
         $stmt = $this->run($query, $params);
 
         if ($stmt) {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        return [];
+        return null;
     }
 
     public function getLastInsertedId(): ?int {

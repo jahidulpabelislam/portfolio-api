@@ -276,7 +276,11 @@ abstract class Entity {
             return static::populateFromDB($rows);
         }
 
-        return static::populateEntitiesFromDB($rows);
+        if ($rows) {
+            return static::populateEntitiesFromDB($rows);
+        }
+
+        return [];
     }
 
     /**
