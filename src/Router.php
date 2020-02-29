@@ -178,13 +178,13 @@ class Router {
         $response = $this->checkAPIVersion();
 
         // Only try to perform the action if API version check above returned okay
-        if (empty($response)) {
+        if ($response === null) {
             $response = $this->executeAction();
-        }
 
-        // If at this point response is empty, we didn't recognise the action
-        if (empty($response)) {
-            $response = Responder::get()->getUnrecognisedURIResponse();
+            // If at this point response is empty, we didn't recognise the action
+            if ($response === null) {
+                $response = Responder::get()->getUnrecognisedURIResponse();
+            }
         }
 
         $this->api->sendResponse($response);
