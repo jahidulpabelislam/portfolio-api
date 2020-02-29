@@ -108,6 +108,16 @@ class Core {
         return $fullURL;
     }
 
+    public static function makeUrl(string $base, array $params): string {
+        $fullURL = Utilities::addTrailingSlash($base);
+
+        if ($params && count($params)) {
+            $fullURL .= "?" . http_build_query($params);
+        }
+
+        return $fullURL;
+    }
+
     private static function isFieldValid(array $data, string $field): bool {
         if (!isset($data[$field])) {
             return false;

@@ -183,16 +183,14 @@ trait Responder {
         $response["meta"]["has_previous_page"] = $hasPreviousPage;
         if ($hasPreviousPage) {
             $params["page"] = $page - 1;
-            $response["meta"]["previous_page_url"] = $pageURL;
-            $response["meta"]["previous_page_params"] = $params;
+            $response["meta"]["previous_page_url"] = Core::makeUrl($pageURL, $params);
         }
 
         $hasNextPage = $page < $lastPage;
         $response["meta"]["has_next_page"] = $hasNextPage;
         if ($hasNextPage) {
             $params["page"] = $page + 1;
-            $response["meta"]["next_page_url"] = $pageURL;
-            $response["meta"]["next_page_params"] = $params;
+            $response["meta"]["next_page_url"] = Core::makeUrl($pageURL, $params);
         }
 
         return $response;
