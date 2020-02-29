@@ -306,7 +306,9 @@ abstract class Entity {
     public function refresh() {
         if (!empty($this->id)) {
             $row = static::select("*", $this->id, null, null, 1);
-            $this->setValues($row);
+            if ($row) {
+                $this->setValues($row);
+            }
         }
     }
 
