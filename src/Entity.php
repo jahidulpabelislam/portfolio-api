@@ -304,8 +304,10 @@ abstract class Entity {
     }
 
     public function refresh() {
-        $row = static::select("*", $this->id, null, null, 1);
-        $this->setValues($row);
+        if (!empty($this->id)) {
+            $row = static::select("*", $this->id, null, null, 1);
+            $this->setValues($row);
+        }
     }
 
     protected function getValuesToSave(): array {
