@@ -335,7 +335,7 @@ class Projects extends Controller {
             $projectId = (int)$projectId;
             if ($projectImage && !empty($projectImage->project_id) && $projectImage->project_id !== $projectId) {
                 $response["row"] = [];
-                $response["meta"]["feedback"] = "No {$projectImage::$displayName} found with {$imageId} as ID for Project: {$projectId}.";
+                $response["meta"]["feedback"] = "No {$projectImage::$displayName} found identified by {$imageId} for Project: {$projectId}.";
             }
 
             return $response;

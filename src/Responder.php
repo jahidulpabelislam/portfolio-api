@@ -217,7 +217,7 @@ trait Responder {
             "meta" => [
                 "status" => 404,
                 "message" => "Not Found",
-                "feedback" => "No {$entityClass::$displayName} found with {$id} as ID.",
+                "feedback" => "No {$entityClass::$displayName} identified by {$id} found.",
             ],
             "row" => [],
         ];
@@ -305,7 +305,7 @@ trait Responder {
 
         return [
             "meta" => [
-                "feedback" => "Couldn't delete {$entityClass::$displayName} with {$id} as ID.",
+                "feedback" => "Failed to delete the {$entityClass::$displayName} identified by {$id}.",
             ],
             "row" => [],
         ];
