@@ -144,6 +144,15 @@ class Projects {
         return $response;
     }
 
+    private static function getProjectEntity($projectId, bool $includeLinkedData = true): Project {
+        $project = Project::getById($projectId);
+        if ($includeLinkedData) {
+            $project->loadProjectImages();
+        }
+
+        return $project;
+    }
+
     /**
      * Get a particular Project defined by $projectId
      *
@@ -152,10 +161,7 @@ class Projects {
      * @return array The request response to send back
      */
     public static function getProject($projectId, bool $includeLinkedData = true): array {
-        $project = Project::getById($projectId);
-        if ($includeLinkedData) {
-            $project->loadProjectImages();
-        }
+        $project = self::getProjectEntity($projectId, $includeLinkedData);
 
         return Responder::getItemResponse($project, $projectId);
     }
@@ -168,14 +174,12 @@ class Projects {
      */
     public static function getProjectImages($projectId): array {
         // Check the Project trying to get Images for exists
-        $projectRes = self::getProject($projectId, false);
-        if (!empty($projectRes["row"])) {
-            $projectImages = ProjectImage::getByColumn("project_id", (int)$projectId);
-
-            return Responder::getItemsResponse(ProjectImage::class, $projectImages);
+        $project = self::getProjectEntity($projectId, true);
+        if (!empty($project->id)) {
+            return Responder::getItemsResponse(ProjectImage::class, $project->images);
         }
 
-        return $projectRes;
+        return Responder::getItemResponse($project, $projectId);
     }
 
     /**

@@ -62,7 +62,7 @@ class Project extends Entity {
     protected static $orderByColumn = "date";
     protected static $orderByASC = false;
 
-    private $images = null;
+    public $images = null;
 
     public function toArray(): array {
         $projectArray = parent::toArray();
