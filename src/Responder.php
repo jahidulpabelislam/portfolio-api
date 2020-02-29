@@ -137,8 +137,8 @@ class Responder {
      * so check if some found return the items (with necessary meta)
      * else if not found return necessary meta
      */
-    public static function getItemsResponse(string $entity, array $entities = []): array {
-        $count = count($entities);
+    public static function getItemsResponse(string $entityClass, ?array $entities = []): array {
+        $count = $entities ? count($entities) : 0;
         if ($count) {
 
             $rows = array_map(static function(Entity $entity) {
@@ -159,7 +159,7 @@ class Responder {
                 "count" => 0,
                 "status" => 404,
                 "message" => "Not Found",
-                "feedback" => "No {$entity::$displayName}s found.",
+                "feedback" => "No {$entityClass::$displayName}s found.",
             ],
             "rows" => [],
         ];
@@ -172,16 +172,16 @@ class Responder {
      *
      * Use getItemsResponse function as the base response, then just adds additional meta data
      */
-    public function getItemsSearchResponse(string $entity, array $entities = [], array $params = []): array {
+    public function getItemsSearchResponse(string $entityClass, ?array $entities = [], array $params = []): array {
         // The items response is the base response, and the extra meta is added below
-        $response = self::getItemsResponse($entity, $entities);
+        $response = self::getItemsResponse($entityClass, $entities);
 
-        $resultFromGeneration = $entity::generateWhereClausesFromParams($params);
-        $totalCount = $entity::getCount($resultFromGeneration["where"] ?? null, $resultFromGeneration["params"] ?? null);
+        $resultFromGeneration = $entityClass::generateWhereClausesFromParams($params);
+        $totalCount = $entityClass::getCount($resultFromGeneration["where"] ?? null, $resultFromGeneration["params"] ?? null);
         $response["meta"]["total_count"] = $totalCount;
 
-        $limit = $entity::getLimit($params["limit"] ?? null);
-        $page = $entity::getPage($params["page"] ?? null);
+        $limit = $entityClass::getLimit($params["limit"] ?? null);
+        $page = $entityClass::getPage($params["page"] ?? null);
 
         $lastPage = ceil($totalCount / $limit);
         $response["meta"]["total_pages"] = $lastPage;
@@ -219,12 +219,12 @@ class Responder {
         ];
     }
 
-    public static function getItemNotFoundResponse(string $entity, $id): array {
+    public static function getItemNotFoundResponse(string $entityClass, $id): array {
         return [
             "meta" => [
                 "status" => 404,
                 "message" => "Not Found",
-                "feedback" => "No {$entity::$displayName} found with {$id} as ID.",
+                "feedback" => "No {$entityClass::$displayName} found with {$id} as ID.",
             ],
             "row" => [],
         ];
@@ -235,16 +235,16 @@ class Responder {
      * so check if found return the item (with necessary meta)
      * else if not found return necessary meta
      */
-    public static function getItemResponse(Entity $entity, $id): array {
-        if ($id && $entity->id && $entity->id == $id) {
+    public static function getItemResponse(string $entityClass, ?Entity $entity, $id): array {
+        if ($id && $entity && $entity->id && $entity->id == $id) {
             return self::getItemFoundResponse($entity);
         }
 
-        return self::getItemNotFoundResponse(get_class($entity), $id);
+        return self::getItemNotFoundResponse($entityClass, $id);
     }
 
-    public static function getInsertResponse(Entity $entity): array {
-        if ($entity->id) {
+    public static function getInsertResponse(string $entityClass, ?Entity $entity): array {
+        if ($entity && $entity->id) {
             $response = self::getItemFoundResponse($entity);
 
             $response["meta"]["status"] = 201;
@@ -257,14 +257,14 @@ class Responder {
             "meta" => [
                 "status" => 500,
                 "message" => "Internal Server Error",
-                "feedback" => "Failed to insert the new {$entity::$displayName}.",
+                "feedback" => "Failed to insert the new {$entityClass::$displayName}.",
             ],
             "row" => [],
         ];
     }
 
-    public static function getUpdateResponse(Entity $entity, $id): array {
-        if ($id && $entity->id && $entity->id == $id) {
+    public static function getUpdateResponse(string $entityClass, ?Entity $entity, $id): array {
+        if ($id && $entity && $entity->id && $entity->id == $id) {
             return self::getItemFoundResponse($entity);
         }
 
@@ -272,7 +272,7 @@ class Responder {
             "meta" => [
                 "status" => 500,
                 "message" => "Internal Server Error",
-                "feedback" => "Failed to update the {$entity::$displayName} identified by {$id}.",
+                "feedback" => "Failed to update the {$entityClass::$displayName} identified by {$id}.",
             ],
             "row" => [],
         ];
@@ -281,10 +281,9 @@ class Responder {
     /**
      * Return the response when a item was attempted to be deleted
      */
-    public static function getItemDeletedResponse(Entity $entity, $id, bool $isDeleted = false): array {
-        // If the entity has no id set it means the item wasn't found, so return item 404 response
-        if (!$entity->id) {
-            return self::getItemNotFoundResponse($entity, $id);
+    public static function getItemDeletedResponse(string $entityClass, ?Entity $entity, $id, bool $isDeleted = false): array {
+        if (!$entity) {
+            return self::getItemNotFoundResponse($entityClass, $id);
         }
 
         if ($isDeleted) {
@@ -302,7 +301,7 @@ class Responder {
             "meta" => [
                 "status" => 500,
                 "message" => "Internal Server Error",
-                "feedback" => "Couldn't delete {$entity::$displayName} with {$id} as ID.",
+                "feedback" => "Couldn't delete {$entityClass::$displayName} with {$id} as ID.",
             ],
             "row" => [],
         ];

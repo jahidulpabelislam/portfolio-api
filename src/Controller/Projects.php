@@ -80,14 +80,14 @@ class Projects {
 
             if ($isNew) {
                 $project = Project::insert($data);
-                $response = Responder::getInsertResponse($project);
+                $response = Responder::getInsertResponse(Project::class, $project);
             }
             else {
                 $project = Project::getById($projectId);
                 $project->setValues($data);
                 $project->save();
                 $project->loadProjectImages();
-                $response = Responder::getUpdateResponse($project, $projectId);
+                $response = Responder::getUpdateResponse(Project::class, $project, $projectId);
             }
         }
         else {
@@ -135,7 +135,7 @@ class Projects {
             $project = Project::getById($projectId);
             $isDeleted = $project->delete();
 
-            $response = Responder::getItemDeletedResponse($project, $projectId, $isDeleted);
+            $response = Responder::getItemDeletedResponse(Project::class, $project, $projectId, $isDeleted);
         }
         else {
             $response = Responder::getNotAuthorisedResponse();
@@ -163,7 +163,7 @@ class Projects {
     public static function getProject($projectId, bool $includeLinkedData = true): array {
         $project = self::getProjectEntity($projectId, $includeLinkedData);
 
-        return Responder::getItemResponse($project, $projectId);
+        return Responder::getItemResponse(Project::class, $project, $projectId);
     }
 
     /**
@@ -179,7 +179,7 @@ class Projects {
             return Responder::getItemsResponse(ProjectImage::class, $project->images);
         }
 
-        return Responder::getItemResponse($project, $projectId);
+        return Responder::getItemResponse(Project::class, $project, $projectId);
     }
 
     /**
@@ -228,7 +228,7 @@ class Projects {
                 ];
                 $projectImage = ProjectImage::insert($imageData);
 
-                $response = Responder::getInsertResponse($projectImage);
+                $response = Responder::getInsertResponse(ProjectImage::class, $projectImage);
             }
             else {
                 // Else there was a problem uploading file to server
@@ -289,7 +289,7 @@ class Projects {
         if (!empty($response["row"])) {
             $projectImage = ProjectImage::getById($imageId);
 
-            $response = Responder::getItemResponse($projectImage, $imageId);
+            $response = Responder::getItemResponse(ProjectImage::class, $projectImage, $imageId);
 
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
@@ -319,7 +319,7 @@ class Projects {
                 $projectImage = ProjectImage::getById($imageId);
                 $isDeleted = $projectImage->delete();
 
-                $response = Responder::getItemDeletedResponse($projectImage, $imageId, $isDeleted);
+                $response = Responder::getItemDeletedResponse(ProjectImage::class, $projectImage, $imageId, $isDeleted);
             }
         }
         else {
