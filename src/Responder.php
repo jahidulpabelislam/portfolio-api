@@ -181,7 +181,13 @@ trait Responder {
 
         $hasPreviousPage = ($page > 1) && ($lastPage >= ($page - 1));
         if ($hasPreviousPage) {
-            $params["page"] = $page - 1;
+            if ($page > 2) {
+                $params["page"] = $page - 1;
+            }
+            else {
+                unset($params["page"]);
+            }
+
             $response["meta"]["previous_page_url"] = Core::makeUrl($pageURL, $params);
         }
 
