@@ -139,6 +139,11 @@ abstract class Entity {
         }
     }
 
+    public function isLoaded(): bool
+    {
+        return !empty($this->id);
+    }
+
     public function setValues(array $values) {
         $columns = array_keys($this->columns);
         foreach ($columns as $column) {
@@ -304,7 +309,7 @@ abstract class Entity {
     }
 
     public function refresh() {
-        if (!empty($this->id)) {
+        if ($this->isLoaded()) {
             $row = static::select("*", $this->id, null, null, 1);
             if ($row) {
                 $this->setValues($row);
@@ -329,7 +334,7 @@ abstract class Entity {
      * Will either be a new insert or a update to an existing Entity
      */
     public function save(): bool {
-        $isNew = empty($this->id);
+        $isNew = !$this->isLoaded();
         if ($isNew && static::$hasCreatedAt) {
             $this->setValue("created_at", date(static::$dateTimeFormat));
         }
@@ -380,7 +385,7 @@ abstract class Entity {
      * @return bool Whether or not deletion was successful
      */
     public function delete(): bool {
-        if (!empty($this->id)) {
+        if ($this->isLoaded()) {
             $rowsAffected = static::getQuery()->delete($this->id);
             return $rowsAffected > 0;
         }

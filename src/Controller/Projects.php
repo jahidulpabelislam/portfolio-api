@@ -175,7 +175,7 @@ class Projects {
     public static function getProjectImages($projectId): array {
         // Check the Project trying to get Images for exists
         $project = self::getProjectEntity($projectId, true);
-        if (!empty($project->id)) {
+        if ($project->isLoaded()) {
             return Responder::getItemsResponse(ProjectImage::class, $project->images);
         }
 
