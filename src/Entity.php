@@ -313,7 +313,10 @@ abstract class Entity {
             $row = static::select("*", $this->id, null, null, 1);
             if ($row) {
                 $this->setValues($row);
+                return;
             }
+
+            $this->setId(null);
         }
     }
 
