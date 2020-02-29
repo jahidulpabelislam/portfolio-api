@@ -184,7 +184,7 @@ abstract class Entity {
      * @param $row array|null
      * @return static
      */
-    private static function populateFromDB(?array $row = null): Entity {
+    private static function populateFromDB(array $row): Entity {
         $entity = static::create($row);
         $entity->setId($row["id"]);
         return $entity;
@@ -268,7 +268,7 @@ abstract class Entity {
      * @param $params array|null
      * @param $limit int|string|null
      * @param $page int|string|null
-     * @return static[]|static
+     * @return static[]|static|null
      */
     public static function get($where = null, ?array $params = null, $limit = null, $page = null) {
         $orderBy = static::getOrderBy();
@@ -277,15 +277,15 @@ abstract class Entity {
 
         $rows = static::select("*", $where, $params, $orderBy, $limit, $page);
 
+        if (!$rows) {
+            return null;
+        }
+
         if (($where && is_numeric($where)) || $limit === 1) {
             return static::populateFromDB($rows);
         }
 
-        if ($rows) {
-            return static::populateEntitiesFromDB($rows);
-        }
-
-        return [];
+        return static::populateEntitiesFromDB($rows);
     }
 
     /**
@@ -298,14 +298,14 @@ abstract class Entity {
 
     /**
      * Load a single Entity from the Database where a Id column = a value ($id).
-     * @return static
+     * @return static|null
      */
-    public static function getById($id): Entity {
+    public static function getById($id): ?Entity {
         if (is_numeric($id)) {
             return static::get((int)$id);
         }
 
-        return new static();
+        return null;
     }
 
     public function refresh() {

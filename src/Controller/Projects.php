@@ -73,8 +73,10 @@ class Projects {
                     $imageData = json_decode($image, true);
 
                     $projectImage = ProjectImage::getById($imageData["id"]);
-                    $projectImage->sort_order_number = $i + 1;
-                    $projectImage->save();
+                    if ($projectImage) {
+                        $projectImage->sort_order_number = $i + 1;
+                        $projectImage->save();
+                    }
                 }
             }
 
@@ -84,9 +86,12 @@ class Projects {
             }
             else {
                 $project = Project::getById($projectId);
-                $project->setValues($data);
-                $project->save();
-                $project->loadProjectImages();
+                if ($project) {
+                    $project->setValues($data);
+                    $project->save();
+                    $project->loadProjectImages();
+                }
+
                 $response = Responder::getUpdateResponse(Project::class, $project, $projectId);
             }
         }
@@ -132,8 +137,12 @@ class Projects {
      */
     public static function deleteProject($projectId): array {
         if (User::isLoggedIn()) {
+            $isDeleted = false;
+
             $project = Project::getById($projectId);
-            $isDeleted = $project->delete();
+            if ($project) {
+                $isDeleted = $project->delete();
+            }
 
             $response = Responder::getItemDeletedResponse(Project::class, $project, $projectId, $isDeleted);
         }
@@ -144,9 +153,9 @@ class Projects {
         return $response;
     }
 
-    private static function getProjectEntity($projectId, bool $includeLinkedData = true): Project {
+    private static function getProjectEntity($projectId, bool $includeLinkedData = true): ?Project {
         $project = Project::getById($projectId);
-        if ($includeLinkedData) {
+        if ($project && $includeLinkedData) {
             $project->loadProjectImages();
         }
 
@@ -175,7 +184,7 @@ class Projects {
     public static function getProjectImages($projectId): array {
         // Check the Project trying to get Images for exists
         $project = self::getProjectEntity($projectId, true);
-        if ($project->isLoaded()) {
+        if ($project && $project->isLoaded()) {
             return Responder::getItemsResponse(ProjectImage::class, $project->images);
         }
 
@@ -293,7 +302,7 @@ class Projects {
 
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
-            if (!empty($projectImage->project_id) && $projectImage->project_id !== $projectId) {
+            if ($projectImage && !empty($projectImage->project_id) && $projectImage->project_id !== $projectId) {
                 $response["row"] = [];
                 $response["meta"]["feedback"] = "No {$projectImage::$displayName} found with {$imageId} as ID for Project: {$projectId}.";
             }
@@ -315,9 +324,13 @@ class Projects {
             $response = self::getProject($projectId, false);
             if (!empty($response["row"])) {
 
+                $isDeleted = false;
+
                 // Delete row from database
                 $projectImage = ProjectImage::getById($imageId);
-                $isDeleted = $projectImage->delete();
+                if ($projectImage) {
+                    $isDeleted = $projectImage->delete();
+                }
 
                 $response = Responder::getItemDeletedResponse(ProjectImage::class, $projectImage, $imageId, $isDeleted);
             }
