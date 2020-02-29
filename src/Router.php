@@ -156,10 +156,10 @@ class Router {
         $method = $this->api->method;
         $uri = $this->api->uriArray;
 
-        $entity = $uri[1] ?? "";
+        $entityName = $uri[1] ?? "";
 
-        $entityFormatted = ucfirst(strtolower($entity));
-        $functionName = "execute{$entityFormatted}Action";
+        $entityNameFormatted = ucfirst(strtolower($entityName));
+        $functionName = "execute{$entityNameFormatted}Action";
         if (method_exists($this, $functionName)) {
             return $this->{$functionName}($uri, $method);
         }
