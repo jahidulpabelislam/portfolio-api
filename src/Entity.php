@@ -360,7 +360,7 @@ abstract class Entity {
     }
 
     /**
-     * @param array|null $data
+     * @param $data array|null
      * @return static
      */
     public static function insert(array $data = null): Entity {
