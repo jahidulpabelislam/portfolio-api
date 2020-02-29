@@ -50,7 +50,7 @@ class Projects {
     private static function saveProject($projectId = null): array {
         if (User::isLoggedIn()) {
 
-            $isNew = empty($projectId);
+            $isNew = $projectId === null;
 
             // Only validate on creation
             if ($isNew && !API::get()->hasRequiredFields(Project::class)) {
