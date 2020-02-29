@@ -236,7 +236,7 @@ class Responder {
      * else if not found return necessary meta
      */
     public static function getItemResponse(string $entityClass, ?Entity $entity, $id): array {
-        if ($id && $entity && $entity->isLoaded() && $entity->id == $id) {
+        if ($entity && $entity->isLoaded()) {
             return self::getItemFoundResponse($entity);
         }
 
@@ -264,7 +264,7 @@ class Responder {
     }
 
     public static function getUpdateResponse(string $entityClass, ?Entity $entity, $id): array {
-        if ($id && $entity && $entity->isLoaded() && $entity->id == $id) {
+        if ($entity && $entity->isLoaded()) {
             return self::getItemFoundResponse($entity);
         }
 
