@@ -16,9 +16,9 @@ if (!defined("ROOT")) {
     die();
 }
 
-use DateTime;
 use App\Database\Connection;
 use App\Database\Query;
+use DateTime;
 
 abstract class Entity {
 
@@ -139,8 +139,7 @@ abstract class Entity {
         }
     }
 
-    public function isLoaded(): bool
-    {
+    public function isLoaded(): bool {
         return !empty($this->id);
     }
 
