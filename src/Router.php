@@ -50,17 +50,17 @@ class Router {
         $authAction = $uri[2] ?? "";
 
         if ($method === "POST") {
-            if ($authAction === "login" && (!isset($uri[3]) || $uri[3] === "")) {
+            if ($authAction === "login" && !isset($uri[3])) {
                 $response = Auth::login();
             }
         }
         else if ($method === "DELETE") {
-            if ($authAction === "logout" && (!isset($uri[3]) || $uri[3] === "")) {
+            if ($authAction === "logout" && !isset($uri[3])) {
                 $response = Auth::logout();
             }
         }
         else if ($method === "GET") {
-            if ($authAction === "session" && (!isset($uri[3]) || $uri[3] === "")) {
+            if ($authAction === "session" && !isset($uri[3])) {
                 $response = Auth::getAuthStatus();
             }
         }
@@ -87,7 +87,7 @@ class Router {
                 $response = Projects::getProject($projectId);
             }
         }
-        else {
+        else if (!isset($uri[2])) {
             $response = Projects::getProjects();
         }
 
