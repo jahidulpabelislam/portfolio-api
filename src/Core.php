@@ -75,7 +75,6 @@ class Core {
 
     private function extractURIFromRequest() {
         $uriString = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
-        $uriString = strtolower($uriString);
         $this->uriString = $uriString;
 
         // Get the individual parts of the request URI as an array
