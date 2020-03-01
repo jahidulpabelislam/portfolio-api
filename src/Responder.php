@@ -188,13 +188,13 @@ trait Responder {
                 unset($params["page"]);
             }
 
-            $response["meta"]["previous_page_url"] = Core::makeUrl($pageURL, $params);
+            $response["meta"]["previous_page"] = Core::makeUrl($pageURL, $params);
         }
 
         $hasNextPage = $page < $lastPage;
         if ($hasNextPage) {
             $params["page"] = $page + 1;
-            $response["meta"]["next_page_url"] = Core::makeUrl($pageURL, $params);
+            $response["meta"]["next_page"] = Core::makeUrl($pageURL, $params);
         }
 
         return $response;
