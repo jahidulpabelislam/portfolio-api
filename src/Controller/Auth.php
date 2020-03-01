@@ -37,8 +37,6 @@ class Auth {
                 return [
                     "meta" => [
                         "ok" => true,
-                        "status" => 200,
-                        "message" => "OK",
                         "jwt" => $jwt,
                     ],
                 ];
@@ -80,8 +78,6 @@ class Auth {
             return [
                 "meta" => [
                     "ok" => true,
-                    "status" => 200,
-                    "message" => "OK",
                 ],
             ];
         }

@@ -74,8 +74,6 @@ class Responder {
     public static function getUnsuccessfulLogoutResponse(): array {
         return [
             "meta" => [
-                "status" => 500,
-                "message" => "Internal Server Error",
                 "feedback" => "Couldn't successfully process your logout request!",
             ],
         ];
@@ -255,8 +253,6 @@ class Responder {
 
         return [
             "meta" => [
-                "status" => 500,
-                "message" => "Internal Server Error",
                 "feedback" => "Failed to insert the new {$entityClass::$displayName}.",
             ],
             "row" => [],
@@ -270,8 +266,6 @@ class Responder {
 
         return [
             "meta" => [
-                "status" => 500,
-                "message" => "Internal Server Error",
                 "feedback" => "Failed to update the {$entityClass::$displayName} identified by {$id}.",
             ],
             "row" => [],
@@ -299,8 +293,6 @@ class Responder {
 
         return [
             "meta" => [
-                "status" => 500,
-                "message" => "Internal Server Error",
                 "feedback" => "Couldn't delete {$entityClass::$displayName} with {$id} as ID.",
             ],
             "row" => [],
