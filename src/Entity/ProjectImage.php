@@ -13,6 +13,8 @@
 
 namespace App\Entity;
 
+use App\Core;
+
 if (!defined("ROOT")) {
     die();
 }
@@ -50,7 +52,7 @@ class ProjectImage extends Entity {
         // Check if the deletion was ok
         if ($isDeleted && !empty($this->file)) {
             // Makes sure there is a leading slash
-            $filePath = ROOT . "/" . ltrim($this->file, "/");
+            $filePath = ROOT . "/" . Core::removeLeadingSlash($this->file);
             if (file_exists($filePath)) {
                 unlink($filePath);
             }
