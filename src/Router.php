@@ -153,7 +153,6 @@ class Router {
      * @return array An appropriate response to request
      */
     private function executeAction(): ?array {
-        $method = $this->api->method;
         $uri = $this->api->uriArray;
 
         $entity = $uri[1] ?? null;
@@ -162,7 +161,7 @@ class Router {
             $entityFormatted = ucfirst(strtolower($entity));
             $functionName = "execute{$entityFormatted}Action";
             if (method_exists($this, $functionName)) {
-                return $this->{$functionName}($uri, $method);
+                return $this->{$functionName}($uri, $this->api->method);
             }
         }
 
