@@ -158,7 +158,7 @@ class Router {
         $entityName = $uri[1] ?? null;
 
         // Make sure value is the correct case
-        if ($entityName && strtolower($entityName[0]) === $entityName[0]) {
+        if ($entityName && strtolower($entityName) === $entityName) {
             $entityNameFormatted = ucfirst($entityName);
             $functionName = "execute{$entityNameFormatted}Action";
             if (method_exists($this, $functionName)) {

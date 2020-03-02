@@ -469,7 +469,7 @@ abstract class Entity {
      * @param $page int|string|null
      * @return static[]|static
      */
-    public static function getByParams(array $params, $limit = null, $page = null): array {
+    public static function getByParams(array $params, $limit = null, $page = null) {
         // Add filters/wheres if a search was entered
         $resultFromGeneration = static::generateWhereClausesFromParams($params);
 

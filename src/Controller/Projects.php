@@ -34,6 +34,10 @@ class Projects {
         $page = $data["page"] ?? null;
         $projects = Project::getByParams($data, $limit, $page);
 
+        if (!is_array($projects)) {
+            $projects = [$projects];
+        }
+
         array_walk($projects, static function(Project $project) {
             $project->loadProjectImages();
         });
