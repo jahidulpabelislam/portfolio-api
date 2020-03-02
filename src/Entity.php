@@ -180,7 +180,7 @@ abstract class Entity {
     }
 
     /**
-     * @param $row array|null
+     * @param $row array
      * @return static
      */
     private static function populateFromDB(array $row): Entity {
@@ -467,7 +467,7 @@ abstract class Entity {
      * @param $params array Any data to aid in the search query
      * @param $limit int|string|null
      * @param $page int|string|null
-     * @return static[]|static
+     * @return static[]|static|null
      */
     public static function getByParams(array $params, $limit = null, $page = null) {
         // Add filters/wheres if a search was entered
