@@ -50,17 +50,17 @@ class Router {
         $authAction = $uri[2] ?? "";
 
         if ($method === "POST") {
-            if ($authAction === "login" && (!isset($uri[3]) || $uri[3] === "")) {
+            if ($authAction === "login" && !isset($uri[3])) {
                 $response = Auth::login();
             }
         }
         else if ($method === "DELETE") {
-            if ($authAction === "logout" && (!isset($uri[3]) || $uri[3] === "")) {
+            if ($authAction === "logout" && !isset($uri[3])) {
                 $response = Auth::logout();
             }
         }
         else if ($method === "GET") {
-            if ($authAction === "session" && (!isset($uri[3]) || $uri[3] === "")) {
+            if ($authAction === "session" && !isset($uri[3])) {
                 $response = Auth::getAuthStatus();
             }
         }
@@ -87,7 +87,7 @@ class Router {
                 $response = Projects::getProject($projectId);
             }
         }
-        else {
+        else if (!isset($uri[2])) {
             $response = Projects::getProjects();
         }
 
@@ -153,15 +153,17 @@ class Router {
      * @return array An appropriate response to request
      */
     private function executeAction(): ?array {
-        $method = $this->api->method;
         $uri = $this->api->uriArray;
 
-        $entityName = $uri[1] ?? "";
+        $entityName = $uri[1] ?? null;
 
-        $entityNameFormatted = ucfirst(strtolower($entityName));
-        $functionName = "execute{$entityNameFormatted}Action";
-        if (method_exists($this, $functionName)) {
-            return $this->{$functionName}($uri, $method);
+        // Make sure value is the correct case
+        if ($entityName && strtolower($entityName[0]) === $entityName[0]) {
+            $entityNameFormatted = ucfirst($entityName);
+            $functionName = "execute{$entityNameFormatted}Action";
+            if (method_exists($this, $functionName)) {
+                return $this->{$functionName}($uri, $this->api->method);
+            }
         }
 
         return null;

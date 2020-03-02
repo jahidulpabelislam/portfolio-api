@@ -44,6 +44,29 @@ class Core {
         return self::$instance;
     }
 
+    public static function removeLeadingSlash(string $url): string {
+        if ($url[0] === "/") {
+            $url = substr($url, 1);
+        }
+
+        return $url;
+    }
+
+    public static function removeTrailingSlash(string $url): string {
+        if (substr($url, -1) === "/") {
+            $url = substr($url, 0, -1);
+        }
+
+        return $url;
+    }
+
+    public static function removeSlashes(string $url): string {
+        $url = self::removeLeadingSlash($url);
+        $url = self::removeTrailingSlash($url);
+
+        return $url;
+    }
+
     private function extractMethodFromRequest() {
         $method = $_SERVER["REQUEST_METHOD"];
 
@@ -52,11 +75,10 @@ class Core {
 
     private function extractURIFromRequest() {
         $uriString = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
-        $uriString = strtolower(trim($uriString));
         $this->uriString = $uriString;
 
         // Get the individual parts of the request URI as an array
-        $uriString = trim($uriString, "/");
+        $uriString = self::removeSlashes($uriString);
         $uriArray = explode("/", $uriString);
         $this->uriArray = $uriArray;
     }
@@ -92,7 +114,7 @@ class Core {
     }
 
     public static function addTrailingSlash(string $url): string {
-        $url = rtrim($url, " /");
+        $url = self::removeTrailingSlash($url);
 
         return "{$url}/";
     }
@@ -107,9 +129,9 @@ class Core {
         $uri = $uriArray ? implode("/", $uriArray) : $this->uriString;
 
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
-        $domain = rtrim($_SERVER["SERVER_NAME"], "/");
+        $domain = self::removeTrailingSlash($_SERVER["SERVER_NAME"]);
 
-        $uri = trim($uri, "/");
+        $uri = self::removeSlashes($uri);
         $fullURL = "{$protocol}://{$domain}/{$uri}";
         $fullURL = self::addTrailingSlash($fullURL);
 
