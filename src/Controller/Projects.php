@@ -192,20 +192,20 @@ class Projects {
             return Responder::getItemsResponse(ProjectImage::class, $project->images);
         }
 
-        return Responder::getItemResponse(Project::class, $project, $projectId);
+        return Responder::getItemNotFoundResponse(Project::class, $projectId);
     }
 
     /**
      * Try and upload the added image
      *
-     * @param $project array The Project trying to upload image for
+     * @param $project Project The Project trying to upload image for
      * @return array The request response to send back
      */
-    private static function uploadProjectImage(array $project, array $image): array {
+    private static function uploadProjectImage(Project $project, array $image): array {
         $response = [];
 
-        $projectId = $project["id"];
-        $projectName = $project["name"];
+        $projectId = $project->id;
+        $projectName = $project->name;
 
         $projectNameFormatted = strtolower($projectName);
         $projectNameFormatted = preg_replace("/[^a-z0-9]+/", "-", $projectNameFormatted);
@@ -272,9 +272,12 @@ class Projects {
             if (isset($files["image"])) {
 
                 // Check the Project trying to add a Image for exists
-                $response = self::getProject($projectId, false);
-                if (!empty($response["row"])) {
-                    $response = self::uploadProjectImage($response["row"], $files["image"]);
+                $project = self::getProjectEntity($projectId);
+                if ($project) {
+                    $response = self::uploadProjectImage($project, $files["image"]);
+                }
+                else {
+                    $response = Responder::getItemNotFoundResponse(Project::class, $projectId);
                 }
             }
             else {
@@ -298,8 +301,8 @@ class Projects {
      */
     public static function getProjectImage($projectId, $imageId): array {
         // Check the Project trying to get Images for exists
-        $response = self::getProject($projectId, false);
-        if (!empty($response["row"])) {
+        $project = self::getProjectEntity($projectId);
+        if ($project) {
             $projectImage = ProjectImage::getById($imageId);
 
             $response = Responder::getItemResponse(ProjectImage::class, $projectImage, $imageId);
@@ -310,9 +313,11 @@ class Projects {
                 $response["row"] = [];
                 $response["meta"]["feedback"] = "No {$projectImage::$displayName} found with {$imageId} as ID for Project: {$projectId}.";
             }
+
+            return $response;
         }
 
-        return $response;
+        return Responder::getItemResponse(Project::class, $project, $projectId);
     }
 
     /**
@@ -325,9 +330,8 @@ class Projects {
     public static function deleteProjectImage($projectId, $imageId): array {
         if (User::isLoggedIn()) {
             // Check the Project of the Image trying to edit actually exists
-            $response = self::getProject($projectId, false);
-            if (!empty($response["row"])) {
-
+            $project = self::getProjectEntity($projectId);
+            if ($project) {
                 $isDeleted = false;
 
                 // Delete row from database
@@ -337,6 +341,9 @@ class Projects {
                 }
 
                 $response = Responder::getItemDeletedResponse(ProjectImage::class, $projectImage, $imageId, $isDeleted);
+            }
+            else {
+                $response = Responder::getItemNotFoundResponse(Project::class, $projectId);
             }
         }
         else {
