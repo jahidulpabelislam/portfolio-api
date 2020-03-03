@@ -157,7 +157,7 @@ class Projects {
         return $response;
     }
 
-    private static function getProjectEntity($projectId, bool $includeLinkedData = true): ?Project {
+    private static function getProjectEntity($projectId, bool $includeLinkedData = false): ?Project {
         $project = Project::getById($projectId);
         if ($project && $includeLinkedData) {
             $project->loadProjectImages();
