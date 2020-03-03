@@ -276,7 +276,7 @@ abstract class Entity {
 
         $rows = static::select("*", $where, $params, $orderBy, $limit, $page);
 
-        if (!$rows) {
+        if ($rows === null) {
             return null;
         }
 
