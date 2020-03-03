@@ -234,7 +234,7 @@ class Responder {
      * else if not found return necessary meta
      */
     public static function getItemResponse(string $entityClass, ?Entity $entity, $id): array {
-        if ($entity && $entity->isLoaded()) {
+        if ($id && $entity && $entity->isLoaded() && $entity->id == $id) {
             return self::getItemFoundResponse($entity);
         }
 
@@ -260,7 +260,7 @@ class Responder {
     }
 
     public static function getUpdateResponse(string $entityClass, ?Entity $entity, $id): array {
-        if ($entity && $entity->isLoaded()) {
+        if ($id && $entity && $entity->isLoaded() && $entity->id == $id) {
             return self::getItemFoundResponse($entity);
         }
 
@@ -276,7 +276,7 @@ class Responder {
      * Return the response when a item was attempted to be deleted
      */
     public static function getItemDeletedResponse(string $entityClass, ?Entity $entity, $id, bool $isDeleted = false): array {
-        if (!$entity || !$entity->isLoaded()) {
+        if (!$id || !$entity || !$entity->isLoaded() || $entity->id != $id) {
             return self::getItemNotFoundResponse($entityClass, $id);
         }
 
