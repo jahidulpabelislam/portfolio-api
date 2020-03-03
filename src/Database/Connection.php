@@ -104,7 +104,7 @@ class Connection {
 
         if ($stmt) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!empty($row)) {
+            if ($row !== false) {
                 return $row;
             }
         }
