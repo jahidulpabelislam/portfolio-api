@@ -276,7 +276,7 @@ class Responder {
      * Return the response when a item was attempted to be deleted
      */
     public static function getItemDeletedResponse(string $entityClass, ?Entity $entity, $id, bool $isDeleted = false): array {
-        if (!$entity) {
+        if (!$entity || !$entity->isLoaded()) {
             return self::getItemNotFoundResponse($entityClass, $id);
         }
 
