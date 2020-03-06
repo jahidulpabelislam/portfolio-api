@@ -22,6 +22,15 @@ use App\Entity\ProjectImage;
 
 class Projects {
 
+    private static function getProjectEntity($projectId, bool $includeLinkedData = false): ?Project {
+        $project = Project::getById($projectId);
+        if ($project && $includeLinkedData) {
+            $project->loadProjectImages();
+        }
+
+        return $project;
+    }
+
     /**
      * Gets all Projects but paginated, also might include search
      *
@@ -89,7 +98,7 @@ class Projects {
                 $response = Responder::getInsertResponse(Project::class, $project);
             }
             else {
-                $project = Project::getById($projectId);
+                $project = self::getProjectEntity($projectId);
                 if ($project) {
                     $project->setValues($data);
                     $project->save();
@@ -143,7 +152,7 @@ class Projects {
         if (User::isLoggedIn()) {
             $isDeleted = false;
 
-            $project = Project::getById($projectId);
+            $project = self::getProjectEntity($projectId);
             if ($project) {
                 $isDeleted = $project->delete();
             }
@@ -155,15 +164,6 @@ class Projects {
         }
 
         return $response;
-    }
-
-    private static function getProjectEntity($projectId, bool $includeLinkedData = false): ?Project {
-        $project = Project::getById($projectId);
-        if ($project && $includeLinkedData) {
-            $project->loadProjectImages();
-        }
-
-        return $project;
     }
 
     /**
