@@ -79,7 +79,7 @@ class Query {
         if ($where) {
             if (is_numeric($where)) {
                 $params = static::initArray($params);
-                $params["id"] = $where;
+                $params["id"] = (int)$where;
                 $where = "id = :id";
             }
 

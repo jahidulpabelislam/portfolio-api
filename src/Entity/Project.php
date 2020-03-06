@@ -123,7 +123,7 @@ class Project extends Entity {
             }
 
             if (is_numeric($where)) {
-                $params["id"] = $where;
+                $params["id"] = (int)$where;
                 $where = ["id = :id"];
                 $limit = 1;
             }
