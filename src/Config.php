@@ -22,7 +22,7 @@ class Config {
 
     public $debug = false;
 
-    public function __construct() {
+    private function __construct() {
         $environment = getenv("APPLICATION_ENV") ?? "production";
 
         // Only want debugging on development site

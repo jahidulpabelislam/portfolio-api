@@ -21,7 +21,7 @@ class Responder {
 
     private static $instance;
 
-    public function __construct() {
+    private function __construct() {
         $this->api = Core::get();
     }
 
