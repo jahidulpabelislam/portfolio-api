@@ -14,13 +14,12 @@ if (!defined("ROOT")) {
     die();
 }
 
-use App\Core as API;
-use App\Responder;
+use App\Controller;
 use App\Entity\User;
 use App\Entity\Project;
 use App\Entity\ProjectImage;
 
-class Projects {
+class Projects extends Controller {
 
     private static function getProjectEntity($projectId, bool $includeLinkedData = false): ?Project {
         $project = Project::getById($projectId);
@@ -36,8 +35,8 @@ class Projects {
      *
      * @return array The request response to send back
      */
-    public static function getProjects(): array {
-        $data = API::get()->data;
+    public function getProjects(): array {
+        $data = $this->api->data;
 
         $limit = $data["limit"] ?? null;
         $page = $data["page"] ?? null;
@@ -51,7 +50,7 @@ class Projects {
             $project->loadProjectImages();
         });
 
-        return Responder::get()->getItemsSearchResponse(Project::class, $projects, $data);
+        return $this->getItemsSearchResponse(Project::class, $projects, $data);
     }
 
     /**
@@ -60,17 +59,17 @@ class Projects {
      * @param $projectId int|null The Id of the Project to update (Only if a update request)
      * @return array The request response to send back
      */
-    private static function saveProject($projectId = null): array {
+    private function saveProject($projectId = null): array {
         if (User::isLoggedIn()) {
 
             $isNew = $projectId === null;
 
             // Only validate on creation
-            if ($isNew && !API::get()->hasRequiredFields(Project::class)) {
-                return Responder::get()->getInvalidFieldsResponse(Project::class);
+            if ($isNew && !$this->api->hasRequiredFields(Project::class)) {
+                return $this->getInvalidFieldsResponse(Project::class);
             }
 
-            $data = API::get()->data;
+            $data = $this->api->data;
 
             // Transform the incoming data into the necessary data for the database
             if (isset($data["date"])) {
@@ -95,7 +94,7 @@ class Projects {
 
             if ($isNew) {
                 $project = Project::insert($data);
-                $response = Responder::getInsertResponse(Project::class, $project);
+                $response = self::getInsertResponse(Project::class, $project);
             }
             else {
                 $project = self::getProjectEntity($projectId);
@@ -105,11 +104,11 @@ class Projects {
                     $project->loadProjectImages();
                 }
 
-                $response = Responder::getUpdateResponse(Project::class, $project, $projectId);
+                $response = self::getUpdateResponse(Project::class, $project, $projectId);
             }
         }
         else {
-            $response = Responder::getNotAuthorisedResponse();
+            $response = self::getNotAuthorisedResponse();
         }
 
         return $response;
@@ -120,8 +119,8 @@ class Projects {
      *
      * @return array The request response to send back
      */
-    public static function addProject(): array {
-        $response = self::saveProject();
+    public function addProject(): array {
+        $response = $this->saveProject();
 
         // If successful, as this is a new Project creation override the meta
         if (!empty($response["row"])) {
@@ -138,8 +137,8 @@ class Projects {
      * @param $projectId int The Id of the Project to update
      * @return array The request response to send back
      */
-    public static function updateProject($projectId): array {
-        return self::saveProject($projectId);
+    public function updateProject($projectId): array {
+        return $this->saveProject($projectId);
     }
 
     /**
@@ -157,10 +156,10 @@ class Projects {
                 $isDeleted = $project->delete();
             }
 
-            $response = Responder::getItemDeletedResponse(Project::class, $project, $projectId, $isDeleted);
+            $response = self::getItemDeletedResponse(Project::class, $project, $projectId, $isDeleted);
         }
         else {
-            $response = Responder::getNotAuthorisedResponse();
+            $response = self::getNotAuthorisedResponse();
         }
 
         return $response;
@@ -176,7 +175,7 @@ class Projects {
     public static function getProject($projectId, bool $includeLinkedData = true): array {
         $project = self::getProjectEntity($projectId, $includeLinkedData);
 
-        return Responder::getItemResponse(Project::class, $project, $projectId);
+        return self::getItemResponse(Project::class, $project, $projectId);
     }
 
     /**
@@ -189,10 +188,10 @@ class Projects {
         // Check the Project trying to get Images for exists
         $project = self::getProjectEntity($projectId, true);
         if ($project) {
-            return Responder::getItemsResponse(ProjectImage::class, $project->images);
+            return self::getItemsResponse(ProjectImage::class, $project->images);
         }
 
-        return Responder::getItemNotFoundResponse(Project::class, $projectId);
+        return self::getItemNotFoundResponse(Project::class, $projectId);
     }
 
     /**
@@ -241,7 +240,7 @@ class Projects {
                 ];
                 $projectImage = ProjectImage::insert($imageData);
 
-                $response = Responder::getInsertResponse(ProjectImage::class, $projectImage);
+                $response = self::getInsertResponse(ProjectImage::class, $projectImage);
             }
             else {
                 // Else there was a problem uploading file to server
@@ -266,9 +265,9 @@ class Projects {
      * @param $projectId int The Project Id to add this Image for
      * @return array The request response to send back
      */
-    public static function addProjectImage($projectId): array {
+    public function addProjectImage($projectId): array {
         if (User::isLoggedIn()) {
-            $files = API::get()->files;
+            $files = $this->api->files;
             if (isset($files["image"])) {
 
                 // Check the Project trying to add a Image for exists
@@ -277,16 +276,16 @@ class Projects {
                     $response = self::uploadProjectImage($project, $files["image"]);
                 }
                 else {
-                    $response = Responder::getItemNotFoundResponse(Project::class, $projectId);
+                    $response = self::getItemNotFoundResponse(Project::class, $projectId);
                 }
             }
             else {
                 $requiredFields = ["image"];
-                $response = Responder::get()->getInvalidFieldsResponse(User::class, $requiredFields);
+                $response = $this->getInvalidFieldsResponse(User::class, $requiredFields);
             }
         }
         else {
-            $response = Responder::getNotAuthorisedResponse();
+            $response = self::getNotAuthorisedResponse();
         }
 
         return $response;
@@ -305,7 +304,7 @@ class Projects {
         if ($project) {
             $projectImage = ProjectImage::getById($imageId);
 
-            $response = Responder::getItemResponse(ProjectImage::class, $projectImage, $imageId);
+            $response = self::getItemResponse(ProjectImage::class, $projectImage, $imageId);
 
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
@@ -317,7 +316,7 @@ class Projects {
             return $response;
         }
 
-        return Responder::getItemResponse(Project::class, $project, $projectId);
+        return self::getItemResponse(Project::class, $project, $projectId);
     }
 
     /**
@@ -340,14 +339,14 @@ class Projects {
                     $isDeleted = $projectImage->delete();
                 }
 
-                $response = Responder::getItemDeletedResponse(ProjectImage::class, $projectImage, $imageId, $isDeleted);
+                $response = self::getItemDeletedResponse(ProjectImage::class, $projectImage, $imageId, $isDeleted);
             }
             else {
-                $response = Responder::getItemNotFoundResponse(Project::class, $projectId);
+                $response = self::getItemNotFoundResponse(Project::class, $projectId);
             }
         }
         else {
-            $response = Responder::getNotAuthorisedResponse();
+            $response = self::getNotAuthorisedResponse();
         }
 
         return $response;

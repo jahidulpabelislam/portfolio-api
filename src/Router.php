@@ -20,10 +20,12 @@ use App\Controller\Projects;
 
 class Router {
 
+    use Responder;
+
     private $api;
 
-    public function __construct() {
-        $this->api = Core::get();
+    public function __construct(Core $api) {
+        $this->api = $api;
     }
 
     /**
@@ -37,7 +39,7 @@ class Router {
 
         $shouldBeVersion = "v" . Config::get()->api_version;
         if ($version !== $shouldBeVersion) {
-            $response = Responder::get()->getUnrecognisedAPIVersionResponse();
+            $response = $this->getUnrecognisedAPIVersionResponse();
         }
 
         return $response ?? null;
@@ -51,7 +53,7 @@ class Router {
 
         if ($method === "POST") {
             if ($authAction === "login" && !isset($uri[3])) {
-                $response = Auth::login();
+                $response = (new Auth($this->api))->login();
             }
         }
         else if ($method === "DELETE") {
@@ -65,7 +67,7 @@ class Router {
             }
         }
         else {
-            $response = Responder::get()->getMethodNotAllowedResponse();
+            $response = $this->getMethodNotAllowedResponse();
         }
 
         return $response ?? null;
@@ -88,7 +90,7 @@ class Router {
             }
         }
         else if (!isset($uri[2])) {
-            $response = Projects::getProjects();
+            $response = (new Projects($this->api))->getProjects();
         }
 
         return $response ?? null;
@@ -100,10 +102,10 @@ class Router {
             && isset($uri[3]) && $uri[3] === "images"
             && !isset($uri[4])
         ) {
-            $response = Projects::addProjectImage($uri[2]);
+            $response = (new Projects($this->api))->addProjectImage($uri[2]);
         }
         else if (!isset($uri[2])) {
-            $response = Projects::addProject();
+            $response = (new Projects($this->api))->addProject();
         }
 
         return $response ?? null;
@@ -111,7 +113,7 @@ class Router {
 
     private function executeProjectsPutAction(array $uri): ?array {
         if (isset($uri[2]) && $uri[2] !== "" && !isset($uri[3])) {
-            $response = Projects::updateProject($uri[2]);
+            $response = (new Projects($this->api))->updateProject($uri[2]);
         }
 
         return $response ?? null;
@@ -144,7 +146,7 @@ class Router {
             return $this->{$functionName}($uri);
         }
 
-        return Responder::get()->getMethodNotAllowedResponse();
+        return $this->getMethodNotAllowedResponse();
     }
 
     /**
@@ -183,10 +185,10 @@ class Router {
 
             // If at this point response is empty, we didn't recognise the action
             if ($response === null) {
-                $response = Responder::get()->getUnrecognisedURIResponse();
+                $response = $this->getUnrecognisedURIResponse();
             }
         }
 
-        $this->api->sendResponse($response);
+        return $response;
     }
 }

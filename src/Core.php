@@ -21,6 +21,8 @@ use DateTimeZone;
 
 class Core {
 
+    use Responder;
+
     private const CACHE_TIMEZONE = "Europe/London";
 
     private $response = [];
@@ -30,23 +32,6 @@ class Core {
     public $uriString = "";
     public $data = [];
     public $files = [];
-
-    private static $instance;
-
-    private function __construct() {
-        $this->extractFromRequest();
-    }
-
-    /**
-     * Singleton getter
-     */
-    public static function get(): Core {
-        if (!self::$instance) {
-            self::$instance = new Core();
-        }
-
-        return self::$instance;
-    }
 
     public static function removeLeadingSlash(string $url): string {
         if ($url[0] === "/") {
@@ -318,5 +303,14 @@ class Core {
         $encodeParams = $isSendingJson ? 0 : JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
         echo json_encode($this->response, $encodeParams);
         die();
+    }
+
+    public function handleRequest() {
+        $this->extractFromRequest();
+
+        $router = new Router($this);
+        $response = $router->performRequest();
+
+        $this->sendResponse($response);
     }
 }

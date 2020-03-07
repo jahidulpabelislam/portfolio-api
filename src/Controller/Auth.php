@@ -11,15 +11,14 @@
 
 namespace App\Controller;
 
-use App\Core as API;
-use App\Responder;
+use App\Controller;
 use App\Entity\User;
 
 if (!defined("ROOT")) {
     die();
 }
 
-class Auth {
+class Auth extends Controller {
 
     /**
      * Call to authenticate a user
@@ -29,10 +28,10 @@ class Auth {
      *
      * @return array The request response to send back
      */
-    public static function login(): array {
-        if (API::get()->hasRequiredFields(User::class)) {
+    public function login(): array {
+        if ($this->api->hasRequiredFields(User::class)) {
 
-            $jwt = User::login(API::get()->data);
+            $jwt = User::login($this->api->data);
             if ($jwt) {
                 return [
                     "meta" => [
@@ -51,7 +50,7 @@ class Auth {
             ];
         }
 
-        return Responder::get()->getInvalidFieldsResponse(User::class);
+        return $this->getInvalidFieldsResponse(User::class);
     }
 
     /**
@@ -61,10 +60,10 @@ class Auth {
      */
     public static function logout(): array {
         if (User::logout()) {
-            return Responder::getLoggedOutResponse();
+            return self::getLoggedOutResponse();
         }
 
-        return Responder::getUnsuccessfulLogOutResponse();
+        return self::getUnsuccessfulLogOutResponse();
     }
 
     /**
@@ -82,6 +81,6 @@ class Auth {
             ];
         }
 
-        return Responder::getNotAuthorisedResponse();
+        return self::getNotAuthorisedResponse();
     }
 }

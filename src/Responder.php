@@ -15,26 +15,7 @@ if (!defined("ROOT")) {
     die();
 }
 
-class Responder {
-
-    private $api;
-
-    private static $instance;
-
-    private function __construct() {
-        $this->api = Core::get();
-    }
-
-    /**
-     * Singleton getter
-     */
-    public static function get(): Responder {
-        if (!self::$instance) {
-            self::$instance = new Responder();
-        }
-
-        return self::$instance;
-    }
+trait Responder {
 
     /**
      * Generate meta data to send back when the method provided is not allowed on the URI

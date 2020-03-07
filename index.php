@@ -10,7 +10,7 @@
 
 require_once(__DIR__ . "/bootstrap.php");
 
-use App\Router;
+use App\Core;
 
-$router = new Router();
-$router->performRequest();
+$api = new Core();
+$api->handleRequest();
