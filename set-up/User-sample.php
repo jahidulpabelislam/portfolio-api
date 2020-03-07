@@ -16,7 +16,6 @@ if (!defined("ROOT")) {
 }
 
 use App\Config;
-use App\Core as API;
 use App\Entity;
 use Exception;
 use Firebase\JWT\JWT;
@@ -30,13 +29,10 @@ class User extends Entity {
      * Authenticate a user trying to login
      * If successful store generate JWT and return, else return null
      *
+     * @param $data array Submitted data to support in login attempt
      * @return string|null
      */
-    public static function login(): ?string {
-        $api = API::get();
-
-        $data = $api->data;
-
+    public static function login(array $data): ?string {
         // TODO: Actually do the logging in here (e.g store in cookie, session or database etc.)
 
         // SAMPLE!!

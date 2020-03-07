@@ -32,7 +32,7 @@ class Auth {
     public static function login(): array {
         if (API::get()->hasRequiredFields(User::class)) {
 
-            $jwt = User::login();
+            $jwt = User::login(API::get()->data);
             if ($jwt) {
                 return [
                     "meta" => [
