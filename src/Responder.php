@@ -79,7 +79,7 @@ trait Responder {
     public function getUnrecognisedAPIVersionResponse(): array {
         $shouldBeVersion = Config::get()->api_version;
 
-        $shouldBeURI = $this->api->uriArray;
+        $shouldBeURI = $this->api->uriParts;
         $shouldBeURI[0] = "v" . $shouldBeVersion;
         $shouldBeURL = $this->api->getAPIURL($shouldBeURI);
 

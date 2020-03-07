@@ -28,8 +28,8 @@ class Core {
     private $response = [];
 
     public $method = "GET";
-    public $uriArray = [];
-    public $uriString = "";
+    public $uri = "";
+    public $uriParts = [];
     public $data = [];
     public $files = [];
 
@@ -63,13 +63,13 @@ class Core {
     }
 
     private function extractURIFromRequest() {
-        $uriString = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
-        $this->uriString = $uriString;
+        $uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+        $this->uri = $uri;
 
         // Get the individual parts of the request URI as an array
-        $uriString = self::removeSlashes($uriString);
-        $uriArray = explode("/", $uriString);
-        $this->uriArray = $uriArray;
+        $uri = self::removeSlashes($uri);
+        $uriParts = explode("/", $uri);
+        $this->uriParts = $uriParts;
     }
 
     private function sanitizeData($value) {
@@ -111,11 +111,11 @@ class Core {
     /**
      * Generates a full URL from the URI user requested
      *
-     * @param $uriArray array The URI user request as an array
+     * @param $uriParts array The URI user request as an array
      * @return string The full URI user requested
      */
-    public function getAPIURL(array $uriArray = null): string {
-        $uri = $uriArray ? implode("/", $uriArray) : $this->uriString;
+    public function getAPIURL(array $uriParts = null): string {
+        $uri = $uriParts ? implode("/", $uriParts) : $this->uri;
 
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
         $domain = self::removeTrailingSlash($_SERVER["SERVER_NAME"]);
@@ -251,7 +251,7 @@ class Core {
         ];
 
         // Set cache for 31 days for some GET Requests
-        if ($this->method === "GET" && !in_array($this->uriString, $notCachedURLs)) {
+        if ($this->method === "GET" && !in_array($this->uri, $notCachedURLs)) {
             $secondsToCache = 2678400; // 31 days
 
             self::setHeader("Cache-Control", "max-age={$secondsToCache}, public");
@@ -280,7 +280,7 @@ class Core {
                 "ok" => false,
                 "status" => ($isSuccessful ? 200 : 500),
                 "message" => ($isSuccessful ? "OK" : "Internal Server Error"),
-                "uri" => $this->uriString,
+                "uri" => $this->uri,
                 "method" => $this->method,
                 "data" => $this->data,
                 "files" => $this->files,
