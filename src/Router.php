@@ -173,8 +173,6 @@ class Router {
      * Try and perform the necessary actions needed to fulfil the request that a user made
      */
     public function performRequest() {
-        $this->api->extractFromRequest();
-
         // Here check the requested API version, if okay return empty array
         // else returns appropriate response
         $response = $this->checkAPIVersion();

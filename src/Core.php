@@ -34,7 +34,7 @@ class Core {
     private static $instance;
 
     private function __construct() {
-
+        $this->extractFromRequest();
     }
 
     /**
