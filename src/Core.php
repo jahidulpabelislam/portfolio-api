@@ -173,7 +173,7 @@ class Core {
      * @return array An array of invalid data fields
      */
     public function getInvalidFields(array $requiredFields): array {
-        $invalidFields = array_filter($requiredFields, static function(string $field) {
+        $invalidFields = array_filter($requiredFields, function(string $field) {
             return !$this->isFieldValid($field);
         });
 
