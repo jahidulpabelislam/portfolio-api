@@ -33,9 +33,7 @@ class Router {
      * else return appropriate response (array)
      */
     private function checkAPIVersion(): ?array {
-        $uriParts = $this->api->uriParts;
-
-        $version = $uriParts[0] ?? "";
+        $version = $this->api->uriParts[0] ?? "";
 
         $shouldBeVersion = "v" . Config::get()->api_version;
         if ($version !== $shouldBeVersion) {
@@ -48,7 +46,10 @@ class Router {
     /**
      * @return array An appropriate response to auth request
      */
-    private function executeAuthAction(array $uriParts, string $method): ?array {
+    private function executeAuthAction(): ?array {
+        $uriParts = $this->api->uriParts;
+        $method = $this->api->method;
+
         $authAction = $uriParts[2] ?? "";
 
         if ($method === "POST") {
@@ -73,7 +74,9 @@ class Router {
         return $response ?? null;
     }
 
-    private function executeProjectsGetAction(array $uriParts): ?array {
+    private function executeProjectsGetAction(): ?array {
+        $uriParts = $this->api->uriParts;
+
         if (isset($uriParts[2]) && $uriParts[2] !== "") {
             $projectId = $uriParts[2];
 
@@ -96,7 +99,9 @@ class Router {
         return $response ?? null;
     }
 
-    private function executeProjectsPostAction(array $uriParts): ?array {
+    private function executeProjectsPostAction(): ?array {
+        $uriParts = $this->api->uriParts;
+
         if (
             isset($uriParts[2]) && $uriParts[2] !== ""
             && isset($uriParts[3]) && $uriParts[3] === "images"
@@ -111,7 +116,9 @@ class Router {
         return $response ?? null;
     }
 
-    private function executeProjectsPutAction(array $uriParts): ?array {
+    private function executeProjectsPutAction(): ?array {
+        $uriParts = $this->api->uriParts;
+
         if (isset($uriParts[2]) && $uriParts[2] !== "" && !isset($uriParts[3])) {
             $response = (new Projects($this->api))->updateProject($uriParts[2]);
         }
@@ -119,7 +126,9 @@ class Router {
         return $response ?? null;
     }
 
-    private function executeProjectsDeleteAction(array $uriParts): ?array {
+    private function executeProjectsDeleteAction(): ?array {
+        $uriParts = $this->api->uriParts;
+
         if (isset($uriParts[2]) && $uriParts[2] !== "") {
             if (
                 isset($uriParts[3]) && $uriParts[3] === "images"
@@ -139,11 +148,11 @@ class Router {
     /**
      * @return array An appropriate response to projects request
      */
-    private function executeProjectsAction(array $uriParts, string $method): ?array {
-        $methodFormatted = ucfirst(strtolower($method));
+    private function executeProjectsAction(): ?array {
+        $methodFormatted = ucfirst(strtolower($this->api->method));
         $functionName = "executeProjects{$methodFormatted}Action";
         if (method_exists($this, $functionName)) {
-            return $this->{$functionName}($uriParts);
+            return $this->{$functionName}();
         }
 
         return $this->getMethodNotAllowedResponse();
@@ -155,16 +164,14 @@ class Router {
      * @return array An appropriate response to request
      */
     private function executeAction(): ?array {
-        $uriParts = $this->api->uriParts;
-
-        $entityName = $uriParts[1] ?? null;
+       $entityName = $this->api->uriParts[1] ?? null;
 
         // Make sure value is the correct case
         if ($entityName && strtolower($entityName) === $entityName) {
             $entityNameFormatted = ucfirst($entityName);
             $functionName = "execute{$entityNameFormatted}Action";
             if (method_exists($this, $functionName)) {
-                return $this->{$functionName}($uriParts, $this->api->method);
+                return $this->{$functionName}();
             }
         }
 
