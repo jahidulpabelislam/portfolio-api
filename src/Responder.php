@@ -17,6 +17,12 @@ if (!defined("ROOT")) {
 
 trait Responder {
 
+    protected $api = null;
+
+    public function __construct(Core $api) {
+        $this->api = $api;
+    }
+
     /**
      * Generate meta data to send back when the method provided is not allowed on the URI
      */

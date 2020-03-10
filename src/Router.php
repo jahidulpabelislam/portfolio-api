@@ -22,12 +22,6 @@ class Router {
 
     use Responder;
 
-    private $api;
-
-    public function __construct(Core $api) {
-        $this->api = $api;
-    }
-
     /**
      * Check that the requested API version is valid, if so return empty array
      * else return appropriate response (array)
