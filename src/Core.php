@@ -68,19 +68,15 @@ class Core {
     }
 
     private function extractMethodFromRequest() {
-        $method = $_SERVER["REQUEST_METHOD"];
-
-        $this->method = strtoupper($method);
+        $this->method = strtoupper($_SERVER["REQUEST_METHOD"]);
     }
 
     private function extractURIFromRequest() {
-        $uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
-        $this->uri = $uri;
+        $this->uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 
         // Get the individual parts of the request URI as an array
-        $uri = self::removeSlashes($uri);
-        $uriParts = explode("/", $uri);
-        $this->uriParts = $uriParts;
+        $uri = self::removeSlashes($this->uri);
+        $this->uriParts = explode("/", $uri);
     }
 
     private static function sanitizeData($value) {
@@ -99,9 +95,9 @@ class Core {
     }
 
     private function extractDataFromRequest() {
-        $this->data = $this->sanitizeData($_POST);
-        $this->params = $this->sanitizeData($_GET);
-        $this->request = $this->sanitizeData($_REQUEST);
+        $this->data = self::sanitizeData($_POST);
+        $this->params = self::sanitizeData($_GET);
+        $this->request = self::sanitizeData($_REQUEST);
     }
 
     private function extractFilesFromRequest() {
@@ -157,6 +153,7 @@ class Core {
      * And data provided is not empty
      *
      * @param $entityClass string the Entity class
+     * @param $data array Array of required data keys
      * @return bool Whether data required is provided & is valid or not
      */
     public static function hasRequiredFields(string $entityClass, array $data): bool {
@@ -175,15 +172,14 @@ class Core {
     /**
      * Get all invalid required data fields
      *
+     * @param $data array Data/values to check fields against
      * @param $requiredFields array Array of required data keys
      * @return array An array of invalid data fields
      */
     public static function getInvalidFields(array $data, array $requiredFields): array {
-        $invalidFields = array_filter($requiredFields, function(string $field) use ($data) {
+        return array_filter($requiredFields, static function(string $field) use ($data) {
             return !self::isFieldValid($data, $field);
         });
-
-        return $invalidFields;
     }
 
     private static function setHeader(string $header, string $value) {
