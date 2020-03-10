@@ -36,11 +36,11 @@ class Projects extends Controller {
      * @return array The request response to send back
      */
     public function getProjects(): array {
-        $data = $this->api->data;
+        $params = $this->api->params;
 
-        $limit = $data["limit"] ?? null;
-        $page = $data["page"] ?? null;
-        $projects = Project::getByParams($data, $limit, $page);
+        $limit = $params["limit"] ?? null;
+        $page = $params["page"] ?? null;
+        $projects = Project::getByParams($params, $limit, $page);
 
         if (!is_array($projects)) {
             $projects = [$projects];
@@ -50,7 +50,7 @@ class Projects extends Controller {
             $project->loadProjectImages();
         });
 
-        return $this->getItemsSearchResponse(Project::class, $projects, $data);
+        return $this->getItemsSearchResponse(Project::class, $projects, $params);
     }
 
     /**
@@ -59,17 +59,15 @@ class Projects extends Controller {
      * @param $projectId int|null The Id of the Project to update (Only if a update request)
      * @return array The request response to send back
      */
-    private function saveProject($projectId = null): array {
+    private function saveProject(array $data, $projectId = null): array {
         if (User::isLoggedIn()) {
 
             $isNew = $projectId === null;
 
             // Only validate on creation
-            if ($isNew && !$this->api->hasRequiredFields(Project::class)) {
-                return $this->getInvalidFieldsResponse(Project::class);
+            if ($isNew && !$this->api->hasRequiredFields(Project::class, $data)) {
+                return $this->getInvalidFieldsResponse(Project::class, $data);
             }
-
-            $data = $this->api->data;
 
             // Transform the incoming data into the necessary data for the database
             if (isset($data["date"])) {
@@ -120,7 +118,7 @@ class Projects extends Controller {
      * @return array The request response to send back
      */
     public function addProject(): array {
-        $response = $this->saveProject();
+        $response = $this->saveProject($this->api->data);
 
         // If successful, as this is a new Project creation override the meta
         if (!empty($response["row"])) {
@@ -138,7 +136,7 @@ class Projects extends Controller {
      * @return array The request response to send back
      */
     public function updateProject($projectId): array {
-        return $this->saveProject($projectId);
+        return $this->saveProject($this->api->params, $projectId);
     }
 
     /**
@@ -281,7 +279,7 @@ class Projects extends Controller {
             }
             else {
                 $requiredFields = ["image"];
-                $response = $this->getInvalidFieldsResponse(User::class, $requiredFields);
+                $response = $this->getInvalidFieldsResponse(User::class, [], $requiredFields);
             }
         }
         else {

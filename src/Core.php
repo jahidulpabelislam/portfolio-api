@@ -28,9 +28,14 @@ class Core {
     private $response = [];
 
     public $method = "GET";
+
     public $uri = "";
     public $uriParts = [];
+
     public $data = [];
+    public $params = [];
+    public $request = [];
+
     public $files = [];
 
     public static function removeLeadingSlash(string $url): string {
@@ -88,7 +93,9 @@ class Core {
     }
 
     private function extractDataFromRequest() {
-        $this->data = $this->sanitizeData($_REQUEST);
+        $this->data = $this->sanitizeData($_POST);
+        $this->params = $this->sanitizeData($_GET);
+        $this->request = $this->sanitizeData($_REQUEST);
     }
 
     private function extractFilesFromRequest() {
@@ -127,9 +134,7 @@ class Core {
         return $fullURL;
     }
 
-    private function isFieldValid(string $field): bool {
-        $data = $this->data;
-
+    private function isFieldValid(array $data, string $field): bool {
         if (!isset($data[$field])) {
             return false;
         }
@@ -153,11 +158,11 @@ class Core {
      * @param $entityClass string the Entity class
      * @return bool Whether data required is provided & is valid or not
      */
-    public function hasRequiredFields(string $entityClass): bool {
+    public function hasRequiredFields(string $entityClass, array $data): bool {
 
         // Loops through each required field, and bails early with false if at least one is invalid
         foreach ($entityClass::getRequiredFields() as $field) {
-            if (!$this->isFieldValid($field)) {
+            if (!$this->isFieldValid($data, $field)) {
                 return false;
             }
         }
@@ -172,9 +177,9 @@ class Core {
      * @param $requiredFields array Array of required data keys
      * @return array An array of invalid data fields
      */
-    public function getInvalidFields(array $requiredFields): array {
-        $invalidFields = array_filter($requiredFields, function(string $field) {
-            return !$this->isFieldValid($field);
+    public function getInvalidFields(array $data, array $requiredFields): array {
+        $invalidFields = array_filter($requiredFields, function(string $field) use ($data) {
+            return !$this->isFieldValid($data, $field);
         });
 
         return $invalidFields;
@@ -280,8 +285,9 @@ class Core {
                 "ok" => false,
                 "status" => ($isSuccessful ? 200 : 500),
                 "message" => ($isSuccessful ? "OK" : "Internal Server Error"),
-                "uri" => $this->uri,
                 "method" => $this->method,
+                "uri" => $this->uri,
+                "params" => $this->params,
                 "data" => $this->data,
                 "files" => $this->files,
             ],

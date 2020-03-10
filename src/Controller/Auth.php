@@ -29,9 +29,10 @@ class Auth extends Controller {
      * @return array The request response to send back
      */
     public function login(): array {
-        if ($this->api->hasRequiredFields(User::class)) {
+        $data = $this->api->data;
+        if ($this->api->hasRequiredFields(User::class, $data)) {
 
-            $jwt = User::login($this->api->data);
+            $jwt = User::login($data);
             if ($jwt) {
                 return [
                     "meta" => [
@@ -50,7 +51,7 @@ class Auth extends Controller {
             ];
         }
 
-        return $this->getInvalidFieldsResponse(User::class);
+        return $this->getInvalidFieldsResponse(User::class, $data);
     }
 
     /**

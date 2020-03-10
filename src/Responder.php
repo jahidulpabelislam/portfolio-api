@@ -95,10 +95,10 @@ trait Responder {
     /**
      * Send necessary meta data back when required data/fields is not provided/valid
      */
-    public function getInvalidFieldsResponse(string $entityClass, array $extraRequiredFields = []): array {
+    public function getInvalidFieldsResponse(string $entityClass, array $data, array $extraRequiredFields = []): array {
         $requiredFields = $entityClass::getRequiredFields();
         $requiredFields = array_merge($requiredFields, $extraRequiredFields);
-        $invalidFields = $this->api->getInvalidFields($requiredFields);
+        $invalidFields = $this->api->getInvalidFields($data, $requiredFields);
 
         return [
             "meta" => [
