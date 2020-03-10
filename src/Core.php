@@ -61,6 +61,12 @@ class Core {
         return $url;
     }
 
+    public static function addTrailingSlash(string $url): string {
+        $url = self::removeTrailingSlash($url);
+
+        return "{$url}/";
+    }
+
     private function extractMethodFromRequest() {
         $method = $_SERVER["REQUEST_METHOD"];
 
@@ -107,12 +113,6 @@ class Core {
         $this->extractURIFromRequest();
         $this->extractDataFromRequest();
         $this->extractFilesFromRequest();
-    }
-
-    public static function addTrailingSlash(string $url): string {
-        $url = self::removeTrailingSlash($url);
-
-        return "{$url}/";
     }
 
     /**
