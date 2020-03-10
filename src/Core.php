@@ -77,11 +77,11 @@ class Core {
         $this->uriParts = $uriParts;
     }
 
-    private function sanitizeData($value) {
+    private static function sanitizeData($value) {
         if (is_array($value)) {
             $newArrayValues = [];
             foreach ($value as $subKey => $subValue) {
-                $newArrayValues[$subKey] = $this->sanitizeData($subValue);
+                $newArrayValues[$subKey] = self::sanitizeData($subValue);
             }
             $value = $newArrayValues;
         }
@@ -134,7 +134,7 @@ class Core {
         return $fullURL;
     }
 
-    private function isFieldValid(array $data, string $field): bool {
+    private static function isFieldValid(array $data, string $field): bool {
         if (!isset($data[$field])) {
             return false;
         }
@@ -144,7 +144,8 @@ class Core {
         if (is_array($value)) {
             return (count($value) > 0);
         }
-        else if (is_string($value)) {
+
+        if (is_string($value)) {
             return ($value !== "");
         }
 
@@ -158,11 +159,11 @@ class Core {
      * @param $entityClass string the Entity class
      * @return bool Whether data required is provided & is valid or not
      */
-    public function hasRequiredFields(string $entityClass, array $data): bool {
+    public static function hasRequiredFields(string $entityClass, array $data): bool {
 
         // Loops through each required field, and bails early with false if at least one is invalid
         foreach ($entityClass::getRequiredFields() as $field) {
-            if (!$this->isFieldValid($data, $field)) {
+            if (!self::isFieldValid($data, $field)) {
                 return false;
             }
         }
@@ -177,9 +178,9 @@ class Core {
      * @param $requiredFields array Array of required data keys
      * @return array An array of invalid data fields
      */
-    public function getInvalidFields(array $data, array $requiredFields): array {
+    public static function getInvalidFields(array $data, array $requiredFields): array {
         $invalidFields = array_filter($requiredFields, function(string $field) use ($data) {
-            return !$this->isFieldValid($data, $field);
+            return !self::isFieldValid($data, $field);
         });
 
         return $invalidFields;
