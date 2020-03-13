@@ -21,8 +21,6 @@ use DateTimeZone;
 
 class Core {
 
-    use Responder;
-
     private const CACHE_TIMEZONE = "Europe/London";
 
     private $response = [];
