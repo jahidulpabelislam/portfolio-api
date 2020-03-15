@@ -299,7 +299,8 @@ class Core {
         self::setHeader("Content-Type", "application/json");
 
         // Check if requested to send json
-        $isSendingJson = $_SERVER["HTTP_ACCEPT"] === "application/json";
+        $accepts = explode(", ", $_SERVER["HTTP_ACCEPT"]);
+        $isSendingJson = in_array("application/json", $accepts);
 
         $encodeParams = $isSendingJson ? 0 : JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
         echo json_encode($this->response, $encodeParams);
