@@ -22,6 +22,7 @@ use DateTimeZone;
 class Core {
 
     private const CACHE_TIMEZONE = "Europe/London";
+    private static $cacheTimeZone = null;
 
     private $response = [];
 
@@ -205,6 +206,14 @@ class Core {
         }
     }
 
+    private static function getCacheTimeZone(): DateTimeZone {
+        if (static::$cacheTimeZone === null) {
+            static::$cacheTimeZone = new DateTimeZone(self::CACHE_TIMEZONE);
+        }
+
+        return static::$cacheTimeZone;
+    }
+
     private function setLastModifiedHeaders() {
         $response = $this->response;
 
@@ -212,7 +221,7 @@ class Core {
             return;
         }
 
-        $gmtTimeZone = new DateTimeZone(self::CACHE_TIMEZONE);
+        $gmtTimeZone = static::getCacheTimeZone();
         $rowDateFormat = "Y-m-d H:i:s e";
 
         $latestDate = null;
@@ -257,7 +266,7 @@ class Core {
 
             self::setHeader("Cache-Control", "max-age={$secondsToCache}, public");
 
-            $gmtTimeZone = new DateTimeZone(self::CACHE_TIMEZONE);
+            $gmtTimeZone = static::getCacheTimeZone();
             $nowDate = new DateTime("+{$secondsToCache} seconds");
             $nowDate = $nowDate->setTimezone($gmtTimeZone);
             $expiresTime = $nowDate->format("D, d M Y H:i:s");
