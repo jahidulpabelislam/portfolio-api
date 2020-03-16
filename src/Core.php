@@ -223,8 +223,8 @@ class Core {
         }
 
         if (!empty($response["rows"]) && count($response["rows"]) > 1) {
-            foreach ($response["rows"] as $row) {
-                if (empty($row["updated_at"])) {
+            foreach ($response["rows"] as $i => $row) {
+                if (!$i || empty($row["updated_at"])) {
                     continue;
                 }
 
