@@ -23,6 +23,7 @@ class Core {
 
     private const CACHE_TIMEZONE = "Europe/London";
     private static $cacheTimeZone = null;
+    private static $rowDateTimeFormat = "Y-m-d H:i:s e";
 
     private $response = [];
 
@@ -214,6 +215,13 @@ class Core {
         return static::$cacheTimeZone;
     }
 
+    private static function createDateTimeFromRow(array $row): DateTime {
+        $dateTime = DateTime::createFromFormat(static::$rowDateTimeFormat, $row["updated_at"]);
+        $dateTime->setTimezone(static::getCacheTimeZone());
+
+        return $dateTime;
+    }
+
     private function setLastModifiedHeaders() {
         $response = $this->response;
 
@@ -221,14 +229,10 @@ class Core {
             return;
         }
 
-        $gmtTimeZone = static::getCacheTimeZone();
-        $rowDateFormat = "Y-m-d H:i:s e";
-
         $latestDate = null;
         $latestRow = $response["row"] ?? $response["rows"][0] ?? null;
         if ($latestRow && $latestRow["updated_at"]) {
-            $latestDate = DateTime::createFromFormat($rowDateFormat, $latestRow["updated_at"]);
-            $latestDate->setTimezone($gmtTimeZone);
+            $latestDate = self::createDateTimeFromRow($latestRow);
         }
 
         if (!empty($response["rows"]) && count($response["rows"]) > 1) {
@@ -237,8 +241,7 @@ class Core {
                     continue;
                 }
 
-                $updatedAtDate = DateTime::createFromFormat($rowDateFormat, $row["updated_at"]);
-                $updatedAtDate->setTimezone($gmtTimeZone);
+                $updatedAtDate = self::createDateTimeFromRow($latestRow);
 
                 if ($updatedAtDate > $latestDate) {
                     $latestDate = $updatedAtDate;
