@@ -215,30 +215,31 @@ class Core {
         $gmtTimeZone = new DateTimeZone(self::CACHE_TIMEZONE);
         $rowDateFormat = "Y-m-d H:i:s e";
 
+        $latestDate = null;
         $latestRow = $response["row"] ?? $response["rows"][0] ?? null;
+        if ($latestRow && $latestRow["updated_at"]) {
+            $latestDate = DateTime::createFromFormat($rowDateFormat, $latestRow["updated_at"]);
+            $latestDate->setTimezone($gmtTimeZone);
+        }
 
         if (!empty($response["rows"]) && count($response["rows"]) > 1) {
-            $latestDate = 0;
             foreach ($response["rows"] as $row) {
                 if (empty($row["updated_at"])) {
                     continue;
                 }
 
                 $updatedAtDate = DateTime::createFromFormat($rowDateFormat, $row["updated_at"]);
-                $updatedAtDate = $updatedAtDate->setTimezone($gmtTimeZone);
-                $updatedAt = $updatedAtDate->getTimestamp();
+                $updatedAtDate->setTimezone($gmtTimeZone);
 
-                if ($updatedAt > $latestDate) {
-                    $latestDate = $updatedAt;
+                if ($updatedAtDate > $latestDate) {
+                    $latestDate = $updatedAtDate;
                     $latestRow = $row;
                 }
             }
         }
 
-        if (!empty($latestRow["updated_at"])) {
-            $updatedAt = DateTime::createFromFormat($rowDateFormat, $latestRow["updated_at"]);
-            $updatedAt = $updatedAt->setTimezone($gmtTimeZone);
-            $lastModified = $updatedAt->format("D, j M Y H:i:s");
+        if ($latestDate) {
+            $lastModified = $latestDate->format("D, j M Y H:i:s");
 
             self::setHeader("Last-Modified", $lastModified . " GMT");
             self::setHeader("ETag", md5($latestRow["id"] . $latestRow["updated_at"]));
