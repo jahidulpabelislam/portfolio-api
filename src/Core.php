@@ -328,4 +328,5 @@ class Core {
 
         $this->sendResponse($response);
     }
+
 }

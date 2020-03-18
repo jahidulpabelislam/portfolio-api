@@ -125,4 +125,5 @@ class Connection {
     public function getLastInsertedId(): ?int {
         return $this->pdo->lastInsertId();
     }
+
 }

@@ -11,12 +11,12 @@
 
 namespace App\Controller;
 
-use App\Controller;
-use App\Entity\User;
-
 if (!defined("ROOT")) {
     die();
 }
+
+use App\Controller;
+use App\Entity\User;
 
 class Auth extends Controller {
 
@@ -84,4 +84,5 @@ class Auth extends Controller {
 
         return self::getNotAuthorisedResponse();
     }
+
 }

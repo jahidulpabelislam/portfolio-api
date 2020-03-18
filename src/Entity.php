@@ -297,6 +297,7 @@ abstract class Entity {
 
     /**
      * Load a single Entity from the Database where a Id column = a value ($id).
+     *
      * @return static|null
      */
     public static function getById($id): ?Entity {
@@ -475,4 +476,5 @@ abstract class Entity {
 
         return static::get($resultFromGeneration["where"] ?? null, $resultFromGeneration["params"] ?? null, $limit, $page);
     }
+
 }

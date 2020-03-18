@@ -15,9 +15,9 @@ if (!defined("ROOT")) {
 }
 
 use App\Controller;
-use App\Entity\User;
 use App\Entity\Project;
 use App\Entity\ProjectImage;
+use App\Entity\User;
 
 class Projects extends Controller {
 
@@ -349,4 +349,5 @@ class Projects extends Controller {
 
         return $response;
     }
+
 }

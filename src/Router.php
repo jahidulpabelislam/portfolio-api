@@ -158,7 +158,7 @@ class Router {
      * @return array An appropriate response to request
      */
     private function executeAction(): ?array {
-       $entityName = $this->api->uriParts[1] ?? null;
+        $entityName = $this->api->uriParts[1] ?? null;
 
         // Make sure value is the correct case
         if ($entityName && strtolower($entityName) === $entityName) {
@@ -192,4 +192,5 @@ class Router {
 
         return $response;
     }
+
 }

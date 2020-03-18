@@ -13,12 +13,11 @@
 
 namespace App\Entity;
 
-use App\Core;
-
 if (!defined("ROOT")) {
     die();
 }
 
+use App\Core;
 use App\Entity;
 
 class ProjectImage extends Entity {
@@ -62,4 +61,5 @@ class ProjectImage extends Entity {
 
         return $isDeleted;
     }
+
 }
