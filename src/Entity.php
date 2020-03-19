@@ -33,20 +33,33 @@ abstract class Entity {
     protected static $requiredColumns = [];
 
     protected static $intColumns = [];
-
     protected static $dateTimeColumns = [];
+
+    protected static $searchableColumns = [];
+
     protected static $dateTimeFormat = "Y-m-d H:i:s";
 
     protected static $hasCreatedAt = true;
-
     protected static $hasUpdatedAt = true;
-
-    protected static $searchableColumns = [];
 
     protected static $orderByColumn = "id";
     protected static $orderByASC = true;
 
     protected static $defaultLimit = 10;
+
+    public function __construct() {
+        // Slight hack so id is the first item...
+        $columns = ["id" => null];
+        $this->columns = array_merge($columns, $this->columns);
+
+        if (static::$hasCreatedAt) {
+            $this->setValue("created_at", null);
+        }
+
+        if (static::$hasUpdatedAt) {
+            $this->setValue("updated_at", null);
+        }
+    }
 
     protected static function getDB(): Connection {
         if (!static::$db) {
@@ -64,20 +77,6 @@ abstract class Entity {
 
     public static function getQuery(): Query {
         return new Query(static::getDB(), static::$tableName);
-    }
-
-    public function __construct() {
-        // Slight hack so id is the first item...
-        $columns = ["id" => null];
-        $this->columns = array_merge($columns, $this->columns);
-
-        if (static::$hasCreatedAt) {
-            $this->setValue("created_at", null);
-        }
-
-        if (static::$hasUpdatedAt) {
-            $this->setValue("updated_at", null);
-        }
     }
 
     private static function getIntColumns(): array {
@@ -105,22 +104,6 @@ abstract class Entity {
         return static::$requiredColumns;
     }
 
-    public function __isset(string $name): bool {
-        return isset($this->columns[$name]);
-    }
-
-    public function __get(string $name) {
-        if (array_key_exists($name, $this->columns)) {
-            return $this->columns[$name];
-        }
-
-        return null;
-    }
-
-    private function setId(?int $id) {
-        $this->columns["id"] = $id;
-    }
-
     private function setValue(string $column, $value) {
         if ($column === "id") {
             return;
@@ -133,6 +116,31 @@ abstract class Entity {
         $this->columns[$column] = $value;
     }
 
+    public function setValues(array $values) {
+        $columns = array_keys($this->columns);
+        foreach ($columns as $column) {
+            if (array_key_exists($column, $values)) {
+                $this->setValue($column, $values[$column]);
+            }
+        }
+    }
+
+    private function setId(?int $id) {
+        $this->columns["id"] = $id;
+    }
+
+    public function __isset(string $name): bool {
+        return isset($this->columns[$name]);
+    }
+
+    public function __get(string $name) {
+        if (array_key_exists($name, $this->columns)) {
+            return $this->columns[$name];
+        }
+
+        return null;
+    }
+
     public function __set(string $name, $value) {
         if (array_key_exists($name, $this->columns)) {
             $this->setValue($name, $value);
@@ -141,15 +149,6 @@ abstract class Entity {
 
     public function isLoaded(): bool {
         return !empty($this->id);
-    }
-
-    public function setValues(array $values) {
-        $columns = array_keys($this->columns);
-        foreach ($columns as $column) {
-            if (array_key_exists($column, $values)) {
-                $this->setValue($column, $values[$column]);
-            }
-        }
     }
 
     public function toArray(): array {
@@ -320,82 +319,6 @@ abstract class Entity {
         }
     }
 
-    protected function getValuesToSave(): array {
-        $values = [];
-
-        foreach ($this->columns as $column => $value) {
-            if ($column !== "id") {
-                $values[$column] = $value;
-            }
-        }
-
-        return $values;
-    }
-
-    /**
-     * Save values to the Entity Table in the Database
-     * Will either be a new insert or a update to an existing Entity
-     */
-    public function save(): bool {
-        $isNew = !$this->isLoaded();
-        if ($isNew && static::$hasCreatedAt) {
-            $this->setValue("created_at", date(static::$dateTimeFormat));
-        }
-        if (static::$hasUpdatedAt) {
-            $this->setValue("updated_at", date(static::$dateTimeFormat));
-        }
-
-        $wasSuccessful = false;
-        $query = static::getQuery();
-        $values = $this->getValuesToSave();
-        if ($isNew) {
-            $newId = $query->insert($values);
-            if ($newId) {
-                $this->setId($newId);
-                $wasSuccessful = true;
-            }
-        }
-        else {
-            $rowsAffected = $query->update($values, $this->id);
-            $wasSuccessful = $rowsAffected > 0;
-        }
-
-        // If insert/update was ok, load the new values into entity state
-        if ($wasSuccessful) {
-            $this->refresh();
-            return true;
-        }
-
-        // Saving failed so reset id
-        $this->setId(null);
-        return false;
-    }
-
-    /**
-     * @param $data array|null
-     * @return static
-     */
-    public static function insert(array $data = null): Entity {
-        $entity = static::create($data);
-        $entity->save();
-
-        return $entity;
-    }
-
-    /**
-     * Delete an Entity from the Database
-     *
-     * @return bool Whether or not deletion was successful
-     */
-    public function delete(): bool {
-        if ($this->isLoaded()) {
-            $rowsAffected = static::getQuery()->delete($this->id);
-            return $rowsAffected > 0;
-        }
-
-        return false;
-    }
-
     /**
      * Helper function
      * Used to generate a where clause for a search on a entity along with any params needed
@@ -475,6 +398,82 @@ abstract class Entity {
         $resultFromGeneration = static::generateWhereClausesFromParams($params);
 
         return static::get($resultFromGeneration["where"] ?? null, $resultFromGeneration["params"] ?? null, $limit, $page);
+    }
+
+    protected function getValuesToSave(): array {
+        $values = [];
+
+        foreach ($this->columns as $column => $value) {
+            if ($column !== "id") {
+                $values[$column] = $value;
+            }
+        }
+
+        return $values;
+    }
+
+    /**
+     * Save values to the Entity Table in the Database
+     * Will either be a new insert or a update to an existing Entity
+     */
+    public function save(): bool {
+        $isNew = !$this->isLoaded();
+        if ($isNew && static::$hasCreatedAt) {
+            $this->setValue("created_at", date(static::$dateTimeFormat));
+        }
+        if (static::$hasUpdatedAt) {
+            $this->setValue("updated_at", date(static::$dateTimeFormat));
+        }
+
+        $wasSuccessful = false;
+        $query = static::getQuery();
+        $values = $this->getValuesToSave();
+        if ($isNew) {
+            $newId = $query->insert($values);
+            if ($newId) {
+                $this->setId($newId);
+                $wasSuccessful = true;
+            }
+        }
+        else {
+            $rowsAffected = $query->update($values, $this->id);
+            $wasSuccessful = $rowsAffected > 0;
+        }
+
+        // If insert/update was ok, load the new values into entity state
+        if ($wasSuccessful) {
+            $this->refresh();
+            return true;
+        }
+
+        // Saving failed so reset id
+        $this->setId(null);
+        return false;
+    }
+
+    /**
+     * @param $data array|null
+     * @return static
+     */
+    public static function insert(array $data = null): Entity {
+        $entity = static::create($data);
+        $entity->save();
+
+        return $entity;
+    }
+
+    /**
+     * Delete an Entity from the Database
+     *
+     * @return bool Whether or not deletion was successful
+     */
+    public function delete(): bool {
+        if ($this->isLoaded()) {
+            $rowsAffected = static::getQuery()->delete($this->id);
+            return $rowsAffected > 0;
+        }
+
+        return false;
     }
 
 }

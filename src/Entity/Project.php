@@ -92,26 +92,6 @@ class Project extends Entity {
     }
 
     /**
-     * @inheritDoc
-     *
-     * Add extra functionality as a Project is linked to many Project Images, so delete these also
-     *
-     * @return bool Whether or not deletion was successful
-     */
-    public function delete(): bool {
-        $isDeleted = parent::delete();
-
-        if ($isDeleted) {
-            $this->loadProjectImages();
-            foreach ($this->images as $image) {
-                $image->delete();
-            }
-        }
-
-        return $isDeleted;
-    }
-
-    /**
      * Adds filter by public projects if (admin) user isn't currently logged in
      */
     private static function addStatusWhere($where, ?array $params, $limit = null): array {
@@ -148,6 +128,26 @@ class Project extends Entity {
     public static function getCount($where = null, ?array $params = null): int {
         [$where, $params] = static::addStatusWhere($where, $params);
         return parent::getCount($where, $params);
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * Add extra functionality as a Project is linked to many Project Images, so delete these also
+     *
+     * @return bool Whether or not deletion was successful
+     */
+    public function delete(): bool {
+        $isDeleted = parent::delete();
+
+        if ($isDeleted) {
+            $this->loadProjectImages();
+            foreach ($this->images as $image) {
+                $image->delete();
+            }
+        }
+
+        return $isDeleted;
     }
 
 }
