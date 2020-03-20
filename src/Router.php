@@ -97,9 +97,8 @@ class Router {
         $uriParts = $this->api->uriParts;
 
         if (
-            isset($uriParts[2]) && $uriParts[2] !== ""
-            && isset($uriParts[3]) && $uriParts[3] === "images"
-            && !isset($uriParts[4])
+            isset($uriParts[2], $uriParts[3]) && !isset($uriParts[4])
+            && $uriParts[2] !== "" && $uriParts[3] === "images"
         ) {
             $response = (new Projects($this->api))->addProjectImage($uriParts[2]);
         }
@@ -125,9 +124,8 @@ class Router {
 
         if (isset($uriParts[2]) && $uriParts[2] !== "") {
             if (
-                isset($uriParts[3]) && $uriParts[3] === "images"
-                && isset($uriParts[4]) && $uriParts[4] !== ""
-                && !isset($uriParts[5])
+                isset($uriParts[3], $uriParts[4]) && !isset($uriParts[5])
+                && $uriParts[3] === "images" && $uriParts[4] !== ""
             ) {
                 $response = Projects::deleteProjectImage($uriParts[2], $uriParts[4]);
             }
