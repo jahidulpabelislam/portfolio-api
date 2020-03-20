@@ -104,7 +104,7 @@ trait Responder {
     public function getInvalidFieldsResponse(string $entityClass, array $data, array $extraRequiredFields = []): array {
         $requiredFields = $entityClass::getRequiredFields();
         $requiredFields = array_merge($requiredFields, $extraRequiredFields);
-        $invalidFields = $this->api->getInvalidFields($data, $requiredFields);
+        $invalidFields = Core::getInvalidFields($data, $requiredFields);
 
         return [
             "meta" => [

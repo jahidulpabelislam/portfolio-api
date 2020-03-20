@@ -16,6 +16,7 @@ if (!defined("ROOT")) {
 }
 
 use App\Controller;
+use App\Core;
 use App\Entity\User;
 
 class Auth extends Controller {
@@ -30,7 +31,7 @@ class Auth extends Controller {
      */
     public function login(): array {
         $data = $this->api->data;
-        if ($this->api->hasRequiredFields(User::class, $data)) {
+        if (Core::hasRequiredFields(User::class, $data)) {
 
             $jwt = User::login($data);
             if ($jwt) {

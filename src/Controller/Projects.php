@@ -15,6 +15,7 @@ if (!defined("ROOT")) {
 }
 
 use App\Controller;
+use App\Core;
 use App\Entity\Project;
 use App\Entity\ProjectImage;
 use App\Entity\User;
@@ -65,7 +66,7 @@ class Projects extends Controller {
             $isNew = $projectId === null;
 
             // Only validate on creation
-            if ($isNew && !$this->api->hasRequiredFields(Project::class, $data)) {
+            if ($isNew && !Core::hasRequiredFields(Project::class, $data)) {
                 return $this->getInvalidFieldsResponse(Project::class, $data);
             }
 
