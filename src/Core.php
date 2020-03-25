@@ -122,14 +122,16 @@ class Core {
      * @return string The full URI user requested
      */
     public function getAPIURL(array $uriParts = null): string {
-        $uri = $uriParts ? implode("/", $uriParts) : $this->uri;
+        $uri = $this->uri;
+        if ($uriParts !== null) {
+            $uri = implode("/", $uriParts);
+            $uri = "/{$uri}";
+        }
 
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
         $domain = self::removeTrailingSlash($_SERVER["SERVER_NAME"]);
 
-        $uri = self::removeSlashes($uri);
-        $fullURL = "{$protocol}://{$domain}/{$uri}";
-        $fullURL = self::addTrailingSlash($fullURL);
+        $fullURL = "{$protocol}://{$domain}{$uri}";
 
         return $fullURL;
     }
