@@ -19,9 +19,15 @@ use App\Core;
 use App\Entity\Project;
 use App\Entity\ProjectImage;
 use App\Entity\User;
+use Exception;
 
 class Projects extends Controller {
 
+    /**
+     * @param $projectId int|string
+     * @param $includeLinkedData bool
+     * @return Project|null
+     */
     private static function getProjectEntity($projectId, bool $includeLinkedData = false): ?Project {
         $project = Project::getById($projectId);
         if ($project && $includeLinkedData) {
@@ -57,7 +63,8 @@ class Projects extends Controller {
     /**
      * Try to either insert or update a Project
      *
-     * @param $projectId int|null The Id of the Project to update (Only if a update request)
+     * @param $data array The values to save
+     * @param $projectId int|string|null The Id of the Project to update (Only if a update request)
      * @return array The request response to send back
      */
     private function saveProject(array $data, $projectId = null): array {
@@ -133,7 +140,7 @@ class Projects extends Controller {
     /**
      * Try to edit a Project a user has added before
      *
-     * @param $projectId int The Id of the Project to update
+     * @param $projectId int|string The Id of the Project to update
      * @return array The request response to send back
      */
     public function updateProject($projectId): array {
@@ -143,7 +150,7 @@ class Projects extends Controller {
     /**
      * Try to delete a Project a user has added before
      *
-     * @param $projectId int The Id of the Project to delete
+     * @param $projectId int|string The Id of the Project to delete
      * @return array The request response to send back
      */
     public static function deleteProject($projectId): array {
@@ -167,7 +174,7 @@ class Projects extends Controller {
     /**
      * Get a particular Project defined by $projectId
      *
-     * @param $projectId int The Id of the Project to get
+     * @param $projectId int|string The Id of the Project to get
      * @param $includeLinkedData bool Whether to also get and include linked entity/data (images)
      * @return array The request response to send back
      */
@@ -180,7 +187,7 @@ class Projects extends Controller {
     /**
      * Get the Images attached to a Project
      *
-     * @param $projectId int The Id of the Project
+     * @param $projectId int|string The Id of the Project
      * @return array The request response to send back
      */
     public static function getProjectImages($projectId): array {
@@ -197,7 +204,9 @@ class Projects extends Controller {
      * Try and upload the added image
      *
      * @param $project Project The Project trying to upload image for
+     * @param $image array The uploaded image
      * @return array The request response to send back
+     * @throws Exception
      */
     private static function uploadProjectImage(Project $project, array $image): array {
         $response = [];
@@ -261,8 +270,9 @@ class Projects extends Controller {
     /**
      * Try to upload a Image user has tried to add as a Project Image
      *
-     * @param $projectId int The Project Id to add this Image for
+     * @param $projectId int|string The Project Id to add this Image for
      * @return array The request response to send back
+     * @throws Exception
      */
     public function addProjectImage($projectId): array {
         if (User::isLoggedIn()) {
@@ -293,8 +303,8 @@ class Projects extends Controller {
     /**
      * Get a Project Image for a Project by Id
      *
-     * @param $projectId int The Id of the Project trying to get Image for
-     * @param $imageId int The Id of the Project Image to get
+     * @param $projectId int|string The Id of the Project trying to get Image for
+     * @param $imageId int|string The Id of the Project Image to get
      * @return array The request response to send back
      */
     public static function getProjectImage($projectId, $imageId): array {
@@ -321,8 +331,8 @@ class Projects extends Controller {
     /**
      * Try to delete a Image linked to a Project
      *
-     * @param $projectId int The Id of the Project trying to delete Image for
-     * @param $imageId int The Id of the Project Image to delete
+     * @param $projectId int|string The Id of the Project trying to delete Image for
+     * @param $imageId int|string The Id of the Project Image to delete
      * @return array The request response to send back
      */
     public static function deleteProjectImage($projectId, $imageId): array {

@@ -93,6 +93,11 @@ class Project extends Entity {
 
     /**
      * Adds filter by public projects if (admin) user isn't currently logged in
+     *
+     * @param $where string[]|string|int|null
+     * @param $params array|null
+     * @param $limit int|string|null
+     * @return array
      */
     private static function addStatusWhere($where, ?array $params, $limit = null): array {
         // As the user isn't logged in, filter by status = public

@@ -189,7 +189,7 @@ abstract class Entity {
     }
 
     /**
-     * @param $rows array
+     * @param $rows array[]
      * @return static[]
      */
     private static function populateEntitiesFromDB(array $rows): array {
@@ -257,6 +257,15 @@ abstract class Entity {
         return null;
     }
 
+    /**
+     * @param $columns string[]|string|null
+     * @param $where string[]|string|int|null
+     * @param $params array|null
+     * @param $orderBy string[]|string|null
+     * @param $limit int|null
+     * @param $page int|null
+     * @return array[]|array|null
+     */
     public static function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, ?int $page = null): ?array {
         return static::getQuery()->select($columns, $where, $params, $orderBy, $limit, $page);
     }
@@ -288,6 +297,12 @@ abstract class Entity {
 
     /**
      * Get Entities from the Database where a column ($column) = a value ($value)
+     *
+     * @param $column string
+     * @param $value string|int
+     * @param $limit int|string|null
+     * @param $page int|string|null
+     * @return static[]|static|null
      */
     public static function getByColumn(string $column, $value, $limit = null, $page = null) {
         $params = [$column => $value];
@@ -297,6 +312,7 @@ abstract class Entity {
     /**
      * Load a single Entity from the Database where a Id column = a value ($id).
      *
+     * @param $id int|string
      * @return static|null
      */
     public static function getById($id): ?Entity {
@@ -379,6 +395,8 @@ abstract class Entity {
      * Used together with Entity::getByParams, as this return a limited Entities
      * but we want to get a number of total items without limit
      *
+     * @param $where string[]|string|null
+     * @param $params array|null
      * @return int
      */
     public static function getCount($where = null, ?array $params = null): int {

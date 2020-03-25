@@ -79,6 +79,10 @@ class Core {
         $this->uriParts = explode("/", $uri);
     }
 
+    /**
+     * @param $value array|string
+     * @return array|string
+     */
     private static function sanitizeData($value) {
         if (is_array($value)) {
             $newArrayValues = [];
@@ -114,7 +118,7 @@ class Core {
     /**
      * Generates a full URL from the URI user requested
      *
-     * @param $uriParts array The URI user request as an array
+     * @param $uriParts string[]|null The URI user request as an array
      * @return string The full URI user requested
      */
     public function getAPIURL(array $uriParts = null): string {
@@ -173,8 +177,8 @@ class Core {
      * Get all invalid required data fields
      *
      * @param $data array Data/values to check fields against
-     * @param $requiredFields array Array of required data keys
-     * @return array An array of invalid data fields
+     * @param $requiredFields string[] Array of required data keys
+     * @return string[] An array of invalid data fields
      */
     public static function getInvalidFields(array $data, array $requiredFields): array {
         return array_filter($requiredFields, static function(string $field) use ($data) {

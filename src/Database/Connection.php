@@ -112,6 +112,11 @@ class Connection {
         return null;
     }
 
+    /**
+     * @param $query string
+     * @param $params array|null
+     * @return array[]|null
+     */
     public function getAll(string $query, ?array $params = null): ?array {
         $stmt = $this->run($query, $params);
 

@@ -22,6 +22,12 @@ class Query {
         $this->table = $table;
     }
 
+    /**
+     * @param $parts array
+     * @param $params array|null
+     * @param $function string
+     * @return array[]|array|int
+     */
     private function execute(array $parts, ?array $params, string $function = "execute") {
         $query = implode("\n", $parts);
         $query .= ";";
@@ -55,7 +61,7 @@ class Query {
     /**
      * Try and force value as an array if not already
      *
-     * @param $value array|mixed
+     * @param $value array|string|null
      * @return array
      */
     private static function initArray($value): array {
@@ -71,7 +77,7 @@ class Query {
     }
 
     /**
-     * @param $where array|string|int|null
+     * @param $where string[]|string|int|null
      * @param $params array|null
      * @return array [string|null, array|null]
      */
@@ -103,8 +109,8 @@ class Query {
      * @param $where string[]|string|int|null
      * @param $params array|null
      * @param $orderBy string[]|string|null
-     * @param $limit int|string|null
-     * @param $page int|string|null
+     * @param $limit int|null
+     * @param $page int|null
      * @return array [array, array|null]
      */
     protected static function generateSelectQuery(string $table, $columns = "*", $where = null, ?array $params = [], $orderBy = null, ?int $limit = null, ?int $page = null): array {
@@ -151,9 +157,9 @@ class Query {
      * @param $where string[]|string|int|null
      * @param $params array|null
      * @param $orderBy string[]|string|null
-     * @param $limit int|string|null
-     * @param $page int|string|null
-     * @return array|null
+     * @param $limit int|null
+     * @param $page int|null
+     * @return array[]|array|null
      */
     public function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, ?int $page = null): ?array {
         [$sqlParts, $params] = static::generateSelectQuery($this->table, $columns, $where, $params, $orderBy, $limit, $page);
@@ -231,7 +237,7 @@ class Query {
     }
 
     /**
-     * @param $where array|string|int|null
+     * @param $where string[]|string|int|null
      * @param $params array|null
      * @return int
      */

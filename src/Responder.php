@@ -121,6 +121,10 @@ trait Responder {
      * Return a response when items were requested,
      * so check if some found return the items (with necessary meta)
      * else if not found return necessary meta
+     *
+     * @param $entityClass string
+     * @param $entities Entity[]|null
+     * @return array
      */
     public static function getItemsResponse(string $entityClass, ?array $entities = []): array {
         $count = $entities ? count($entities) : 0;
@@ -156,6 +160,11 @@ trait Responder {
      * else if not found return necessary meta
      *
      * Use getItemsResponse function as the base response, then just adds additional meta data
+     *
+     * @param $entityClass string
+     * @param $entities Entity[]|null
+     * @param $params array
+     * @return array
      */
     public function getItemsSearchResponse(string $entityClass, ?array $entities = [], array $params = []): array {
         // The items response is the base response, and the extra meta is added below
@@ -204,6 +213,11 @@ trait Responder {
         ];
     }
 
+    /**
+     * @param $entityClass string
+     * @param $id int|string|null
+     * @return array
+     */
     public static function getItemNotFoundResponse(string $entityClass, $id): array {
         return [
             "meta" => [
@@ -219,6 +233,11 @@ trait Responder {
      * Return a response when a item was requested,
      * so check if found return the item (with necessary meta)
      * else if not found return necessary meta
+     *
+     * @param $entityClass string
+     * @param $entity Entity|null
+     * @param $id int|string|null
+     * @return array
      */
     public static function getItemResponse(string $entityClass, ?Entity $entity, $id): array {
         if ($id && $entity && $entity->isLoaded() && $entity->id == $id) {
@@ -246,6 +265,12 @@ trait Responder {
         ];
     }
 
+    /**
+     * @param $entityClass string
+     * @param $entity Entity|null
+     * @param $id int|string|null
+     * @return array
+     */
     public static function getUpdateResponse(string $entityClass, ?Entity $entity, $id): array {
         if ($id && $entity && $entity->isLoaded() && $entity->id == $id) {
             return self::getItemFoundResponse($entity);
@@ -261,6 +286,12 @@ trait Responder {
 
     /**
      * Return the response when a item was attempted to be deleted
+     *
+     * @param $entityClass string
+     * @param $entity Entity|null
+     * @param $id int|string|null
+     * @param $isDeleted bool
+     * @return array
      */
     public static function getItemDeletedResponse(string $entityClass, ?Entity $entity, $id, bool $isDeleted = false): array {
         if (!$id || !$entity || !$entity->isLoaded() || $entity->id != $id) {
