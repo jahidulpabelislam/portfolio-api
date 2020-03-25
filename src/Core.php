@@ -38,35 +38,6 @@ class Core {
 
     public $files = [];
 
-    public static function removeLeadingSlash(string $url): string {
-        if ($url[0] === "/") {
-            $url = substr($url, 1);
-        }
-
-        return $url;
-    }
-
-    public static function removeTrailingSlash(string $url): string {
-        if (substr($url, -1) === "/") {
-            $url = substr($url, 0, -1);
-        }
-
-        return $url;
-    }
-
-    public static function removeSlashes(string $url): string {
-        $url = self::removeLeadingSlash($url);
-        $url = self::removeTrailingSlash($url);
-
-        return $url;
-    }
-
-    public static function addTrailingSlash(string $url): string {
-        $url = self::removeTrailingSlash($url);
-
-        return "{$url}/";
-    }
-
     private function extractMethodFromRequest() {
         $this->method = strtoupper($_SERVER["REQUEST_METHOD"]);
     }
@@ -75,7 +46,7 @@ class Core {
         $this->uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 
         // Get the individual parts of the request URI as an array
-        $uri = self::removeSlashes($this->uri);
+        $uri = Utilities::removeSlashes($this->uri);
         $this->uriParts = explode("/", $uri);
     }
 
@@ -129,7 +100,7 @@ class Core {
         }
 
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
-        $domain = self::removeTrailingSlash($_SERVER["SERVER_NAME"]);
+        $domain = Utilities::removeTrailingSlash($_SERVER["SERVER_NAME"]);
 
         $fullURL = "{$protocol}://{$domain}{$uri}";
 
