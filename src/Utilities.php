@@ -33,4 +33,10 @@ class Utilities {
         return "{$url}/";
     }
 
+    public static function addLeadingSlash(string $url): string {
+        $url = self::removeLeadingSlash($url);
+
+        return "/{$url}";
+    }
+
 }
