@@ -12,5 +12,5 @@ require_once(__DIR__ . "/bootstrap.php");
 
 use App\Core;
 
-$api = new Core();
-$api->handleRequest();
+$core = new Core();
+$core->handleRequest();

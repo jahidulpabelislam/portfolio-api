@@ -43,7 +43,7 @@ class Projects extends Controller {
      * @return array The request response to send back
      */
     public function getProjects(): array {
-        $params = $this->api->params;
+        $params = $this->core->params;
 
         $limit = $params["limit"] ?? null;
         $page = $params["page"] ?? null;
@@ -126,7 +126,7 @@ class Projects extends Controller {
      * @return array The request response to send back
      */
     public function addProject(): array {
-        $response = $this->saveProject($this->api->data);
+        $response = $this->saveProject($this->core->data);
 
         // If successful, as this is a new Project creation override the meta
         if (!empty($response["row"])) {
@@ -144,7 +144,7 @@ class Projects extends Controller {
      * @return array The request response to send back
      */
     public function updateProject($projectId): array {
-        return $this->saveProject($this->api->params, $projectId);
+        return $this->saveProject($this->core->params, $projectId);
     }
 
     /**
@@ -276,7 +276,7 @@ class Projects extends Controller {
      */
     public function addProjectImage($projectId): array {
         if (User::isLoggedIn()) {
-            $files = $this->api->files;
+            $files = $this->core->files;
             if (isset($files["image"])) {
 
                 // Check the Project trying to add a Image for exists

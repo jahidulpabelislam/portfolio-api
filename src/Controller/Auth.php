@@ -30,7 +30,7 @@ class Auth extends Controller {
      * @return array The request response to send back
      */
     public function login(): array {
-        $data = $this->api->data;
+        $data = $this->core->data;
         if (Core::hasRequiredFields(User::class, $data)) {
 
             $jwt = User::login($data);

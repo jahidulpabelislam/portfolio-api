@@ -17,10 +17,10 @@ if (!defined("ROOT")) {
 
 trait Responder {
 
-    protected $api = null;
+    protected $core = null;
 
-    public function __construct(Core $api) {
-        $this->api = $api;
+    public function __construct(Core $core) {
+        $this->core = $core;
     }
 
     /**
@@ -31,7 +31,7 @@ trait Responder {
             "meta" => [
                 "status" => 405,
                 "message" => "Method Not Allowed.",
-                "feedback" => "Method {$this->api->method} not allowed on " . $this->api->getAPIURL() . ".",
+                "feedback" => "Method {$this->core->method} not allowed on " . $this->core->getAPIURL() . ".",
             ],
         ];
     }
@@ -74,7 +74,7 @@ trait Responder {
             "meta" => [
                 "status" => 404,
                 "message" => "Not Found",
-                "feedback" => "Unrecognised URI (" . $this->api->getAPIURL() . ").",
+                "feedback" => "Unrecognised URI (" . $this->core->getAPIURL() . ").",
             ],
         ];
     }
@@ -85,9 +85,9 @@ trait Responder {
     public function getUnrecognisedAPIVersionResponse(): array {
         $shouldBeVersion = Config::get()->api_version;
 
-        $shouldBeURI = $this->api->uriParts;
+        $shouldBeURI = $this->core->uriParts;
         $shouldBeURI[0] = "v" . $shouldBeVersion;
-        $shouldBeURL = $this->api->getAPIURL($shouldBeURI);
+        $shouldBeURL = $this->core->getAPIURL($shouldBeURI);
 
         return [
             "meta" => [
@@ -180,7 +180,7 @@ trait Responder {
         $lastPage = ceil($totalCount / $limit);
         $response["meta"]["total_pages"] = $lastPage;
 
-        $pageURL = $this->api->getAPIURL();
+        $pageURL = $this->core->getAPIURL();
         if (isset($params["limit"])) {
             $params["limit"] = $limit;
         }
