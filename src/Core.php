@@ -22,6 +22,7 @@ use DateTimeZone;
 class Core {
 
     private const CACHE_TIMEZONE = "Europe/London";
+
     private static $cacheTimeZone = null;
     private static $rowDateTimeFormat = "Y-m-d H:i:s e";
 
