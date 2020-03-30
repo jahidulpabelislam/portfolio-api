@@ -49,8 +49,11 @@ class Projects extends Controller {
         $page = $params["page"] ?? null;
         $projects = Project::getByParams($params, $limit, $page);
 
-        if (!is_array($projects)) {
+        if ($projects instanceof Project) {
             $projects = [$projects];
+        }
+        else if (!is_array($projects)) {
+            $projects = [];
         }
 
         array_walk($projects, static function(Project $project) {
