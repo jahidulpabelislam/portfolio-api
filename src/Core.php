@@ -219,7 +219,7 @@ class Core {
                     continue;
                 }
 
-                $updatedAtDate = self::createDateTimeFromRow($latestRow);
+                $updatedAtDate = self::createDateTimeFromRow($row);
 
                 if ($updatedAtDate > $latestDate) {
                     $latestDate = $updatedAtDate;
