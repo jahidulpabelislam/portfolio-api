@@ -209,7 +209,7 @@ class Core {
 
         $latestDate = null;
         $latestRow = $response["row"] ?? $response["rows"][0] ?? null;
-        if ($latestRow && $latestRow["updated_at"]) {
+        if ($latestRow && !empty($latestRow["updated_at"])) {
             $latestDate = self::createDateTimeFromRow($latestRow);
         }
 
