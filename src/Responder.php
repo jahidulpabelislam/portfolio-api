@@ -127,25 +127,20 @@ trait Responder {
      */
     public static function getItemsResponse(string $entityClass, ?EntityCollection $entities = null): array {
         $count = $entities ? count($entities) : 0;
-        if ($count) {
-            return [
-                "meta" => [
-                    "ok" => true,
-                    "count" => $count,
-                ],
-                "rows" => $entities->toArray(),
-            ];
+
+        $response = [
+            "meta" => [
+                "ok" => true,
+                "count" => $count,
+            ],
+            "rows" => $entities ? $entities->toArray() : [],
+        ];
+
+        if (!$count) {
+            $response["meta"]["feedback"] = "No {$entityClass::$displayName}s found.";
         }
 
-        return [
-            "meta" => [
-                "count" => 0,
-                "status" => 404,
-                "message" => "Not Found",
-                "feedback" => "No {$entityClass::$displayName}s found.",
-            ],
-            "rows" => [],
-        ];
+        return $response;
     }
 
     /**
