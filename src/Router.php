@@ -14,6 +14,7 @@ namespace App;
 
 use App\Controller\Auth;
 use App\Controller\Projects;
+use App\Database\Exception;
 
 class Router {
 
@@ -177,7 +178,17 @@ class Router {
 
         // Only try to perform the action if API version check above returned okay
         if ($response === null) {
-            $response = $this->executeAction();
+            try {
+                $response = $this->executeAction();
+            }
+            catch (Exception $exception) {
+                error_log($exception->getMessage() . ". Full error: {$exception}");
+                $response = [
+                    "meta" => [
+                        "ok" => false,
+                    ],
+                ];
+            }
 
             // If at this point response is empty, we didn't recognise the action
             if ($response === null) {

@@ -77,11 +77,8 @@ class Projects extends Controller {
             $totalCount = Project::getCount($where, $queryParams);
             $projects = new EntityCollection([$projects], $totalCount, $limit, $page);
         }
-        else if (!($projects) instanceof EntityCollection) {
-            $projects = [];
-        }
 
-        if ($projects && count($projects)) {
+        if (count($projects)) {
             $images = ProjectImage::getByColumn("project_id", $projects->pluck("id")->toArray());
             $imagesGrouped = $images->groupBy("project_id");
 

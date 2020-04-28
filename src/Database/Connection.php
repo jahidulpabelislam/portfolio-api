@@ -23,6 +23,8 @@ class Connection {
 
     /**
      * Connects to a MySQL engine using PDO
+     *
+     * @throws Exception
      */
     public function __construct(array $config = []) {
         $defaults = [
@@ -46,8 +48,11 @@ class Connection {
             $this->pdo = new PDO($dsn, $username, $password, $options);
         }
         catch (PDOException $error) {
-            $errorMessage = $error->getMessage();
-            error_log("Error creating a connection to database: {$errorMessage}, full error: {$error}");
+            throw new Exception(
+                "Error creating a connection to database: {$error->getMessage()}",
+                $error->getCode(),
+                $error->getPrevious()
+            );
         }
     }
 
@@ -56,54 +61,59 @@ class Connection {
      *
      * @param $query string The SQL query to run
      * @param $params array|null Array of any params/bindings to use with the SQL query
-     * @return PDOStatement|null
+     * @return PDOStatement
+     * @throws Exception
      */
-    private function run(string $query, ?array $params): ?PDOStatement {
-        if ($this->pdo) {
-            try {
-                // Check if any params/bindings to execute
-                if (isset($params)) {
-                    $bindings = [];
-                    foreach ($params as $key => $value) {
-                        $bindings[":{$key}"] = $value;
-                    }
-
-                    $stmt = $this->pdo->prepare($query);
-                    $stmt->execute($bindings);
-                }
-                else {
-                    $stmt = $this->pdo->query($query);
+    private function run(string $query, ?array $params): PDOStatement {
+        try {
+            // Check if any params/bindings to execute
+            if (isset($params)) {
+                $bindings = [];
+                foreach ($params as $key => $value) {
+                    $bindings[":{$key}"] = $value;
                 }
 
-                return $stmt;
+                $stmt = $this->pdo->prepare($query);
+                $stmt->execute($bindings);
             }
-            catch (PDOException $error) {
-                $errorMessage = $error->getMessage();
-                error_log("Error executing query on database: {$errorMessage} using query: {$query} and params: " . print_r($params, true) . ", full error: {$error}");
+            else {
+                $stmt = $this->pdo->query($query);
             }
+
+            return $stmt;
         }
-
-        return null;
+        catch (PDOException $error) {
+            throw new Exception(
+                "Error executing query on database: {$error->getMessage()}, using query: {$query} and params: " . print_r($params, true),
+                $error->getCode(),
+                $error->getPrevious()
+            );
+        }
     }
 
+    /**
+     * @param $query string
+     * @param $params array|null
+     * @return int
+     * @throws Exception
+     */
     public function execute(string $query, ?array $params = null): int {
         $stmt = $this->run($query, $params);
-
-        if ($stmt) {
-            return $stmt->rowCount();
-        }
-
-        return 0;
+        return $stmt->rowCount();
     }
 
+    /**
+     * @param $query string
+     * @param $params array|null
+     * @return array|null
+     * @throws Exception
+     */
     public function getOne(string $query, ?array $params = null): ?array {
         $stmt = $this->run($query, $params);
 
-        if ($stmt) {
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($row !== false) {
-                return $row;
-            }
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row !== false) {
+            return $row;
         }
 
         return null;
@@ -112,16 +122,12 @@ class Connection {
     /**
      * @param $query string
      * @param $params array|null
-     * @return array[]|null
+     * @return array[]
+     * @throws Exception
      */
-    public function getAll(string $query, ?array $params = null): ?array {
+    public function getAll(string $query, ?array $params = null): array {
         $stmt = $this->run($query, $params);
-
-        if ($stmt) {
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        }
-
-        return null;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getLastInsertedId(): ?int {

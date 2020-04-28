@@ -27,7 +27,7 @@ class Query {
      * @param $parts array
      * @param $params array|null
      * @param $function string
-     * @return array[]|array|int
+     * @return array[]|array|int|null
      */
     private function execute(array $parts, ?array $params, string $function = "execute") {
         $query = implode("\n", $parts);
