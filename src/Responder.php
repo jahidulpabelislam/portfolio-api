@@ -216,7 +216,6 @@ trait Responder {
                 "message" => "Not Found",
                 "feedback" => "No {$entityClass::$displayName} identified by {$id} found.",
             ],
-            "row" => [],
         ];
     }
 
@@ -252,7 +251,6 @@ trait Responder {
             "meta" => [
                 "feedback" => "Failed to insert the new {$entityClass::$displayName}.",
             ],
-            "row" => [],
         ];
     }
 
@@ -271,7 +269,6 @@ trait Responder {
             "meta" => [
                 "feedback" => "Failed to update the {$entityClass::$displayName} identified by {$id}.",
             ],
-            "row" => [],
         ];
     }
 
@@ -304,7 +301,6 @@ trait Responder {
             "meta" => [
                 "feedback" => "Failed to delete the {$entityClass::$displayName} identified by {$id}.",
             ],
-            "row" => [],
         ];
     }
 
