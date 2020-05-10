@@ -71,15 +71,12 @@ class Auth extends Controller {
      * @return array The request response to send back
      */
     public static function getStatus(): array {
-        if (User::isLoggedIn()) {
-            return [
-                "meta" => [
-                    "ok" => true,
-                ],
-            ];
-        }
-
-        return self::getNotAuthorisedResponse();
+        return [
+            "meta" => [
+                "ok" => true,
+            ],
+            "data" => User::isLoggedIn(),
+        ];
     }
 
 }
