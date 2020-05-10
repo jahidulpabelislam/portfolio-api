@@ -193,7 +193,6 @@ class Core {
 
             // Override meta data, and respond with all endpoints available
             if ($this->method === "OPTIONS") {
-                $this->response["meta"]["ok"] = true;
                 $this->response["meta"]["status"] = 200;
                 $this->response["meta"]["message"] = "OK";
             }
@@ -284,7 +283,6 @@ class Core {
         $isSuccessful = $response["meta"]["ok"] ?? false;
         $defaults = [
             "meta" => [
-                "ok" => false,
                 "status" => ($isSuccessful ? 200 : 500),
                 "message" => ($isSuccessful ? "OK" : "Internal Server Error"),
                 "method" => $this->method,
@@ -294,6 +292,7 @@ class Core {
                 "files" => $this->files,
             ],
         ];
+        unset($response["meta"]["ok"]);
         $this->response = array_replace_recursive($defaults, $response);
 
         $this->setCORSHeaders();
