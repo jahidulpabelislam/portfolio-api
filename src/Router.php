@@ -57,7 +57,7 @@ class Router {
             }
         }
         else if ($method === "GET") {
-            if ($authAction === "session" && !isset($uriParts[3])) {
+            if ($authAction === "status" && !isset($uriParts[3])) {
                 $response = Auth::getAuthStatus();
             }
         }
