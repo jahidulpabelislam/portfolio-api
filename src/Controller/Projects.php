@@ -331,7 +331,7 @@ class Projects extends Controller {
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
             if ($projectImage && !empty($projectImage->project_id) && $projectImage->project_id !== $projectId) {
-                $response["row"] = [];
+                $response["data"] = [];
                 $response["meta"]["feedback"] = "No {$projectImage::$displayName} found identified by {$imageId} for Project: {$projectId}.";
             }
 

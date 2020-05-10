@@ -217,16 +217,12 @@ class Core {
 
     public function getLastModified(): string {
         if ($this->lastModified === null) {
-            $response = $this->response;
-
             $lastModified = "";
 
-            if (!empty($response["row"])) {
-                $latestRow = $response["row"];
-                if (!empty($latestRow["updated_at"])) {
-                    $latestDate = self::createDateTimeFromRow($latestRow);
-                    $lastModified = $latestDate->format("D, j M Y H:i:s") . " GMT";
-                }
+            $latestRow = $this->response["data"] ?? null;
+            if ($latestRow && !empty($latestRow["updated_at"])) {
+                $latestDate = self::createDateTimeFromRow($latestRow);
+                $lastModified = $latestDate->format("D, j M Y H:i:s") . " GMT";
             }
 
             $this->lastModified = $lastModified;

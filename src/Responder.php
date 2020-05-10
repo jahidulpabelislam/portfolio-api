@@ -133,7 +133,7 @@ trait Responder {
                 "ok" => true,
                 "count" => $count,
             ],
-            "rows" => $entities->toArray()
+            "data" => $entities->toArray(),
         ];
 
         if (!$count) {
@@ -200,7 +200,7 @@ trait Responder {
             "meta" => [
                 "ok" => true,
             ],
-            "row" => $entity->toArray(),
+            "data" => $entity->toArray(),
         ];
     }
 
@@ -291,7 +291,7 @@ trait Responder {
                 "meta" => [
                     "ok" => true,
                 ],
-                "row" => [
+                "data" => [
                     "id" => (int)$id,
                 ],
             ];
