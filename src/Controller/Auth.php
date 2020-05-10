@@ -34,8 +34,8 @@ class Auth extends Controller {
                 return [
                     "meta" => [
                         "ok" => true,
-                        "jwt" => $jwt,
                     ],
+                    "data" => $jwt,
                 ];
             }
 
