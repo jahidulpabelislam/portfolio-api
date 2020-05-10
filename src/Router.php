@@ -184,9 +184,7 @@ class Router {
             catch (Exception $exception) {
                 error_log($exception->getMessage() . ". Full error: {$exception}");
                 $response = [
-                    "meta" => [
-                        "ok" => false,
-                    ],
+                    "ok" => false,
                 ];
             }
 

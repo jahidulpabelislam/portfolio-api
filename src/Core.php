@@ -280,7 +280,7 @@ class Core {
      * @param $response array The response generated from the request so far
      */
     public function sendResponse(array $response) {
-        $isSuccessful = $response["meta"]["ok"] ?? false;
+        $isSuccessful = $response["ok"] ?? false;
         $defaults = [
             "meta" => [
                 "status" => ($isSuccessful ? 200 : 500),
@@ -292,7 +292,7 @@ class Core {
                 "files" => $this->files,
             ],
         ];
-        unset($response["meta"]["ok"]);
+        unset($response["ok"]);
         $this->response = array_replace_recursive($defaults, $response);
 
         $this->setCORSHeaders();

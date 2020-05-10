@@ -50,8 +50,8 @@ trait Responder {
 
     public static function getLoggedOutResponse(): array {
         return [
+            "ok" => true,
             "meta" => [
-                "ok" => true,
                 "feedback" => "Successfully logged out.",
             ],
         ];
@@ -129,8 +129,8 @@ trait Responder {
         $count = count($entities);
 
         $response = [
+            "ok" => true,
             "meta" => [
-                "ok" => true,
                 "count" => $count,
             ],
             "data" => $entities->toArray(),
@@ -197,9 +197,7 @@ trait Responder {
 
     private static function getItemFoundResponse(Entity $entity): array {
         return [
-            "meta" => [
-                "ok" => true,
-            ],
+            "ok" => true,
             "data" => $entity->toArray(),
         ];
     }
@@ -288,9 +286,7 @@ trait Responder {
 
         if ($isDeleted) {
             return [
-                "meta" => [
-                    "ok" => true,
-                ],
+                "ok" => true,
                 "data" => [
                     "id" => (int)$id,
                 ],

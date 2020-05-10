@@ -32,9 +32,7 @@ class Auth extends Controller {
             $jwt = User::login($data);
             if ($jwt) {
                 return [
-                    "meta" => [
-                        "ok" => true,
-                    ],
+                    "ok" => true,
                     "data" => $jwt,
                 ];
             }
@@ -72,9 +70,7 @@ class Auth extends Controller {
      */
     public static function getStatus(): array {
         return [
-            "meta" => [
-                "ok" => true,
-            ],
+            "ok" => true,
             "data" => User::isLoggedIn(),
         ];
     }
