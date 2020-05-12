@@ -309,14 +309,13 @@ class Core {
         $status = $this->response["meta"]["status"];
         $message = $this->response["meta"]["message"];
 
-        header("HTTP/1.1 {$status} {$message}");
         self::setHeader("Content-Type", "application/json");
 
-        // Check if requested to send json
-        $accepts = explode(", ", $_SERVER["HTTP_ACCEPT"]);
-        $isSendingJson = in_array("application/json", $accepts);
+        header("HTTP/1.1 {$status} {$message}");
 
-        $encodeParams = $isSendingJson ? 0 : JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
+        $sendPretty = Utilities::stringToBoolean($this->params["pretty"] ?? null);
+
+        $encodeParams = $sendPretty ? JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES : 0;
         echo json_encode($this->response, $encodeParams);
         die();
     }

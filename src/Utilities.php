@@ -39,4 +39,12 @@ class Utilities {
         return "/{$url}";
     }
 
+    public static function stringToBoolean(?string $string, ?bool $default = false): ?bool {
+        if (in_array($string, ['', null], true)) {
+            return $default;
+        }
+
+        return filter_var($string, FILTER_VALIDATE_BOOLEAN);
+    }
+
 }
