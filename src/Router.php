@@ -20,6 +20,8 @@ class Router {
 
     use Responder;
 
+    protected $basePath = "";
+
     protected $routes = [];
 
     public function __construct(Core $core) {
@@ -40,6 +42,14 @@ class Router {
         $this->addRoute("/auth/login/", "POST", $authController, "login");
         $this->addRoute("/auth/logout/", "DELETE", $authController, "logout");
         $this->addRoute("/auth/session/", "GET", $authController, "getStatus");
+    }
+
+    public function setBasePath(string $basePath) {
+        $this->basePath = $basePath;
+    }
+
+    public function getBasePath(): string {
+        return $this->basePath;
     }
 
     public function addRoute(string $path, string $method, string $controller, string $function) {
@@ -80,9 +90,16 @@ class Router {
         return $identifiers;
     }
 
-    private static function pathToRegex(string $path): string {
-        $regex = preg_replace('/\/{([A-Za-z]*?)}\//', '/(?<$1>[^/]*)/', $path);
+    private function pathToRegex(string $path): string {
+        $basePath = $this->getBasePath();
+        if ($basePath !== "") {
+            $path = Utilities::addTrailingSlash($basePath) . Utilities::removeLeadingSlash($path);
+        }
+
+        $regex = preg_replace("/\/{([A-Za-z]*?)}\//", "/(?<$1>[^/]*)/", $path);
         $regex = str_replace("/", "\/", $regex);
+        $regex = "/^{$regex}$/";
+
         return $regex;
     }
 
@@ -93,11 +110,9 @@ class Router {
      */
     private function executeAction(): ?array {
         $uri = $this->core->uri;
-        $routePrefix = "\/v" . Config::get()->api_version;
         foreach ($this->routes as $route => $routeData) {
-            $routeRegex = self::pathToRegex($route);
-            $regex = "/^{$routePrefix}{$routeRegex}$/";
-            if (preg_match_all($regex, $uri, $matches)) {
+            $routeRegex = $this->pathToRegex($route);
+            if (preg_match_all($routeRegex, $uri, $matches)) {
                 if (isset($routeData[$this->core->method])) {
                     $action = $routeData[$this->core->method];
                     $controllerClass = $action["controller"];

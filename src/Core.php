@@ -324,6 +324,7 @@ class Core {
         $this->extractFromRequest();
 
         $router = new Router($this);
+        $router->setBasePath("/v" . Config::get()->api_version);
         $response = $router->performRequest();
 
         $this->sendResponse($response);
