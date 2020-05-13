@@ -60,8 +60,8 @@ class Router {
         $identifiers = [];
 
         foreach ($matches as $key => $match) {
-            if (!is_numeric($key)) {
-                $identifiers[$key] = $match[0];
+            if (is_numeric($key)) {
+                $identifiers[$key] = $match;
             }
         }
 
@@ -90,12 +90,16 @@ class Router {
         $uri = $this->core->uri;
         foreach ($this->routes as $route => $routeData) {
             $routeRegex = $this->pathToRegex($route);
-            if (preg_match_all($routeRegex, $uri, $matches)) {
+            if (preg_match($routeRegex, $uri, $matches)) {
                 if (isset($routeData[$this->core->method])) {
                     $action = $routeData[$this->core->method];
+
                     $controllerClass = $action["controller"];
                     $controller = new $controllerClass($this->core);
+
+                    array_shift($matches);
                     $identifiers = $this->getIdentifiersFromMatches($matches);
+
                     return call_user_func_array([$controller, $action["function"]], $identifiers);
                 }
 
