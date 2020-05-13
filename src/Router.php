@@ -28,18 +28,18 @@ class Router {
         $projectsController = Projects::class;
         $authController = Auth::class;
 
-        $this->addRoute("\/projects\/(?<projectId>[0-9]*)\/images\/(?<id>[0-9]*)\/", "GET", $projectsController, "getProjectImage");
-        $this->addRoute("\/projects\/(?<projectId>[0-9]*)\/images\/(?<id>[0-9]*)\/", "DELETE", $projectsController, "deleteProjectImage");
-        $this->addRoute("\/projects\/(?<projectId>[0-9]*)\/images\/", "GET", $projectsController, "getProjectImages");
-        $this->addRoute("\/projects\/(?<projectId>[0-9]*)\/images\/", "POST", $projectsController, "addProjectImage");
-        $this->addRoute("\/projects\/(?<id>[0-9]*)\/", "GET", $projectsController, "getProject");
-        $this->addRoute("\/projects\/(?<id>[0-9]*)\/", "PUT", $projectsController, "updateProject");
-        $this->addRoute("\/projects\/(?<id>[0-9]*)\/", "DELETE", $projectsController, "deleteProject");
-        $this->addRoute("\/projects\/", "GET", $projectsController, "getProjects");
-        $this->addRoute("\/projects\/", "POST", $projectsController, "addProject");
-        $this->addRoute("\/auth\/login\/", "POST", $authController, "login");
-        $this->addRoute("\/auth\/logout\/", "DELETE", $authController, "logout");
-        $this->addRoute("\/auth\/session\/", "GET", $authController, "getStatus");
+        $this->addRoute("/projects/(?<projectId>[0-9]*)/images/(?<id>[0-9]*)/", "GET", $projectsController, "getProjectImage");
+        $this->addRoute("/projects/(?<projectId>[0-9]*)/images/(?<id>[0-9]*)/", "DELETE", $projectsController, "deleteProjectImage");
+        $this->addRoute("/projects/(?<projectId>[0-9]*)/images/", "GET", $projectsController, "getProjectImages");
+        $this->addRoute("/projects/(?<projectId>[0-9]*)/images/", "POST", $projectsController, "addProjectImage");
+        $this->addRoute("/projects/(?<id>[0-9]*)/", "GET", $projectsController, "getProject");
+        $this->addRoute("/projects/(?<id>[0-9]*)/", "PUT", $projectsController, "updateProject");
+        $this->addRoute("/projects/(?<id>[0-9]*)/", "DELETE", $projectsController, "deleteProject");
+        $this->addRoute("/projects/", "GET", $projectsController, "getProjects");
+        $this->addRoute("/projects/", "POST", $projectsController, "addProject");
+        $this->addRoute("/auth/login/", "POST", $authController, "login");
+        $this->addRoute("/auth/logout/", "DELETE", $authController, "logout");
+        $this->addRoute("/auth/session/", "GET", $authController, "getStatus");
     }
 
     public function addRoute(string $path, string $method, string $controller, string $function) {
@@ -87,8 +87,9 @@ class Router {
      */
     private function executeAction(): ?array {
         $uri = $this->core->uri;
-        foreach ($this->routes as $regex => $routeData) {
-            $regex = "/^\/v" . Config::get()->api_version . "{$regex}$/";
+        foreach ($this->routes as $route => $routeData) {
+            $routeRegex = str_replace("/", "\/", $route);
+            $regex = "/^\/v" . Config::get()->api_version . "{$routeRegex}$/";
             if (preg_match_all($regex, $uri, $matches)) {
                 if (isset($routeData[$this->core->method])) {
                     $action = $routeData[$this->core->method];
