@@ -20,74 +20,36 @@ class Router {
 
     use Responder;
 
-    protected $routes;
+    protected $routes = [];
 
     public function __construct(Core $core) {
         $this->core = $core;
 
-        $this->routes = [
-            "\/projects\/(?<projectId>[0-9]*)\/images\/(?<id>[0-9]*)\/" => [
-                "GET" => [
-                    "controller" => Projects::class,
-                    "method" => "getProjectImage",
-                ],
-                "DELETE" => [
-                    "controller" => Projects::class,
-                    "method" => "deleteProjectImage",
-                ],
-            ],
-            "\/projects\/(?<projectId>[0-9]*)\/images\/" => [
-                "GET" => [
-                    "controller" => Projects::class,
-                    "method" => "getProjectImages",
-                ],
-                "POST" => [
-                    "controller" => Projects::class,
-                    "method" => "addProjectImage",
-                ],
-            ],
-            "\/projects\/(?<id>[0-9]*)\/" => [
-                "GET" => [
-                    "controller" => Projects::class,
-                    "method" => "getProject",
-                ],
-                "PUT" => [
-                    "controller" => Projects::class,
-                    "method" => "updateProject",
-                ],
-                "DELETE" => [
-                    "controller" => Projects::class,
-                    "method" => "deleteProject",
-                ],
-            ],
-            "\/projects\/" => [
-                "GET" => [
-                    "controller" => Projects::class,
-                    "method" => "getProjects",
-                ],
-                "POST" => [
-                    "controller" => Projects::class,
-                    "method" => "addProject",
-                ],
-            ],
-            "\/auth\/login\/" => [
-                "POST" => [
-                    "controller" => Auth::class,
-                    "method" => "login",
-                ],
-            ],
-            "\/auth\/logout\/" => [
-                "DELETE" => [
-                    "controller" => Auth::class,
-                    "method" => "logout",
-                ],
-            ],
-            "\/auth\/session\/" => [
-                "GET" => [
-                    "controller" => Auth::class,
-                    "method" => "getStatus",
-                ],
-            ],
+        $projectsController = Projects::class;
+        $authController = Auth::class;
+
+        $this->addRoute("\/projects\/(?<projectId>[0-9]*)\/images\/(?<id>[0-9]*)\/", "GET", $projectsController, "getProjectImage");
+        $this->addRoute("\/projects\/(?<projectId>[0-9]*)\/images\/(?<id>[0-9]*)\/", "DELETE", $projectsController, "deleteProjectImage");
+        $this->addRoute("\/projects\/(?<projectId>[0-9]*)\/images\/", "GET", $projectsController, "getProjectImages");
+        $this->addRoute("\/projects\/(?<projectId>[0-9]*)\/images\/", "POST", $projectsController, "addProjectImage");
+        $this->addRoute("\/projects\/(?<id>[0-9]*)\/", "GET", $projectsController, "getProject");
+        $this->addRoute("\/projects\/(?<id>[0-9]*)\/", "PUT", $projectsController, "updateProject");
+        $this->addRoute("\/projects\/(?<id>[0-9]*)\/", "DELETE", $projectsController, "deleteProject");
+        $this->addRoute("\/projects\/", "GET", $projectsController, "getProjects");
+        $this->addRoute("\/projects\/", "POST", $projectsController, "addProject");
+        $this->addRoute("\/auth\/login\/", "POST", $authController, "login");
+        $this->addRoute("\/auth\/logout\/", "DELETE", $authController, "logout");
+        $this->addRoute("\/auth\/session\/", "GET", $authController, "getStatus");
+    }
+
+    public function addRoute(string $path, string $method, string $controller, string $function) {
+        if (!isset($this->routes[$path])) {
+            $this->routes[$path] = [];
+        }
+
+        $this->routes[$path][$method] = [
+            "controller" => $controller,
+            "function" => $function,
         ];
     }
 
@@ -133,7 +95,7 @@ class Router {
                     $controllerClass = $action["controller"];
                     $controller = new $controllerClass($this->core);
                     $identifiers = $this->getIdentifiersFromMatches($matches);
-                    return call_user_func_array([$controller, $action["method"]], $identifiers);
+                    return call_user_func_array([$controller, $action["function"]], $identifiers);
                 }
 
                 return $this->getMethodNotAllowedResponse();
