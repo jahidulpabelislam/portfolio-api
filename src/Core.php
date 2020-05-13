@@ -13,6 +13,8 @@
 
 namespace App;
 
+use App\Controller\Auth;
+use App\Controller\Projects;
 use DateTime;
 use DateTimeZone;
 
@@ -325,6 +327,23 @@ class Core {
 
         $router = new Router($this);
         $router->setBasePath("/v" . Config::get()->api_version);
+
+        $projectsController = Projects::class;
+        $authController = Auth::class;
+
+        $router->addRoute("/projects/{projectId}/images/{id}/", "GET", $projectsController, "getProjectImage");
+        $router->addRoute("/projects/{projectId}/images/{id}/", "DELETE", $projectsController, "deleteProjectImage");
+        $router->addRoute("/projects/{projectId}/images/", "GET", $projectsController, "getProjectImages");
+        $router->addRoute("/projects/{projectId}/images/", "POST", $projectsController, "addProjectImage");
+        $router->addRoute("/projects/{id}/", "GET", $projectsController, "getProject");
+        $router->addRoute("/projects/{id}/", "PUT", $projectsController, "updateProject");
+        $router->addRoute("/projects/{id}/", "DELETE", $projectsController, "deleteProject");
+        $router->addRoute("/projects/", "GET", $projectsController, "getProjects");
+        $router->addRoute("/projects/", "POST", $projectsController, "addProject");
+        $router->addRoute("/auth/login/", "POST", $authController, "login");
+        $router->addRoute("/auth/logout/", "DELETE", $authController, "logout");
+        $router->addRoute("/auth/session/", "GET", $authController, "getStatus");
+
         $response = $router->performRequest();
 
         $this->sendResponse($response);

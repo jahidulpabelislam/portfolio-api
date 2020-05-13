@@ -12,8 +12,6 @@
 
 namespace App;
 
-use App\Controller\Auth;
-use App\Controller\Projects;
 use App\Database\Exception;
 
 class Router {
@@ -23,26 +21,6 @@ class Router {
     protected $basePath = "";
 
     protected $routes = [];
-
-    public function __construct(Core $core) {
-        $this->core = $core;
-
-        $projectsController = Projects::class;
-        $authController = Auth::class;
-
-        $this->addRoute("/projects/{projectId}/images/{id}/", "GET", $projectsController, "getProjectImage");
-        $this->addRoute("/projects/{projectId}/images/{id}/", "DELETE", $projectsController, "deleteProjectImage");
-        $this->addRoute("/projects/{projectId}/images/", "GET", $projectsController, "getProjectImages");
-        $this->addRoute("/projects/{projectId}/images/", "POST", $projectsController, "addProjectImage");
-        $this->addRoute("/projects/{id}/", "GET", $projectsController, "getProject");
-        $this->addRoute("/projects/{id}/", "PUT", $projectsController, "updateProject");
-        $this->addRoute("/projects/{id}/", "DELETE", $projectsController, "deleteProject");
-        $this->addRoute("/projects/", "GET", $projectsController, "getProjects");
-        $this->addRoute("/projects/", "POST", $projectsController, "addProject");
-        $this->addRoute("/auth/login/", "POST", $authController, "login");
-        $this->addRoute("/auth/logout/", "DELETE", $authController, "logout");
-        $this->addRoute("/auth/session/", "GET", $authController, "getStatus");
-    }
 
     public function setBasePath(string $basePath) {
         $this->basePath = $basePath;
