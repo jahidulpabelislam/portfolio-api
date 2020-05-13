@@ -20,6 +20,77 @@ class Router {
 
     use Responder;
 
+    protected $routes;
+
+    public function __construct(Core $core) {
+        $this->core = $core;
+
+        $this->routes = [
+            "\/projects\/(?<projectId>[0-9]*)\/images\/(?<id>[0-9]*)\/" => [
+                "GET" => [
+                    "controller" => Projects::class,
+                    "method" => "getProjectImage",
+                ],
+                "DELETE" => [
+                    "controller" => Projects::class,
+                    "method" => "deleteProjectImage",
+                ],
+            ],
+            "\/projects\/(?<projectId>[0-9]*)\/images\/" => [
+                "GET" => [
+                    "controller" => Projects::class,
+                    "method" => "getProjectImages",
+                ],
+                "POST" => [
+                    "controller" => Projects::class,
+                    "method" => "addProjectImage",
+                ],
+            ],
+            "\/projects\/(?<id>[0-9]*)\/" => [
+                "GET" => [
+                    "controller" => Projects::class,
+                    "method" => "getProject",
+                ],
+                "PUT" => [
+                    "controller" => Projects::class,
+                    "method" => "updateProject",
+                ],
+                "DELETE" => [
+                    "controller" => Projects::class,
+                    "method" => "deleteProject",
+                ],
+            ],
+            "\/projects\/" => [
+                "GET" => [
+                    "controller" => Projects::class,
+                    "method" => "getProjects",
+                ],
+                "POST" => [
+                    "controller" => Projects::class,
+                    "method" => "addProject",
+                ],
+            ],
+            "\/auth\/login\/" => [
+                "POST" => [
+                    "controller" => Auth::class,
+                    "method" => "login",
+                ],
+            ],
+            "\/auth\/logout\/" => [
+                "DELETE" => [
+                    "controller" => Auth::class,
+                    "method" => "logout",
+                ],
+            ],
+            "\/auth\/session\/" => [
+                "GET" => [
+                    "controller" => Auth::class,
+                    "method" => "getStatus",
+                ],
+            ],
+        ];
+    }
+
     /**
      * Check that the requested API version is valid, if so return empty array
      * else return appropriate response (array)
@@ -35,117 +106,16 @@ class Router {
         return $response ?? null;
     }
 
-    /**
-     * @return array An appropriate response to auth request
-     */
-    private function executeAuthAction(): ?array {
-        $uriParts = $this->core->uriParts;
-        $method = $this->core->method;
+    private function getIdentifiersFromMatches(array $matches): array {
+        $identifiers = [];
 
-        $authAction = $uriParts[2] ?? null;
-
-        if ($method === "POST") {
-            if ($authAction === "login" && !isset($uriParts[3])) {
-                $response = (new Auth($this->core))->login();
-            }
-        }
-        else if ($method === "DELETE") {
-            if ($authAction === "logout" && !isset($uriParts[3])) {
-                $response = Auth::logout();
-            }
-        }
-        else if ($method === "GET") {
-            if ($authAction === "session" && !isset($uriParts[3])) {
-                $response = Auth::getStatus();
-            }
-        }
-        else {
-            $response = $this->getMethodNotAllowedResponse();
-        }
-
-        return $response ?? null;
-    }
-
-    private function executeProjectsGetAction(): ?array {
-        $uriParts = $this->core->uriParts;
-
-        if (isset($uriParts[2]) && $uriParts[2] !== "") {
-            $projectId = $uriParts[2];
-
-            if (isset($uriParts[3]) && $uriParts[3] === "images") {
-                if (isset($uriParts[4]) && $uriParts[4] !== "" && !isset($uriParts[5])) {
-                    $response = Projects::getProjectImage($projectId, $uriParts[4]);
-                }
-                else if (!isset($uriParts[4])) {
-                    $response = Projects::getProjectImages($projectId);
-                }
-            }
-            else if (!isset($uriParts[3])) {
-                $response = Projects::getProject($projectId);
-            }
-        }
-        else if (!isset($uriParts[2])) {
-            $response = (new Projects($this->core))->getProjects();
-        }
-
-        return $response ?? null;
-    }
-
-    private function executeProjectsPostAction(): ?array {
-        $uriParts = $this->core->uriParts;
-
-        if (
-            isset($uriParts[2], $uriParts[3]) && !isset($uriParts[4])
-            && $uriParts[2] !== "" && $uriParts[3] === "images"
-        ) {
-            $response = (new Projects($this->core))->addProjectImage($uriParts[2]);
-        }
-        else if (!isset($uriParts[2])) {
-            $response = (new Projects($this->core))->addProject();
-        }
-
-        return $response ?? null;
-    }
-
-    private function executeProjectsPutAction(): ?array {
-        $uriParts = $this->core->uriParts;
-
-        if (isset($uriParts[2]) && $uriParts[2] !== "" && !isset($uriParts[3])) {
-            $response = (new Projects($this->core))->updateProject($uriParts[2]);
-        }
-
-        return $response ?? null;
-    }
-
-    private function executeProjectsDeleteAction(): ?array {
-        $uriParts = $this->core->uriParts;
-
-        if (isset($uriParts[2]) && $uriParts[2] !== "") {
-            if (
-                isset($uriParts[3], $uriParts[4]) && !isset($uriParts[5])
-                && $uriParts[3] === "images" && $uriParts[4] !== ""
-            ) {
-                $response = Projects::deleteProjectImage($uriParts[2], $uriParts[4]);
-            }
-            else if (!isset($uriParts[3])) {
-                $response = Projects::deleteProject($uriParts[2]);
+        foreach ($matches as $key => $match) {
+            if (!is_numeric($key)) {
+                $identifiers[$key] = $match[0];
             }
         }
 
-        return $response ?? null;
-    }
-
-    /**
-     * @return array An appropriate response to projects request
-     */
-    private function executeProjectsAction(): ?array {
-        $methodFormatted = ucfirst(strtolower($this->core->method));
-        $functionName = "executeProjects{$methodFormatted}Action";
-        if (method_exists($this, $functionName)) {
-            return $this->{$functionName}();
-        }
-
-        return $this->getMethodNotAllowedResponse();
+        return $identifiers;
     }
 
     /**
@@ -154,18 +124,23 @@ class Router {
      * @return array An appropriate response to request
      */
     private function executeAction(): ?array {
-        $entityName = $this->core->uriParts[1] ?? null;
+        $uri = $this->core->uri;
+        foreach ($this->routes as $regex => $routeData) {
+            $regex = "/^\/v" . Config::get()->api_version . "{$regex}$/";
+            if (preg_match_all($regex, $uri, $matches)) {
+                if (isset($routeData[$this->core->method])) {
+                    $action = $routeData[$this->core->method];
+                    $controllerClass = $action["controller"];
+                    $controller = new $controllerClass($this->core);
+                    $identifiers = $this->getIdentifiersFromMatches($matches);
+                    return call_user_func_array([$controller, $action["method"]], $identifiers);
+                }
 
-        // Make sure value is the correct case
-        if ($entityName && strtolower($entityName) === $entityName) {
-            $entityNameFormatted = ucfirst($entityName);
-            $functionName = "execute{$entityNameFormatted}Action";
-            if (method_exists($this, $functionName)) {
-                return $this->{$functionName}();
+                return $this->getMethodNotAllowedResponse();
             }
         }
 
-        return null;
+        return $this->getUnrecognisedURIResponse();
     }
 
     /**
@@ -186,11 +161,6 @@ class Router {
                 $response = [
                     "ok" => false,
                 ];
-            }
-
-            // If at this point response is empty, we didn't recognise the action
-            if ($response === null) {
-                $response = $this->getUnrecognisedURIResponse();
             }
         }
 
