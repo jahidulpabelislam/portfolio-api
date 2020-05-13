@@ -28,13 +28,13 @@ class Router {
         $projectsController = Projects::class;
         $authController = Auth::class;
 
-        $this->addRoute("/projects/(?<projectId>[0-9]*)/images/(?<id>[0-9]*)/", "GET", $projectsController, "getProjectImage");
-        $this->addRoute("/projects/(?<projectId>[0-9]*)/images/(?<id>[0-9]*)/", "DELETE", $projectsController, "deleteProjectImage");
-        $this->addRoute("/projects/(?<projectId>[0-9]*)/images/", "GET", $projectsController, "getProjectImages");
-        $this->addRoute("/projects/(?<projectId>[0-9]*)/images/", "POST", $projectsController, "addProjectImage");
-        $this->addRoute("/projects/(?<id>[0-9]*)/", "GET", $projectsController, "getProject");
-        $this->addRoute("/projects/(?<id>[0-9]*)/", "PUT", $projectsController, "updateProject");
-        $this->addRoute("/projects/(?<id>[0-9]*)/", "DELETE", $projectsController, "deleteProject");
+        $this->addRoute("/projects/(?<projectId>[^/]*)/images/(?<id>[^/]*)/", "GET", $projectsController, "getProjectImage");
+        $this->addRoute("/projects/(?<projectId>[^/]*)/images/(?<id>[^/]*)/", "DELETE", $projectsController, "deleteProjectImage");
+        $this->addRoute("/projects/(?<projectId>[^/]*)/images/", "GET", $projectsController, "getProjectImages");
+        $this->addRoute("/projects/(?<projectId>[^/]*)/images/", "POST", $projectsController, "addProjectImage");
+        $this->addRoute("/projects/(?<id>[^/]*)/", "GET", $projectsController, "getProject");
+        $this->addRoute("/projects/(?<id>[^/]*)/", "PUT", $projectsController, "updateProject");
+        $this->addRoute("/projects/(?<id>[^/]*)/", "DELETE", $projectsController, "deleteProject");
         $this->addRoute("/projects/", "GET", $projectsController, "getProjects");
         $this->addRoute("/projects/", "POST", $projectsController, "addProject");
         $this->addRoute("/auth/login/", "POST", $authController, "login");
