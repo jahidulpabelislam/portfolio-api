@@ -28,13 +28,13 @@ class Router {
         $projectsController = Projects::class;
         $authController = Auth::class;
 
-        $this->addRoute("/projects/(?<projectId>[^/]*)/images/(?<id>[^/]*)/", "GET", $projectsController, "getProjectImage");
-        $this->addRoute("/projects/(?<projectId>[^/]*)/images/(?<id>[^/]*)/", "DELETE", $projectsController, "deleteProjectImage");
-        $this->addRoute("/projects/(?<projectId>[^/]*)/images/", "GET", $projectsController, "getProjectImages");
-        $this->addRoute("/projects/(?<projectId>[^/]*)/images/", "POST", $projectsController, "addProjectImage");
-        $this->addRoute("/projects/(?<id>[^/]*)/", "GET", $projectsController, "getProject");
-        $this->addRoute("/projects/(?<id>[^/]*)/", "PUT", $projectsController, "updateProject");
-        $this->addRoute("/projects/(?<id>[^/]*)/", "DELETE", $projectsController, "deleteProject");
+        $this->addRoute("/projects/{projectId}/images/{id}/", "GET", $projectsController, "getProjectImage");
+        $this->addRoute("/projects/{projectId}/images/{id}/", "DELETE", $projectsController, "deleteProjectImage");
+        $this->addRoute("/projects/{projectId}/images/", "GET", $projectsController, "getProjectImages");
+        $this->addRoute("/projects/{projectId}/images/", "POST", $projectsController, "addProjectImage");
+        $this->addRoute("/projects/{id}/", "GET", $projectsController, "getProject");
+        $this->addRoute("/projects/{id}/", "PUT", $projectsController, "updateProject");
+        $this->addRoute("/projects/{id}/", "DELETE", $projectsController, "deleteProject");
         $this->addRoute("/projects/", "GET", $projectsController, "getProjects");
         $this->addRoute("/projects/", "POST", $projectsController, "addProject");
         $this->addRoute("/auth/login/", "POST", $authController, "login");
@@ -80,6 +80,12 @@ class Router {
         return $identifiers;
     }
 
+    private static function pathToRegex(string $path): string {
+        $regex = preg_replace('/\/{([A-Za-z]*?)}\//', '/(?<$1>[^/]*)/', $path);
+        $regex = str_replace("/", "\/", $regex);
+        return $regex;
+    }
+
     /**
      * Try and execute the requested action
      *
@@ -87,9 +93,10 @@ class Router {
      */
     private function executeAction(): ?array {
         $uri = $this->core->uri;
+        $routePrefix = "\/v" . Config::get()->api_version;
         foreach ($this->routes as $route => $routeData) {
-            $routeRegex = str_replace("/", "\/", $route);
-            $regex = "/^\/v" . Config::get()->api_version . "{$routeRegex}$/";
+            $routeRegex = self::pathToRegex($route);
+            $regex = "/^{$routePrefix}{$routeRegex}$/";
             if (preg_match_all($regex, $uri, $matches)) {
                 if (isset($routeData[$this->core->method])) {
                     $action = $routeData[$this->core->method];
