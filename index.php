@@ -13,5 +13,5 @@ require_once(__DIR__ . "/bootstrap.php");
 
 use App\Core;
 
-$core = new Core();
+$core = Core::get();
 $core->handleRequest();

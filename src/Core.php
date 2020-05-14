@@ -41,6 +41,16 @@ class Core {
     protected $etag = null;
     protected $lastModified = null;
 
+    protected static $instance = null;
+
+    public static function get(): self {
+        if (static::$instance === null) {
+            static::$instance = new static();
+        }
+
+        return static::$instance;
+    }
+
     private function extractMethodFromRequest() {
         $this->method = strtoupper($_SERVER["REQUEST_METHOD"]);
     }
