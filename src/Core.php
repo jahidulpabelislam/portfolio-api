@@ -41,6 +41,8 @@ class Core {
     protected $etag = null;
     protected $lastModified = null;
 
+    protected $router = null;
+
     protected static $instance = null;
 
     public static function get(): self {
@@ -49,6 +51,36 @@ class Core {
         }
 
         return static::$instance;
+    }
+
+    private function initRoutes() {
+        $router = $this->router;
+
+        $router->setBasePath("/v" . Config::get()->api_version);
+
+        $projectsController = Projects::class;
+        $authController = Auth::class;
+
+        $router->addRoute("/projects/{projectId}/images/{id}/", "GET", $projectsController, "getProjectImage");
+        $router->addRoute("/projects/{projectId}/images/{id}/", "DELETE", $projectsController, "deleteProjectImage");
+        $router->addRoute("/projects/{projectId}/images/", "GET", $projectsController, "getProjectImages");
+        $router->addRoute("/projects/{projectId}/images/", "POST", $projectsController, "addProjectImage");
+        $router->addRoute("/projects/{id}/", "GET", $projectsController, "getProject");
+        $router->addRoute("/projects/{id}/", "PUT", $projectsController, "updateProject");
+        $router->addRoute("/projects/{id}/", "DELETE", $projectsController, "deleteProject");
+        $router->addRoute("/projects/", "GET", $projectsController, "getProjects");
+        $router->addRoute("/projects/", "POST", $projectsController, "addProject");
+        $router->addRoute("/auth/login/", "POST", $authController, "login");
+        $router->addRoute("/auth/logout/", "DELETE", $authController, "logout");
+        $router->addRoute("/auth/session/", "GET", $authController, "getStatus");
+    }
+
+    protected function getRouter(): Router {
+        if ($this->router === null) {
+            $this->router = new Router($this);
+            $this->initRoutes();
+        }
+        return $this->router;
     }
 
     private function extractMethodFromRequest() {
@@ -335,26 +367,7 @@ class Core {
     public function handleRequest() {
         $this->extractFromRequest();
 
-        $router = new Router($this);
-        $router->setBasePath("/v" . Config::get()->api_version);
-
-        $projectsController = Projects::class;
-        $authController = Auth::class;
-
-        $router->addRoute("/projects/{projectId}/images/{id}/", "GET", $projectsController, "getProjectImage");
-        $router->addRoute("/projects/{projectId}/images/{id}/", "DELETE", $projectsController, "deleteProjectImage");
-        $router->addRoute("/projects/{projectId}/images/", "GET", $projectsController, "getProjectImages");
-        $router->addRoute("/projects/{projectId}/images/", "POST", $projectsController, "addProjectImage");
-        $router->addRoute("/projects/{id}/", "GET", $projectsController, "getProject");
-        $router->addRoute("/projects/{id}/", "PUT", $projectsController, "updateProject");
-        $router->addRoute("/projects/{id}/", "DELETE", $projectsController, "deleteProject");
-        $router->addRoute("/projects/", "GET", $projectsController, "getProjects");
-        $router->addRoute("/projects/", "POST", $projectsController, "addProject");
-        $router->addRoute("/auth/login/", "POST", $authController, "login");
-        $router->addRoute("/auth/logout/", "DELETE", $authController, "logout");
-        $router->addRoute("/auth/session/", "GET", $authController, "getStatus");
-
-        $response = $router->performRequest();
+        $response = $this->getRouter()->performRequest();
 
         $this->sendResponse($response);
     }
