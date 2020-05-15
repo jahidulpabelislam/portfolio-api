@@ -12,7 +12,8 @@
 
 namespace App;
 
-use App\Database\Exception;
+use App\Database\Exception as DBException;
+use Exception;
 
 class Router {
 
@@ -21,6 +22,7 @@ class Router {
     protected $basePath = "";
 
     protected $routes = [];
+    protected $namedRoutes = [];
 
     public function setBasePath(string $basePath) {
         $this->basePath = $basePath;
@@ -30,7 +32,7 @@ class Router {
         return $this->basePath;
     }
 
-    public function addRoute(string $path, string $method, string $controller, string $function) {
+    public function addRoute(string $path, string $method, string $controller, string $function, string $name = null) {
         if (!isset($this->routes[$path])) {
             $this->routes[$path] = [];
         }
@@ -39,21 +41,40 @@ class Router {
             "controller" => $controller,
             "function" => $function,
         ];
+
+        if ($name) {
+            $this->namedRoutes[$name] = $path;
+        }
+    }
+
+    protected function getFullPath(string $path): string {
+        $basePath = $this->getBasePath();
+        if ($basePath !== "") {
+            $path = Utilities::addTrailingSlash($basePath) . Utilities::removeLeadingSlash($path);
+        }
+
+        return $path;
     }
 
     /**
-     * Check that the requested API version is valid, if so return empty array
-     * else return appropriate response (array)
+     * @param $name string
+     * @param $params array
+     * @return string
+     * @throws Exception
      */
-    private function checkAPIVersion(): ?array {
-        $version = $this->core->uriParts[0] ?? null;
-
-        $shouldBeVersion = "v" . Config::get()->api_version;
-        if ($version !== $shouldBeVersion) {
-            $response = $this->getUnrecognisedAPIVersionResponse();
+    public function makePath(string $name, array $params): string {
+        if (!isset($this->namedRoutes[$name])) {
+            throw new Exception("Named route {$name} not defined");
         }
 
-        return $response ?? null;
+        $path = $this->namedRoutes[$name];
+        $url = $this->getFullPath($path);
+
+        foreach ($params as $identifier => $value) {
+            $url = str_replace("/{{$identifier}}/", "/{$value}/", $url);
+        }
+
+        return $url;
     }
 
     private function getIdentifiersFromMatches(array $matches): array {
@@ -69,10 +90,7 @@ class Router {
     }
 
     private function pathToRegex(string $path): string {
-        $basePath = $this->getBasePath();
-        if ($basePath !== "") {
-            $path = Utilities::addTrailingSlash($basePath) . Utilities::removeLeadingSlash($path);
-        }
+        $path = $this->getFullPath($path);
 
         $regex = preg_replace("/\/{([A-Za-z]*?)}\//", "/(?<$1>[^/]*)/", $path);
         $regex = str_replace("/", "\/", $regex);
@@ -111,6 +129,21 @@ class Router {
     }
 
     /**
+     * Check that the requested API version is valid, if so return empty array
+     * else return appropriate response (array)
+     */
+    private function checkAPIVersion(): ?array {
+        $version = $this->core->uriParts[0] ?? null;
+
+        $shouldBeVersion = "v" . Config::get()->api_version;
+        if ($version !== $shouldBeVersion) {
+            $response = $this->getUnrecognisedAPIVersionResponse();
+        }
+
+        return $response ?? null;
+    }
+
+    /**
      * Try and perform the necessary actions needed to fulfil the request that a user made
      */
     public function performRequest(): ?array {
@@ -123,7 +156,7 @@ class Router {
             try {
                 $response = $this->executeAction();
             }
-            catch (Exception $exception) {
+            catch (DBException $exception) {
                 error_log($exception->getMessage() . ". Full error: {$exception}");
                 $response = [
                     "ok" => false,

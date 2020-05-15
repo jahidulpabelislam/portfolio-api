@@ -61,11 +61,11 @@ class Core {
         $projectsController = Projects::class;
         $authController = Auth::class;
 
-        $router->addRoute("/projects/{projectId}/images/{id}/", "GET", $projectsController, "getProjectImage");
+        $router->addRoute("/projects/{projectId}/images/{id}/", "GET", $projectsController, "getProjectImage", "projectImage");
         $router->addRoute("/projects/{projectId}/images/{id}/", "DELETE", $projectsController, "deleteProjectImage");
-        $router->addRoute("/projects/{projectId}/images/", "GET", $projectsController, "getProjectImages");
+        $router->addRoute("/projects/{projectId}/images/", "GET", $projectsController, "getProjectImages", "projectImages");
         $router->addRoute("/projects/{projectId}/images/", "POST", $projectsController, "addProjectImage");
-        $router->addRoute("/projects/{id}/", "GET", $projectsController, "getProject");
+        $router->addRoute("/projects/{id}/", "GET", $projectsController, "getProject", "project");
         $router->addRoute("/projects/{id}/", "PUT", $projectsController, "updateProject");
         $router->addRoute("/projects/{id}/", "DELETE", $projectsController, "deleteProject");
         $router->addRoute("/projects/", "GET", $projectsController, "getProjects");
@@ -75,7 +75,7 @@ class Core {
         $router->addRoute("/auth/session/", "GET", $authController, "getStatus");
     }
 
-    protected function getRouter(): Router {
+    public function getRouter(): Router {
         if ($this->router === null) {
             $this->router = new Router($this);
             $this->initRoutes();
