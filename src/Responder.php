@@ -30,7 +30,7 @@ trait Responder {
             "meta" => [
                 "status" => 405,
                 "message" => "Method Not Allowed.",
-                "feedback" => "Method {$this->core->method} not allowed on " . $this->core->getAPIURL() . ".",
+                "feedback" => "Method {$this->core->method} not allowed on " . $this->core->getRequestedURL() . ".",
             ],
         ];
     }
@@ -73,7 +73,7 @@ trait Responder {
             "meta" => [
                 "status" => 404,
                 "message" => "Not Found",
-                "feedback" => "Unrecognised URI (" . $this->core->getAPIURL() . ").",
+                "feedback" => "Unrecognised URI (" . $this->core->getRequestedURL() . ").",
             ],
         ];
     }
@@ -86,7 +86,7 @@ trait Responder {
 
         $shouldBeURI = $this->core->uriParts;
         $shouldBeURI[0] = "v" . $shouldBeVersion;
-        $shouldBeURL = $this->core->getAPIURL($shouldBeURI);
+        $shouldBeURL = Core::makeFullURL($shouldBeURI);
 
         return [
             "meta" => [
@@ -169,7 +169,7 @@ trait Responder {
         $lastPage = ceil($totalCount / $limit);
         $response["meta"]["total_pages"] = $lastPage;
 
-        $pageURL = $this->core->getAPIURL();
+        $pageURL = $this->core->getRequestedURL();
         if (isset($params["limit"])) {
             $params["limit"] = $limit;
         }

@@ -132,24 +132,28 @@ class Core {
     }
 
     /**
-     * Generates a full URL from the URI user requested
-     *
-     * @param $uriParts string[]|null The URI user request as an array
-     * @return string The full URI user requested
+     * @param $uri string|string[]
+     * @return string
      */
-    public function getAPIURL(array $uriParts = null): string {
-        $uri = $this->uri;
-        if ($uriParts !== null) {
-            $uri = implode("/", $uriParts);
+    public static function makeFullURL($uri): string {
+        if (is_array($uri)) {
+            $uri = implode("/", $uri);
             $uri = Utilities::addLeadingSlash($uri);
         }
 
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
         $domain = Utilities::removeTrailingSlash($_SERVER["SERVER_NAME"]);
 
-        $fullURL = "{$protocol}://{$domain}{$uri}";
+        return "{$protocol}://{$domain}{$uri}";
+    }
 
-        return $fullURL;
+    /**
+     * Generates a full URL of current request
+     *
+     * @return string The full URI user requested
+     */
+    public function getRequestedURL(): string {
+         return static::makeFullURL($this->uri);
     }
 
     public static function makeUrl(string $base, array $params): string {
