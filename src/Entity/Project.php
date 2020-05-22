@@ -14,11 +14,10 @@
 
 namespace App\Entity;
 
-use App\APIEntityInterface;
 use App\Core;
-use App\Entity;
+use App\APIEntity;
 
-class Project extends Entity implements APIEntityInterface {
+class Project extends APIEntity {
 
     use Filterable;
     use Searchable;

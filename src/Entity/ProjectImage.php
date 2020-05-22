@@ -14,12 +14,11 @@
 
 namespace App\Entity;
 
-use App\APIEntityInterface;
 use App\Core;
-use App\Entity;
+use App\APIEntity;
 use App\Utilities;
 
-class ProjectImage extends Entity implements APIEntityInterface {
+class ProjectImage extends APIEntity {
 
     use Timestamped;
 
