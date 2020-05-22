@@ -14,9 +14,11 @@
 
 namespace App\Entity;
 
+use App\APIEntityInterface;
+use App\Core;
 use App\Entity;
 
-class Project extends Entity {
+class Project extends Entity implements APIEntityInterface {
 
     use Filterable;
     use Searchable;
@@ -119,6 +121,10 @@ class Project extends Entity {
         }
 
         return $array;
+    }
+
+    public function getAPIURL(): string {
+        return Core::get()->getRouter()->makeUrl("project", ["id" => $this->id]);
     }
 
 }

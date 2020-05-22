@@ -14,10 +14,12 @@
 
 namespace App\Entity;
 
+use App\APIEntityInterface;
+use App\Core;
 use App\Entity;
 use App\Utilities;
 
-class ProjectImage extends Entity {
+class ProjectImage extends Entity implements APIEntityInterface {
 
     use Timestamped;
 
@@ -59,6 +61,16 @@ class ProjectImage extends Entity {
         }
 
         return $isDeleted;
+    }
+
+    public function getAPIURL(): string {
+        return Core::get()->getRouter()->makeUrl(
+            "projectImage",
+            [
+                "id" => $this->id,
+                "projectId" => $this->project_id,
+            ]
+        );
     }
 
 }
