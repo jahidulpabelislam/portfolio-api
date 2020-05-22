@@ -138,13 +138,13 @@ class Core {
     public static function makeFullURL($uri): string {
         if (is_array($uri)) {
             $uri = implode("/", $uri);
-            $uri = Utilities::addLeadingSlash($uri);
         }
 
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
         $domain = Utilities::removeTrailingSlash($_SERVER["SERVER_NAME"]);
+        $uri = Utilities::addLeadingSlash($uri);
 
-        return "{$protocol}://{$domain}{$uri}";
+        return Utilities::addTrailingSlash("{$protocol}://{$domain}{$uri}");
     }
 
     /**
