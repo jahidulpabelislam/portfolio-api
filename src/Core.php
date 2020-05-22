@@ -222,7 +222,7 @@ class Core {
         return $_SERVER["HTTP_IF_MODIFIED_SINCE"] ?? null;
     }
 
-    private static function setHeader(string $header, string $value) {
+    public static function setHeader(string $header, string $value) {
         header("{$header}: {$value}");
     }
 

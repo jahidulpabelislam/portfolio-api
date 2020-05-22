@@ -242,6 +242,8 @@ trait Responder {
             $response["meta"]["status"] = 201;
             $response["meta"]["message"] = "Created";
 
+            Core::setHeader("Location", $entity->getAPIURL());
+
             return $response;
         }
 
