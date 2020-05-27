@@ -175,6 +175,7 @@ class Core {
             self::setHeader("Access-Control-Allow-Origin", $originURL);
             self::setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             self::setHeader("Access-Control-Allow-Headers", "Process-Data, Authorization");
+            self::setHeader("Vary", "Origin");
 
             // Override meta data, and respond with all endpoints available
             if ($this->method === "OPTIONS") {
