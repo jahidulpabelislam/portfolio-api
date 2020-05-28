@@ -216,9 +216,7 @@ class Core {
 
         if ($latestDate) {
             $lastModified = $latestDate->format("D, j M Y H:i:s");
-
             self::setHeader("Last-Modified", $lastModified . " GMT");
-            self::setHeader("ETag", md5($latestRow["id"] . $latestRow["updated_at"]));
         }
     }
 
@@ -242,6 +240,8 @@ class Core {
             self::setHeader("Pragma", "cache");
 
             $this->setLastModifiedHeaders();
+
+            self::setHeader("ETag", md5(json_encode($this->response)));
         }
     }
 
