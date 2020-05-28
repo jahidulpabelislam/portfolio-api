@@ -39,6 +39,9 @@ class Core {
 
     public $files = [];
 
+    protected $etag = null;
+    protected $lastModified = null;
+
     private function extractMethodFromRequest() {
         $this->method = strtoupper($_SERVER["REQUEST_METHOD"]);
     }
@@ -160,6 +163,10 @@ class Core {
         });
     }
 
+    protected function getLastModifiedFromRequest(): string {
+        return $_SERVER["HTTP_IF_MODIFIED_SINCE"] ?? "";
+    }
+
     private static function setHeader(string $header, string $value) {
         header("{$header}: {$value}");
     }
@@ -201,23 +208,43 @@ class Core {
         return $dateTime;
     }
 
+    public function getLastModified(): string {
+        if ($this->lastModified === null) {
+            $response = $this->response;
+
+            $lastModified = "";
+
+            if (!empty($response["row"])) {
+                $latestRow = $response["row"];
+                if (!empty($latestRow["updated_at"])) {
+                    $latestDate = self::createDateTimeFromRow($latestRow);
+                    $lastModified = $latestDate->format("D, j M Y H:i:s") . " GMT";
+                }
+            }
+
+            $this->lastModified = $lastModified;
+        }
+
+        return $this->lastModified;
+    }
+
     private function setLastModifiedHeaders() {
-        $response = $this->response;
+        $lastModified = $this->getLastModified();
+        if ($lastModified) {
+            self::setHeader("Last-Modified", $lastModified);
+        }
+    }
 
-        if (empty($response["row"])) {
-            return;
+    public function getETagFromRequest(): string {
+        return $_SERVER["HTTP_IF_NONE_MATCH"] ?? "";
+    }
+
+    public function getETag(): string {
+        if ($this->etag === null) {
+            $this->etag = md5(json_encode($this->response));
         }
 
-        $latestDate = null;
-        $latestRow = $response["row"];
-        if (!empty($latestRow["updated_at"])) {
-            $latestDate = self::createDateTimeFromRow($latestRow);
-        }
-
-        if ($latestDate) {
-            $lastModified = $latestDate->format("D, j M Y H:i:s");
-            self::setHeader("Last-Modified", $lastModified . " GMT");
-        }
+        return $this->etag;
     }
 
     private function setCacheHeaders() {
@@ -241,7 +268,7 @@ class Core {
 
             $this->setLastModifiedHeaders();
 
-            self::setHeader("ETag", md5(json_encode($this->response)));
+            self::setHeader("ETag", $this->getETag());
         }
     }
 
@@ -268,6 +295,14 @@ class Core {
 
         $this->setCORSHeaders();
         $this->setCacheHeaders();
+
+        if (
+            $this->getETag() === $this->getETagFromRequest() ||
+            $this->getLastModified() === $this->getLastModifiedFromRequest()
+        ) {
+            header("HTTP/1.1 304 Not Modified");
+            die();
+        }
 
         $status = $this->response["meta"]["status"];
         $message = $this->response["meta"]["message"];
