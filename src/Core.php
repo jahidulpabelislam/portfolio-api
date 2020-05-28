@@ -204,29 +204,14 @@ class Core {
     private function setLastModifiedHeaders() {
         $response = $this->response;
 
-        if (empty($response["rows"]) && empty($response["row"])) {
+        if (empty($response["row"])) {
             return;
         }
 
         $latestDate = null;
-        $latestRow = $response["row"] ?? $response["rows"][0] ?? null;
-        if ($latestRow && !empty($latestRow["updated_at"])) {
+        $latestRow = $response["row"];
+        if (!empty($latestRow["updated_at"])) {
             $latestDate = self::createDateTimeFromRow($latestRow);
-        }
-
-        if (!empty($response["rows"]) && count($response["rows"]) > 1) {
-            foreach ($response["rows"] as $i => $row) {
-                if (!$i || empty($row["updated_at"])) {
-                    continue;
-                }
-
-                $updatedAtDate = self::createDateTimeFromRow($row);
-
-                if ($updatedAtDate > $latestDate) {
-                    $latestDate = $updatedAtDate;
-                    $latestRow = $row;
-                }
-            }
         }
 
         if ($latestDate) {
