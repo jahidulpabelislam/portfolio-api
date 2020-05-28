@@ -80,10 +80,7 @@ abstract class Entity {
     }
 
     private static function getIntColumns(): array {
-        $intColumns = static::$intColumns;
-        $intColumns[] = "id";
-
-        return $intColumns;
+        return static::$intColumns;
     }
 
     private static function getDataTimeColumns(): array {
