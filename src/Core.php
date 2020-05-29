@@ -163,8 +163,8 @@ class Core {
         });
     }
 
-    protected function getLastModifiedFromRequest(): string {
-        return $_SERVER["HTTP_IF_MODIFIED_SINCE"] ?? "";
+    protected function getLastModifiedFromRequest(): ?string {
+        return $_SERVER["HTTP_IF_MODIFIED_SINCE"] ?? null;
     }
 
     private static function setHeader(string $header, string $value) {
@@ -235,8 +235,8 @@ class Core {
         }
     }
 
-    public function getETagFromRequest(): string {
-        return $_SERVER["HTTP_IF_NONE_MATCH"] ?? "";
+    public function getETagFromRequest(): ?string {
+        return $_SERVER["HTTP_IF_NONE_MATCH"] ?? null;
     }
 
     public function getETag(): string {
