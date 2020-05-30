@@ -129,15 +129,7 @@ class Projects extends Controller {
      * @return array The request response to send back
      */
     public function addProject(): array {
-        $response = $this->saveProject($this->core->data);
-
-        // If successful, as this is a new Project creation override the meta
-        if (!empty($response["row"])) {
-            $response["meta"]["status"] = 201;
-            $response["meta"]["message"] = "Created";
-        }
-
-        return $response;
+        return $this->saveProject($this->core->data);
     }
 
     /**
