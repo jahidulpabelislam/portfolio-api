@@ -45,7 +45,7 @@ class Core {
 
     protected static $instance = null;
 
-    public static function get(): self {
+    public static function get(): Core {
         if (static::$instance === null) {
             static::$instance = new static();
         }
