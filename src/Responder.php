@@ -195,7 +195,7 @@ trait Responder {
         return $response;
     }
 
-    private static function getItemFoundResponse(Entity $entity): array {
+    private static function getItemFoundResponse(APIEntity $entity): array {
         return [
             "ok" => true,
             "data" => $entity->toArray(),
@@ -223,11 +223,11 @@ trait Responder {
      * else if not found return necessary meta
      *
      * @param $entityClass string
-     * @param $entity Entity|null
+     * @param $entity APIEntity|null
      * @param $id int|string|null
      * @return array
      */
-    public static function getItemResponse(string $entityClass, ?Entity $entity, $id): array {
+    public static function getItemResponse(string $entityClass, ?APIEntity $entity, $id): array {
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
             return static::getItemFoundResponse($entity);
         }
@@ -235,7 +235,7 @@ trait Responder {
         return static::getItemNotFoundResponse($entityClass, $id);
     }
 
-    public static function getInsertResponse(string $entityClass, ?Entity $entity): array {
+    public static function getInsertResponse(string $entityClass, ?APIEntity $entity): array {
         if ($entity && $entity->isLoaded()) {
             $response = static::getItemFoundResponse($entity);
 
@@ -256,11 +256,11 @@ trait Responder {
 
     /**
      * @param $entityClass string
-     * @param $entity Entity|null
+     * @param $entity APIEntity|null
      * @param $id int|string|null
      * @return array
      */
-    public static function getUpdateResponse(string $entityClass, ?Entity $entity, $id): array {
+    public static function getUpdateResponse(string $entityClass, ?APIEntity $entity, $id): array {
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
             return static::getItemFoundResponse($entity);
         }
@@ -276,12 +276,12 @@ trait Responder {
      * Return the response when a item was attempted to be deleted
      *
      * @param $entityClass string
-     * @param $entity Entity|null
+     * @param $entity APIEntity|null
      * @param $id int|string|null
      * @param $isDeleted bool
      * @return array
      */
-    public static function getItemDeletedResponse(string $entityClass, ?Entity $entity, $id, bool $isDeleted = false): array {
+    public static function getItemDeletedResponse(string $entityClass, ?APIEntity $entity, $id, bool $isDeleted = false): array {
         if (!$id || !$entity || !$entity->isLoaded() || $entity->getId() != $id) {
             return static::getItemNotFoundResponse($entityClass, $id);
         }
