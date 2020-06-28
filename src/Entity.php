@@ -179,7 +179,7 @@ abstract class Entity {
         return $this->getId() !== null;
     }
 
-    public static function create(?array $data = null): Entity {
+    public static function factory(?array $data = null): Entity {
         $entity = new static();
 
         if (!empty($data)) {
@@ -194,7 +194,7 @@ abstract class Entity {
      * @return static
      */
     private static function populateFromDB(array $row): Entity {
-        $entity = static::create($row);
+        $entity = static::factory($row);
         $entity->setId($row["id"]);
         return $entity;
     }
@@ -451,7 +451,7 @@ abstract class Entity {
      * @return static
      */
     public static function insert(array $data = null): Entity {
-        $entity = static::create($data);
+        $entity = static::factory($data);
         $entity->save();
 
         return $entity;
