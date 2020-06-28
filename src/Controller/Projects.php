@@ -285,7 +285,7 @@ class Projects extends Controller {
             }
             else {
                 $requiredFields = ["image"];
-                $response = $this->getInvalidFieldsResponse(User::class, [], $requiredFields);
+                $response = $this->getInvalidFieldsResponse(ProjectImage::class, [], $requiredFields);
             }
         }
         else {
