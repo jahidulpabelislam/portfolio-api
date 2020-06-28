@@ -175,7 +175,7 @@ abstract class Entity {
     }
 
     public function isLoaded(): bool {
-        return !empty($this->id);
+        return $this->getId() !== null;
     }
 
     public static function create(?array $data = null): Entity {
@@ -392,7 +392,7 @@ abstract class Entity {
 
     public function refresh() {
         if ($this->isLoaded()) {
-            $row = static::select("*", $this->id, null, null, 1);
+            $row = static::select("*", $this->getId(), null, null, 1);
             if ($row) {
                 $this->setValues($row);
                 return;
@@ -438,7 +438,7 @@ abstract class Entity {
             }
         }
         else {
-            $rowsAffected = $query->update($values, $this->id);
+            $rowsAffected = $query->update($values, $this->getId());
             $wasSuccessful = $rowsAffected > 0;
         }
 
@@ -471,7 +471,7 @@ abstract class Entity {
      */
     public function delete(): bool {
         if ($this->isLoaded()) {
-            $rowsAffected = static::getQuery()->delete($this->id);
+            $rowsAffected = static::getQuery()->delete($this->getId());
             return $rowsAffected > 0;
         }
 

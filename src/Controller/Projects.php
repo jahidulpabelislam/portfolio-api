@@ -206,7 +206,7 @@ class Projects extends Controller {
     private static function uploadProjectImage(Project $project, array $image): array {
         $response = [];
 
-        $projectId = $project->id;
+        $projectId = $project->getId();
         $projectName = $project->name;
 
         $projectNameFormatted = strtolower($projectName);

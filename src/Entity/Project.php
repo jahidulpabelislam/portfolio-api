@@ -113,7 +113,7 @@ class Project extends Entity {
      */
     public function loadProjectImages() {
         if ($this->isLoaded()) {
-            $this->images = ProjectImage::getByColumn("project_id", $this->id);
+            $this->images = ProjectImage::getByColumn("project_id", $this->getId());
         }
     }
 

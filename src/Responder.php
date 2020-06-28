@@ -240,7 +240,7 @@ trait Responder {
      * @return array
      */
     public static function getItemResponse(string $entityClass, ?Entity $entity, $id): array {
-        if ($id && $entity && $entity->isLoaded() && $entity->id == $id) {
+        if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
             return self::getItemFoundResponse($entity);
         }
 
@@ -272,7 +272,7 @@ trait Responder {
      * @return array
      */
     public static function getUpdateResponse(string $entityClass, ?Entity $entity, $id): array {
-        if ($id && $entity && $entity->isLoaded() && $entity->id == $id) {
+        if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
             return self::getItemFoundResponse($entity);
         }
 
@@ -294,7 +294,7 @@ trait Responder {
      * @return array
      */
     public static function getItemDeletedResponse(string $entityClass, ?Entity $entity, $id, bool $isDeleted = false): array {
-        if (!$id || !$entity || !$entity->isLoaded() || $entity->id != $id) {
+        if (!$id || !$entity || !$entity->isLoaded() || $entity->getId() != $id) {
             return self::getItemNotFoundResponse($entityClass, $id);
         }
 
