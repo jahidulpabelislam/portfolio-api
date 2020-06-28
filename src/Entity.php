@@ -28,6 +28,7 @@ abstract class Entity {
 
     protected static $tableName = "";
 
+    protected $identifier = null;
     protected $columns = [];
 
     protected static $requiredColumns = [];
@@ -114,18 +115,14 @@ abstract class Entity {
     }
 
     private function setId(?int $id) {
-        $this->columns["id"] = $id;
+        $this->identifier = $id;
     }
 
     public function getId(): ?int {
-        return $this->columns["id"];
+        return $this->identifier;
     }
 
     private function setValue(string $column, $value) {
-        if ($column === "id") {
-            return;
-        }
-
         if (in_array($column, static::getIntColumns())) {
             $value = (int)$value;
         }
@@ -149,6 +146,10 @@ abstract class Entity {
     }
 
     public function __get(string $name) {
+        if ($name === "id") {
+            return $this->getId();
+        }
+
         if (array_key_exists($name, $this->columns)) {
             return $this->columns[$name];
         }
@@ -157,14 +158,14 @@ abstract class Entity {
     }
 
     public function __isset(string $name): bool {
+        if ($name === "id") {
+            return isset($this->identifier);
+        }
+
         return isset($this->columns[$name]);
     }
 
     public function __construct() {
-        // Slight hack so id is the first item...
-        $columns = ["id" => null];
-        $this->columns = array_merge($columns, $this->columns);
-
         if (static::$hasCreatedAt) {
             $this->setValue("created_at", null);
         }
@@ -403,15 +404,7 @@ abstract class Entity {
     }
 
     protected function getValuesToSave(): array {
-        $values = [];
-
-        foreach ($this->columns as $column => $value) {
-            if ($column !== "id") {
-                $values[$column] = $value;
-            }
-        }
-
-        return $values;
+        return $this->columns;
     }
 
     /**
@@ -479,17 +472,21 @@ abstract class Entity {
     }
 
     public function toArray(): array {
-        $array = $this->columns;
+        $array = [
+            "id" => $this->getId(),
+        ];
 
         $dateTimeColumns = static::getDataTimeColumns();
 
-        foreach ($array as $column => $value) {
+        foreach ($this->columns as $column => $value) {
             if (in_array($column, $dateTimeColumns)) {
                 $datetime = DateTime::createFromFormat(static::$dateTimeFormat, $value);
                 if ($datetime) {
-                    $array[$column] = $datetime->format("Y-m-d H:i:s e");
+                    $value = $datetime->format("Y-m-d H:i:s e");
                 }
             }
+
+            $array[$column] = $value;
         }
 
         return $array;
