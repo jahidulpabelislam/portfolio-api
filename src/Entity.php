@@ -117,6 +117,10 @@ abstract class Entity {
         $this->columns["id"] = $id;
     }
 
+    public function getId(): ?int {
+        return $this->columns["id"];
+    }
+
     private function setValue(string $column, $value) {
         if ($column === "id") {
             return;
