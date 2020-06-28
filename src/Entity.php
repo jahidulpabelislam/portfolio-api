@@ -47,38 +47,6 @@ abstract class Entity {
 
     protected static $defaultLimit = 10;
 
-    public function __construct() {
-        // Slight hack so id is the first item...
-        $columns = ["id" => null];
-        $this->columns = array_merge($columns, $this->columns);
-
-        if (static::$hasCreatedAt) {
-            $this->setValue("created_at", null);
-        }
-
-        if (static::$hasUpdatedAt) {
-            $this->setValue("updated_at", null);
-        }
-    }
-
-    protected static function getDB(): Connection {
-        if (!static::$db) {
-            $config = Config::get();
-            static::$db = new Connection([
-                "host" => $config->db_host,
-                "database" => $config->db_name,
-                "username" => $config->db_username,
-                "password" => $config->db_password,
-            ]);
-        }
-
-        return static::$db;
-    }
-
-    public static function getQuery(): Query {
-        return new Query(static::getDB(), static::$tableName);
-    }
-
     private static function getIntColumns(): array {
         return static::$intColumns;
     }
@@ -99,6 +67,54 @@ abstract class Entity {
 
     public static function getRequiredFields(): array {
         return static::$requiredColumns;
+    }
+
+    protected static function getDB(): Connection {
+        if (!static::$db) {
+            $config = Config::get();
+            static::$db = new Connection([
+                "host" => $config->db_host,
+                "database" => $config->db_name,
+                "username" => $config->db_username,
+                "password" => $config->db_password,
+            ]);
+        }
+
+        return static::$db;
+    }
+
+    public static function getQuery(): Query {
+        return new Query(static::getDB(), static::$tableName);
+    }
+
+    /**
+     * @param $columns string[]|string|null
+     * @param $where string[]|string|int|null
+     * @param $params array|null
+     * @param $orderBy string[]|string|null
+     * @param $limit int|null
+     * @param $page int|null
+     * @return array[]|array|null
+     */
+    public static function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, ?int $page = null): ?array {
+        return static::getQuery()->select($columns, $where, $params, $orderBy, $limit, $page);
+    }
+
+    /**
+     * Used to get a total count of Entities using a where clause
+     * Used together with Entity::getByParams, as this return a limited Entities
+     * but we want to get a number of total items without limit
+     *
+     * @param $where string[]|string|null
+     * @param $params array|null
+     * @return int
+     */
+    public static function getCount($where = null, ?array $params = null): int {
+        return static::getQuery()->count($where, $params);
+    }
+
+    private function setId(?int $id) {
+        $this->columns["id"] = $id;
     }
 
     private function setValue(string $column, $value) {
@@ -122,12 +138,10 @@ abstract class Entity {
         }
     }
 
-    private function setId(?int $id) {
-        $this->columns["id"] = $id;
-    }
-
-    public function __isset(string $name): bool {
-        return isset($this->columns[$name]);
+    public function __set(string $name, $value) {
+        if (array_key_exists($name, $this->columns)) {
+            $this->setValue($name, $value);
+        }
     }
 
     public function __get(string $name) {
@@ -138,31 +152,26 @@ abstract class Entity {
         return null;
     }
 
-    public function __set(string $name, $value) {
-        if (array_key_exists($name, $this->columns)) {
-            $this->setValue($name, $value);
+    public function __isset(string $name): bool {
+        return isset($this->columns[$name]);
+    }
+
+    public function __construct() {
+        // Slight hack so id is the first item...
+        $columns = ["id" => null];
+        $this->columns = array_merge($columns, $this->columns);
+
+        if (static::$hasCreatedAt) {
+            $this->setValue("created_at", null);
+        }
+
+        if (static::$hasUpdatedAt) {
+            $this->setValue("updated_at", null);
         }
     }
 
     public function isLoaded(): bool {
         return !empty($this->id);
-    }
-
-    public function toArray(): array {
-        $array = $this->columns;
-
-        $dateTimeColumns = static::getDataTimeColumns();
-
-        foreach ($array as $column => $value) {
-            if (in_array($column, $dateTimeColumns)) {
-                $datetime = DateTime::createFromFormat(static::$dateTimeFormat, $value);
-                if ($datetime) {
-                    $array[$column] = $datetime->format("Y-m-d H:i:s e");
-                }
-            }
-        }
-
-        return $array;
     }
 
     public static function create(?array $data = null): Entity {
@@ -255,19 +264,6 @@ abstract class Entity {
     }
 
     /**
-     * @param $columns string[]|string|null
-     * @param $where string[]|string|int|null
-     * @param $params array|null
-     * @param $orderBy string[]|string|null
-     * @param $limit int|null
-     * @param $page int|null
-     * @return array[]|array|null
-     */
-    public static function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, ?int $page = null): ?array {
-        return static::getQuery()->select($columns, $where, $params, $orderBy, $limit, $page);
-    }
-
-    /**
      * @param $where string[]|string|int
      * @param $params array|null
      * @param $limit int|string|null
@@ -318,18 +314,6 @@ abstract class Entity {
         }
 
         return null;
-    }
-
-    public function refresh() {
-        if ($this->isLoaded()) {
-            $row = static::select("*", $this->id, null, null, 1);
-            if ($row) {
-                $this->setValues($row);
-                return;
-            }
-
-            $this->setId(null);
-        }
     }
 
     /**
@@ -388,19 +372,6 @@ abstract class Entity {
     }
 
     /**
-     * Used to get a total count of Entities using a where clause
-     * Used together with Entity::getByParams, as this return a limited Entities
-     * but we want to get a number of total items without limit
-     *
-     * @param $where string[]|string|null
-     * @param $params array|null
-     * @return int
-     */
-    public static function getCount($where = null, ?array $params = null): int {
-        return static::getQuery()->count($where, $params);
-    }
-
-    /**
      * Gets all Entities but paginated, also might include search
      *
      * @param $params array Any data to aid in the search query
@@ -413,6 +384,18 @@ abstract class Entity {
         $resultFromGeneration = static::generateWhereClausesFromParams($params);
 
         return static::get($resultFromGeneration["where"] ?? null, $resultFromGeneration["params"] ?? null, $limit, $page);
+    }
+
+    public function refresh() {
+        if ($this->isLoaded()) {
+            $row = static::select("*", $this->id, null, null, 1);
+            if ($row) {
+                $this->setValues($row);
+                return;
+            }
+
+            $this->setId(null);
+        }
     }
 
     protected function getValuesToSave(): array {
@@ -489,6 +472,23 @@ abstract class Entity {
         }
 
         return false;
+    }
+
+    public function toArray(): array {
+        $array = $this->columns;
+
+        $dateTimeColumns = static::getDataTimeColumns();
+
+        foreach ($array as $column => $value) {
+            if (in_array($column, $dateTimeColumns)) {
+                $datetime = DateTime::createFromFormat(static::$dateTimeFormat, $value);
+                if ($datetime) {
+                    $array[$column] = $datetime->format("Y-m-d H:i:s e");
+                }
+            }
+        }
+
+        return $array;
     }
 
 }

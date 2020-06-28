@@ -64,33 +64,6 @@ class Project extends Entity {
 
     public $images = null;
 
-    public function toArray(): array {
-        $projectArray = parent::toArray();
-
-        if (isset($projectArray["skills"])) {
-            $skills = explode(",", $projectArray["skills"]);
-            array_walk($skills, "trim");
-            $projectArray["skills"] = $skills;
-        }
-
-        if ($this->images !== null) {
-            $projectArray["images"] = array_map(static function(ProjectImage $image) {
-                return $image->toArray();
-            }, $this->images);
-        }
-
-        return $projectArray;
-    }
-
-    /**
-     * Helper function to get all Project Image Entities linked to this Project
-     */
-    public function loadProjectImages() {
-        if ($this->isLoaded()) {
-            $this->images = ProjectImage::getByColumn("project_id", $this->id);
-        }
-    }
-
     /**
      * Adds filter by public projects if (admin) user isn't currently logged in
      *
@@ -125,14 +98,23 @@ class Project extends Entity {
         return [$where, $params, $limit];
     }
 
+    public static function getCount($where = null, ?array $params = null): int {
+        [$where, $params] = static::addStatusWhere($where, $params);
+        return parent::getCount($where, $params);
+    }
+
     public static function get($where = null, ?array $params = null, $limit = null, $page = null) {
         [$where, $params, $limit] = static::addStatusWhere($where, $params, $limit);
         return parent::get($where, $params, $limit, $page);
     }
 
-    public static function getCount($where = null, ?array $params = null): int {
-        [$where, $params] = static::addStatusWhere($where, $params);
-        return parent::getCount($where, $params);
+    /**
+     * Helper function to get all Project Image Entities linked to this Project
+     */
+    public function loadProjectImages() {
+        if ($this->isLoaded()) {
+            $this->images = ProjectImage::getByColumn("project_id", $this->id);
+        }
     }
 
     /**
@@ -153,6 +135,24 @@ class Project extends Entity {
         }
 
         return $isDeleted;
+    }
+
+    public function toArray(): array {
+        $projectArray = parent::toArray();
+
+        if (isset($projectArray["skills"])) {
+            $skills = explode(",", $projectArray["skills"]);
+            array_walk($skills, "trim");
+            $projectArray["skills"] = $skills;
+        }
+
+        if ($this->images !== null) {
+            $projectArray["images"] = array_map(static function(ProjectImage $image) {
+                return $image->toArray();
+            }, $this->images);
+        }
+
+        return $projectArray;
     }
 
 }
