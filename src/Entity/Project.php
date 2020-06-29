@@ -119,6 +119,16 @@ class Project extends Entity {
 
     /**
      * @inheritDoc
+     */
+    public function refresh() {
+        parent::refresh();
+        if ($this->isLoaded() && $this->images !== null) {
+            $this->loadProjectImages(true);
+        }
+    }
+
+    /**
+     * @inheritDoc
      *
      * Add extra functionality as a Project is linked to many Project Images, so delete these also
      *
