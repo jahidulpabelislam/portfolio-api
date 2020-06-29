@@ -12,10 +12,6 @@
 
 namespace App;
 
-if (!defined("ROOT")) {
-    die();
-}
-
 class Config {
 
     private static $instance;

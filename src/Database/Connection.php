@@ -12,10 +12,6 @@
 
 namespace App\Database;
 
-if (!defined("ROOT")) {
-    die();
-}
-
 use PDO;
 use PDOException;
 use PDOStatement;

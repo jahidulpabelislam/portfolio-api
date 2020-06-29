@@ -11,10 +11,6 @@
 
 namespace App\Entity;
 
-if (!defined("ROOT")) {
-    die();
-}
-
 use App\Config;
 use App\Entity;
 use Exception;

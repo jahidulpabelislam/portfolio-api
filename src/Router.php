@@ -11,10 +11,6 @@
 
 namespace App;
 
-if (!defined("ROOT")) {
-    die();
-}
-
 use App\Controller\Auth;
 use App\Controller\Projects;
 

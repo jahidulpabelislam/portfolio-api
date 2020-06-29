@@ -11,10 +11,6 @@
 
 namespace App;
 
-if (!defined("ROOT")) {
-    die();
-}
-
 trait Responder {
 
     protected $core = null;

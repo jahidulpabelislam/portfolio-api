@@ -13,10 +13,6 @@
 
 namespace App\Entity;
 
-if (!defined("ROOT")) {
-    die();
-}
-
 use App\Entity;
 
 class Project extends Entity {

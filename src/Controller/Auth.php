@@ -11,10 +11,6 @@
 
 namespace App\Controller;
 
-if (!defined("ROOT")) {
-    die();
-}
-
 use App\Controller;
 use App\Core;
 use App\Entity\User;

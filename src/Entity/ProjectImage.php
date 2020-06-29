@@ -13,10 +13,6 @@
 
 namespace App\Entity;
 
-if (!defined("ROOT")) {
-    die();
-}
-
 use App\Core;
 use App\Entity;
 use App\Utilities;

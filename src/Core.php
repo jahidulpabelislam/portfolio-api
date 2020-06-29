@@ -12,10 +12,6 @@
 
 namespace App;
 
-if (!defined("ROOT")) {
-    die();
-}
-
 use DateTime;
 use DateTimeZone;
 

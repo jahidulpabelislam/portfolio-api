@@ -12,10 +12,6 @@
 
 namespace App;
 
-if (!defined("ROOT")) {
-    die();
-}
-
 use App\Database\Connection;
 use App\Database\Query;
 use DateTime;
