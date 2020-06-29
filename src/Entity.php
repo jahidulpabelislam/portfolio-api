@@ -127,6 +127,18 @@ abstract class Entity {
             $value = (int)$value;
         }
 
+        if (in_array($column, static::getDataTimeColumns())) {
+            if ($value && is_string($value)) {
+                $value = new DateTime($value);
+            }
+            else if ($value instanceof DateTime) {
+                // NOP - All good here
+            }
+            else {
+                $value = null; // Unexpected value, set to null
+            }
+        }
+
         $this->columns[$column] = $value;
     }
 
@@ -404,7 +416,16 @@ abstract class Entity {
     }
 
     protected function getValuesToSave(): array {
-        return $this->columns;
+        $values = [];
+
+        foreach ($this->columns as $column => $value) {
+            if ($value instanceof DateTime) {
+                $value = $value->format(static::$dateTimeFormat);
+            }
+            $values[$column] = $value;
+        }
+
+        return $values;
     }
 
     /**
@@ -414,10 +435,10 @@ abstract class Entity {
     public function save(): bool {
         $isNew = !$this->isLoaded();
         if ($isNew && static::$hasCreatedAt) {
-            $this->setValue("created_at", date(static::$dateTimeFormat));
+            $this->setValue("created_at", new DateTime());
         }
         if (static::$hasUpdatedAt) {
-            $this->setValue("updated_at", date(static::$dateTimeFormat));
+            $this->setValue("updated_at", new DateTime());
         }
 
         $wasSuccessful = false;
@@ -474,14 +495,9 @@ abstract class Entity {
             "id" => $this->getId(),
         ];
 
-        $dateTimeColumns = static::getDataTimeColumns();
-
         foreach ($this->columns as $column => $value) {
-            if (in_array($column, $dateTimeColumns)) {
-                $datetime = DateTime::createFromFormat(static::$dateTimeFormat, $value);
-                if ($datetime) {
-                    $value = $datetime->format("Y-m-d H:i:s e");
-                }
+            if ($value instanceof DateTime) {
+                $value = $value->format("Y-m-d H:i:s e");
             }
 
             $array[$column] = $value;
