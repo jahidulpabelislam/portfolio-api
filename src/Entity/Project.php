@@ -112,7 +112,7 @@ class Project extends Entity {
      * Helper function to get all Project Image Entities linked to this Project
      */
     public function loadProjectImages() {
-        if ($this->isLoaded()) {
+        if ($this->isLoaded() && $this->images === null) {
             $this->images = ProjectImage::getByColumn("project_id", $this->getId());
         }
     }
