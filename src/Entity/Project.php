@@ -111,8 +111,8 @@ class Project extends Entity {
     /**
      * Helper function to get all Project Image Entities linked to this Project
      */
-    public function loadProjectImages() {
-        if ($this->isLoaded() && $this->images === null) {
+    public function loadProjectImages(bool $reload = false) {
+        if ($this->isLoaded() && ($reload || $this->images === null)) {
             $this->images = ProjectImage::getByColumn("project_id", $this->getId());
         }
     }
