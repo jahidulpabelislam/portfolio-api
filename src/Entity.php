@@ -52,7 +52,7 @@ abstract class Entity {
         return static::$intColumns;
     }
 
-    private static function getDataTimeColumns(): array {
+    private static function getDateTimeColumns(): array {
         $columns = static::$dateTimeColumns;
 
         if (static::$hasCreatedAt) {
@@ -127,7 +127,7 @@ abstract class Entity {
             $value = (int)$value;
         }
 
-        if (in_array($column, static::getDataTimeColumns())) {
+        if (in_array($column, static::getDateTimeColumns())) {
             if ($value && is_string($value)) {
                 $value = new DateTime($value);
             }
