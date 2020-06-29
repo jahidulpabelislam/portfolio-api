@@ -106,11 +106,10 @@ class Projects extends Controller {
                 $response = self::getInsertResponse(Project::class, $project);
             }
             else {
-                $project = self::getProjectEntity($projectId);
+                $project = self::getProjectEntity($projectId, true);
                 if ($project) {
                     $project->setValues($data);
                     $project->save();
-                    $project->loadProjectImages();
                 }
 
                 $response = self::getUpdateResponse(Project::class, $project, $projectId);
