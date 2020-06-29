@@ -435,9 +435,7 @@ abstract class Entity {
             $wasSuccessful = $rowsAffected > 0;
         }
 
-        // If insert/update was ok, load the new values into entity state
         if ($wasSuccessful) {
-            $this->refresh();
             return true;
         }
 
