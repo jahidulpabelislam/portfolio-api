@@ -120,8 +120,8 @@ class Project extends Entity {
     /**
      * @inheritDoc
      */
-    public function refresh() {
-        parent::refresh();
+    public function reload() {
+        parent::reload();
         if ($this->isLoaded() && $this->images !== null) {
             $this->loadProjectImages(true);
         }

@@ -391,7 +391,7 @@ abstract class Entity {
         return static::get($resultFromGeneration["where"] ?? null, $resultFromGeneration["params"] ?? null, $limit, $page);
     }
 
-    public function refresh() {
+    public function reload() {
         if ($this->isLoaded()) {
             $row = static::select("*", $this->getId(), null, null, 1);
             if ($row) {

@@ -90,7 +90,7 @@ class Projects extends Controller {
 
             if ($isNew) {
                 $project = Project::insert($data);
-                $project->refresh();
+                $project->reload();
                 $response = self::getInsertResponse(Project::class, $project);
             }
             else {
@@ -113,7 +113,7 @@ class Projects extends Controller {
                         }
                     }
 
-                    $project->refresh();
+                    $project->reload();
                 }
 
                 $response = self::getUpdateResponse(Project::class, $project, $projectId);
@@ -245,7 +245,7 @@ class Projects extends Controller {
                     "sort_order_number" => 999, // High enough number
                 ];
                 $projectImage = ProjectImage::insert($imageData);
-                $projectImage->refresh();
+                $projectImage->reload();
                 $response = self::getInsertResponse(ProjectImage::class, $projectImage);
             }
             else {
