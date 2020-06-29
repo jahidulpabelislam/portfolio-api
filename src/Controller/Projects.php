@@ -88,19 +88,6 @@ class Projects extends Controller {
                 $data["skills"] = implode(",", $data["skills"]);
             }
 
-            // Checks if the save was okay, and images were passed, update the sort order on the images
-            if (!empty($data["images"])) {
-                foreach ($data["images"] as $i => $image) {
-                    $imageData = json_decode($image, true);
-
-                    $projectImage = ProjectImage::getById($imageData["id"]);
-                    if ($projectImage) {
-                        $projectImage->sort_order_number = $i + 1;
-                        $projectImage->save();
-                    }
-                }
-            }
-
             if ($isNew) {
                 $project = Project::insert($data);
                 $response = self::getInsertResponse(Project::class, $project);
@@ -110,6 +97,20 @@ class Projects extends Controller {
                 if ($project) {
                     $project->setValues($data);
                     $project->save();
+
+                    // If images were passed update the sort order
+                    if (!empty($data["images"])) {
+                        $orders = [];
+                        foreach ($data["images"] as $i => $image) {
+                            $imageData = json_decode($image, true);
+                            $orders[$imageData["id"]] = $i + 1;
+                        }
+
+                        foreach ($project->images as $projectImage) {
+                            $projectImage->sort_order_number = $orders[$projectImage->getId()];
+                            $projectImage->save();
+                        }
+                    }
                 }
 
                 $response = self::getUpdateResponse(Project::class, $project, $projectId);
