@@ -30,11 +30,14 @@ abstract class Entity {
     protected static $requiredColumns = [];
 
     protected static $intColumns = [];
+
     protected static $dateTimeColumns = [];
+    protected static $dateTimeFormat = "Y-m-d H:i:s";
+
+    protected static $dateColumns = [];
+    protected static $dateFormat = "Y-m-d";
 
     protected static $searchableColumns = [];
-
-    protected static $dateTimeFormat = "Y-m-d H:i:s";
 
     protected static $hasCreatedAt = true;
     protected static $hasUpdatedAt = true;
@@ -60,6 +63,10 @@ abstract class Entity {
         }
 
         return $columns;
+    }
+
+    private static function getDateColumns(): array {
+        return static::$dateColumns;
     }
 
     public static function getRequiredFields(): array {
@@ -123,7 +130,7 @@ abstract class Entity {
             $value = (int)$value;
         }
 
-        if (in_array($column, static::getDateTimeColumns())) {
+        if (in_array($column, static::getDateColumns()) || in_array($column, static::getDateTimeColumns())) {
             if ($value && is_string($value)) {
                 $value = new DateTime($value);
             }
@@ -414,9 +421,17 @@ abstract class Entity {
     protected function getValuesToSave(): array {
         $values = [];
 
+        $dateColumns = static::getDateColumns();
+        $dateTimeColumns = static::getDateTimeColumns();
+
         foreach ($this->columns as $column => $value) {
             if ($value instanceof DateTime) {
-                $value = $value->format(static::$dateTimeFormat);
+                if (in_array($column, $dateColumns)) {
+                    $value = $value->format(static::$dateFormat);
+                }
+                else if (in_array($column, $dateTimeColumns)) {
+                    $value = $value->format(static::$dateTimeFormat);
+                }
             }
             $values[$column] = $value;
         }
@@ -491,9 +506,17 @@ abstract class Entity {
             "id" => $this->getId(),
         ];
 
+        $dateColumns = static::getDateColumns();
+        $dateTimeColumns = static::getDateTimeColumns();
+
         foreach ($this->columns as $column => $value) {
             if ($value instanceof DateTime) {
-                $value = $value->format("Y-m-d H:i:s e");
+                if (in_array($column, $dateColumns)) {
+                    $value = $value->format("Y-m-d");
+                }
+                else if (in_array($column, $dateTimeColumns)) {
+                    $value = $value->format("Y-m-d H:i:s e");
+                }
             }
 
             $array[$column] = $value;

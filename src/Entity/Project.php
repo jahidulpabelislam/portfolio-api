@@ -46,6 +46,10 @@ class Project extends Entity {
         "short_description",
     ];
 
+    protected static $dateColumns = [
+        "date"
+    ];
+
     protected static $searchableColumns = [
         "name",
         "type",
