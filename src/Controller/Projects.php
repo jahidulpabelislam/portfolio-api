@@ -76,11 +76,6 @@ class Projects extends Controller {
                 return $this->getInvalidFieldsResponse(Project::class, $data);
             }
 
-            // Transform the incoming data into the necessary data for the database
-            if (isset($data["skills"]) && is_array($data["skills"])) {
-                $data["skills"] = implode(",", $data["skills"]);
-            }
-
             if ($isNew) {
                 $project = Project::insert($data);
                 $project->reload();

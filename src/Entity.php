@@ -37,6 +37,9 @@ abstract class Entity {
     protected static $dateColumns = [];
     protected static $dateFormat = "Y-m-d";
 
+    protected static $arrayColumns = [];
+    protected static $arrayColumnSeparator = ",";
+
     protected static $searchableColumns = [];
 
     protected static $hasCreatedAt = true;
@@ -67,6 +70,10 @@ abstract class Entity {
 
     private static function getDateColumns(): array {
         return static::$dateColumns;
+    }
+
+    private static function getArrayColumns(): array {
+        return static::$arrayColumns;
     }
 
     public static function getRequiredFields(): array {
@@ -129,15 +136,19 @@ abstract class Entity {
         if (in_array($column, static::getIntColumns())) {
             $value = (int)$value;
         }
-
-        if (in_array($column, static::getDateColumns()) || in_array($column, static::getDateTimeColumns())) {
+        else if (in_array($column, static::getArrayColumns())) {
+            if (is_string($value)) {
+                $value = explode(static::$arrayColumnSeparator, $value);
+            }
+            else if (!is_array($value)) {
+                $value = []; // Unexpected value, set to empty array
+            }
+        }
+        else if (in_array($column, static::getDateColumns()) || in_array($column, static::getDateTimeColumns())) {
             if ($value && is_string($value)) {
                 $value = new DateTime($value);
             }
-            else if ($value instanceof DateTime) {
-                // NOP - All good here
-            }
-            else {
+            else if (!($value instanceof DateTime)) {
                 $value = null; // Unexpected value, set to null
             }
         }
@@ -421,11 +432,15 @@ abstract class Entity {
     protected function getValuesToSave(): array {
         $values = [];
 
+        $arrayColumns = static::getArrayColumns();
         $dateColumns = static::getDateColumns();
         $dateTimeColumns = static::getDateTimeColumns();
 
         foreach ($this->columns as $column => $value) {
-            if ($value instanceof DateTime) {
+            if (in_array($column, $arrayColumns)) {
+                $value = implode(static::$arrayColumnSeparator, $value);
+            }
+            else if ($value instanceof DateTime) {
                 if (in_array($column, $dateColumns)) {
                     $value = $value->format(static::$dateFormat);
                 }

@@ -33,7 +33,7 @@ class Project extends Entity {
         "short_description" => "",
         "long_description" => "",
         "colour" => "",
-        "skills" => "",
+        "skills" => [],
         "status" => "draft",
     ];
 
@@ -48,6 +48,10 @@ class Project extends Entity {
 
     protected static $dateColumns = [
         "date"
+    ];
+
+    protected static $arrayColumns = [
+        "skills",
     ];
 
     protected static $searchableColumns = [
@@ -148,21 +152,15 @@ class Project extends Entity {
     }
 
     public function toArray(): array {
-        $projectArray = parent::toArray();
-
-        if (isset($projectArray["skills"])) {
-            $skills = explode(",", $projectArray["skills"]);
-            array_walk($skills, "trim");
-            $projectArray["skills"] = $skills;
-        }
+        $array = parent::toArray();
 
         if ($this->images !== null) {
-            $projectArray["images"] = array_map(static function(ProjectImage $image) {
+            $array["images"] = array_map(static function(ProjectImage $image) {
                 return $image->toArray();
             }, $this->images);
         }
 
-        return $projectArray;
+        return $array;
     }
 
 }
