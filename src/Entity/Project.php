@@ -25,7 +25,7 @@ class Project extends Entity {
 
     protected $columns = [
         "name" => "",
-        "date" => "",
+        "date" => null,
         "type" => "",
         "link" => "",
         "github" => "",
@@ -47,7 +47,7 @@ class Project extends Entity {
     ];
 
     protected static $dateColumns = [
-        "date"
+        "date",
     ];
 
     protected static $arrayColumns = [
