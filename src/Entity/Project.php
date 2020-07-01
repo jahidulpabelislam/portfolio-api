@@ -46,13 +46,9 @@ class Project extends Entity {
         "short_description",
     ];
 
-    protected static $dateColumns = [
-        "date",
-    ];
+    protected static $dateColumns = ["date"];
 
-    protected static $arrayColumns = [
-        "skills",
-    ];
+    protected static $arrayColumns = ["skills"];
 
     protected static $searchableColumns = [
         "name",
@@ -154,10 +150,11 @@ class Project extends Entity {
     public function toArray(): array {
         $array = parent::toArray();
 
-        if ($this->images !== null) {
-            $array["images"] = array_map(static function(ProjectImage $image) {
-                return $image->toArray();
-            }, $this->images);
+        if ($this->images instanceof Collection) {
+            $array["images"] = [];
+            foreach ($this->images as $image) {
+                $array["images"][] = $image->toArray();
+            }
         }
 
         return $array;

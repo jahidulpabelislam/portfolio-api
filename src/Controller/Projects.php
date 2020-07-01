@@ -12,6 +12,7 @@ namespace App\Controller;
 
 use App\Controller;
 use App\Core;
+use App\Entity\Collection as EntityCollection;
 use App\Entity\Project;
 use App\Entity\ProjectImage;
 use App\Entity\User;
@@ -48,13 +49,13 @@ class Projects extends Controller {
         if ($projects instanceof Project) {
             $projects = [$projects];
         }
-        else if (!is_array($projects)) {
+        else if (!($projects) instanceof EntityCollection) {
             $projects = [];
         }
 
-        array_walk($projects, static function(Project $project) {
+        foreach ($projects as $project) {
             $project->loadProjectImages();
-        });
+        }
 
         return $this->getItemsSearchResponse(Project::class, $projects, $params);
     }

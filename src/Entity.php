@@ -12,8 +12,10 @@
 
 namespace App;
 
+use App\Database\Collection as DbCollection;
 use App\Database\Connection;
 use App\Database\Query;
+use App\Entity\Collection as EntityCollection;
 use DateTime;
 
 abstract class Entity {
@@ -105,9 +107,9 @@ abstract class Entity {
      * @param $orderBy string[]|string|null
      * @param $limit int|null
      * @param $page int|null
-     * @return array[]|array|null
+     * @return DbCollection|array|null
      */
-    public static function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, ?int $page = null): ?array {
+    public static function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, ?int $page = null) {
         return static::getQuery()->select($columns, $where, $params, $orderBy, $limit, $page);
     }
 
@@ -229,8 +231,14 @@ abstract class Entity {
      * @param $rows array[]
      * @return static[]
      */
-    private static function populateEntitiesFromDB(array $rows): array {
-        return array_map(["static", "populateFromDB"], $rows);
+    private static function populateEntitiesFromDB($rows): array {
+        $entities = [];
+
+        foreach ($rows as $row) {
+            $entities[] = static::populateFromDB($row);
+        }
+
+        return $entities;
     }
 
     /**
@@ -299,7 +307,7 @@ abstract class Entity {
      * @param $params array|null
      * @param $limit int|string|null
      * @param $page int|string|null
-     * @return static[]|static|null
+     * @return EntityCollection|static|null
      */
     public static function get($where = null, ?array $params = null, $limit = null, $page = null) {
         $orderBy = static::getOrderBy();
@@ -316,7 +324,9 @@ abstract class Entity {
             return static::populateFromDB($rows);
         }
 
-        return static::populateEntitiesFromDB($rows);
+        $entities = static::populateEntitiesFromDB($rows);
+
+        return new EntityCollection($entities);
     }
 
     /**
@@ -326,7 +336,7 @@ abstract class Entity {
      * @param $value string|int
      * @param $limit int|string|null
      * @param $page int|string|null
-     * @return static[]|static|null
+     * @return EntityCollection|static|null
      */
     public static function getByColumn(string $column, $value, $limit = null, $page = null) {
         $params = [$column => $value];
@@ -408,7 +418,7 @@ abstract class Entity {
      * @param $params array Any data to aid in the search query
      * @param $limit int|string|null
      * @param $page int|string|null
-     * @return static[]|static|null
+     * @return EntityCollection|static|null
      */
     public static function getByParams(array $params, $limit = null, $page = null) {
         // Add filters/wheres if a search was entered

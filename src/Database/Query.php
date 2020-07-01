@@ -159,16 +159,18 @@ class Query {
      * @param $orderBy string[]|string|null
      * @param $limit int|null
      * @param $page int|null
-     * @return array[]|array|null
+     * @return Collection|array|null
      */
-    public function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, ?int $page = null): ?array {
+    public function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, ?int $page = null) {
         [$sqlParts, $params] = static::generateSelectQuery($this->table, $columns, $where, $params, $orderBy, $limit, $page);
 
         if (($where && is_numeric($where)) || $limit === 1) {
             return $this->execute($sqlParts, $params, "getOne");
         }
 
-        return $this->execute($sqlParts, $params, "getAll");
+        $rows = $this->execute($sqlParts, $params, "getAll");
+
+        return new Collection($rows);
     }
 
     /**

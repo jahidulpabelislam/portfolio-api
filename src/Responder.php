@@ -11,6 +11,8 @@
 
 namespace App;
 
+use App\Entity\Collection as EntityCollection;
+
 trait Responder {
 
     protected $core = null;
@@ -119,16 +121,17 @@ trait Responder {
      * else if not found return necessary meta
      *
      * @param $entityClass string
-     * @param $entities Entity[]|null
+     * @param $entities EntityCollection|null
      * @return array
      */
-    public static function getItemsResponse(string $entityClass, ?array $entities = []): array {
+    public static function getItemsResponse(string $entityClass, ?EntityCollection $entities = null): array {
         $count = $entities ? count($entities) : 0;
         if ($count) {
 
-            $rows = array_map(static function(Entity $entity) {
-                return $entity->toArray();
-            }, $entities);
+            $rows = [];
+            foreach ($entities as $entity) {
+                $rows[] = $entity->toArray();
+            }
 
             return [
                 "meta" => [
@@ -158,11 +161,11 @@ trait Responder {
      * Use getItemsResponse function as the base response, then just adds additional meta data
      *
      * @param $entityClass string
-     * @param $entities Entity[]|null
+     * @param $entities EntityCollection|null
      * @param $params array
      * @return array
      */
-    public function getItemsSearchResponse(string $entityClass, ?array $entities = [], array $params = []): array {
+    public function getItemsSearchResponse(string $entityClass, EntityCollection $entities = null, array $params = []): array {
         // The items response is the base response, and the extra meta is added below
         $response = self::getItemsResponse($entityClass, $entities);
 
