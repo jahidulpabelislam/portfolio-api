@@ -62,6 +62,9 @@ class Project extends Entity {
     protected static $orderByColumn = "date";
     protected static $orderByASC = false;
 
+    /**
+     * @var Collection|null
+     */
     public $images = null;
 
     /**
