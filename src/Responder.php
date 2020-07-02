@@ -168,7 +168,7 @@ trait Responder {
         $params = $this->core->params;
 
         // The items response is the base response, and the extra meta is added below
-        $response = self::getItemsResponse($entityClass, $collection);
+        $response = static::getItemsResponse($entityClass, $collection);
 
         $totalCount = $collection ? $collection->getTotalCount() : 0;
         $response["meta"]["total_count"] = $totalCount;
@@ -240,15 +240,15 @@ trait Responder {
      */
     public static function getItemResponse(string $entityClass, ?Entity $entity, $id): array {
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
-            return self::getItemFoundResponse($entity);
+            return static::getItemFoundResponse($entity);
         }
 
-        return self::getItemNotFoundResponse($entityClass, $id);
+        return static::getItemNotFoundResponse($entityClass, $id);
     }
 
     public static function getInsertResponse(string $entityClass, ?Entity $entity): array {
         if ($entity && $entity->isLoaded()) {
-            $response = self::getItemFoundResponse($entity);
+            $response = static::getItemFoundResponse($entity);
 
             $response["meta"]["status"] = 201;
             $response["meta"]["message"] = "Created";
@@ -272,7 +272,7 @@ trait Responder {
      */
     public static function getUpdateResponse(string $entityClass, ?Entity $entity, $id): array {
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
-            return self::getItemFoundResponse($entity);
+            return static::getItemFoundResponse($entity);
         }
 
         return [
@@ -294,7 +294,7 @@ trait Responder {
      */
     public static function getItemDeletedResponse(string $entityClass, ?Entity $entity, $id, bool $isDeleted = false): array {
         if (!$id || !$entity || !$entity->isLoaded() || $entity->getId() != $id) {
-            return self::getItemNotFoundResponse($entityClass, $id);
+            return static::getItemNotFoundResponse($entityClass, $id);
         }
 
         if ($isDeleted) {
