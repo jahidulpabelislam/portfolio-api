@@ -285,21 +285,18 @@ abstract class Entity {
         return $page;
     }
 
-    protected static function getOrderBy(): ?array {
+    protected static function getOrderBy(): array {
+        $orderBys = [];
         if (static::$orderByColumn) {
-            $orderBys = [
-                static::$orderByColumn . " " . (static::$orderByASC ? "ASC" : "DESC"),
-            ];
-
-            // Sort by id if not already to stop any randomness on rows with same value on above
-            if (static::$orderByColumn !== "id") {
-                $orderBys[] = "id ASC";
-            }
-
-            return $orderBys;
+            $orderBys[] = static::$orderByColumn . " " . (static::$orderByASC ? "ASC" : "DESC");
         }
 
-        return null;
+        // Sort by id if not already to stop any randomness on rows with same value on above
+        if (static::$orderByColumn !== "id") {
+            $orderBys[] = "id ASC";
+        }
+
+        return $orderBys;
     }
 
     /**
