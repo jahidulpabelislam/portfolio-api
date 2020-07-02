@@ -57,7 +57,7 @@ class Projects extends Controller {
             $project->loadProjectImages();
         }
 
-        return $this->getItemsSearchResponse(Project::class, $projects, $params);
+        return $this->getPaginatedItemsResponse(Project::class, $projects);
     }
 
     /**

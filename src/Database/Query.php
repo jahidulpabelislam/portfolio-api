@@ -170,7 +170,23 @@ class Query {
 
         $rows = $this->execute($sqlParts, $params, "getAll");
 
-        return new Collection($rows);
+        $totalCount = null;
+        if ($limit) {
+            // Replace the SELECT part in query with a simple count
+            $sqlParts[0] = "SELECT COUNT(*) as count";
+
+            array_pop($sqlParts); // Remove the LIMIT part in query
+
+            // Remove the ORDER BY part in query if added
+            if ($orderBy) {
+                array_pop($sqlParts);
+            }
+
+            $row = $this->execute($sqlParts, $params, "getOne");
+            $totalCount = $row["count"] ?? 0;
+        }
+
+        return new Collection($rows, $totalCount, $limit, $page);
     }
 
     /**

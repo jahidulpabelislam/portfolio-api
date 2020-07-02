@@ -2,8 +2,8 @@
 
 namespace App\Entity;
 
-use App\Collection as BaseCollection;
+use App\Database\Collection as DBCollection;
 
-class Collection extends BaseCollection {
+class Collection extends DBCollection {
 
 }

@@ -326,7 +326,12 @@ abstract class Entity {
 
         $entities = static::populateEntitiesFromDB($rows);
 
-        return new EntityCollection($entities);
+        return new EntityCollection(
+            $entities,
+            $rows->getTotalCount(),
+            $rows->getLimit(),
+            $rows->getPage()
+        );
     }
 
     /**

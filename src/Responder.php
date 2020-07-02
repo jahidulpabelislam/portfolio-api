@@ -161,20 +161,20 @@ trait Responder {
      * Use getItemsResponse function as the base response, then just adds additional meta data
      *
      * @param $entityClass string
-     * @param $entities EntityCollection|null
-     * @param $params array
+     * @param $collection EntityCollection|null
      * @return array
      */
-    public function getItemsSearchResponse(string $entityClass, EntityCollection $entities = null, array $params = []): array {
-        // The items response is the base response, and the extra meta is added below
-        $response = self::getItemsResponse($entityClass, $entities);
+    public function getPaginatedItemsResponse(string $entityClass, EntityCollection $collection = null): array {
+        $params = $this->core->params;
 
-        $resultFromGeneration = $entityClass::generateWhereClausesFromParams($params);
-        $totalCount = $entityClass::getCount($resultFromGeneration["where"] ?? null, $resultFromGeneration["params"] ?? null);
+        // The items response is the base response, and the extra meta is added below
+        $response = self::getItemsResponse($entityClass, $collection);
+
+        $totalCount = $collection ? $collection->getTotalCount() : 0;
         $response["meta"]["total_count"] = $totalCount;
 
-        $limit = $entityClass::getLimit($params["limit"] ?? null);
-        $page = $entityClass::getPage($params["page"] ?? null);
+        $limit = $collection->getLimit();
+        $page = $collection->getPage();
 
         $lastPage = ceil($totalCount / $limit);
         $response["meta"]["total_pages"] = $lastPage;
