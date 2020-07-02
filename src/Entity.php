@@ -52,11 +52,11 @@ abstract class Entity {
 
     protected static $defaultLimit = 10;
 
-    private static function getIntColumns(): array {
+    public static function getIntColumns(): array {
         return static::$intColumns;
     }
 
-    private static function getDateTimeColumns(): array {
+    public static function getDateTimeColumns(): array {
         $columns = static::$dateTimeColumns;
 
         if (static::$hasCreatedAt) {
@@ -70,11 +70,11 @@ abstract class Entity {
         return $columns;
     }
 
-    private static function getDateColumns(): array {
+    public static function getDateColumns(): array {
         return static::$dateColumns;
     }
 
-    private static function getArrayColumns(): array {
+    public static function getArrayColumns(): array {
         return static::$arrayColumns;
     }
 
@@ -82,7 +82,7 @@ abstract class Entity {
         return static::$requiredColumns;
     }
 
-    protected static function getDB(): Connection {
+    public static function getDB(): Connection {
         if (!static::$db) {
             $config = Config::get();
             static::$db = new Connection([
@@ -248,7 +248,7 @@ abstract class Entity {
      * @param $limit int|string|null
      * @return int|null
      */
-    public static function getLimit($limit = null): ?int {
+    protected static function getLimit($limit = null): ?int {
         // If limit specified use unless it's bigger than default
         if (is_numeric($limit)) {
             $limit = (int)$limit;
@@ -272,7 +272,7 @@ abstract class Entity {
      * @param $page int|string|null
      * @return int|null
      */
-    public static function getPage($page = null): ?int {
+    protected static function getPage($page = null): ?int {
         if (is_numeric($page)) {
             $page = (int)$page;
         }
@@ -370,7 +370,7 @@ abstract class Entity {
      * @param $params array The fields to search for within searchable columns (if any)
      * @return array|null [string, array] Generated SQL where clause(s) and an associative array containing any params for query
      */
-    public static function generateWhereClausesFromParams(array $params): ?array {
+    protected static function generateWhereClausesFromParams(array $params): ?array {
         if (!static::$searchableColumns) {
             return null;
         }
