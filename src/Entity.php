@@ -106,10 +106,10 @@ abstract class Entity {
      * @param $params array|null
      * @param $orderBy string[]|string|null
      * @param $limit int|null
-     * @param $page int|null
+     * @param $page int|string|null
      * @return DbCollection|array|null
      */
-    public static function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, ?int $page = null) {
+    public static function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, $page = null) {
         return static::getQuery()->select($columns, $where, $params, $orderBy, $limit, $page);
     }
 
@@ -265,26 +265,6 @@ abstract class Entity {
         return $limit;
     }
 
-    /**
-     * Get the page to use for a SQL query
-     * Can specify the page and it will make sure it is valid
-     *
-     * @param $page int|string|null
-     * @return int|null
-     */
-    protected static function getPage($page = null): ?int {
-        if (is_numeric($page)) {
-            $page = (int)$page;
-        }
-
-        // If invalid use page 1
-        if (!$page || $page < 1) {
-            $page = 1;
-        }
-
-        return $page;
-    }
-
     protected static function getOrderBy(): array {
         $orderBys = [];
         if (static::$orderByColumn) {
@@ -309,7 +289,6 @@ abstract class Entity {
     public static function get($where = null, ?array $params = null, $limit = null, $page = null) {
         $orderBy = static::getOrderBy();
         $limit = static::getLimit($limit);
-        $page = static::getPage($page);
 
         $rows = static::select("*", $where, $params, $orderBy, $limit, $page);
 

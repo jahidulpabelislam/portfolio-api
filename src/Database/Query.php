@@ -153,15 +153,37 @@ class Query {
     }
 
     /**
+     * Get the page to use for a SQL query
+     * Can specify the page and it will make sure it is valid
+     *
+     * @param $page int|string|null
+     * @return int|null
+     */
+    protected static function getPage($page = null): ?int {
+        if (is_numeric($page)) {
+            $page = (int)$page;
+        }
+
+        // If invalid use page 1
+        if (!$page || $page < 1) {
+            $page = 1;
+        }
+
+        return $page;
+    }
+
+    /**
      * @param $columns string[]|string|null
      * @param $where string[]|string|int|null
      * @param $params array|null
      * @param $orderBy string[]|string|null
      * @param $limit int|null
-     * @param $page int|null
+     * @param $page int|string|null
      * @return Collection|array|null
      */
-    public function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, ?int $page = null) {
+    public function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, $page = null) {
+        $page = $limit ? static::getPage($page) : null;
+
         [$sqlParts, $params] = static::generateSelectQuery($this->table, $columns, $where, $params, $orderBy, $limit, $page);
 
         if (($where && is_numeric($where)) || $limit === 1) {
