@@ -21,6 +21,10 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
         return $this->items;
     }
 
+    protected function resetCount() {
+        $this->count = count($this->items);
+    }
+
     protected function doesItemExists($key) {
         return array_key_exists($key, $this->items);
     }
@@ -32,6 +36,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
         else {
             $this->items[$key] = $item;
         }
+        $this->resetCount();
     }
 
     protected function getItem($key) {
@@ -40,6 +45,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 
     protected function removeItem($key) {
         unset($this->items[$key]);
+        $this->resetCount();
     }
 
     // ArrayAccess //
