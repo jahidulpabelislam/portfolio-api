@@ -12,7 +12,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
     protected $items;
     protected $count;
 
-    public function __construct(array $items) {
+    public function __construct(array $items = []) {
         $this->items = $items;
         $this->count = count($items);
     }

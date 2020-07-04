@@ -10,7 +10,7 @@ class Collection extends BaseCollection {
     protected $limit;
     protected $page;
 
-    public function __construct(array $items, int $totalCount = null, int $limit = null, int $page = null) {
+    public function __construct(array $items = [], int $totalCount = null, int $limit = null, int $page = null) {
         parent::__construct($items);
         $this->totalCount = $totalCount ?? $this->count;
         $this->limit = $limit;
