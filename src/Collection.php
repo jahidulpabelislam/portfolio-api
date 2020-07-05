@@ -39,6 +39,10 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
         $this->resetCount();
     }
 
+    public function addItem($item) {
+        $this->setItem(null, $item);
+    }
+
     public function getItem($key) {
         return $this->items[$key];
     }
