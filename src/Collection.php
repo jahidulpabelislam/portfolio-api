@@ -25,7 +25,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
         $this->count = count($this->items);
     }
 
-    protected function doesItemExists($key) {
+    protected function doesItemExist($key) {
         return array_key_exists($key, $this->items);
     }
 
@@ -51,7 +51,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
     // ArrayAccess //
 
     public function offsetExists($offset): bool {
-        return $this->doesItemExists($offset);
+        return $this->doesItemExist($offset);
     }
 
     public function offsetGet($offset) {
