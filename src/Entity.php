@@ -346,7 +346,7 @@ abstract class Entity implements Arrayable {
      * @param $params array The fields to search for within searchable columns (if any)
      * @return array|null [string, array] Generated SQL where clause(s) and an associative array containing any params for query
      */
-    protected static function generateWhereClausesFromParams(array $params): ?array {
+    public static function generateWhereClausesFromParams(array $params): ?array {
         if (!static::$searchableColumns) {
             return null;
         }
