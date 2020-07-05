@@ -154,10 +154,7 @@ class Project extends Entity {
         $array = parent::toArray();
 
         if ($this->images instanceof Collection) {
-            $array["images"] = [];
-            foreach ($this->images as $image) {
-                $array["images"][] = $image->toArray();
-            }
+            $array["images"] = $this->images->toArray();
         }
 
         return $array;

@@ -7,7 +7,7 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 
-class Collection implements ArrayAccess, Countable, IteratorAggregate {
+class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate {
 
     protected $items;
     protected $count;
@@ -19,6 +19,21 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 
     public function getItems(): array {
         return $this->items;
+    }
+
+    public function toArray(): array {
+        $array = [];
+
+        foreach ($this->getItems() as $key => $item) {
+            if ($item instanceof Arrayable) {
+                $array[$key] = $item->toArray();
+            }
+            else {
+                $array[$key] = $item;
+            }
+        }
+
+        return $array;
     }
 
     protected function resetCount() {

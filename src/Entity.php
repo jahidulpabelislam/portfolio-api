@@ -18,7 +18,7 @@ use App\Database\Query;
 use App\Entity\Collection as EntityCollection;
 use DateTime;
 
-abstract class Entity {
+abstract class Entity implements Arrayable {
 
     protected static $db;
 

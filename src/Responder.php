@@ -127,18 +127,12 @@ trait Responder {
     public static function getItemsResponse(string $entityClass, ?EntityCollection $entities = null): array {
         $count = $entities ? count($entities) : 0;
         if ($count) {
-
-            $rows = [];
-            foreach ($entities as $entity) {
-                $rows[] = $entity->toArray();
-            }
-
             return [
                 "meta" => [
                     "ok" => true,
                     "count" => $count,
                 ],
-                "rows" => $rows,
+                "rows" => $entities->toArray(),
             ];
         }
 
