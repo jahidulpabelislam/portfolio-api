@@ -29,7 +29,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
         return array_key_exists($key, $this->items);
     }
 
-    protected function setItem($key, $item) {
+    public function setItem($key, $item) {
         if ($key === null) {
             $this->items[] = $item;
         }
@@ -39,11 +39,11 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
         $this->resetCount();
     }
 
-    protected function getItem($key) {
+    public function getItem($key) {
         return $this->items[$key];
     }
 
-    protected function removeItem($key) {
+    public function removeItem($key) {
         unset($this->items[$key]);
         $this->resetCount();
     }
