@@ -17,6 +17,10 @@ class Collection extends BaseCollection {
         $this->page = $page;
     }
 
+    public function toArray(): array {
+        return $this->items;
+    }
+
     public function getTotalCount(): int {
         return $this->totalCount;
     }

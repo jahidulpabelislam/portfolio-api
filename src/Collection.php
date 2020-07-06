@@ -24,7 +24,7 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
     public function toArray(): array {
         $array = [];
 
-        foreach ($this->getItems() as $key => $item) {
+        foreach ($this->items as $key => $item) {
             if ($item instanceof Arrayable) {
                 $array[$key] = $item->toArray();
             }
