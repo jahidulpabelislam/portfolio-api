@@ -21,7 +21,7 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
         $this->count = count($this->items);
     }
 
-    public function setItem($key, $item) {
+    public function set($key, $item) {
         if ($key === null) {
             $this->items[] = $item;
         }
@@ -31,11 +31,11 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
         $this->resetCount();
     }
 
-    public function addItem($item) {
-        $this->setItem(null, $item);
+    public function add($item) {
+        $this->set(null, $item);
     }
 
-    public function removeItem($key) {
+    public function remove($key) {
         unset($this->items[$key]);
         $this->resetCount();
     }
@@ -44,7 +44,7 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
         return array_key_exists($key, $this->items);
     }
 
-    public function getItem($key) {
+    public function get($key) {
         return $this->items[$key];
     }
 
@@ -74,15 +74,15 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
     }
 
     public function offsetGet($offset) {
-        return $this->getItem($offset);
+        return $this->get($offset);
     }
 
     public function offsetSet($offset, $item) {
-        $this->setItem($offset, $item);
+        $this->set($offset, $item);
     }
 
     public function offsetUnset($offset) {
-        $this->removeItem($offset);
+        $this->remove($offset);
     }
 
     // IteratorAggregate //
