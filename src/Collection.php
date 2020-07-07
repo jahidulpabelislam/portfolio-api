@@ -141,4 +141,21 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
         return $plucked;
     }
 
+    public function groupBy($key): Collection {
+        $collection = new Collection();
+
+        foreach ($this->items as $item) {
+            $value = static::getFromItem($item, $key);
+
+            if (!isset($collection[$value])) {
+                $collection->set($value, new static([$item]));
+            }
+            else {
+                $collection[$value]->add($item);
+            }
+        }
+
+        return $collection;
+    }
+
 }
