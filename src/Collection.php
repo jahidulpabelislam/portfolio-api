@@ -98,4 +98,47 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
         return $this->count;
     }
 
+    protected static function getFromItem($item, $key, $default = null) {
+        $value = $default;
+        if (is_object($item)) {
+            if (property_exists($item, $key) || isset($item->{$key})) {
+                $value = $item->{$key};
+            }
+            else if (method_exists($item, $key)) {
+                $value = $item->{$key}();
+            }
+            else if ($item instanceof Arrayable) {
+                $array = $item->toArray();
+                if (isset($array[$key])) {
+                    $value = $array[$key];
+                }
+            }
+        }
+        else if (is_array($item) || $item instanceof ArrayAccess) {
+            $value = $item[$key];
+        }
+
+        return $value;
+    }
+
+    public function pluck($toPluck, $keyedBy = null): Collection {
+        $plucked = new Collection();
+
+        foreach ($this->items as $item) {
+            $value = static::getFromItem($item, $toPluck);
+
+            if ($value) {
+                if ($keyedBy) {
+                    $keyValue = static::getFromItem($item, $keyedBy);
+                    $plucked->set($keyValue, $value);
+                }
+                else {
+                    $plucked->add($value);
+                }
+            }
+        }
+
+        return $plucked;
+    }
+
 }
