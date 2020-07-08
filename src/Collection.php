@@ -114,7 +114,7 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
                 }
             }
         }
-        else if (is_array($item) || $item instanceof ArrayAccess) {
+        else if ((is_array($item) || $item instanceof ArrayAccess) && isset($item[$key])) {
             $value = $item[$key];
         }
 
