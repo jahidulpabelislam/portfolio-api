@@ -101,7 +101,7 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
     protected static function getFromItem($item, $key, $default = null) {
         $value = $default;
         if (is_object($item)) {
-            if (property_exists($item, $key) || isset($item->{$key})) {
+            if (isset($item->{$key})) {
                 $value = $item->{$key};
             }
             else if (method_exists($item, $key)) {
