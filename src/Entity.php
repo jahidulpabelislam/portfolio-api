@@ -147,7 +147,7 @@ abstract class Entity implements Arrayable {
             }
         }
         else if (in_array($column, static::getDateColumns()) || in_array($column, static::getDateTimeColumns())) {
-            if (!empty(trim($value)) && (is_string($value) || is_numeric($value))) {
+            if (!empty($value) && (is_string($value) || is_numeric($value))) {
                 $value = new DateTime($value);
             }
             else if (!($value instanceof DateTime)) {
