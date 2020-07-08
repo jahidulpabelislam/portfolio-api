@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Arrayable;
 use App\Database\Collection as DBCollection;
 
 class Collection extends DBCollection {
@@ -15,6 +14,27 @@ class Collection extends DBCollection {
         }
 
         return $array;
+    }
+
+    protected static function getFromItem($entity, $key, $default = null) {
+        if ($key === "id") {
+            return $entity->getId();
+        }
+
+        if (isset($entity->{$key})) {
+            return $entity->{$key};
+        }
+
+        if (method_exists($entity, $key)) {
+            return $entity->{$key}();
+        }
+
+        $array = $entity->toArray();
+        if (isset($array[$key])) {
+            return $array[$key];
+        }
+
+        return $default;
     }
 
 }

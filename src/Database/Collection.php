@@ -33,4 +33,8 @@ class Collection extends BaseCollection {
         return $this->page;
     }
 
+    protected static function getFromItem($item, $key, $default = null) {
+        return $item[$key] ?? $default;
+    }
+
 }
