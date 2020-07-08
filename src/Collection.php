@@ -127,14 +127,12 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
         foreach ($this->items as $item) {
             $value = static::getFromItem($item, $toPluck);
 
-            if ($value) {
-                if ($keyedBy) {
-                    $keyValue = static::getFromItem($item, $keyedBy);
-                    $plucked->set($keyValue, $value);
-                }
-                else {
-                    $plucked->add($value);
-                }
+            if ($keyedBy) {
+                $keyValue = static::getFromItem($item, $keyedBy);
+                $plucked->set($keyValue, $value);
+            }
+            else {
+                $plucked->add($value);
             }
         }
 
