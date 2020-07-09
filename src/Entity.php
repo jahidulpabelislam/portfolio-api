@@ -340,14 +340,18 @@ abstract class Entity implements Arrayable {
     }
 
     /**
-     * Load a single Entity from the Database where a Id column = a value ($id).
+     * Load Entity(ies) from the Database where Id column equals/in $id.
      *
-     * @param $id int|string
-     * @return static|null
+     * @param $id int|string|array
+     * @return static|static[]|null
      */
-    public static function getById($id): ?Entity {
+    public static function getById($id) {
         if (is_numeric($id)) {
             return static::get((int)$id);
+        }
+
+        if (is_array($id)) {
+            return static::getByColumn("id", $id);
         }
 
         return null;
