@@ -192,20 +192,30 @@ class Query {
 
         $rows = $this->execute($sqlParts, $params, "getAll");
 
+        $count = count($rows);
         $totalCount = null;
         if ($limit) {
-            // Replace the SELECT part in query with a simple count
-            $sqlParts[0] = "SELECT COUNT(*) as count";
+            /**
+             * If count is the limit, do a query to find the total count
+             * Else we can work out the total
+             */
+            if ($count === $limit) {
+                // Replace the SELECT part in query with a simple count
+                $sqlParts[0] = "SELECT COUNT(*) as count";
 
-            array_pop($sqlParts); // Remove the LIMIT part in query
+                array_pop($sqlParts); // Remove the LIMIT part in query
 
-            // Remove the ORDER BY part in query if added
-            if ($orderBy) {
-                array_pop($sqlParts);
+                // Remove the ORDER BY part in query if added
+                if ($orderBy) {
+                    array_pop($sqlParts);
+                }
+
+                $row = $this->execute($sqlParts, $params, "getOne");
+                $totalCount = $row["count"] ?? 0;
             }
-
-            $row = $this->execute($sqlParts, $params, "getOne");
-            $totalCount = $row["count"] ?? 0;
+            else {
+                $totalCount = $limit * ($page - 1) + $count;
+            }
         }
 
         return new Collection($rows, $totalCount, $limit, $page);
