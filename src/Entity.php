@@ -429,7 +429,7 @@ abstract class Entity implements Arrayable {
 
     public function reload() {
         if ($this->isLoaded()) {
-            $row = static::select("*", $this->getId(), null, null, 1);
+            $row = static::select("*", $this->getId());
             if ($row) {
                 $this->setValues($row);
                 return;
