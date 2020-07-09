@@ -56,11 +56,7 @@ class Projects extends Controller {
         }
 
         if ($projects && count($projects)) {
-            /**
-             * Somewhat dodgy but okay as ids should safe - not user managed.
-             * TODO: Refactor into safer method in Entity class
-             */
-            $images = ProjectImage::get("project_id in (" . implode(", ", $projects->pluck("id")->toArray()) . ")");
+            $images = ProjectImage::getByColumn("project_id" , $projects->pluck("id")->toArray());
             $imagesGrouped = $images->groupBy("project_id");
 
             foreach ($projects as $project) {

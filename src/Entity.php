@@ -314,14 +314,29 @@ abstract class Entity implements Arrayable {
      * Get Entities from the Database where a column ($column) = a value ($value)
      *
      * @param $column string
-     * @param $value string|int
+     * @param $value string|int|array
      * @param $limit int|string|null
      * @param $page int|string|null
      * @return EntityCollection|static|null
      */
     public static function getByColumn(string $column, $value, $limit = null, $page = null) {
-        $params = [$column => $value];
-        return static::get("{$column} = :{$column}", $params, $limit, $page);
+        if (is_array($value)) {
+            $values = $value;
+            $params = [];
+            $ins = [];
+            foreach ($values as $i => $value) {
+                $key = "{$column}_" . ($i + 1);
+                $ins[] = ":{$key}";
+                $params[$key] = $value;
+            }
+
+            $where = "{$column} in (" . implode(", ", $ins) . ")";
+        } else {
+            $where = "{$column} = :{$column}";
+            $params = [$column => $value];
+        }
+
+        return static::get($where, $params, $limit, $page);
     }
 
     /**
