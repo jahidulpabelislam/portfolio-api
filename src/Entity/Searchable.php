@@ -4,6 +4,14 @@ namespace App\Entity;
 
 trait Searchable {
 
+    protected static function getSearchableColumns(): array {
+        if (isset(static::$searchableColumns)) {
+            return static::$searchableColumns;
+        }
+
+        return array_keys(static::$defaultColumns);
+    }
+
     /**
      * @inheritDoc
      *
@@ -37,7 +45,7 @@ trait Searchable {
         }
 
         $searchWhereClauses = [];
-        foreach (static::$searchableColumns as $column) {
+        foreach (static::getSearchableColumns() as $column) {
             $searchWhereClauses[] = "{$column} LIKE :search";
             $searchWhereClauses[] = "{$column} LIKE :searchReversed";
         }
