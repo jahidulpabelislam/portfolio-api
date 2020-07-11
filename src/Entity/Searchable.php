@@ -32,17 +32,15 @@ trait Searchable {
         $whereClauses = $result["where"];
         $whereParams = $result["params"];
 
-        if ($searchValue) {
-            // Split each word in search
-            $searchWords = explode(" ", $searchValue);
-            $searchString = "%" . implode("%", $searchWords) . "%";
+        // Split each word in search
+        $searchWords = explode(" ", $searchValue);
+        $searchString = "%" . implode("%", $searchWords) . "%";
 
-            $searchesReversed = array_reverse($searchWords);
-            $searchStringReversed = "%" . implode("%", $searchesReversed) . "%";
+        $searchesReversed = array_reverse($searchWords);
+        $searchStringReversed = "%" . implode("%", $searchesReversed) . "%";
 
-            $whereParams["search"] = $searchString;
-            $whereParams["searchReversed"] = $searchStringReversed;
-        }
+        $whereParams["search"] = $searchString;
+        $whereParams["searchReversed"] = $searchStringReversed;
 
         $searchWhereClauses = [];
         foreach (static::getSearchableColumns() as $column) {
