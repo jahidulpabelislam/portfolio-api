@@ -17,6 +17,8 @@ use App\Entity;
 
 class Project extends Entity {
 
+    use Searchable;
+
     private const PUBLIC_STATUS = "published";
 
     public static $displayName = "Project";

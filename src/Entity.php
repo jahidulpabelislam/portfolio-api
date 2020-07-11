@@ -44,8 +44,6 @@ abstract class Entity implements Arrayable {
     protected static $arrayColumns = [];
     protected static $arrayColumnSeparator = ",";
 
-    protected static $searchableColumns = [];
-
     protected static $hasCreatedAt = true;
     protected static $hasUpdatedAt = true;
 
@@ -370,44 +368,18 @@ abstract class Entity implements Arrayable {
      * @return array|null [string, array] Generated SQL where clause(s) and an associative array containing any params for query
      */
     public static function generateWhereClausesFromParams(array $params): ?array {
-        $searchValue = $params["search"] ?? null;
-
-        $queryParams = [];
-
-        if ($searchValue) {
-            // Split each word in search
-            $searchWords = explode(" ", $searchValue);
-            $searchString = "%" . implode("%", $searchWords) . "%";
-
-            $searchesReversed = array_reverse($searchWords);
-            $searchStringReversed = "%" . implode("%", $searchesReversed) . "%";
-
-            $queryParams["searchString"] = $searchString;
-            $queryParams["searchStringReversed"] = $searchStringReversed;
-        }
-
-        $whereClauses = [];
-        $searchWhereClauses = [];
-
+        $where = [];
+        $whereParams = [];
         foreach (array_keys(static::$defaultColumns) as $column) {
-            if ($searchValue && in_array($column, static::$searchableColumns)) {
-                $searchWhereClauses[] = "{$column} LIKE :searchString";
-                $searchWhereClauses[] = "{$column} LIKE :searchStringReversed";
-            }
-
             if (!empty($params[$column])) {
-                $whereClauses[] = "{$column} = :{$column}";
-                $queryParams[$column] = $params[$column];
+                $where[] = "{$column} = :{$column}";
+                $whereParams[$column] = $params[$column];
             }
-        }
-
-        if (!empty($searchWhereClauses)) {
-            array_unshift($whereClauses, "(\n\t\t" . implode("\n\t\tOR ", $searchWhereClauses) . "\n\t)");
         }
 
         return [
-            "where" => $whereClauses,
-            "params" => $queryParams,
+            "where" => $where,
+            "params" => $whereParams,
         ];
     }
 
