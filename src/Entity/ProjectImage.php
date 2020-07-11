@@ -22,7 +22,7 @@ class ProjectImage extends Entity {
 
     protected static $tableName = "portfolio_project_image";
 
-    protected $columns = [
+    protected static $defaultColumns = [
         "project_id" => null,
         "sort_order_number" => 0,
         "file" => "",

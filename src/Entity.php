@@ -27,7 +27,9 @@ abstract class Entity implements Arrayable {
     protected static $tableName = "";
 
     protected $identifier = null;
-    protected $columns = [];
+    protected $columns = null;
+
+    protected static $defaultColumns = [];
 
     protected static $requiredColumns = [];
 
@@ -194,6 +196,8 @@ abstract class Entity implements Arrayable {
     }
 
     public function __construct() {
+        $this->columns = static::$defaultColumns;
+
         if (static::$hasCreatedAt) {
             $this->setValue("created_at", null);
         }
@@ -366,10 +370,6 @@ abstract class Entity implements Arrayable {
      * @return array|null [string, array] Generated SQL where clause(s) and an associative array containing any params for query
      */
     public static function generateWhereClausesFromParams(array $params): ?array {
-        if (!static::$searchableColumns) {
-            return null;
-        }
-
         $searchValue = $params["search"] ?? null;
 
         $queryParams = [];
@@ -389,9 +389,8 @@ abstract class Entity implements Arrayable {
         $whereClauses = [];
         $searchWhereClauses = [];
 
-        // Loop through each searchable column
-        foreach (static::$searchableColumns as $column) {
-            if ($searchValue) {
+        foreach (array_keys(static::$defaultColumns) as $column) {
+            if ($searchValue && in_array($column, static::$searchableColumns)) {
                 $searchWhereClauses[] = "{$column} LIKE :searchString";
                 $searchWhereClauses[] = "{$column} LIKE :searchStringReversed";
             }

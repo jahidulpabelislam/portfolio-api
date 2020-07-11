@@ -23,7 +23,7 @@ class Project extends Entity {
 
     protected static $tableName = "portfolio_project";
 
-    protected $columns = [
+    protected static $defaultColumns = [
         "name" => "",
         "date" => null,
         "type" => "",
