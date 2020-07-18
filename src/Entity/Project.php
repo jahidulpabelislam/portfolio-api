@@ -97,7 +97,11 @@ class Project extends Entity {
                 $where = [];
             }
 
-            $where[] = "status = :status";
+            $statusWhere = "status = :status";
+            if (!in_array($statusWhere, $where)) {
+                $where[] = $statusWhere;
+            }
+
             $params["status"] = self::PUBLIC_STATUS;
         }
         return [$where, $params, $limit];
