@@ -19,6 +19,7 @@ class Project extends Entity {
 
     use Filterable;
     use Searchable;
+    use Timestamped;
 
     private const PUBLIC_STATUS = "published";
 

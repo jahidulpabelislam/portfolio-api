@@ -18,6 +18,8 @@ use App\Utilities;
 
 class ProjectImage extends Entity {
 
+    use Timestamped;
+
     public static $displayName = "Project Image";
 
     protected static $tableName = "portfolio_project_image";

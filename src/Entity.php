@@ -44,9 +44,6 @@ abstract class Entity implements Arrayable {
     protected static $arrayColumns = [];
     protected static $arrayColumnSeparator = ",";
 
-    protected static $hasCreatedAt = true;
-    protected static $hasUpdatedAt = true;
-
     protected static $orderByColumn = "id";
     protected static $orderByASC = true;
 
@@ -57,17 +54,7 @@ abstract class Entity implements Arrayable {
     }
 
     public static function getDateTimeColumns(): array {
-        $columns = static::$dateTimeColumns;
-
-        if (static::$hasCreatedAt) {
-            $columns[] = "created_at";
-        }
-
-        if (static::$hasUpdatedAt) {
-            $columns[] = "updated_at";
-        }
-
-        return $columns;
+        return static::$dateTimeColumns;
     }
 
     public static function getDateColumns(): array {
@@ -132,7 +119,7 @@ abstract class Entity implements Arrayable {
         return $this->identifier;
     }
 
-    private function setValue(string $column, $value) {
+    protected function setValue(string $column, $value) {
         if (in_array($column, static::getIntColumns())) {
             $value = (int)$value;
         }
@@ -193,14 +180,6 @@ abstract class Entity implements Arrayable {
 
     public function __construct() {
         $this->columns = static::$defaultColumns;
-
-        if (static::$hasCreatedAt) {
-            $this->setValue("created_at", null);
-        }
-
-        if (static::$hasUpdatedAt) {
-            $this->setValue("updated_at", null);
-        }
     }
 
     public function isLoaded(): bool {
@@ -400,12 +379,6 @@ abstract class Entity implements Arrayable {
      */
     public function save(): bool {
         $isNew = !$this->isLoaded();
-        if ($isNew && static::$hasCreatedAt) {
-            $this->setValue("created_at", new DateTime());
-        }
-        if (static::$hasUpdatedAt) {
-            $this->setValue("updated_at", new DateTime());
-        }
 
         $wasSuccessful = false;
         $query = static::getQuery();
