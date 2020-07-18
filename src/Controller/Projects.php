@@ -26,7 +26,14 @@ class Projects extends Controller {
      * @return Project|null
      */
     private static function getProjectEntity($projectId, bool $includeLinkedData = false): ?Project {
-        $project = Project::getById($projectId);
+        $where = ["id = :id"];
+        $params = ["id" => $projectId];
+        if (!User::isLoggedIn()) {
+            $where[] = "status = :status";
+            $params["status"] = Project::PUBLIC_STATUS;
+        }
+
+        $project = Project::get($where, $params, 1);
         if ($project && $includeLinkedData) {
             $project->loadProjectImages();
         }
@@ -44,6 +51,11 @@ class Projects extends Controller {
 
         $limit = $params["limit"] ?? null;
         $page = $params["page"] ?? null;
+
+        // As the user isn't logged in, filter by status = public
+        if (!User::isLoggedIn()) {
+            $params["status"] = Project::PUBLIC_STATUS;
+        }
 
         $query = Project::buildQueryFromFilters($params);
 

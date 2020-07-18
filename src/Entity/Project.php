@@ -21,7 +21,7 @@ class Project extends Entity {
     use Searchable;
     use Timestamped;
 
-    private const PUBLIC_STATUS = "published";
+    public const PUBLIC_STATUS = "published";
 
     public static $displayName = "Project";
 
@@ -70,54 +70,6 @@ class Project extends Entity {
      * @var Collection|null
      */
     public $images = null;
-
-    /**
-     * Adds filter by public projects if (admin) user isn't currently logged in
-     *
-     * @param $where string[]|string|int|null
-     * @param $params array|null
-     * @param $limit int|string|null
-     * @return array
-     */
-    private static function addStatusWhere($where, ?array $params, $limit = null): array {
-        // As the user isn't logged in, filter by status = public
-        if (!User::isLoggedIn()) {
-
-            if ($params === null) {
-                $params = [];
-            }
-
-            if (is_numeric($where)) {
-                $params["id"] = (int)$where;
-                $where = ["id = :id"];
-                $limit = 1;
-            }
-            else if (is_string($where)) {
-                $where = [$where];
-            }
-            else if (!is_array($where)) {
-                $where = [];
-            }
-
-            $statusWhere = "status = :status";
-            if (!in_array($statusWhere, $where)) {
-                $where[] = $statusWhere;
-            }
-
-            $params["status"] = self::PUBLIC_STATUS;
-        }
-        return [$where, $params, $limit];
-    }
-
-    public static function getCount($where = null, ?array $params = null): int {
-        [$where, $params] = static::addStatusWhere($where, $params);
-        return parent::getCount($where, $params);
-    }
-
-    public static function get($where = null, ?array $params = null, $limit = null, $page = null) {
-        [$where, $params, $limit] = static::addStatusWhere($where, $params, $limit);
-        return parent::get($where, $params, $limit, $page);
-    }
 
     /**
      * Helper function to get all Project Image Entities linked to this Project
