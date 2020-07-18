@@ -115,8 +115,6 @@ abstract class Entity implements Arrayable {
 
     /**
      * Used to get a total count of Entities using a where clause
-     * Used together with Entity::getByParams, as this return a limited Entities
-     * but we want to get a number of total items without limit
      *
      * @param $where string[]|string|null
      * @param $params array|null
@@ -360,42 +358,25 @@ abstract class Entity implements Arrayable {
     }
 
     /**
-     * Helper function
-     * Used to generate a where clause for a search on a entity along with any params needed
-     * Used with Entity::getByParams();
+     * Generate where(s) to filter entities by values.
      *
-     * @param $params array The fields to search for within searchable columns (if any)
-     * @return array|null [string, array] Generated SQL where clause(s) and an associative array containing any params for query
+     * @param $filters array The fields to search for within searchable columns (if any)
+     * @return array [string[], array] Generated SQL where clause(s) and an associative array containing any params for query
      */
-    public static function generateWhereClausesFromParams(array $params): ?array {
+    public static function buildQueryFromFilters(array $filters): array {
         $where = [];
-        $whereParams = [];
+        $params = [];
         foreach (array_keys(static::$defaultColumns) as $column) {
-            if (!empty($params[$column])) {
+            if (!empty($filters[$column])) {
                 $where[] = "{$column} = :{$column}";
-                $whereParams[$column] = $params[$column];
+                $params[$column] = $filters[$column];
             }
         }
 
         return [
             "where" => $where,
-            "params" => $whereParams,
+            "params" => $params,
         ];
-    }
-
-    /**
-     * Gets all Entities but paginated, also might include search
-     *
-     * @param $params array Any data to aid in the search query
-     * @param $limit int|string|null
-     * @param $page int|string|null
-     * @return EntityCollection|static|null
-     */
-    public static function getByParams(array $params, $limit = null, $page = null) {
-        // Add filters/wheres if a search was entered
-        $resultFromGeneration = static::generateWhereClausesFromParams($params);
-
-        return static::get($resultFromGeneration["where"] ?? null, $resultFromGeneration["params"] ?? null, $limit, $page);
     }
 
     public function reload() {

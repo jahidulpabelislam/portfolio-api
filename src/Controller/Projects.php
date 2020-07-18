@@ -44,11 +44,24 @@ class Projects extends Controller {
 
         $limit = $params["limit"] ?? null;
         $page = $params["page"] ?? null;
-        $projects = Project::getByParams($params, $limit, $page);
+
+        $query = Project::buildQueryFromFilters($params);
+
+        $where = $query["where"];
+        $queryParams = $query["params"];
+
+        $search = $params['search'] ?? '';
+        if ($search) {
+            $searchQuery = Project::buildSearchQuery($search);
+
+            $where = array_merge($where, $searchQuery['where']);
+            $queryParams = array_merge($queryParams, $searchQuery['params']);
+        }
+
+        $projects = Project::get($where, $queryParams, $limit, $page);
 
         if ($projects instanceof Project) {
-            $clauses = Project::generateWhereClausesFromParams($params);
-            $totalCount = Project::getCount($clauses["where"] ?? null, $clauses["params"] ?? null);
+            $totalCount = Project::getCount($where, $queryParams);
             $projects = new EntityCollection([$projects], $totalCount, 1, 1);
         }
         else if (!($projects) instanceof EntityCollection) {

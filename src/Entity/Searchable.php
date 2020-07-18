@@ -13,46 +13,32 @@ trait Searchable {
     }
 
     /**
-     * @inheritDoc
+     * Build where clause(s) for like searches on searchable columns
      *
-     * Add in where clauses for like searches on searchable columns
-     *
-     * @param array $params
-     * @return array|null
+     * @param $search string
+     * @return array
      */
-    public static function generateWhereClausesFromParams(array $params): ?array {
-        $result = parent::generateWhereClausesFromParams($params);
+    public static function buildSearchQuery(string $search): array {
+        $words = explode(" ", $search);
+        $wordsReversed = array_reverse($words);
 
-        $searchValue = $params["search"] ?? null;
+        $searchFormatted = "%" . implode("%", $words) . "%";
+        $searchFormattedReversed = "%" . implode("%", $wordsReversed) . "%";
 
-        if (!$searchValue) {
-            return $result;
-        }
+        $params = [
+            "search" => $searchFormatted,
+            "searchReversed" => $searchFormattedReversed,
+        ];
 
-        $whereClauses = $result["where"];
-        $whereParams = $result["params"];
-
-        // Split each word in search
-        $searchWords = explode(" ", $searchValue);
-        $searchString = "%" . implode("%", $searchWords) . "%";
-
-        $searchesReversed = array_reverse($searchWords);
-        $searchStringReversed = "%" . implode("%", $searchesReversed) . "%";
-
-        $whereParams["search"] = $searchString;
-        $whereParams["searchReversed"] = $searchStringReversed;
-
-        $searchWhereClauses = [];
+        $where = [];
         foreach (static::getSearchableColumns() as $column) {
-            $searchWhereClauses[] = "{$column} LIKE :search";
-            $searchWhereClauses[] = "{$column} LIKE :searchReversed";
+            $where[] = "{$column} LIKE :search";
+            $where[] = "{$column} LIKE :searchReversed";
         }
-
-        array_unshift($whereClauses, "(\n\t\t" . implode("\n\t\tOR ", $searchWhereClauses) . "\n\t)");
 
         return [
-            "where" => $whereClauses,
-            "params" => $whereParams,
+            "where" => ["(\n\t\t" . implode("\n\t\tOR ", $where) . "\n\t)"],
+            "params" => $params,
         ];
     }
 
