@@ -62,12 +62,12 @@ class Projects extends Controller {
         $where = $query["where"];
         $queryParams = $query["params"];
 
-        $search = $params['search'] ?? '';
+        $search = $params["search"] ?? '';
         if ($search) {
             $searchQuery = Project::buildSearchQuery($search);
 
-            $where = array_merge($where, $searchQuery['where']);
-            $queryParams = array_merge($queryParams, $searchQuery['params']);
+            $where = array_merge($where, $searchQuery["where"]);
+            $queryParams = array_merge($queryParams, $searchQuery["params"]);
         }
 
         $projects = Project::get($where, $queryParams, $limit, $page);
