@@ -127,13 +127,18 @@ trait Responder {
      */
     public static function getItemsResponse(string $entityClass, EntityCollection $entities): array {
         $count = count($entities);
+        $data = [];
+
+        foreach ($entities as $entity) {
+            $data[] = $entity->getAPIResponse();
+        }
 
         $response = [
             "ok" => true,
             "meta" => [
                 "count" => $count,
             ],
-            "data" => $entities->toArray(),
+            "data" => $data,
         ];
 
         if (!$count) {
@@ -198,7 +203,7 @@ trait Responder {
     private static function getItemFoundResponse(APIEntity $entity): array {
         return [
             "ok" => true,
-            "data" => $entity->toArray(),
+            "data" => $entity->getAPIResponse(),
         ];
     }
 
