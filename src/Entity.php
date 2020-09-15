@@ -119,12 +119,12 @@ abstract class Entity implements Arrayable {
         return $this->identifier;
     }
 
-    protected function setValue(string $column, $value) {
+    protected function setValue(string $column, $value, bool $fromDb = false) {
         if (in_array($column, static::getIntColumns())) {
             $value = (int)$value;
         }
         else if (in_array($column, static::getArrayColumns())) {
-            if (is_string($value)) {
+            if ($fromDb && is_string($value)) {
                 $value = explode(static::$arrayColumnSeparator, $value);
             }
             else if (!is_array($value)) {
@@ -143,11 +143,11 @@ abstract class Entity implements Arrayable {
         $this->columns[$column] = $value;
     }
 
-    public function setValues(array $values) {
+    public function setValues(array $values, bool $fromDb = false) {
         $columns = array_keys($this->columns);
         foreach ($columns as $column) {
             if (array_key_exists($column, $values)) {
-                $this->setValue($column, $values[$column]);
+                $this->setValue($column, $values[$column], $fromDb);
             }
         }
     }
@@ -201,7 +201,8 @@ abstract class Entity implements Arrayable {
      * @return static
      */
     private static function populateFromDB(array $row): Entity {
-        $entity = static::factory($row);
+        $entity = new static();
+        $entity->setValues($row, true);
         $entity->setId($row["id"]);
         return $entity;
     }
@@ -340,7 +341,7 @@ abstract class Entity implements Arrayable {
         if ($this->isLoaded()) {
             $row = static::select("*", $this->getId());
             if ($row) {
-                $this->setValues($row);
+                $this->setValues($row, true);
                 return;
             }
 
