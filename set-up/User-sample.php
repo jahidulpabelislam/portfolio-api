@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The functions for the handling of authentication for this API.
  *

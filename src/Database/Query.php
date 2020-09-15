@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The middle man for querying the database from an Entity.
  * Builds the SQL queries and executes/runs them and returns in appropriate format.
@@ -113,8 +114,16 @@ class Query {
      * @param $page int|null
      * @return array [array, array|null]
      */
-    protected static function generateSelectQuery(string $table, $columns = "*", $where = null, ?array $params = [], $orderBy = null, ?int $limit = null, ?int $page = null): array {
-        $columns = $columns?: "*";
+    protected static function generateSelectQuery(
+        string $table,
+        $columns = "*",
+        $where = null,
+        ?array $params = [],
+        $orderBy = null,
+        ?int $limit = null,
+        ?int $page = null
+    ): array {
+        $columns = $columns ?: "*";
         $columns = static::arrayToQueryString($columns);
 
         $sqlParts = [
@@ -181,10 +190,25 @@ class Query {
      * @param $page int|string|null
      * @return Collection|array|null
      */
-    public function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, $page = null) {
+    public function select(
+        $columns = "*",
+        $where = null,
+        ?array $params = null,
+        $orderBy = null,
+        ?int $limit = null,
+        $page = null
+    ) {
         $page = $limit ? static::getPage($page) : null;
 
-        [$sqlParts, $params] = static::generateSelectQuery($this->table, $columns, $where, $params, $orderBy, $limit, $page);
+        [$sqlParts, $params] = static::generateSelectQuery(
+            $this->table,
+            $columns,
+            $where,
+            $params,
+            $orderBy,
+            $limit,
+            $page
+        );
 
         if (($where && is_numeric($where)) || $limit === 1) {
             return $this->execute($sqlParts, $params, "getOne");

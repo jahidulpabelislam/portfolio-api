@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The Project Image Entity object class (extends the base Entity class, where most of the ORM functionality lies).
  * Within this holds and methods where it overwrites or add extra custom functionality from the base Entity class.

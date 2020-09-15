@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Connects to a database and set up to send and receive data
  *

@@ -96,7 +96,14 @@ abstract class Entity implements Arrayable {
      * @param $page int|string|null
      * @return DbCollection|array|null
      */
-    public static function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, $page = null) {
+    public static function select(
+        $columns = "*",
+        $where = null,
+        ?array $params = null,
+        $orderBy = null,
+        ?int $limit = null,
+        $page = null
+    ) {
         return static::getQuery()->select($columns, $where, $params, $orderBy, $limit, $page);
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The controller for this API's Authentication.
  *
@@ -28,7 +29,6 @@ class Auth extends Controller {
     public function login(): array {
         $data = $this->core->data;
         if (Core::hasRequiredFields(User::class, $data)) {
-
             $jwt = User::login($data);
             if ($jwt) {
                 return [

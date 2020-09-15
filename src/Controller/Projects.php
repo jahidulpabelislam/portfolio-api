@@ -1,4 +1,5 @@
 <?php
+
 /**
  * All the custom functions for the Projects part of the API that allow to perform all user requests.
  *
@@ -81,7 +82,7 @@ class Projects extends Controller {
         }
 
         if ($projects && count($projects)) {
-            $images = ProjectImage::getByColumn("project_id" , $projects->pluck("id")->toArray());
+            $images = ProjectImage::getByColumn("project_id", $projects->pluck("id")->toArray());
             $imagesGrouped = $images->groupBy("project_id");
 
             foreach ($projects as $project) {
@@ -101,7 +102,6 @@ class Projects extends Controller {
      */
     private function saveProject(array $data, $projectId = null): array {
         if (User::isLoggedIn()) {
-
             $isNew = $projectId === null;
 
             // Only validate on creation
@@ -255,10 +255,8 @@ class Projects extends Controller {
         // Check if file is a actual image
         $fileType = mime_content_type($image["tmp_name"]);
         if (strpos($fileType, "image/") === 0) {
-
             // Try to uploaded file
             if (move_uploaded_file($image["tmp_name"], $newImageFullPath)) {
-
                 // Add new image with location into the database
                 $imageData = [
                     "file" => $newFileLocation,
@@ -297,7 +295,6 @@ class Projects extends Controller {
         if (User::isLoggedIn()) {
             $files = $this->core->files;
             if (isset($files["image"])) {
-
                 // Check the Project trying to add a Image for exists
                 $project = self::getProjectEntity($projectId);
                 if ($project) {

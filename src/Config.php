@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Sets Constants for Connection to the Database & API's Auth
  * as well as other settings.

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for storing any helper functions which constructs responses
  *
