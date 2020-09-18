@@ -220,10 +220,12 @@ class Query {
         $totalCount = null;
         if ($limit) {
             /**
-             * If count is the limit, do a query to find the total count
+             * Do a DB query to get total count if:
+             *    - none found on a specific page than 1
+             *    - count is the limit
              * Else we can work out the total
              */
-            if ($count === $limit) {
+            if ((!$count && $page > 1) || $count === $limit) {
                 // Replace the SELECT part in query with a simple count
                 $sqlParts[0] = "SELECT COUNT(*) as count";
 
