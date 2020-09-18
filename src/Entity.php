@@ -267,7 +267,7 @@ abstract class Entity implements Arrayable {
     }
 
     /**
-     * @param $where string[]|string|int
+     * @param $where string[]|string|int|null
      * @param $params array|null
      * @param $limit int|string|null
      * @param $page int|string|null

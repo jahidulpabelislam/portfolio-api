@@ -55,7 +55,7 @@ class Connection {
      * Executes a SQL query
      *
      * @param $query string The SQL query to run
-     * @param $params array Array of any params/bindings to use with the SQL query
+     * @param $params array|null Array of any params/bindings to use with the SQL query
      * @return PDOStatement|null
      */
     private function run(string $query, ?array $params): ?PDOStatement {
