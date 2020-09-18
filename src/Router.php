@@ -24,7 +24,7 @@ class Router {
      * else return appropriate response (array)
      */
     private function checkAPIVersion(): ?array {
-        $version = $this->core->uriParts[0] ?? "";
+        $version = $this->core->uriParts[0] ?? null;
 
         $shouldBeVersion = "v" . Config::get()->api_version;
         if ($version !== $shouldBeVersion) {
@@ -41,7 +41,7 @@ class Router {
         $uriParts = $this->core->uriParts;
         $method = $this->core->method;
 
-        $authAction = $uriParts[2] ?? "";
+        $authAction = $uriParts[2] ?? null;
 
         if ($method === "POST") {
             if ($authAction === "login" && !isset($uriParts[3])) {

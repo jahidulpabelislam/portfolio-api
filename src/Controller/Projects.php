@@ -63,7 +63,7 @@ class Projects extends Controller {
         $where = $query["where"];
         $queryParams = $query["params"];
 
-        $search = $params["search"] ?? '';
+        $search = $params["search"] ?? null;
         if ($search) {
             $searchQuery = Project::buildSearchQuery($search);
 
