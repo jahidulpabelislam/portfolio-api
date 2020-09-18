@@ -255,7 +255,7 @@ class Projects extends Controller {
         // Check if file is a actual image
         $fileType = mime_content_type($image["tmp_name"]);
         if (strpos($fileType, "image/") === 0) {
-            // Try to uploaded file
+            // Try to upload file
             if (move_uploaded_file($image["tmp_name"], $newImageFullPath)) {
                 // Add new image with location into the database
                 $imageData = [

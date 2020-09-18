@@ -170,11 +170,7 @@ abstract class Entity implements Arrayable {
             return $this->getId();
         }
 
-        if (array_key_exists($name, $this->columns)) {
-            return $this->columns[$name];
-        }
-
-        return null;
+        return $this->columns[$name] ?? null;
     }
 
     public function __isset(string $name): bool {
@@ -215,10 +211,10 @@ abstract class Entity implements Arrayable {
     }
 
     /**
-     * @param $rows array[]
+     * @param $rows DbCollection
      * @return static[]
      */
-    private static function populateEntitiesFromDB($rows): array {
+    private static function populateEntitiesFromDB(DbCollection $rows): array {
         $entities = [];
 
         foreach ($rows as $row) {

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Database\Collection as DBCollection;
+use App\Entity;
 
 class Collection extends DBCollection {
 
@@ -16,6 +17,12 @@ class Collection extends DBCollection {
         return $array;
     }
 
+    /**
+     * @param $entity Entity
+     * @param $key string
+     * @param $default mixed
+     * @return mixed
+     */
     protected static function getFromItem($entity, $key, $default = null) {
         if ($key === "id") {
             return $entity->getId();
@@ -30,11 +37,7 @@ class Collection extends DBCollection {
         }
 
         $array = $entity->toArray();
-        if (isset($array[$key])) {
-            return $array[$key];
-        }
-
-        return $default;
+        return $array[$key] ?? $default;
     }
 
 }

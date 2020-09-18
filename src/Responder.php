@@ -16,7 +16,7 @@ use App\Entity\Collection as EntityCollection;
 
 trait Responder {
 
-    protected $core = null;
+    protected $core;
 
     public function __construct(Core $core) {
         $this->core = $core;
