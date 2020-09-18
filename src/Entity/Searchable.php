@@ -5,11 +5,7 @@ namespace App\Entity;
 trait Searchable {
 
     protected static function getSearchableColumns(): array {
-        if (isset(static::$searchableColumns)) {
-            return static::$searchableColumns;
-        }
-
-        return array_keys(static::$defaultColumns);
+        return static::$searchableColumns ?? array_keys(static::$defaultColumns);
     }
 
     /**
