@@ -75,7 +75,7 @@ class Projects extends Controller {
 
         if ($projects instanceof Project) {
             $totalCount = Project::getCount($where, $queryParams);
-            $projects = new EntityCollection([$projects], $totalCount, 1, 1);
+            $projects = new EntityCollection([$projects], $totalCount, $limit, $page);
         }
         else if (!($projects) instanceof EntityCollection) {
             $projects = [];
