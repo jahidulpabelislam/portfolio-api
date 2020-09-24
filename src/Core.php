@@ -20,6 +20,8 @@ use DateTimeZone;
 
 class Core {
 
+    use Singleton;
+
     private const CACHE_TIMEZONE = "Europe/London";
 
     private static $cacheTimeZone = null;
@@ -42,16 +44,6 @@ class Core {
     protected $lastModified = null;
 
     protected $router = null;
-
-    protected static $instance = null;
-
-    public static function get(): Core {
-        if (static::$instance === null) {
-            static::$instance = new static();
-        }
-
-        return static::$instance;
-    }
 
     private function initRoutes() {
         $router = $this->router;

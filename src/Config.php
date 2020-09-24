@@ -15,7 +15,7 @@ namespace App;
 
 class Config {
 
-    private static $instance;
+    use Singleton;
 
     public $debug = false;
 
@@ -26,17 +26,6 @@ class Config {
         if ($environment === "development") {
             $this->debug = true;
         }
-    }
-
-    /**
-     * Singleton getter
-     */
-    public static function get(): Config {
-        if (!self::$instance) {
-            self::$instance = new Config();
-        }
-
-        return self::$instance;
     }
 
     public function __get(string $name) {
