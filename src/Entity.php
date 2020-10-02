@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The base Entity object class for Project & Projects Images.
  * Holds all ORM style functions.
