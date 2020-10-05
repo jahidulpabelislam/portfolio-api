@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Utils;
 
 use ArrayAccess;
 use ArrayIterator;

@@ -14,8 +14,8 @@
 
 namespace App\Entity;
 
-use App\Core;
 use App\APIEntity;
+use App\Core;
 
 class Project extends APIEntity {
 

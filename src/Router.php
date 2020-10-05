@@ -13,6 +13,7 @@
 namespace App;
 
 use App\Database\Exception as DBException;
+use App\Utils\StringHelper;
 use Exception;
 
 class Router {
@@ -50,7 +51,7 @@ class Router {
     protected function getFullPath(string $path): string {
         $basePath = $this->getBasePath();
         if ($basePath !== "") {
-            $path = Utilities::addTrailingSlash($basePath) . Utilities::removeLeadingSlash($path);
+            $path = StringHelper::addTrailingSlash($basePath) . StringHelper::removeLeadingSlash($path);
         }
 
         return $path;

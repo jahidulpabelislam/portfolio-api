@@ -15,6 +15,8 @@ namespace App;
 
 use App\Controller\Auth;
 use App\Controller\Projects;
+use App\Utils\Singleton;
+use App\Utils\StringHelper;
 use DateTime;
 use DateTimeZone;
 
@@ -83,7 +85,7 @@ class Core {
         $this->uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 
         // Get the individual parts of the request URI as an array
-        $uri = Utilities::removeSlashes($this->uri);
+        $uri = StringHelper::removeSlashes($this->uri);
         $this->uriParts = explode("/", $uri);
     }
 
@@ -133,10 +135,10 @@ class Core {
         }
 
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
-        $domain = Utilities::removeTrailingSlash($_SERVER["SERVER_NAME"]);
-        $uri = Utilities::addLeadingSlash($uri);
+        $domain = StringHelper::removeTrailingSlash($_SERVER["SERVER_NAME"]);
+        $uri = StringHelper::addLeadingSlash($uri);
 
-        return Utilities::addTrailingSlash("{$protocol}://{$domain}{$uri}");
+        return StringHelper::addTrailingSlash("{$protocol}://{$domain}{$uri}");
     }
 
     /**
@@ -149,7 +151,7 @@ class Core {
     }
 
     public static function makeUrl(string $base, array $params): string {
-        $fullURL = Utilities::addTrailingSlash($base);
+        $fullURL = StringHelper::addTrailingSlash($base);
 
         if ($params && count($params)) {
             $fullURL .= "?" . http_build_query($params);
@@ -353,7 +355,7 @@ class Core {
 
         header("HTTP/1.1 {$status} {$message}");
 
-        $sendPretty = Utilities::stringToBoolean($this->params["pretty"] ?? null);
+        $sendPretty = StringHelper::stringToBoolean($this->params["pretty"] ?? null);
 
         $encodeParams = $sendPretty ? JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES : 0;
         echo json_encode($this->response, $encodeParams);

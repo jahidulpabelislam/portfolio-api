@@ -16,6 +16,7 @@ use App\Database\Collection as DbCollection;
 use App\Database\Connection;
 use App\Database\Query;
 use App\Entity\Collection as EntityCollection;
+use App\Utils\Arrayable;
 use DateTime;
 
 abstract class Entity implements Arrayable {

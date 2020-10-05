@@ -1,8 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Utils;
 
-class Utilities {
+class StringHelper {
 
     public static function removeLeadingSlash(string $url): string {
         if ($url[0] === "/") {

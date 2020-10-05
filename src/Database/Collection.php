@@ -2,7 +2,7 @@
 
 namespace App\Database;
 
-use App\Collection as BaseCollection;
+use App\Utils\Collection as BaseCollection;
 
 class Collection extends BaseCollection {
 

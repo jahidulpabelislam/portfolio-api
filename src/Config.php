@@ -13,6 +13,8 @@
 
 namespace App;
 
+use App\Utils\Singleton;
+
 class Config {
 
     use Singleton;

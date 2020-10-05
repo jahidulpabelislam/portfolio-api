@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Database\Collection as DBCollection;
-use App\Entity;
 
 class Collection extends DBCollection {
 

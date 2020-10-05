@@ -14,9 +14,9 @@
 
 namespace App\Entity;
 
-use App\Core;
 use App\APIEntity;
-use App\Utilities;
+use App\Core;
+use App\Utils\StringHelper;
 
 class ProjectImage extends APIEntity {
 
@@ -53,7 +53,7 @@ class ProjectImage extends APIEntity {
         // Check if the deletion was ok
         if ($isDeleted && !empty($this->file)) {
             // Makes sure there is a leading slash
-            $filePath = ROOT . Utilities::addLeadingSlash($this->file);
+            $filePath = ROOT . StringHelper::addLeadingSlash($this->file);
             if (file_exists($filePath)) {
                 unlink($filePath);
             }
