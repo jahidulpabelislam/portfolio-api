@@ -10,8 +10,10 @@
  * @copyright 2010-2020 JPI
  */
 
-namespace App;
+namespace App\HTTP;
 
+use App\APIEntity;
+use App\Core;
 use App\Entity\Collection as EntityCollection;
 
 trait Responder {
@@ -22,90 +24,107 @@ trait Responder {
         $this->core = $core;
     }
 
+    public static function newResponse(): Response {
+        return new Response();
+    }
+
     /**
      * Generate meta data to send back when the method provided is not allowed on the URI
      */
-    public function getMethodNotAllowedResponse(): array {
-        return [
+    public function getMethodNotAllowedResponse(): Response {
+        $response = static::newResponse();
+        $response->setBody([
             "meta" => [
                 "status" => 405,
                 "message" => "Method Not Allowed.",
                 "feedback" => "Method {$this->core->method} not allowed on " . $this->core->getRequestedURL() . ".",
             ],
-        ];
+        ]);
+        return $response;
     }
 
     /**
      * Send necessary meta data back when user isn't logged in correctly
      */
-    public static function getNotAuthorisedResponse(): array {
-        return [
+    public static function getNotAuthorisedResponse(): Response {
+        $response = static::newResponse();
+        $response->setBody([
             "meta" => [
                 "status" => 401,
                 "message" => "Unauthorized",
                 "feedback" => "You need to be logged in!",
             ],
-        ];
+        ]);
+        return $response;
     }
 
-    public static function getLoggedOutResponse(): array {
-        return [
+    public static function getLoggedOutResponse(): Response {
+        $response = static::newResponse();
+        $response->setBody([
             "ok" => true,
             "meta" => [
                 "feedback" => "Successfully logged out.",
             ],
-        ];
+        ]);
+        return $response;
     }
 
-    public static function getUnsuccessfulLogoutResponse(): array {
-        return [
+    public static function getUnsuccessfulLogoutResponse(): Response {
+        $response = static::newResponse();
+        $response->setBody([
             "meta" => [
                 "feedback" => "Couldn't successfully process your logout request!",
             ],
-        ];
+        ]);
+        return $response;
     }
 
     /**
      * Generate response data to send back when the URI provided is not recognised
      */
-    public function getUnrecognisedURIResponse(): array {
-        return [
+    public function getUnrecognisedURIResponse(): Response {
+        $response = static::newResponse();
+        $response->setBody([
             "meta" => [
                 "status" => 404,
                 "message" => "Not Found",
                 "feedback" => "Unrecognised URI (" . $this->core->getRequestedURL() . ").",
             ],
-        ];
+        ]);
+        return $response;
     }
 
     /**
      * Generate response data to send back when the requested API version is not recognised
      */
-    public function getUnrecognisedAPIVersionResponse(): array {
+    public function getUnrecognisedAPIVersionResponse(): Response {
         $shouldBeVersion = Config::get()->api_version;
 
         $shouldBeURI = $this->core->uriParts;
         $shouldBeURI[0] = "v" . $shouldBeVersion;
         $shouldBeURL = Core::makeFullURL($shouldBeURI);
 
-        return [
+        $response = static::newResponse();
+        $response->setBody([
             "meta" => [
                 "status" => 404,
                 "message" => "Not Found",
                 "feedback" => "Unrecognised API version. Current version is {$shouldBeVersion}, so please update requested URL to {$shouldBeURL}.",
             ],
-        ];
+        ]);
+        return $response;
     }
 
     /**
      * Send necessary meta data back when required data/fields is not provided/valid
      */
-    public function getInvalidFieldsResponse(string $entityClass, array $data, array $extraRequiredFields = []): array {
+    public function getInvalidFieldsResponse(string $entityClass, array $data, array $extraRequiredFields = []): Response {
         $requiredFields = $entityClass::getRequiredFields();
         $requiredFields = array_merge($requiredFields, $extraRequiredFields);
         $invalidFields = Core::getInvalidFields($data, $requiredFields);
 
-        return [
+        $response = static::newResponse();
+        $response->setBody([
             "meta" => [
                 "status" => 400,
                 "message" => "Bad Request",
@@ -113,7 +132,8 @@ trait Responder {
                 "invalid_fields" => $invalidFields,
                 "feedback" => "The necessary data was not provided, missing/invalid fields: " . implode(", ", $invalidFields) . ".",
             ],
-        ];
+        ]);
+        return $response;
     }
 
     /**
@@ -123,9 +143,9 @@ trait Responder {
      *
      * @param $entityClass string
      * @param $entities EntityCollection
-     * @return array
+     * @return Response
      */
-    public static function getItemsResponse(string $entityClass, EntityCollection $entities): array {
+    public static function getItemsResponse(string $entityClass, EntityCollection $entities): Response {
         $count = count($entities);
         $data = [];
 
@@ -133,7 +153,7 @@ trait Responder {
             $data[] = $entity->getAPIResponse();
         }
 
-        $response = [
+        $body = [
             "ok" => true,
             "meta" => [
                 "count" => $count,
@@ -142,9 +162,11 @@ trait Responder {
         ];
 
         if (!$count) {
-            $response["meta"]["feedback"] = "No {$entityClass::$displayName}s found.";
+            $body["meta"]["feedback"] = "No {$entityClass::$displayName}s found.";
         }
 
+        $response = static::newResponse();
+        $response->setBody($body);
         return $response;
     }
 
@@ -157,22 +179,24 @@ trait Responder {
      *
      * @param $entityClass string
      * @param $collection EntityCollection
-     * @return array
+     * @return Response
      */
-    public function getPaginatedItemsResponse(string $entityClass, EntityCollection $collection): array {
+    public function getPaginatedItemsResponse(string $entityClass, EntityCollection $collection): Response {
         $params = $this->core->params;
 
         // The items response is the base response, and the extra meta is added below
         $response = static::getItemsResponse($entityClass, $collection);
 
+        $body = $response->getBody();
+
         $totalCount = $collection->getTotalCount();
-        $response["meta"]["total_count"] = $totalCount;
+        $body["meta"]["total_count"] = $totalCount;
 
         $limit = $collection->getLimit();
         $page = $collection->getPage();
 
         $lastPage = ceil($totalCount / $limit);
-        $response["meta"]["total_pages"] = $lastPage;
+        $body["meta"]["total_pages"] = $lastPage;
 
         $pageURL = $this->core->getRequestedURL();
         if (isset($params["limit"])) {
@@ -188,38 +212,44 @@ trait Responder {
                 unset($params["page"]);
             }
 
-            $response["meta"]["previous_page"] = Core::makeUrl($pageURL, $params);
+            $body["meta"]["previous_page"] = Core::makeUrl($pageURL, $params);
         }
 
         $hasNextPage = $page < $lastPage;
         if ($hasNextPage) {
             $params["page"] = $page + 1;
-            $response["meta"]["next_page"] = Core::makeUrl($pageURL, $params);
+            $body["meta"]["next_page"] = Core::makeUrl($pageURL, $params);
         }
+
+        $response->setBody($body);
 
         return $response;
     }
 
-    private static function getItemFoundResponse(APIEntity $entity): array {
-        return [
+    private static function getItemFoundResponse(APIEntity $entity): Response {
+        $response = static::newResponse();
+        $response->setBody([
             "ok" => true,
             "data" => $entity->getAPIResponse(),
-        ];
+        ]);
+        return $response;
     }
 
     /**
      * @param $entityClass string
      * @param $id int|string|null
-     * @return array
+     * @return Response
      */
-    public static function getItemNotFoundResponse(string $entityClass, $id): array {
-        return [
+    public static function getItemNotFoundResponse(string $entityClass, $id): Response {
+        $response = static::newResponse();
+        $response->setBody([
             "meta" => [
                 "status" => 404,
                 "message" => "Not Found",
                 "feedback" => "No {$entityClass::$displayName} identified by {$id} found.",
             ],
-        ];
+        ]);
+        return $response;
     }
 
     /**
@@ -230,9 +260,9 @@ trait Responder {
      * @param $entityClass string
      * @param $entity APIEntity|null
      * @param $id int|string|null
-     * @return array
+     * @return Response
      */
-    public static function getItemResponse(string $entityClass, ?APIEntity $entity, $id): array {
+    public static function getItemResponse(string $entityClass, ?APIEntity $entity, $id): Response {
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
             return static::getItemFoundResponse($entity);
         }
@@ -240,41 +270,47 @@ trait Responder {
         return static::getItemNotFoundResponse($entityClass, $id);
     }
 
-    public static function getInsertResponse(string $entityClass, ?APIEntity $entity): array {
+    public static function getInsertResponse(string $entityClass, ?APIEntity $entity): Response {
         if ($entity && $entity->isLoaded()) {
             $response = static::getItemFoundResponse($entity);
 
-            $response["meta"]["status"] = 201;
-            $response["meta"]["message"] = "Created";
+            $body = $response->getBody();
+            $body["meta"]["status"] = 201;
+            $body["meta"]["message"] = "Created";
+            $response->setBody($body);
 
-            Core::setHeader("Location", $entity->getAPIURL());
+            $response->addHeader("Location", $entity->getAPIURL());
 
             return $response;
         }
 
-        return [
+        $response = static::newResponse();
+        $response->setBody([
             "meta" => [
                 "feedback" => "Failed to insert the new {$entityClass::$displayName}.",
             ],
-        ];
+        ]);
+        return $response;
     }
 
     /**
      * @param $entityClass string
      * @param $entity APIEntity|null
      * @param $id int|string|null
-     * @return array
+     * @return Response
      */
-    public static function getUpdateResponse(string $entityClass, ?APIEntity $entity, $id): array {
+    public static function getUpdateResponse(string $entityClass, ?APIEntity $entity, $id): Response {
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
             return static::getItemFoundResponse($entity);
         }
 
-        return [
+        $response = static::newResponse();
+        $response->setBody([
             "meta" => [
                 "feedback" => "Failed to update the {$entityClass::$displayName} identified by {$id}.",
             ],
-        ];
+        ]);
+        return $response;
     }
 
     /**
@@ -284,27 +320,36 @@ trait Responder {
      * @param $entity APIEntity|null
      * @param $id int|string|null
      * @param $isDeleted bool
-     * @return array
+     * @return Response
      */
-    public static function getItemDeletedResponse(string $entityClass, ?APIEntity $entity, $id, bool $isDeleted = false): array {
+    public static function getItemDeletedResponse(
+        string $entityClass,
+        ?APIEntity $entity,
+        $id,
+        bool $isDeleted = false
+    ): Response {
         if (!$id || !$entity || !$entity->isLoaded() || $entity->getId() != $id) {
             return static::getItemNotFoundResponse($entityClass, $id);
         }
 
         if ($isDeleted) {
-            return [
+            $response = static::newResponse();
+            $response->setBody([
                 "ok" => true,
                 "data" => [
                     "id" => (int)$id,
                 ],
-            ];
+            ]);
+            return $response;
         }
 
-        return [
+        $response = static::newResponse();
+        $response->setBody([
             "meta" => [
                 "feedback" => "Failed to delete the {$entityClass::$displayName} identified by {$id}.",
             ],
-        ];
+        ]);
+        return $response;
     }
 
 }

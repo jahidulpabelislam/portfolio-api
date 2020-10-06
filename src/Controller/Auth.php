@@ -15,6 +15,7 @@ namespace App\Controller;
 use App\Controller;
 use App\Core;
 use App\Entity\User;
+use App\HTTP\Response;
 
 class Auth extends Controller {
 
@@ -24,26 +25,30 @@ class Auth extends Controller {
      * If successful return appropriate success message with JWT
      * else return appropriate error message
      *
-     * @return array The request response to send back
+     * @return Response
      */
-    public function login(): array {
+    public function login(): Response {
         $data = $this->core->data;
         if (Core::hasRequiredFields(User::class, $data)) {
             $jwt = User::login($data);
             if ($jwt) {
-                return [
+                $response = static::newResponse();
+                $response->setBody([
                     "ok" => true,
                     "data" => $jwt,
-                ];
+                ]);
+                return $response;
             }
 
-            return [
+            $response = static::newResponse();
+            $response->setBody([
                 "meta" => [
                     "status" => 401,
                     "message" => "Unauthorized",
                     "feedback" => "Wrong username and/or password.",
                 ],
-            ];
+            ]);
+            return $response;
         }
 
         return $this->getInvalidFieldsResponse(User::class, $data);
@@ -52,9 +57,9 @@ class Auth extends Controller {
     /**
      * Call logout, then return appropriate success or error message
      *
-     * @return array The request response to send back
+     * @return Response
      */
-    public static function logout(): array {
+    public static function logout(): Response {
         if (User::logout()) {
             return self::getLoggedOutResponse();
         }
@@ -66,13 +71,15 @@ class Auth extends Controller {
      * Check whether the current user is logged in
      * then return appropriate response depending on check
      *
-     * @return array The request response to send back
+     * @return Response
      */
-    public static function getStatus(): array {
-        return [
+    public static function getStatus(): Response {
+        $response = static::newResponse();
+        $response->setBody([
             "ok" => true,
             "data" => User::isLoggedIn(),
-        ];
+        ]);
+        return $response;
     }
 
 }

@@ -13,6 +13,8 @@
 namespace App;
 
 use App\Database\Exception as DBException;
+use App\HTTP\Responder;
+use App\HTTP\Response;
 use App\Utils\StringHelper;
 use Exception;
 
@@ -108,9 +110,10 @@ class Router {
     /**
      * Try and execute the requested action
      *
-     * @return array An appropriate response to request
+     * @return Response An appropriate response to request
+     * @throws DBException
      */
-    private function executeAction(): ?array {
+    private function executeAction(): Response {
         $uri = $this->core->uri;
         foreach ($this->routes as $route => $routeData) {
             $routeRegex = $this->pathToRegex($route);
@@ -138,21 +141,21 @@ class Router {
      * Check that the requested API version is valid, if so return empty array
      * else return appropriate response (array)
      */
-    private function checkAPIVersion(): ?array {
+    private function checkAPIVersion(): ?Response {
         $version = $this->core->uriParts[0] ?? null;
 
         $shouldBeVersion = "v" . Config::get()->api_version;
         if ($version !== $shouldBeVersion) {
-            $response = $this->getUnrecognisedAPIVersionResponse();
+            return $this->getUnrecognisedAPIVersionResponse();
         }
 
-        return $response ?? null;
+        return null;
     }
 
     /**
      * Try and perform the necessary actions needed to fulfil the request that a user made
      */
-    public function performRequest(): ?array {
+    public function performRequest(): Response {
         // Here check the requested API version, if okay return empty array
         // else returns appropriate response
         $response = $this->checkAPIVersion();
@@ -164,9 +167,10 @@ class Router {
             }
             catch (DBException $exception) {
                 error_log($exception->getMessage() . ". Full error: {$exception}");
-                $response = [
+                $response = static::newResponse();
+                $response->setBody([
                     "ok" => false,
-                ];
+                ]);
             }
         }
 

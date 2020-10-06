@@ -15,6 +15,7 @@ namespace App;
 
 use App\Controller\Auth;
 use App\Controller\Projects;
+use App\HTTP\Response;
 use App\Utils\Singleton;
 use App\Utils\StringHelper;
 use DateTime;
@@ -29,7 +30,10 @@ class Core {
     private static $cacheTimeZone = null;
     private static $rowDateTimeFormat = "Y-m-d H:i:s e";
 
-    private $response = [];
+    /**
+     * @var Response|null
+     */
+    private $response = null;
 
     public $method = "GET";
 
@@ -228,15 +232,17 @@ class Core {
 
         // If the domain if allowed send correct header response back
         if (in_array($originDomain, Config::get()->allowed_domains)) {
-            self::setHeader("Access-Control-Allow-Origin", $originURL);
-            self::setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-            self::setHeader("Access-Control-Allow-Headers", "Process-Data, Authorization");
-            self::setHeader("Vary", "Origin");
+            $this->response->addHeader("Access-Control-Allow-Origin", $originURL);
+            $this->response->addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            $this->response->addHeader("Access-Control-Allow-Headers", "Process-Data, Authorization");
+            $this->response->addHeader("Vary", "Origin");
 
             // Override meta data, and respond with all endpoints available
             if ($this->method === "OPTIONS") {
-                $this->response["meta"]["status"] = 200;
-                $this->response["meta"]["message"] = "OK";
+                $body = $this->response->getBody();
+                $body["meta"]["status"] = 200;
+                $body["meta"]["message"] = "OK";
+                $this->response->setBody($body);
             }
         }
     }
@@ -260,7 +266,7 @@ class Core {
         if ($this->lastModified === null) {
             $lastModified = "";
 
-            $latestRow = $this->response["data"] ?? null;
+            $latestRow = $this->response->getBody()["data"] ?? null;
             if ($latestRow && !empty($latestRow["updated_at"])) {
                 $latestDate = self::createDateTimeFromRow($latestRow);
                 $lastModified = $latestDate->format("D, j M Y H:i:s") . " GMT";
@@ -275,7 +281,7 @@ class Core {
     private function setLastModifiedHeaders() {
         $lastModified = $this->getLastModified();
         if ($lastModified) {
-            self::setHeader("Last-Modified", $lastModified);
+            $this->response->addHeader("Last-Modified", $lastModified);
         }
     }
 
@@ -285,7 +291,7 @@ class Core {
 
     public function getETag(): string {
         if ($this->etag === null) {
-            $this->etag = md5(json_encode($this->response));
+            $this->etag = md5(json_encode($this->response->getBody()));
         }
 
         return $this->etag;
@@ -300,29 +306,28 @@ class Core {
         if ($this->method === "GET" && !in_array($this->uri, $notCachedURLs)) {
             $secondsToCache = 2678400; // 31 days
 
-            self::setHeader("Cache-Control", "max-age={$secondsToCache}, public");
+            $this->response->addHeader("Cache-Control", "max-age={$secondsToCache}, public");
 
             $gmtTimeZone = static::getCacheTimeZone();
             $nowDate = new DateTime("+{$secondsToCache} seconds");
             $nowDate = $nowDate->setTimezone($gmtTimeZone);
             $expiresTime = $nowDate->format("D, d M Y H:i:s");
-            self::setHeader("Expires", "{$expiresTime} GMT");
+            $this->response->addHeader("Expires", "{$expiresTime} GMT");
 
-            self::setHeader("Pragma", "cache");
+            $this->response->addHeader("Pragma", "cache");
 
             $this->setLastModifiedHeaders();
 
-            self::setHeader("ETag", $this->getETag());
+            $this->response->addHeader("ETag", $this->getETag());
         }
     }
 
     /**
-     * Send the response response back
-     *
-     * @param $response array The response generated from the request so far
+     * Process the response.
      */
-    public function sendResponse(array $response) {
-        $isSuccessful = $response["ok"] ?? false;
+    public function processResponse() {
+        $body = $this->response->getBody();
+        $isSuccessful = $body["ok"] ?? false;
         $defaults = [
             "meta" => [
                 "status" => ($isSuccessful ? 200 : 500),
@@ -334,40 +339,39 @@ class Core {
                 "files" => $this->files,
             ],
         ];
-        unset($response["ok"]);
-        $this->response = array_replace_recursive($defaults, $response);
+        unset($body["ok"]);
+        $body = array_replace_recursive($defaults, $body);
+        $this->response->setBody($body);
 
         $this->setCORSHeaders();
         $this->setCacheHeaders();
+
+        $body = $this->response->getBody();
 
         if (
             $this->getETag() === $this->getETagFromRequest() ||
             $this->getLastModified() === $this->getLastModifiedFromRequest()
         ) {
-            header("HTTP/1.1 304 Not Modified");
-            die();
+            $body["meta"]["status"] = 304;
+            $body["meta"]["message"] = "Not Modified";
         }
 
-        $status = $this->response["meta"]["status"];
-        $message = $this->response["meta"]["message"];
+        $status = $body["meta"]["status"];
+        $message = $body["meta"]["message"];
+        $this->response->setStatus($status, $message);
 
-        self::setHeader("Content-Type", "application/json");
-
-        header("HTTP/1.1 {$status} {$message}");
-
-        $sendPretty = StringHelper::stringToBoolean($this->params["pretty"] ?? null);
-
-        $encodeParams = $sendPretty ? JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES : 0;
-        echo json_encode($this->response, $encodeParams);
-        die();
+        $this->response->addHeader("Content-Type", "application/json");
     }
 
     public function handleRequest() {
         $this->extractFromRequest();
 
-        $response = $this->getRouter()->performRequest();
+        $this->response = $this->getRouter()->performRequest();
 
-        $this->sendResponse($response);
+        $this->processResponse();
+
+        $sendPretty = StringHelper::stringToBoolean($this->params["pretty"] ?? null);
+        $this->response->send($sendPretty);
     }
 
 }

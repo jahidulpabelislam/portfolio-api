@@ -17,6 +17,7 @@ use App\Entity\Collection as EntityCollection;
 use App\Entity\Project;
 use App\Entity\ProjectImage;
 use App\Entity\User;
+use App\HTTP\Response;
 use Exception;
 
 class Projects extends Controller {
@@ -45,9 +46,9 @@ class Projects extends Controller {
     /**
      * Gets all Projects but paginated, also might include search
      *
-     * @return array The request response to send back
+     * @return Response
      */
-    public function getProjects(): array {
+    public function getProjects(): Response {
         $params = $this->core->params;
 
         $limit = $params["limit"] ?? null;
@@ -95,9 +96,9 @@ class Projects extends Controller {
      *
      * @param $data array The values to save
      * @param $projectId int|string|null The Id of the Project to update (Only if a update request)
-     * @return array The request response to send back
+     * @return Response
      */
-    private function saveProject(array $data, $projectId = null): array {
+    private function saveProject(array $data, $projectId = null): Response {
         if (User::isLoggedIn()) {
             $isNew = $projectId === null;
 
@@ -109,47 +110,43 @@ class Projects extends Controller {
             if ($isNew) {
                 $project = Project::insert($data);
                 $project->reload();
-                $response = self::getInsertResponse(Project::class, $project);
+                return self::getInsertResponse(Project::class, $project);
             }
-            else {
-                $project = self::getProjectEntity($projectId, true);
-                if ($project) {
-                    $project->setValues($data);
-                    $project->save();
 
-                    // If images were passed update the sort order
-                    if (!empty($data["images"])) {
-                        $orders = [];
-                        foreach ($data["images"] as $i => $image) {
-                            $imageData = json_decode($image, true);
-                            $orders[$imageData["id"]] = $i + 1;
-                        }
+            $project = self::getProjectEntity($projectId, true);
+            if ($project) {
+                $project->setValues($data);
+                $project->save();
 
-                        foreach ($project->images as $projectImage) {
-                            $projectImage->sort_order_number = $orders[$projectImage->getId()];
-                            $projectImage->save();
-                        }
+                // If images were passed update the sort order
+                if (!empty($data["images"])) {
+                    $orders = [];
+                    foreach ($data["images"] as $i => $image) {
+                        $imageData = json_decode($image, true);
+                        $orders[$imageData["id"]] = $i + 1;
                     }
 
-                    $project->reload();
+                    foreach ($project->images as $projectImage) {
+                        $projectImage->sort_order_number = $orders[$projectImage->getId()];
+                        $projectImage->save();
+                    }
                 }
 
-                $response = self::getUpdateResponse(Project::class, $project, $projectId);
+                $project->reload();
             }
-        }
-        else {
-            $response = self::getNotAuthorisedResponse();
+
+            return self::getUpdateResponse(Project::class, $project, $projectId);
         }
 
-        return $response;
+        return self::getNotAuthorisedResponse();
     }
 
     /**
      * Try and add a Project a user has attempted to add
      *
-     * @return array The request response to send back
+     * @return Response
      */
-    public function addProject(): array {
+    public function addProject(): Response {
         return $this->saveProject($this->core->data);
     }
 
@@ -157,9 +154,9 @@ class Projects extends Controller {
      * Try to edit a Project a user has added before
      *
      * @param $projectId int|string The Id of the Project to update
-     * @return array The request response to send back
+     * @return Response
      */
-    public function updateProject($projectId): array {
+    public function updateProject($projectId): Response {
         return $this->saveProject($this->core->params, $projectId);
     }
 
@@ -167,9 +164,9 @@ class Projects extends Controller {
      * Try to delete a Project a user has added before
      *
      * @param $projectId int|string The Id of the Project to delete
-     * @return array The request response to send back
+     * @return Response
      */
-    public static function deleteProject($projectId): array {
+    public static function deleteProject($projectId): Response {
         if (User::isLoggedIn()) {
             $isDeleted = false;
 
@@ -178,13 +175,10 @@ class Projects extends Controller {
                 $isDeleted = $project->delete();
             }
 
-            $response = self::getItemDeletedResponse(Project::class, $project, $projectId, $isDeleted);
-        }
-        else {
-            $response = self::getNotAuthorisedResponse();
+            return self::getItemDeletedResponse(Project::class, $project, $projectId, $isDeleted);
         }
 
-        return $response;
+        return self::getNotAuthorisedResponse();
     }
 
     /**
@@ -192,9 +186,9 @@ class Projects extends Controller {
      *
      * @param $projectId int|string The Id of the Project to get
      * @param $includeLinkedData bool Whether to also get and include linked entity/data (images)
-     * @return array The request response to send back
+     * @return Response
      */
-    public static function getProject($projectId, bool $includeLinkedData = true): array {
+    public static function getProject($projectId, bool $includeLinkedData = true): Response {
         $project = self::getProjectEntity($projectId, $includeLinkedData);
 
         return self::getItemResponse(Project::class, $project, $projectId);
@@ -204,9 +198,9 @@ class Projects extends Controller {
      * Get the Images attached to a Project
      *
      * @param $projectId int|string The Id of the Project
-     * @return array The request response to send back
+     * @return Response
      */
-    public static function getProjectImages($projectId): array {
+    public static function getProjectImages($projectId): Response {
         // Check the Project trying to get Images for exists
         $project = self::getProjectEntity($projectId, true);
         if ($project) {
@@ -221,11 +215,11 @@ class Projects extends Controller {
      *
      * @param $project Project The Project trying to upload image for
      * @param $image array The uploaded image
-     * @return array The request response to send back
+     * @return Response
      * @throws Exception
      */
-    private static function uploadProjectImage(Project $project, array $image): array {
-        $response = [];
+    private static function uploadProjectImage(Project $project, array $image): Response {
+        $responseBody = [];
 
         $projectId = $project->getId();
         $projectName = $project->name;
@@ -262,22 +256,23 @@ class Projects extends Controller {
                 ];
                 $projectImage = ProjectImage::insert($imageData);
                 $projectImage->reload();
-                $response = self::getInsertResponse(ProjectImage::class, $projectImage);
+                return self::getInsertResponse(ProjectImage::class, $projectImage);
             }
-            else {
-                // Else there was a problem uploading file to server
-                $response["meta"]["feedback"] = "Sorry, there was an error uploading your image.";
-            }
+
+            // Else there was a problem uploading file to server
+            $responseBody["meta"]["feedback"] = "Sorry, there was an error uploading your image.";
         }
         else {
             // Else bad request as file uploaded is not a image
-            $response["meta"] = [
+            $responseBody["meta"] = [
                 "status" => 400,
                 "message" => "Bad Request",
                 "feedback" => "File is not an image.",
             ];
         }
 
+        $response = static::newResponse();
+        $response->setBody($responseBody);
         return $response;
     }
 
@@ -285,32 +280,27 @@ class Projects extends Controller {
      * Try to upload a Image user has tried to add as a Project Image
      *
      * @param $projectId int|string The Project Id to add this Image for
-     * @return array The request response to send back
+     * @return Response
      * @throws Exception
      */
-    public function addProjectImage($projectId): array {
+    public function addProjectImage($projectId): Response {
         if (User::isLoggedIn()) {
             $files = $this->core->files;
             if (isset($files["image"])) {
                 // Check the Project trying to add a Image for exists
                 $project = self::getProjectEntity($projectId);
                 if ($project) {
-                    $response = self::uploadProjectImage($project, $files["image"]);
+                    return self::uploadProjectImage($project, $files["image"]);
                 }
-                else {
-                    $response = self::getItemNotFoundResponse(Project::class, $projectId);
-                }
+
+                return self::getItemNotFoundResponse(Project::class, $projectId);
             }
-            else {
-                $requiredFields = ["image"];
-                $response = $this->getInvalidFieldsResponse(ProjectImage::class, [], $requiredFields);
-            }
-        }
-        else {
-            $response = self::getNotAuthorisedResponse();
+
+            $requiredFields = ["image"];
+            return $this->getInvalidFieldsResponse(ProjectImage::class, [], $requiredFields);
         }
 
-        return $response;
+        return self::getNotAuthorisedResponse();
     }
 
     /**
@@ -318,9 +308,9 @@ class Projects extends Controller {
      *
      * @param $projectId int|string The Id of the Project trying to get Image for
      * @param $imageId int|string The Id of the Project Image to get
-     * @return array The request response to send back
+     * @return Response
      */
-    public static function getProjectImage($projectId, $imageId): array {
+    public static function getProjectImage($projectId, $imageId): Response {
         // Check the Project trying to get Images for exists
         $project = self::getProjectEntity($projectId);
         if ($project) {
@@ -328,12 +318,16 @@ class Projects extends Controller {
 
             $response = self::getItemResponse(ProjectImage::class, $projectImage, $imageId);
 
+            $responseBody = $response->getBody();
+
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
             if ($projectImage && !empty($projectImage->project_id) && $projectImage->project_id !== $projectId) {
-                $response["data"] = [];
-                $response["meta"]["feedback"] = "No {$projectImage::$displayName} found identified by {$imageId} for Project: {$projectId}.";
+                $responseBody["data"] = [];
+                $responseBody["meta"]["feedback"] = "No {$projectImage::$displayName} found identified by {$imageId} for Project: {$projectId}.";
             }
+
+            $response->setBody($responseBody);
 
             return $response;
         }
@@ -346,9 +340,9 @@ class Projects extends Controller {
      *
      * @param $projectId int|string The Id of the Project trying to delete Image for
      * @param $imageId int|string The Id of the Project Image to delete
-     * @return array The request response to send back
+     * @return Response
      */
-    public static function deleteProjectImage($projectId, $imageId): array {
+    public static function deleteProjectImage($projectId, $imageId): Response {
         if (User::isLoggedIn()) {
             // Check the Project of the Image trying to edit actually exists
             $project = self::getProjectEntity($projectId);
@@ -361,17 +355,13 @@ class Projects extends Controller {
                     $isDeleted = $projectImage->delete();
                 }
 
-                $response = self::getItemDeletedResponse(ProjectImage::class, $projectImage, $imageId, $isDeleted);
+                return self::getItemDeletedResponse(ProjectImage::class, $projectImage, $imageId, $isDeleted);
             }
-            else {
-                $response = self::getItemNotFoundResponse(Project::class, $projectId);
-            }
-        }
-        else {
-            $response = self::getNotAuthorisedResponse();
+
+            return self::getItemNotFoundResponse(Project::class, $projectId);
         }
 
-        return $response;
+        return self::getNotAuthorisedResponse();
     }
 
 }
