@@ -271,9 +271,7 @@ class Projects extends Controller {
             ];
         }
 
-        $response = static::newResponse();
-        $response->setBody($responseBody);
-        return $response;
+        return static::newResponse($responseBody);
     }
 
     /**

@@ -32,23 +32,19 @@ class Auth extends Controller {
         if (Core::hasRequiredFields(User::class, $data)) {
             $jwt = User::login($data);
             if ($jwt) {
-                $response = static::newResponse();
-                $response->setBody([
+                return static::newResponse([
                     "ok" => true,
                     "data" => $jwt,
                 ]);
-                return $response;
             }
 
-            $response = static::newResponse();
-            $response->setBody([
+            return static::newResponse([
                 "meta" => [
                     "status" => 401,
                     "message" => "Unauthorized",
                     "feedback" => "Wrong username and/or password.",
                 ],
             ]);
-            return $response;
         }
 
         return $this->getInvalidFieldsResponse(User::class, $data);
@@ -74,12 +70,10 @@ class Auth extends Controller {
      * @return Response
      */
     public static function getStatus(): Response {
-        $response = static::newResponse();
-        $response->setBody([
+        return static::newResponse([
             "ok" => true,
             "data" => User::isLoggedIn(),
         ]);
-        return $response;
     }
 
 }

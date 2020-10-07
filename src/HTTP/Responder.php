@@ -24,74 +24,70 @@ trait Responder {
         $this->core = $core;
     }
 
-    public static function newResponse(): Response {
-        return new Response();
+    public static function newResponse(array $body = null): Response {
+        $response = new Response();
+
+        if ($body) {
+            $response->setBody($body);
+        }
+
+        return $response;
     }
 
     /**
      * Generate meta data to send back when the method provided is not allowed on the URI
      */
     public function getMethodNotAllowedResponse(): Response {
-        $response = static::newResponse();
-        $response->setBody([
+        return static::newResponse([
             "meta" => [
                 "status" => 405,
                 "message" => "Method Not Allowed.",
                 "feedback" => "Method {$this->core->method} not allowed on " . $this->core->getRequestedURL() . ".",
             ],
         ]);
-        return $response;
     }
 
     /**
      * Send necessary meta data back when user isn't logged in correctly
      */
     public static function getNotAuthorisedResponse(): Response {
-        $response = static::newResponse();
-        $response->setBody([
+        return static::newResponse([
             "meta" => [
                 "status" => 401,
                 "message" => "Unauthorized",
                 "feedback" => "You need to be logged in!",
             ],
         ]);
-        return $response;
     }
 
     public static function getLoggedOutResponse(): Response {
-        $response = static::newResponse();
-        $response->setBody([
+        return static::newResponse([
             "ok" => true,
             "meta" => [
                 "feedback" => "Successfully logged out.",
             ],
         ]);
-        return $response;
     }
 
     public static function getUnsuccessfulLogoutResponse(): Response {
-        $response = static::newResponse();
-        $response->setBody([
+        return static::newResponse([
             "meta" => [
                 "feedback" => "Couldn't successfully process your logout request!",
             ],
         ]);
-        return $response;
     }
 
     /**
      * Generate response data to send back when the URI provided is not recognised
      */
     public function getUnrecognisedURIResponse(): Response {
-        $response = static::newResponse();
-        $response->setBody([
+        return static::newResponse([
             "meta" => [
                 "status" => 404,
                 "message" => "Not Found",
                 "feedback" => "Unrecognised URI (" . $this->core->getRequestedURL() . ").",
             ],
         ]);
-        return $response;
     }
 
     /**
@@ -104,15 +100,13 @@ trait Responder {
         $shouldBeURI[0] = "v" . $shouldBeVersion;
         $shouldBeURL = Core::makeFullURL($shouldBeURI);
 
-        $response = static::newResponse();
-        $response->setBody([
+        return static::newResponse([
             "meta" => [
                 "status" => 404,
                 "message" => "Not Found",
                 "feedback" => "Unrecognised API version. Current version is {$shouldBeVersion}, so please update requested URL to {$shouldBeURL}.",
             ],
         ]);
-        return $response;
     }
 
     /**
@@ -123,8 +117,7 @@ trait Responder {
         $requiredFields = array_merge($requiredFields, $extraRequiredFields);
         $invalidFields = Core::getInvalidFields($data, $requiredFields);
 
-        $response = static::newResponse();
-        $response->setBody([
+        return static::newResponse([
             "meta" => [
                 "status" => 400,
                 "message" => "Bad Request",
@@ -133,7 +126,6 @@ trait Responder {
                 "feedback" => "The necessary data was not provided, missing/invalid fields: " . implode(", ", $invalidFields) . ".",
             ],
         ]);
-        return $response;
     }
 
     /**
@@ -165,9 +157,7 @@ trait Responder {
             $body["meta"]["feedback"] = "No {$entityClass::$displayName}s found.";
         }
 
-        $response = static::newResponse();
-        $response->setBody($body);
-        return $response;
+        return static::newResponse($body);
     }
 
     /**
@@ -227,12 +217,10 @@ trait Responder {
     }
 
     private static function getItemFoundResponse(APIEntity $entity): Response {
-        $response = static::newResponse();
-        $response->setBody([
+        return static::newResponse([
             "ok" => true,
             "data" => $entity->getAPIResponse(),
         ]);
-        return $response;
     }
 
     /**
@@ -241,15 +229,13 @@ trait Responder {
      * @return Response
      */
     public static function getItemNotFoundResponse(string $entityClass, $id): Response {
-        $response = static::newResponse();
-        $response->setBody([
+        return static::newResponse([
             "meta" => [
                 "status" => 404,
                 "message" => "Not Found",
                 "feedback" => "No {$entityClass::$displayName} identified by {$id} found.",
             ],
         ]);
-        return $response;
     }
 
     /**
@@ -284,13 +270,11 @@ trait Responder {
             return $response;
         }
 
-        $response = static::newResponse();
-        $response->setBody([
+        return static::newResponse([
             "meta" => [
                 "feedback" => "Failed to insert the new {$entityClass::$displayName}.",
             ],
         ]);
-        return $response;
     }
 
     /**
@@ -304,13 +288,11 @@ trait Responder {
             return static::getItemFoundResponse($entity);
         }
 
-        $response = static::newResponse();
-        $response->setBody([
+        return static::newResponse([
             "meta" => [
                 "feedback" => "Failed to update the {$entityClass::$displayName} identified by {$id}.",
             ],
         ]);
-        return $response;
     }
 
     /**
@@ -333,23 +315,19 @@ trait Responder {
         }
 
         if ($isDeleted) {
-            $response = static::newResponse();
-            $response->setBody([
+            return static::newResponse([
                 "ok" => true,
                 "data" => [
                     "id" => (int)$id,
                 ],
             ]);
-            return $response;
         }
 
-        $response = static::newResponse();
-        $response->setBody([
+        return static::newResponse([
             "meta" => [
                 "feedback" => "Failed to delete the {$entityClass::$displayName} identified by {$id}.",
             ],
         ]);
-        return $response;
     }
 
 }
