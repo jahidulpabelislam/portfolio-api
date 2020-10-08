@@ -12,7 +12,7 @@ class Collection extends BaseCollection {
 
     public function __construct(array $items = [], int $totalCount = null, int $limit = null, int $page = null) {
         parent::__construct($items);
-        $this->totalCount = $totalCount ?? $this->count;
+        $this->totalCount = $totalCount ?? null;
         $this->limit = $limit;
         $this->page = $page;
     }
@@ -22,7 +22,7 @@ class Collection extends BaseCollection {
     }
 
     public function getTotalCount(): int {
-        return $this->totalCount;
+        return $this->totalCount ?? $this->count();
     }
 
     public function getLimit(): ?int {

@@ -216,9 +216,10 @@ class Query {
 
         $rows = $this->execute($sqlParts, $params, "getAll");
 
-        $count = count($rows);
         $totalCount = null;
         if ($limit) {
+            $count = count($rows);
+
             /**
              * Do a DB query to get total count if:
              *    - none found on a specific page than 1

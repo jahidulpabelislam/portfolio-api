@@ -10,15 +10,14 @@ use IteratorAggregate;
 class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate {
 
     protected $items;
-    protected $count;
+    protected $count = null;
 
     public function __construct(array $items = []) {
         $this->items = $items;
-        $this->count = count($items);
     }
 
     protected function resetCount() {
-        $this->count = count($this->items);
+        $this->count = null;
     }
 
     public function set($key, $item) {
@@ -95,6 +94,10 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
     // Countable //
 
     public function count(): int {
+        if ($this->count === null) {
+            $this->count = count($this->items);
+        }
+
         return $this->count;
     }
 
