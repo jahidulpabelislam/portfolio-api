@@ -7,7 +7,12 @@ class Response {
     protected $statusCode = 500;
     protected $statusMessage = "Internal Server Error";
     protected $body = [];
-    protected $headers = [];
+
+    public $headers = null;
+
+    public function __construct() {
+        $this->headers = new Headers();
+    }
 
     public function setStatus(int $code, string $message) {
         $this->statusCode = $code;
@@ -23,10 +28,10 @@ class Response {
     }
 
     public function addHeader(string $header, string $value) {
-        $this->headers[$header] = $value;
+        $this->headers->set($header, $value);
     }
 
-    public function getHeaders(): array {
+    public function getHeaders(): Headers {
         return $this->headers;
     }
 
@@ -39,7 +44,7 @@ class Response {
     }
 
     protected function sendHeaders() {
-        foreach ($this->getHeaders() as $name => $value) {
+        foreach ($this->headers as $name => $value) {
             header("{$name}: {$value}");
         }
 
