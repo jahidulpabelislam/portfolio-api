@@ -2,9 +2,9 @@
 
 namespace App\Database;
 
-use App\Utils\Collection as BaseCollection;
+use App\Utils\ArrayCollection;
 
-class Collection extends BaseCollection {
+class Collection extends ArrayCollection {
 
     protected $totalCount;
     protected $limit;
@@ -17,10 +17,6 @@ class Collection extends BaseCollection {
         $this->page = $page;
     }
 
-    public function toArray(): array {
-        return $this->items;
-    }
-
     public function getTotalCount(): int {
         return $this->totalCount ?? $this->count();
     }
@@ -31,16 +27,6 @@ class Collection extends BaseCollection {
 
     public function getPage(): ?int {
         return $this->page;
-    }
-
-    /**
-     * @param $item array
-     * @param $key string
-     * @param $default mixed
-     * @return string|int|float|null
-     */
-    protected static function getFromItem($item, $key, $default = null) {
-        return $item[$key] ?? $default;
     }
 
 }
