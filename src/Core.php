@@ -19,16 +19,10 @@ use App\HTTP\Response;
 use App\Utils\Singleton;
 use App\Utils\StringHelper;
 use DateTime;
-use DateTimeZone;
 
 class Core {
 
     use Singleton;
-
-    private const CACHE_TIMEZONE = "Europe/London";
-
-    private static $cacheTimeZone = null;
-    private static $rowDateTimeFormat = "Y-m-d H:i:s e";
 
     /**
      * @var Response|null
@@ -47,7 +41,6 @@ class Core {
     public $files = [];
 
     protected $etag = null;
-    protected $lastModified = null;
 
     protected $router = null;
 
@@ -247,42 +240,8 @@ class Core {
         }
     }
 
-    private static function getCacheTimeZone(): DateTimeZone {
-        if (static::$cacheTimeZone === null) {
-            static::$cacheTimeZone = new DateTimeZone(self::CACHE_TIMEZONE);
-        }
-
-        return static::$cacheTimeZone;
-    }
-
-    private static function createDateTimeFromRow(array $row): DateTime {
-        $dateTime = DateTime::createFromFormat(static::$rowDateTimeFormat, $row["updated_at"]);
-        $dateTime->setTimezone(static::getCacheTimeZone());
-
-        return $dateTime;
-    }
-
-    public function getLastModified(): string {
-        if ($this->lastModified === null) {
-            $lastModified = "";
-
-            $latestRow = $this->response->getBody()["data"] ?? null;
-            if ($latestRow && !empty($latestRow["updated_at"])) {
-                $latestDate = self::createDateTimeFromRow($latestRow);
-                $lastModified = $latestDate->format("D, j M Y H:i:s") . " GMT";
-            }
-
-            $this->lastModified = $lastModified;
-        }
-
-        return $this->lastModified;
-    }
-
-    private function setLastModifiedHeaders() {
-        $lastModified = $this->getLastModified();
-        if ($lastModified) {
-            $this->response->addHeader("Last-Modified", $lastModified);
-        }
+    public function getLastModified() {
+        return $this->response->headers->get("Last-Modified", "");
     }
 
     public function getETagFromRequest(): ?string {
@@ -308,15 +267,13 @@ class Core {
 
             $this->response->addHeader("Cache-Control", "max-age={$secondsToCache}, public");
 
-            $gmtTimeZone = static::getCacheTimeZone();
+            $gmtTimeZone = Response::getCacheTimeZone();
             $nowDate = new DateTime("+{$secondsToCache} seconds");
             $nowDate = $nowDate->setTimezone($gmtTimeZone);
             $expiresTime = $nowDate->format("D, d M Y H:i:s");
             $this->response->addHeader("Expires", "{$expiresTime} GMT");
 
             $this->response->addHeader("Pragma", "cache");
-
-            $this->setLastModifiedHeaders();
 
             $this->response->addHeader("ETag", $this->getETag());
         }

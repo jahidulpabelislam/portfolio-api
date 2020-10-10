@@ -2,7 +2,22 @@
 
 namespace App\HTTP;
 
+use DateTime;
+use DateTimeZone;
+
 class Response {
+
+    private const CACHE_TIMEZONE = "Europe/London";
+
+    private static $cacheTimeZone = null;
+
+    public static function getCacheTimeZone(): DateTimeZone {
+        if (static::$cacheTimeZone === null) {
+            static::$cacheTimeZone = new DateTimeZone(self::CACHE_TIMEZONE);
+        }
+
+        return static::$cacheTimeZone;
+    }
 
     protected $statusCode = 500;
     protected $statusMessage = "Internal Server Error";

@@ -250,7 +250,16 @@ trait Responder {
      */
     public static function getItemResponse(string $entityClass, ?APIEntity $entity, $id): Response {
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
-            return static::getItemFoundResponse($entity);
+            $response = static::getItemFoundResponse($entity);
+
+            $lastModifiedDate = $entity->getLastModifiedDate();
+            if ($lastModifiedDate) {
+                $lastModifiedDate->setTimezone(Response::getCacheTimeZone());
+                $lastModified = $lastModifiedDate->format("D, j M Y H:i:s") . " GMT";
+                $response->addHeader("Last-Modified", $lastModified);
+            }
+
+            return $response;
         }
 
         return static::getItemNotFoundResponse($entityClass, $id);

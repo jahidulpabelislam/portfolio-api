@@ -46,4 +46,12 @@ trait Timestamped {
         return parent::save();
     }
 
+    public function getLastModifiedDate(): ?DateTime {
+        if (!isset(static::$hasUpdatedAt) || static::$hasUpdatedAt) {
+            return $this->updated_at;
+        }
+
+        return null;
+    }
+
 }

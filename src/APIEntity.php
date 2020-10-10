@@ -30,4 +30,8 @@ abstract class APIEntity extends Entity implements APIEntityInterface {
         return $response;
     }
 
+    public function getLastModifiedDate(): ?DateTime {
+        return null;
+    }
+
 }
