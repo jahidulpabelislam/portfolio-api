@@ -39,8 +39,8 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
         return array_key_exists($key, $this->items);
     }
 
-    public function get($key) {
-        return $this->items[$key];
+    public function get($key, $default = null) {
+        return $this->items[$key] ?? $default;
     }
 
     public function getItems(): array {
