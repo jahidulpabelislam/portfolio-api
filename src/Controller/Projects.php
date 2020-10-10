@@ -219,7 +219,7 @@ class Projects extends Controller {
      * @throws Exception
      */
     private static function uploadProjectImage(Project $project, array $image): Response {
-        $responseBody = [];
+        $response = [];
 
         $projectId = $project->getId();
         $projectName = $project->name;
@@ -260,18 +260,18 @@ class Projects extends Controller {
             }
 
             // Else there was a problem uploading file to server
-            $responseBody["meta"]["feedback"] = "Sorry, there was an error uploading your image.";
+            $response["meta"]["feedback"] = "Sorry, there was an error uploading your image.";
         }
         else {
             // Else bad request as file uploaded is not a image
-            $responseBody["meta"] = [
+            $response["meta"] = [
                 "status" => 400,
                 "message" => "Bad Request",
                 "feedback" => "File is not an image.",
             ];
         }
 
-        return static::newResponse($responseBody);
+        return static::newResponse($response);
     }
 
     /**
@@ -316,16 +316,16 @@ class Projects extends Controller {
 
             $response = self::getItemResponse(ProjectImage::class, $projectImage, $imageId);
 
-            $responseBody = $response->getBody();
+            $responseContent = $response->getContent();
 
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
             if ($projectImage && !empty($projectImage->project_id) && $projectImage->project_id !== $projectId) {
-                $responseBody["data"] = [];
-                $responseBody["meta"]["feedback"] = "No {$projectImage::$displayName} found identified by {$imageId} for Project: {$projectId}.";
+                $responseContent["data"] = [];
+                $responseContent["meta"]["feedback"] = "No {$projectImage::$displayName} found identified by {$imageId} for Project: {$projectId}.";
             }
 
-            $response->setBody($responseBody);
+            $response->setContent($responseContent);
 
             return $response;
         }

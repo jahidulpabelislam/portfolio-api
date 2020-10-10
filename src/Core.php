@@ -232,10 +232,10 @@ class Core {
 
             // Override meta data, and respond with all endpoints available
             if ($this->method === "OPTIONS") {
-                $body = $this->response->getBody();
-                $body["meta"]["status"] = 200;
-                $body["meta"]["message"] = "OK";
-                $this->response->setBody($body);
+                $content = $this->response->getContent();
+                $content["meta"]["status"] = 200;
+                $content["meta"]["message"] = "OK";
+                $this->response->setContent($content);
             }
         }
     }
@@ -250,7 +250,7 @@ class Core {
 
     public function getETag(): string {
         if ($this->etag === null) {
-            $this->etag = md5(json_encode($this->response->getBody()));
+            $this->etag = md5(json_encode($this->response->getContent()));
         }
 
         return $this->etag;
@@ -283,8 +283,8 @@ class Core {
      * Process the response.
      */
     public function processResponse() {
-        $body = $this->response->getBody();
-        $isSuccessful = $body["ok"] ?? false;
+        $content = $this->response->getContent();
+        $isSuccessful = $content["ok"] ?? false;
         $defaults = [
             "meta" => [
                 "status" => ($isSuccessful ? 200 : 500),
@@ -296,25 +296,25 @@ class Core {
                 "files" => $this->files,
             ],
         ];
-        unset($body["ok"]);
-        $body = array_replace_recursive($defaults, $body);
-        $this->response->setBody($body);
+        unset($content["ok"]);
+        $content = array_replace_recursive($defaults, $content);
+        $this->response->setContent($content);
 
         $this->setCORSHeaders();
         $this->setCacheHeaders();
 
-        $body = $this->response->getBody();
+        $content = $this->response->getContent();
 
         if (
             $this->getETag() === $this->getETagFromRequest() ||
             $this->getLastModified() === $this->getLastModifiedFromRequest()
         ) {
-            $body["meta"]["status"] = 304;
-            $body["meta"]["message"] = "Not Modified";
+            $content["meta"]["status"] = 304;
+            $content["meta"]["message"] = "Not Modified";
         }
 
-        $status = $body["meta"]["status"];
-        $message = $body["meta"]["message"];
+        $status = $content["meta"]["status"];
+        $message = $content["meta"]["message"];
         $this->response->setStatus($status, $message);
 
         $this->response->addHeader("Content-Type", "application/json");

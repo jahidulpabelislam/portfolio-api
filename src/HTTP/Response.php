@@ -21,7 +21,7 @@ class Response {
 
     protected $statusCode = 500;
     protected $statusMessage = "Internal Server Error";
-    protected $body = [];
+    protected $content = [];
 
     public $headers = null;
 
@@ -50,12 +50,12 @@ class Response {
         return $this->headers;
     }
 
-    public function setBody(array $body) {
-        $this->body = $body;
+    public function setContent(array $content) {
+        $this->content = $content;
     }
 
-    public function getBody(): array {
-        return $this->body;
+    public function getContent(): array {
+        return $this->content;
     }
 
     protected function sendHeaders() {
@@ -66,14 +66,14 @@ class Response {
         header("HTTP/1.1 {$this->getStatusCode()} {$this->getStatusMessage()}");
     }
 
-    protected function sendBody(bool $pretty) {
+    protected function sendContent(bool $pretty) {
         $encodeParams = $pretty ? JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES : 0;
-        echo json_encode($this->getBody(), $encodeParams);
+        echo json_encode($this->getContent(), $encodeParams);
     }
 
     public function send(bool $pretty = false) {
         $this->sendHeaders();
-        $this->sendBody($pretty);
+        $this->sendContent($pretty);
     }
 
 }

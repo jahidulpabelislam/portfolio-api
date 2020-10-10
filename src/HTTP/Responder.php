@@ -24,11 +24,11 @@ trait Responder {
         $this->core = $core;
     }
 
-    public static function newResponse(array $body = null): Response {
+    public static function newResponse(array $content = null): Response {
         $response = new Response();
 
-        if ($body) {
-            $response->setBody($body);
+        if ($content) {
+            $response->setContent($content);
         }
 
         return $response;
@@ -145,7 +145,7 @@ trait Responder {
             $data[] = $entity->getAPIResponse();
         }
 
-        $body = [
+        $response = [
             "ok" => true,
             "meta" => [
                 "count" => $count,
@@ -154,10 +154,10 @@ trait Responder {
         ];
 
         if (!$count) {
-            $body["meta"]["feedback"] = "No {$entityClass::$displayName}s found.";
+            $response["meta"]["feedback"] = "No {$entityClass::$displayName}s found.";
         }
 
-        return static::newResponse($body);
+        return static::newResponse($response);
     }
 
     /**
@@ -177,16 +177,16 @@ trait Responder {
         // The items response is the base response, and the extra meta is added below
         $response = static::getItemsResponse($entityClass, $collection);
 
-        $body = $response->getBody();
+        $content = $response->getContent();
 
         $totalCount = $collection->getTotalCount();
-        $body["meta"]["total_count"] = $totalCount;
+        $content["meta"]["total_count"] = $totalCount;
 
         $limit = $collection->getLimit();
         $page = $collection->getPage();
 
         $lastPage = ceil($totalCount / $limit);
-        $body["meta"]["total_pages"] = $lastPage;
+        $content["meta"]["total_pages"] = $lastPage;
 
         $pageURL = $this->core->getRequestedURL();
         if (isset($params["limit"])) {
@@ -202,16 +202,16 @@ trait Responder {
                 unset($params["page"]);
             }
 
-            $body["meta"]["previous_page"] = Core::makeUrl($pageURL, $params);
+            $content["meta"]["previous_page"] = Core::makeUrl($pageURL, $params);
         }
 
         $hasNextPage = $page < $lastPage;
         if ($hasNextPage) {
             $params["page"] = $page + 1;
-            $body["meta"]["next_page"] = Core::makeUrl($pageURL, $params);
+            $content["meta"]["next_page"] = Core::makeUrl($pageURL, $params);
         }
 
-        $response->setBody($body);
+        $response->setContent($content);
 
         return $response;
     }
@@ -267,10 +267,10 @@ trait Responder {
         if ($entity && $entity->isLoaded()) {
             $response = static::getItemFoundResponse($entity);
 
-            $body = $response->getBody();
-            $body["meta"]["status"] = 201;
-            $body["meta"]["message"] = "Created";
-            $response->setBody($body);
+            $content = $response->getContent();
+            $content["meta"]["status"] = 201;
+            $content["meta"]["message"] = "Created";
+            $response->setContent($content);
 
             $response->addHeader("Location", $entity->getAPIURL());
 
