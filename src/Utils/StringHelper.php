@@ -40,7 +40,7 @@ class StringHelper {
     }
 
     public static function stringToBoolean(?string $string, ?bool $default = false): ?bool {
-        if (in_array($string, ['', null], true)) {
+        if (in_array($string, ["", null], true)) {
             return $default;
         }
 
