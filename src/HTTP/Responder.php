@@ -145,7 +145,7 @@ trait Responder {
             $data[] = $entity->getAPIResponse();
         }
 
-        $response = [
+        $content = [
             "ok" => true,
             "meta" => [
                 "count" => $count,
@@ -154,10 +154,12 @@ trait Responder {
         ];
 
         if (!$count) {
-            $response["meta"]["feedback"] = "No {$entityClass::$displayName}s found.";
+            $content["meta"]["feedback"] = "No {$entityClass::$displayName}s found.";
         }
 
-        return static::newResponse($response);
+        $response = static::newResponse($content);
+        $response->setCacheable(true);
+        return $response;
     }
 
     /**
@@ -251,6 +253,7 @@ trait Responder {
     public static function getItemResponse(string $entityClass, ?APIEntity $entity, $id): Response {
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
             $response = static::getItemFoundResponse($entity);
+            $response->setCacheable(true);
 
             $lastModifiedDate = $entity->getLastModifiedDate();
             if ($lastModifiedDate) {

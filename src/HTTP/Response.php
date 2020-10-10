@@ -23,10 +23,16 @@ class Response {
     protected $statusMessage = "Internal Server Error";
     protected $content = [];
 
+    protected $cacheable = false;
+
     public $headers = null;
 
     public function __construct() {
         $this->headers = new Headers();
+    }
+
+    public function setCacheable(bool $cacheable) {
+        $this->cacheable = $cacheable;
     }
 
     public function setStatus(int $code, string $message) {
@@ -58,6 +64,10 @@ class Response {
         return $this->content;
     }
 
+    public function getETag(): string {
+        return md5(json_encode($this->getContent()));
+    }
+
     protected function sendHeaders() {
         foreach ($this->headers as $name => $value) {
             header("{$name}: {$value}");
@@ -72,6 +82,20 @@ class Response {
     }
 
     public function send(bool $pretty = false) {
+        if ($this->cacheable) {
+            $secondsToCache = 2678400; // 31 days
+
+            $this->addHeader("Cache-Control", "max-age={$secondsToCache}, public");
+
+            $gmtTimeZone = static::getCacheTimeZone();
+            $nowDate = new DateTime("+{$secondsToCache} seconds");
+            $nowDate = $nowDate->setTimezone($gmtTimeZone);
+            $expiresTime = $nowDate->format("D, d M Y H:i:s");
+            $this->addHeader("Expires", "{$expiresTime} GMT");
+            $this->addHeader("Pragma", "cache");
+            $this->addHeader("ETag", $this->getETag());
+        }
+
         $this->sendHeaders();
         $this->sendContent($pretty);
     }

@@ -40,8 +40,6 @@ class Core {
 
     public $files = [];
 
-    protected $etag = null;
-
     protected $router = null;
 
     private function initRoutes() {
@@ -249,34 +247,7 @@ class Core {
     }
 
     public function getETag(): string {
-        if ($this->etag === null) {
-            $this->etag = md5(json_encode($this->response->getContent()));
-        }
-
-        return $this->etag;
-    }
-
-    private function setCacheHeaders() {
-        $notCachedURLs = [
-            "/v" . Config::get()->api_version . "/auth/session/",
-        ];
-
-        // Set cache for 31 days for some GET Requests
-        if ($this->method === "GET" && !in_array($this->uri, $notCachedURLs)) {
-            $secondsToCache = 2678400; // 31 days
-
-            $this->response->addHeader("Cache-Control", "max-age={$secondsToCache}, public");
-
-            $gmtTimeZone = Response::getCacheTimeZone();
-            $nowDate = new DateTime("+{$secondsToCache} seconds");
-            $nowDate = $nowDate->setTimezone($gmtTimeZone);
-            $expiresTime = $nowDate->format("D, d M Y H:i:s");
-            $this->response->addHeader("Expires", "{$expiresTime} GMT");
-
-            $this->response->addHeader("Pragma", "cache");
-
-            $this->response->addHeader("ETag", $this->getETag());
-        }
+        return $this->response->headers->get("ETag", "");
     }
 
     /**
@@ -301,7 +272,6 @@ class Core {
         $this->response->setContent($content);
 
         $this->setCORSHeaders();
-        $this->setCacheHeaders();
 
         $content = $this->response->getContent();
 
