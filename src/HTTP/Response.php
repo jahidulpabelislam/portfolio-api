@@ -42,7 +42,7 @@ class Response {
         return $this->statusMessage;
     }
 
-    public function addHeader(string $header, string $value) {
+    public function addHeader(string $header, $value) {
         $this->headers->set($header, $value);
     }
 

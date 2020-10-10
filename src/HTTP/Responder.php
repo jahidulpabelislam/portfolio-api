@@ -254,9 +254,7 @@ trait Responder {
 
             $lastModifiedDate = $entity->getLastModifiedDate();
             if ($lastModifiedDate) {
-                $lastModifiedDate->setTimezone(Response::getCacheTimeZone());
-                $lastModified = $lastModifiedDate->format("D, j M Y H:i:s") . " GMT";
-                $response->addHeader("Last-Modified", $lastModified);
+                $response->addHeader("Last-Modified", $lastModifiedDate);
             }
 
             return $response;
