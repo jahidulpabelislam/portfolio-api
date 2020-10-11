@@ -207,14 +207,6 @@ class Core {
         });
     }
 
-    protected function getLastModifiedFromRequest(): ?string {
-        return $_SERVER["HTTP_IF_MODIFIED_SINCE"] ?? null;
-    }
-
-    public static function setHeader(string $header, string $value) {
-        header("{$header}: {$value}");
-    }
-
     private function setCORSHeaders() {
         $originURL = $_SERVER["HTTP_ORIGIN"] ?? "";
 
@@ -236,6 +228,10 @@ class Core {
                 $this->response->setContent($content);
             }
         }
+    }
+
+    protected function getLastModifiedFromRequest(): ?string {
+        return $_SERVER["HTTP_IF_MODIFIED_SINCE"] ?? null;
     }
 
     public function getLastModified() {
