@@ -37,11 +37,6 @@ class Response {
             $headers["Expires"] = $headers["Expires"]->format("D, d M Y H:i:s") . " GMT";
         }
 
-        if (isset($headers["Last-Modified"]) && $headers["Last-Modified"] instanceof DateTime) {
-            $headers["Last-Modified"]->setTimezone($timeZone);
-            $headers["Last-Modified"] = $headers["Last-Modified"]->format("D, j M Y H:i:s") . " GMT";
-        }
-
         if (isset($headers["ETag"]) && $headers["ETag"]) {
             $headers["ETag"] = $this->getETag();
         }

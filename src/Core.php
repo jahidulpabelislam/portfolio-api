@@ -230,20 +230,8 @@ class Core {
         }
     }
 
-    protected function getLastModifiedFromRequest(): ?string {
-        return $_SERVER["HTTP_IF_MODIFIED_SINCE"] ?? null;
-    }
-
-    public function getLastModified() {
-        return $this->response->headers->get("Last-Modified", "");
-    }
-
     public function getETagFromRequest(): ?string {
         return $_SERVER["HTTP_IF_NONE_MATCH"] ?? null;
-    }
-
-    public function getETag(): string {
-        return $this->response->headers->get("ETag", "");
     }
 
     public static function getDefaultCacheHeaders(): array {
@@ -261,7 +249,9 @@ class Core {
      * Process the response.
      */
     public function processResponse() {
-        $content = $this->response->getContent();
+        $response = $this->response;
+
+        $content = $response->getContent();
         $isSuccessful = $content["ok"] ?? false;
         $defaults = [
             "meta" => [
@@ -276,16 +266,13 @@ class Core {
         ];
         unset($content["ok"]);
         $content = array_replace_recursive($defaults, $content);
-        $this->response->setContent($content);
+        $response->setContent($content);
 
         $this->setCORSHeaders();
 
-        $content = $this->response->getContent();
+        $content = $response->getContent();
 
-        if (
-            $this->getETag() === $this->getETagFromRequest() ||
-            $this->getLastModified() === $this->getLastModifiedFromRequest()
-        ) {
+        if ($response->headers->get("ETag", "") === $this->getETagFromRequest()) {
             $content["meta"]["status"] = 304;
             $content["meta"]["message"] = "Not Modified";
         }

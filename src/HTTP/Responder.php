@@ -253,16 +253,7 @@ trait Responder {
     public static function getItemResponse(string $entityClass, ?APIEntity $entity, $id): Response {
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
             $response = static::getItemFoundResponse($entity);
-
-            $cacheHeaders = Core::getDefaultCacheHeaders();
-
-            $lastModifiedDate = $entity->getLastModifiedDate();
-            if ($lastModifiedDate) {
-                $cacheHeaders["Last-Modified"] = $lastModifiedDate;
-            }
-
-            $response->setCacheHeaders($cacheHeaders);
-
+            $response->setCacheHeaders(Core::getDefaultCacheHeaders());
             return $response;
         }
 

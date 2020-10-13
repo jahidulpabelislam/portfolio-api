@@ -140,19 +140,4 @@ class Project extends APIEntity {
         return $response;
     }
 
-    public function getLastModifiedDate(): ?DateTime {
-        $lastModified = parent::getLastModifiedDate();
-
-        if ($this->images instanceof Collection) {
-            foreach ($this->images as $image) {
-                $imageLastModified = $image->getLastModifiedDate();
-                if (!$lastModified || $imageLastModified > $lastModified) {
-                    $lastModified = $imageLastModified;
-                }
-            }
-        }
-
-        return $lastModified;
-    }
-
 }
