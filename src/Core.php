@@ -246,6 +246,17 @@ class Core {
         return $this->response->headers->get("ETag", "");
     }
 
+    public static function getDefaultCacheHeaders(): array {
+        $secondsToCache = 2678400; // 31 days
+
+        return [
+            "Cache-Control" => "max-age={$secondsToCache}, public",
+            "Expires" => new DateTime("+{$secondsToCache} seconds"),
+            "Pragma" => "cache",
+            "ETag" => true,
+        ];
+    }
+
     /**
      * Process the response.
      */

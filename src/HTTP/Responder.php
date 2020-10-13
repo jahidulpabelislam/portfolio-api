@@ -158,7 +158,7 @@ trait Responder {
         }
 
         $response = static::newResponse($content);
-        $response->setCacheable(true);
+        $response->setCacheHeaders(Core::getDefaultCacheHeaders());
         return $response;
     }
 
@@ -253,12 +253,15 @@ trait Responder {
     public static function getItemResponse(string $entityClass, ?APIEntity $entity, $id): Response {
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
             $response = static::getItemFoundResponse($entity);
-            $response->setCacheable(true);
+
+            $cacheHeaders = Core::getDefaultCacheHeaders();
 
             $lastModifiedDate = $entity->getLastModifiedDate();
             if ($lastModifiedDate) {
-                $response->addHeader("Last-Modified", $lastModifiedDate);
+                $cacheHeaders["Last-Modified"] = $lastModifiedDate;
             }
+
+            $response->setCacheHeaders($cacheHeaders);
 
             return $response;
         }

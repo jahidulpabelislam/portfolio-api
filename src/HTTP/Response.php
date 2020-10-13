@@ -23,16 +23,32 @@ class Response {
     protected $statusMessage = "Internal Server Error";
     protected $content = [];
 
-    protected $cacheable = false;
-
     public $headers = null;
 
     public function __construct() {
         $this->headers = new Headers();
     }
 
-    public function setCacheable(bool $cacheable) {
-        $this->cacheable = $cacheable;
+    public function setCacheHeaders(array $headers) {
+        $timeZone = static::getCacheTimeZone();
+
+        if (isset($headers["Expires"]) && $headers["Expires"] instanceof DateTime) {
+            $headers["Expires"]->setTimezone($timeZone);
+            $headers["Expires"] = $headers["Expires"]->format("D, d M Y H:i:s") . " GMT";
+        }
+
+        if (isset($headers["Last-Modified"]) && $headers["Last-Modified"] instanceof DateTime) {
+            $headers["Last-Modified"]->setTimezone($timeZone);
+            $headers["Last-Modified"] = $headers["Last-Modified"]->format("D, j M Y H:i:s") . " GMT";
+        }
+
+        if (isset($headers["ETag"]) && $headers["ETag"]) {
+            $headers["ETag"] = $this->getETag();
+        }
+
+        foreach ($headers as $header => $value) {
+            $this->headers->set($header, $value);
+        }
     }
 
     public function setStatus(int $code, string $message) {
@@ -82,20 +98,6 @@ class Response {
     }
 
     public function send(bool $pretty = false) {
-        if ($this->cacheable) {
-            $secondsToCache = 2678400; // 31 days
-
-            $this->addHeader("Cache-Control", "max-age={$secondsToCache}, public");
-
-            $gmtTimeZone = static::getCacheTimeZone();
-            $nowDate = new DateTime("+{$secondsToCache} seconds");
-            $nowDate = $nowDate->setTimezone($gmtTimeZone);
-            $expiresTime = $nowDate->format("D, d M Y H:i:s");
-            $this->addHeader("Expires", "{$expiresTime} GMT");
-            $this->addHeader("Pragma", "cache");
-            $this->addHeader("ETag", $this->getETag());
-        }
-
         $this->sendHeaders();
         $this->sendContent($pretty);
     }
