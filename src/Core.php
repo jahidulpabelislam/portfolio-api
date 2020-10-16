@@ -222,10 +222,7 @@ class Core {
 
             // Override meta data, and respond with all endpoints available
             if ($this->method === "OPTIONS") {
-                $content = $this->response->getContent();
-                $content["meta"]["status"] = 200;
-                $content["meta"]["message"] = "OK";
-                $this->response->setContent($content);
+                $this->response->setStatus(200);
             }
         }
     }
@@ -252,11 +249,10 @@ class Core {
         $response = $this->response;
 
         $content = $response->getContent();
-        $isSuccessful = $content["ok"] ?? false;
         $defaults = [
             "meta" => [
-                "status" => ($isSuccessful ? 200 : 500),
-                "message" => ($isSuccessful ? "OK" : "Internal Server Error"),
+                "status" => "",
+                "message" => "",
                 "method" => $this->method,
                 "uri" => $this->uri,
                 "params" => $this->params,
@@ -264,24 +260,20 @@ class Core {
                 "files" => $this->files,
             ],
         ];
-        unset($content["ok"]);
         $content = array_replace_recursive($defaults, $content);
-        $response->setContent($content);
 
         $this->setCORSHeaders();
 
-        $content = $response->getContent();
-
         if ($response->headers->get("ETag", "") === $this->getETagFromRequest()) {
-            $content["meta"]["status"] = 304;
-            $content["meta"]["message"] = "Not Modified";
+            $response->setStatus(304);
         }
 
-        $status = $content["meta"]["status"];
-        $message = $content["meta"]["message"];
-        $this->response->setStatus($status, $message);
+        $content["meta"]["status"] = $response->getStatusCode();
+        $content["meta"]["message"] = $response->getStatusMessage();
 
-        $this->response->addHeader("Content-Type", "application/json");
+        $response->setContent($content);
+
+        $response->addHeader("Content-Type", "application/json");
     }
 
     public function handleRequest() {

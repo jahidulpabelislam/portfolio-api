@@ -19,14 +19,16 @@ class Response {
         return static::$cacheTimeZone;
     }
 
-    protected $statusCode = 500;
-    protected $statusMessage = "Internal Server Error";
-    protected $content = [];
+    protected $statusCode;
+    protected $statusMessage = null;
+    protected $content;
 
-    public $headers = null;
+    public $headers;
 
-    public function __construct() {
-        $this->headers = new Headers();
+    public function __construct(int $statusCode = 500, array $content = [], array $headers = []) {
+        $this->content = $content;
+        $this->statusCode = $statusCode;
+        $this->headers = new Headers($headers);
     }
 
     public function setCacheHeaders(array $headers) {
@@ -46,7 +48,7 @@ class Response {
         }
     }
 
-    public function setStatus(int $code, string $message) {
+    public function setStatus(int $code, ?string $message = null) {
         $this->statusCode = $code;
         $this->statusMessage = $message;
     }
@@ -56,6 +58,10 @@ class Response {
     }
 
     public function getStatusMessage(): string {
+        if ($this->statusMessage === null) {
+            $this->statusMessage = Status::getMessageForCode($this->getStatusCode());
+        }
+
         return $this->statusMessage;
     }
 

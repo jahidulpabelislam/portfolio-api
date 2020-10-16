@@ -220,6 +220,7 @@ class Projects extends Controller {
      */
     private static function uploadProjectImage(Project $project, array $image): Response {
         $response = [];
+        $statusCode = 500;
 
         $projectId = $project->getId();
         $projectName = $project->name;
@@ -265,13 +266,13 @@ class Projects extends Controller {
         else {
             // Else bad request as file uploaded is not a image
             $response["meta"] = [
-                "status" => 400,
-                "message" => "Bad Request",
                 "feedback" => "File is not an image.",
             ];
+
+            $statusCode = 400;
         }
 
-        return static::newResponse($response);
+        return new Response($statusCode, $response);
     }
 
     /**

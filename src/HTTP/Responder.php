@@ -13,6 +13,7 @@
 namespace App\HTTP;
 
 use App\APIEntity;
+use App\Config;
 use App\Core;
 use App\Entity\Collection as EntityCollection;
 
@@ -24,24 +25,12 @@ trait Responder {
         $this->core = $core;
     }
 
-    public static function newResponse(array $content = null): Response {
-        $response = new Response();
-
-        if ($content) {
-            $response->setContent($content);
-        }
-
-        return $response;
-    }
-
     /**
      * Generate meta data to send back when the method provided is not allowed on the URI
      */
     public function getMethodNotAllowedResponse(): Response {
-        return static::newResponse([
+        return new Response(405, [
             "meta" => [
-                "status" => 405,
-                "message" => "Method Not Allowed.",
                 "feedback" => "Method {$this->core->method} not allowed on " . $this->core->getRequestedURL() . ".",
             ],
         ]);
@@ -51,18 +40,15 @@ trait Responder {
      * Send necessary meta data back when user isn't logged in correctly
      */
     public static function getNotAuthorisedResponse(): Response {
-        return static::newResponse([
+        return new Response(401, [
             "meta" => [
-                "status" => 401,
-                "message" => "Unauthorized",
                 "feedback" => "You need to be logged in!",
             ],
         ]);
     }
 
     public static function getLoggedOutResponse(): Response {
-        return static::newResponse([
-            "ok" => true,
+        return new Response(200, [
             "meta" => [
                 "feedback" => "Successfully logged out.",
             ],
@@ -70,7 +56,7 @@ trait Responder {
     }
 
     public static function getUnsuccessfulLogoutResponse(): Response {
-        return static::newResponse([
+        return new Response(500, [
             "meta" => [
                 "feedback" => "Couldn't successfully process your logout request!",
             ],
@@ -81,10 +67,8 @@ trait Responder {
      * Generate response data to send back when the URI provided is not recognised
      */
     public function getUnrecognisedURIResponse(): Response {
-        return static::newResponse([
+        return new Response(404, [
             "meta" => [
-                "status" => 404,
-                "message" => "Not Found",
                 "feedback" => "Unrecognised URI (" . $this->core->getRequestedURL() . ").",
             ],
         ]);
@@ -97,13 +81,11 @@ trait Responder {
         $shouldBeVersion = Config::get()->api_version;
 
         $shouldBeURI = $this->core->uriParts;
-        $shouldBeURI[0] = "v" . $shouldBeVersion;
+        $shouldBeURI[0] = "v{$shouldBeVersion}";
         $shouldBeURL = Core::makeFullURL($shouldBeURI);
 
-        return static::newResponse([
+        return new Response(404, [
             "meta" => [
-                "status" => 404,
-                "message" => "Not Found",
                 "feedback" => "Unrecognised API version. Current version is {$shouldBeVersion}, so please update requested URL to {$shouldBeURL}.",
             ],
         ]);
@@ -117,10 +99,8 @@ trait Responder {
         $requiredFields = array_merge($requiredFields, $extraRequiredFields);
         $invalidFields = Core::getInvalidFields($data, $requiredFields);
 
-        return static::newResponse([
+        return new Response(400, [
             "meta" => [
-                "status" => 400,
-                "message" => "Bad Request",
                 "required_fields" => $requiredFields,
                 "invalid_fields" => $invalidFields,
                 "feedback" => "The necessary data was not provided, missing/invalid fields: " . implode(", ", $invalidFields) . ".",
@@ -146,7 +126,6 @@ trait Responder {
         }
 
         $content = [
-            "ok" => true,
             "meta" => [
                 "count" => $count,
             ],
@@ -157,7 +136,7 @@ trait Responder {
             $content["meta"]["feedback"] = "No {$entityClass::$displayName}s found.";
         }
 
-        $response = static::newResponse($content);
+        $response = new Response(200, $content);
         $response->setCacheHeaders(Core::getDefaultCacheHeaders());
         return $response;
     }
@@ -219,8 +198,7 @@ trait Responder {
     }
 
     private static function getItemFoundResponse(APIEntity $entity): Response {
-        return static::newResponse([
-            "ok" => true,
+        return new Response(200, [
             "data" => $entity->getAPIResponse(),
         ]);
     }
@@ -231,10 +209,8 @@ trait Responder {
      * @return Response
      */
     public static function getItemNotFoundResponse(string $entityClass, $id): Response {
-        return static::newResponse([
+        return new Response(404, [
             "meta" => [
-                "status" => 404,
-                "message" => "Not Found",
                 "feedback" => "No {$entityClass::$displayName} identified by {$id} found.",
             ],
         ]);
@@ -263,18 +239,12 @@ trait Responder {
     public static function getInsertResponse(string $entityClass, ?APIEntity $entity): Response {
         if ($entity && $entity->isLoaded()) {
             $response = static::getItemFoundResponse($entity);
-
-            $content = $response->getContent();
-            $content["meta"]["status"] = 201;
-            $content["meta"]["message"] = "Created";
-            $response->setContent($content);
-
+            $response->setStatus(201);
             $response->addHeader("Location", $entity->getAPIURL());
-
             return $response;
         }
 
-        return static::newResponse([
+        return new Response(500, [
             "meta" => [
                 "feedback" => "Failed to insert the new {$entityClass::$displayName}.",
             ],
@@ -292,7 +262,7 @@ trait Responder {
             return static::getItemFoundResponse($entity);
         }
 
-        return static::newResponse([
+        return new Response(500, [
             "meta" => [
                 "feedback" => "Failed to update the {$entityClass::$displayName} identified by {$id}.",
             ],
@@ -319,15 +289,14 @@ trait Responder {
         }
 
         if ($isDeleted) {
-            return static::newResponse([
-                "ok" => true,
+            return new Response(200, [
                 "data" => [
                     "id" => (int)$id,
                 ],
             ]);
         }
 
-        return static::newResponse([
+        return new Response(500, [
             "meta" => [
                 "feedback" => "Failed to delete the {$entityClass::$displayName} identified by {$id}.",
             ],

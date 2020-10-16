@@ -167,7 +167,7 @@ class Router {
             }
             catch (DBException $exception) {
                 error_log($exception->getMessage() . ". Full error: {$exception}");
-                $response = static::newResponse();
+                $response = new Response();
             }
         }
 
