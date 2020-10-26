@@ -40,6 +40,9 @@ class Core {
 
     public $files = [];
 
+    /**
+     * @var Router|null
+     */
     protected $router = null;
 
     private function initRoutes() {
@@ -50,18 +53,35 @@ class Core {
         $projectsController = Projects::class;
         $authController = Auth::class;
 
-        $router->addRoute("/projects/{projectId}/images/{id}/", "GET", $projectsController, "getProjectImage", "projectImage");
-        $router->addRoute("/projects/{projectId}/images/{id}/", "DELETE", $projectsController, "deleteProjectImage");
-        $router->addRoute("/projects/{projectId}/images/", "GET", $projectsController, "getProjectImages", "projectImages");
-        $router->addRoute("/projects/{projectId}/images/", "POST", $projectsController, "addProjectImage");
-        $router->addRoute("/projects/{id}/", "GET", $projectsController, "getProject", "project");
-        $router->addRoute("/projects/{id}/", "PUT", $projectsController, "updateProject");
-        $router->addRoute("/projects/{id}/", "DELETE", $projectsController, "deleteProject");
-        $router->addRoute("/projects/", "GET", $projectsController, "getProjects");
-        $router->addRoute("/projects/", "POST", $projectsController, "addProject");
-        $router->addRoute("/auth/login/", "POST", $authController, "login");
-        $router->addRoute("/auth/logout/", "DELETE", $authController, "logout");
-        $router->addRoute("/auth/session/", "GET", $authController, "getStatus");
+        $successResponseCallback = static function () {
+            return new Response(200);
+        };
+
+        $router->addRoute("/projects/{projectId}/images/{id}/", "GET", [$projectsController, "getProjectImage", "projectImage"]);
+        $router->addRoute("/projects/{projectId}/images/{id}/", "DELETE", [$projectsController, "deleteProjectImage"]);
+        $router->addRoute("/projects/{projectId}/images/{id}/", "OPTIONS", $successResponseCallback);
+
+        $router->addRoute("/projects/{projectId}/images/", "GET", [$projectsController, "getProjectImages"], "projectImages");
+        $router->addRoute("/projects/{projectId}/images/", "POST", [$projectsController, "addProjectImage"]);
+        $router->addRoute("/projects/{projectId}/images/", "OPTIONS", $successResponseCallback);
+
+        $router->addRoute("/projects/{id}/", "GET", [$projectsController, "getProject"], "project");
+        $router->addRoute("/projects/{id}/", "PUT", [$projectsController, "updateProject"]);
+        $router->addRoute("/projects/{id}/", "DELETE", [$projectsController, "deleteProject"]);
+        $router->addRoute("/projects/{id}/", "OPTIONS", $successResponseCallback);
+
+        $router->addRoute("/projects/", "GET", [$projectsController, "getProjects"]);
+        $router->addRoute("/projects/", "POST", [$projectsController, "addProject"]);
+        $router->addRoute("/projects/", "OPTIONS", $successResponseCallback);
+
+        $router->addRoute("/auth/login/", "POST", [$authController, "login"]);
+        $router->addRoute("/auth/login/", "OPTIONS", $successResponseCallback);
+
+        $router->addRoute("/auth/logout/", "DELETE", [$authController, "logout"]);
+        $router->addRoute("/auth/logout/", "OPTIONS", $successResponseCallback);
+
+        $router->addRoute("/auth/session/", "GET", [$authController, "getStatus"]);
+        $router->addRoute("/auth/session/", "OPTIONS", $successResponseCallback);
     }
 
     public function getRouter(): Router {
@@ -219,11 +239,6 @@ class Core {
             $this->response->addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             $this->response->addHeader("Access-Control-Allow-Headers", "Process-Data, Authorization");
             $this->response->addHeader("Vary", "Origin");
-
-            // Override meta data, and respond with all endpoints available
-            if ($this->method === "OPTIONS") {
-                $this->response->setStatus(200);
-            }
         }
     }
 

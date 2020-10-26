@@ -35,15 +35,28 @@ class Router {
         return $this->basePath;
     }
 
-    public function addRoute(string $path, string $method, string $controller, string $function, string $name = null) {
+    /**
+     * @param $path string
+     * @param $method string
+     * @param $callback \Closure|array
+     * @param $name string|null
+     */
+    public function addRoute(string $path, string $method, $callback, string $name = null) {
         if (!isset($this->routes[$path])) {
             $this->routes[$path] = [];
         }
 
-        $this->routes[$path][$method] = [
-            "controller" => $controller,
-            "function" => $function,
-        ];
+        $route = [];
+
+        if (is_array($callback)) {
+            $route["controller"] = $callback[0];
+            $route["function"] = $callback[1];
+        }
+        else if (is_callable($callback)) {
+            $route["callable"] = $callback;
+        }
+
+        $this->routes[$path][$method] = $route;
 
         if ($name) {
             $this->namedRoutes[$name] = $path;
@@ -115,19 +128,24 @@ class Router {
      */
     private function executeAction(): Response {
         $uri = $this->core->uri;
-        foreach ($this->routes as $route => $routeData) {
-            $routeRegex = $this->pathToRegex($route);
-            if (preg_match($routeRegex, $uri, $matches)) {
-                if (isset($routeData[$this->core->method])) {
-                    $action = $routeData[$this->core->method];
+        $method = $this->core->method;
 
-                    $controllerClass = $action["controller"];
-                    $controller = new $controllerClass($this->core);
-
+        foreach ($this->routes as $path => $routes) {
+            $pathRegex = $this->pathToRegex($path);
+            if (preg_match($pathRegex, $uri, $matches)) {
+                if (isset($routes[$method])) {
+                    $route = $routes[$method];
                     array_shift($matches);
                     $identifiers = $this->getIdentifiersFromMatches($matches);
 
-                    return call_user_func_array([$controller, $action["function"]], $identifiers);
+                    if (isset($route["callable"])) {
+                        return $route["callable"](...$identifiers);
+                    }
+
+                    $controllerClass = $route["controller"];
+                    $controller = new $controllerClass($this->core);
+
+                    return call_user_func_array([$controller, $route["function"]], $identifiers);
                 }
 
                 return $this->getMethodNotAllowedResponse();
