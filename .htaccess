@@ -4,25 +4,47 @@ IndexIgnore *
 
 # Stop users from viewing these folders/files
 
-<Files .gitattributes>
-    order allow,deny
-    deny from all
-</Files>
+# Apache 2.4
+<IfModule mod_authz_core.c>
+    <Files .gitattributes>
+        Require all denied
+    </Files>
 
-<Files .gitignore>
-    order allow,deny
-    deny from all
-</Files>
+    <Files .gitignore>
+        Require all denied
+    </Files>
 
-<Files .htaccess>
-    order allow,deny
-    deny from all
-</Files>
+    <Files .htaccess>
+        Require all denied
+    </Files>
 
-<Files README.md>
-    order allow,deny
-    deny from all
-</Files>
+    <Files README.md>
+        Require all denied
+    </Files>
+</IfModule>
+
+# Apache 2.2
+<IfModule !mod_authz_core.c>
+    <Files .gitattributes>
+        order allow,deny
+        deny from all
+    </Files>
+
+    <Files .gitignore>
+        order allow,deny
+        deny from all
+    </Files>
+
+    <Files .htaccess>
+        order allow,deny
+        deny from all
+    </Files>
+
+    <Files README.md>
+        order allow,deny
+        deny from all
+    </Files>
+</IfModule>
 
 DirectoryIndex index.php index.html
 
