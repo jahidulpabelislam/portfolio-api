@@ -261,15 +261,13 @@ class Projects extends Controller {
             }
 
             // Else there was a problem uploading file to server
-            $response["meta"]["feedback"] = "Sorry, there was an error uploading your image.";
+            $response["error"] = "Sorry, there was an error uploading your image.";
         }
         else {
             // Else bad request as file uploaded is not a image
-            $response["meta"] = [
-                "feedback" => "File is not an image.",
-            ];
-
             $statusCode = 400;
+
+            $response["error"] = "File is not an image.";
         }
 
         return new Response($statusCode, $response);
@@ -317,16 +315,14 @@ class Projects extends Controller {
 
             $response = self::getItemResponse(ProjectImage::class, $projectImage, $imageId);
 
-            $responseContent = $response->getContent();
-
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
             if ($projectImage && !empty($projectImage->project_id) && $projectImage->project_id !== $projectId) {
+                $responseContent = $response->getContent();
                 $responseContent["data"] = [];
-                $responseContent["meta"]["feedback"] = "No {$projectImage::$displayName} found identified by {$imageId} for Project: {$projectId}.";
+                $responseContent["error"] = "No {$projectImage::$displayName} found identified by {$imageId} for Project: {$projectId}.";
+                $response->setContent($responseContent);
             }
-
-            $response->setContent($responseContent);
 
             return $response;
         }

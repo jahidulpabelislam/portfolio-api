@@ -38,9 +38,7 @@ class Auth extends Controller {
             }
 
             return new Response(401, [
-                "meta" => [
-                    "feedback" => "Wrong username and/or password.",
-                ],
+                "error" => "Wrong username and/or password.",
             ]);
         }
 

@@ -30,9 +30,7 @@ trait Responder {
      */
     public function getMethodNotAllowedResponse(): Response {
         return new Response(405, [
-            "meta" => [
-                "feedback" => "Method {$this->core->method} not allowed on " . $this->core->getRequestedURL() . ".",
-            ],
+            "error" => "Method {$this->core->method} not allowed on " . $this->core->getRequestedURL() . ".",
         ]);
     }
 
@@ -41,25 +39,21 @@ trait Responder {
      */
     public static function getNotAuthorisedResponse(): Response {
         return new Response(401, [
-            "meta" => [
-                "feedback" => "You need to be logged in!",
-            ],
+            "error" => "You need to be logged in!",
         ]);
     }
 
     public static function getLoggedOutResponse(): Response {
         return new Response(200, [
             "meta" => [
-                "feedback" => "Successfully logged out.",
+                "message" => "Successfully logged out.",
             ],
         ]);
     }
 
     public static function getUnsuccessfulLogoutResponse(): Response {
         return new Response(500, [
-            "meta" => [
-                "feedback" => "Couldn't successfully process your logout request!",
-            ],
+            "error" => "Couldn't successfully process your logout request!",
         ]);
     }
 
@@ -68,9 +62,7 @@ trait Responder {
      */
     public function getUnrecognisedURIResponse(): Response {
         return new Response(404, [
-            "meta" => [
-                "feedback" => "Unrecognised URI (" . $this->core->getRequestedURL() . ").",
-            ],
+            "error" => "Unrecognised URI (" . $this->core->getRequestedURL() . ").",
         ]);
     }
 
@@ -85,9 +77,7 @@ trait Responder {
         $shouldBeURL = Core::makeFullURL($shouldBeURI);
 
         return new Response(404, [
-            "meta" => [
-                "feedback" => "Unrecognised API version. Current version is {$shouldBeVersion}, so please update requested URL to {$shouldBeURL}.",
-            ],
+            "error" => "Unrecognised API version. Current version is {$shouldBeVersion}, so please update requested URL to {$shouldBeURL}.",
         ]);
     }
 
@@ -103,8 +93,8 @@ trait Responder {
             "meta" => [
                 "required_fields" => $requiredFields,
                 "invalid_fields" => $invalidFields,
-                "feedback" => "The necessary data was not provided, missing/invalid fields: " . implode(", ", $invalidFields) . ".",
             ],
+            "error" => "The necessary data was not provided, missing/invalid fields: " . implode(", ", $invalidFields) . ".",
         ]);
     }
 
@@ -133,7 +123,7 @@ trait Responder {
         ];
 
         if (!$count) {
-            $content["meta"]["feedback"] = "No {$entityClass::$displayName}s found.";
+            $content["meta"]["message"] = "No {$entityClass::$displayName}s found.";
         }
 
         $response = new Response(200, $content);
@@ -210,9 +200,7 @@ trait Responder {
      */
     public static function getItemNotFoundResponse(string $entityClass, $id): Response {
         return new Response(404, [
-            "meta" => [
-                "feedback" => "No {$entityClass::$displayName} identified by {$id} found.",
-            ],
+            "error" => "No {$entityClass::$displayName} identified by {$id} found.",
         ]);
     }
 
@@ -245,9 +233,7 @@ trait Responder {
         }
 
         return new Response(500, [
-            "meta" => [
-                "feedback" => "Failed to insert the new {$entityClass::$displayName}.",
-            ],
+            "error" => "Failed to insert the new {$entityClass::$displayName}.",
         ]);
     }
 
@@ -263,9 +249,7 @@ trait Responder {
         }
 
         return new Response(500, [
-            "meta" => [
-                "feedback" => "Failed to update the {$entityClass::$displayName} identified by {$id}.",
-            ],
+            "error" => "Failed to update the {$entityClass::$displayName} identified by {$id}.",
         ]);
     }
 
@@ -297,9 +281,7 @@ trait Responder {
         }
 
         return new Response(500, [
-            "meta" => [
-                "feedback" => "Failed to delete the {$entityClass::$displayName} identified by {$id}.",
-            ],
+            "error" => "Failed to delete the {$entityClass::$displayName} identified by {$id}.",
         ]);
     }
 
