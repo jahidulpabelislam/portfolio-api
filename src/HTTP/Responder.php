@@ -173,13 +173,13 @@ trait Responder {
                 unset($params["page"]);
             }
 
-            $content["meta"]["previous_page"] = Core::makeUrl($pageURL, $params);
+            $content["meta"]["links"]["previous_page"] = Core::makeUrl($pageURL, $params);
         }
 
         $hasNextPage = $page < $lastPage;
         if ($hasNextPage) {
             $params["page"] = $page + 1;
-            $content["meta"]["next_page"] = Core::makeUrl($pageURL, $params);
+            $content["meta"]["links"]["next_page"] = Core::makeUrl($pageURL, $params);
         }
 
         $response->setContent($content);
