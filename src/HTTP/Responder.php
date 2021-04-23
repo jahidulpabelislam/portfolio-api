@@ -112,7 +112,9 @@ trait Responder {
         $data = [];
 
         foreach ($entities as $entity) {
-            $data[] = $entity->getAPIResponse();
+            $response = $entity->getAPIResponse();
+            $response["_links"] = $entity->getAPILinks();
+            $data[] = $response;
         }
 
         $content = [
@@ -203,6 +205,9 @@ trait Responder {
 
     private static function getItemFoundResponse(APIEntity $entity): Response {
         return new Response(200, [
+            "meta" => [
+                "links" => $entity->getAPILinks(),
+            ],
             "data" => $entity->getAPIResponse(),
         ]);
     }

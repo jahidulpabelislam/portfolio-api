@@ -30,4 +30,10 @@ abstract class APIEntity extends Entity implements APIEntityInterface {
         return $response;
     }
 
+    public function getAPILinks(): array {
+        return [
+            "self" => $this->getAPIURL(),
+        ];
+    }
+
 }

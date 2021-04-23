@@ -127,13 +127,21 @@ class Project extends APIEntity {
         return Core::get()->getRouter()->makeUrl("project", ["id" => $this->id]);
     }
 
+    public function getAPILinks(): array {
+        $links = parent::getAPILinks();
+        $links["images"] = Core::get()->getRouter()->makeUrl("projectImages", ["projectId" => $this->getId()]);
+        return $links;
+    }
+
     public function getAPIResponse(): array {
         $response = parent::getAPIResponse();
 
         if ($this->images instanceof Collection) {
             $response["images"] = [];
             foreach ($this->images as $image) {
-                $response["images"][] = $image->getAPIResponse();
+                $imageResponse = $image->getAPIResponse();
+                $imageResponse["_links"] = $image->getAPILinks();
+                $response["images"][] = $imageResponse;
             }
         }
 
