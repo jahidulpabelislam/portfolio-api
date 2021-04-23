@@ -107,7 +107,7 @@ trait Responder {
      * @param $entities EntityCollection
      * @return Response
      */
-    public static function getItemsResponse(string $entityClass, EntityCollection $entities): Response {
+    public function getItemsResponse(string $entityClass, EntityCollection $entities): Response {
         $count = count($entities);
         $data = [];
 
@@ -118,6 +118,9 @@ trait Responder {
         $content = [
             "meta" => [
                 "count" => $count,
+                "links" => [
+                    "self" => $this->core->getRequestedURL(),
+                ],
             ],
             "data" => $data,
         ];
@@ -146,9 +149,11 @@ trait Responder {
         $params = $this->core->params;
 
         // The items response is the base response, and the extra meta is added below
-        $response = static::getItemsResponse($entityClass, $collection);
+        $response = $this->getItemsResponse($entityClass, $collection);
 
         $content = $response->getContent();
+
+        unset($content["meta"]["links"]);
 
         $totalCount = $collection->getTotalCount();
         $content["meta"]["total_count"] = $totalCount;
@@ -160,9 +165,18 @@ trait Responder {
         $content["meta"]["total_pages"] = $lastPage;
 
         $pageURL = $this->core->getRequestedURL();
+
+        // Always update to the used value if param was passed (incase it was different)
         if (isset($params["limit"])) {
             $params["limit"] = $limit;
         }
+        if (isset($params["page"])) {
+            $params["page"] = $page;
+        }
+
+        $content["meta"]["links"] = [
+            "self" => Core::makeUrl($pageURL, $params),
+        ];
 
         $hasPreviousPage = ($page > 1) && ($lastPage >= ($page - 1));
         if ($hasPreviousPage) {

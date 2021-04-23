@@ -200,11 +200,11 @@ class Projects extends Controller {
      * @param $projectId int|string The Id of the Project
      * @return Response
      */
-    public static function getProjectImages($projectId): Response {
+    public function getProjectImages($projectId): Response {
         // Check the Project trying to get Images for exists
         $project = self::getProjectEntity($projectId, true);
         if ($project) {
-            return self::getItemsResponse(ProjectImage::class, $project->images);
+            return $this->getItemsResponse(ProjectImage::class, $project->images);
         }
 
         return self::getItemNotFoundResponse(Project::class, $projectId);
