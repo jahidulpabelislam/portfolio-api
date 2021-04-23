@@ -89,12 +89,14 @@ trait Responder {
         $requiredFields = array_merge($requiredFields, $extraRequiredFields);
         $invalidFields = Core::getInvalidFields($data, $requiredFields);
 
+        $errors = [];
+        foreach ($invalidFields as $invalidField) {
+            $errors[$invalidField] = "$invalidField is a required field";
+        }
+
         return new Response(400, [
-            "meta" => [
-                "required_fields" => $requiredFields,
-                "invalid_fields" => $invalidFields,
-            ],
-            "error" => "The necessary data was not provided, missing/invalid fields: " . implode(", ", $invalidFields) . ".",
+            "error" => "The necessary data was not provided or invalid.",
+            "errors" => $errors,
         ]);
     }
 
