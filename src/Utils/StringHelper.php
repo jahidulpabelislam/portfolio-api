@@ -30,7 +30,19 @@ class StringHelper {
     public static function addTrailingSlash(string $url): string {
         $url = self::removeTrailingSlash($url);
 
-        return "{$url}/";
+        // If the last bit includes a full stop, assume its a file...
+        // so don't add trailing slash
+        $withoutProtocol = str_replace(["https://", "http://"], "", $url);
+        $splitPaths = explode("/", $withoutProtocol);
+        $count = count($splitPaths);
+        if ($count > 1 && !is_dir($url)) {
+            $lastPath = $splitPaths[$count - 1] ?? null;
+            if ($lastPath && strpos($lastPath, ".")) {
+                return $url;
+            }
+        }
+
+        return "$url/";
     }
 
     public static function addLeadingSlash(string $url): string {

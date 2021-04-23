@@ -151,9 +151,9 @@ class Core {
 
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
         $domain = StringHelper::removeTrailingSlash($_SERVER["SERVER_NAME"]);
-        $uri = StringHelper::addLeadingSlash($uri);
+        $uri = StringHelper::removeLeadingSlash($uri);
 
-        return StringHelper::addTrailingSlash("{$protocol}://{$domain}{$uri}");
+        return StringHelper::addTrailingSlash("$protocol://$domain/$uri");
     }
 
     /**
