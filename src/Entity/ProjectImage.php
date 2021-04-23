@@ -72,4 +72,13 @@ class ProjectImage extends APIEntity {
         );
     }
 
+    public function getAPIResponse(): array {
+        $response = parent::getAPIResponse();
+
+        $response["url"] = Core::makeFullURL($response["file"]);
+        unset($response["file"]);
+
+        return $response;
+    }
+
 }
