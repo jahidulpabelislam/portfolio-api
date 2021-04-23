@@ -57,7 +57,7 @@ class Core {
             return new Response(200);
         };
 
-        $router->addRoute("/projects/{projectId}/images/{id}/", "GET", [$projectsController, "getProjectImage", "projectImage"]);
+        $router->addRoute("/projects/{projectId}/images/{id}/", "GET", [$projectsController, "getProjectImage"], "projectImage");
         $router->addRoute("/projects/{projectId}/images/{id}/", "DELETE", [$projectsController, "deleteProjectImage"]);
         $router->addRoute("/projects/{projectId}/images/{id}/", "OPTIONS", $successResponseCallback);
 
