@@ -84,18 +84,9 @@ trait Responder {
     /**
      * Send necessary meta data back when required data/fields is not provided/valid
      */
-    public function getInvalidFieldsResponse(string $entityClass, array $data, array $extraRequiredFields = []): Response {
-        $requiredFields = $entityClass::getRequiredFields();
-        $requiredFields = array_merge($requiredFields, $extraRequiredFields);
-        $invalidFields = Core::getInvalidFields($data, $requiredFields);
-
-        $errors = [];
-        foreach ($invalidFields as $invalidField) {
-            $errors[$invalidField] = "$invalidField is a required field";
-        }
-
+    public function getInvalidFieldsResponse(array $errors): Response {
         return new Response(400, [
-            "error" => "The necessary data was not provided or invalid.",
+            "error" => "The necessary data was not provided and/or invalid.",
             "errors" => $errors,
         ]);
     }

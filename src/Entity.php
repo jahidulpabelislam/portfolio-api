@@ -421,6 +421,27 @@ abstract class Entity implements Arrayable {
         return $entity;
     }
 
+    public function getErrors(): array {
+        $errors = [];
+        foreach (static::getRequiredFields() as $field) {
+            if (!$this->{$field}) {
+                $errors[$field] = "$field is a required field.";
+            }
+        }
+
+        return $errors;
+    }
+
+    public function hasErrors(): bool {
+        foreach (static::getRequiredFields() as $field) {
+            if (!$this->{$field}) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Delete an Entity from the Database
      *

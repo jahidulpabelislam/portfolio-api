@@ -101,14 +101,12 @@ class Projects extends Controller {
     private function saveProject(array $data, $projectId = null): Response {
         if (User::isLoggedIn()) {
             $isNew = $projectId === null;
-
-            // Only validate on creation
-            if ($isNew && !Core::hasRequiredFields(Project::class, $data)) {
-                return $this->getInvalidFieldsResponse(Project::class, $data);
-            }
-
             if ($isNew) {
-                $project = Project::insert($data);
+                $project = Project::factory($data);
+                if ($errors = $project->getErrors()) {
+                    return $this->getInvalidFieldsResponse($errors);
+                }
+                $project->save();
                 $project->reload();
                 return self::getInsertResponse(Project::class, $project);
             }
@@ -293,8 +291,10 @@ class Projects extends Controller {
                 return self::getItemNotFoundResponse(Project::class, $projectId);
             }
 
-            $requiredFields = ["image"];
-            return $this->getInvalidFieldsResponse(ProjectImage::class, [], $requiredFields);
+            $errors = [
+                "image" => "image is a required field."
+            ];
+            return $this->getInvalidFieldsResponse($errors);
         }
 
         return self::getNotAuthorisedResponse();

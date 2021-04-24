@@ -29,7 +29,7 @@ class Auth extends Controller {
      */
     public function login(): Response {
         $data = $this->core->data;
-        if (Core::hasRequiredFields(User::class, $data)) {
+        if (!$errors = User::getErrors($data)) {
             $jwt = User::login($data);
             if ($jwt) {
                 return new Response(200, [
@@ -42,7 +42,7 @@ class Auth extends Controller {
             ]);
         }
 
-        return $this->getInvalidFieldsResponse(User::class, $data);
+        return $this->getInvalidFieldsResponse($errors);
     }
 
     /**

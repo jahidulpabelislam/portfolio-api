@@ -175,7 +175,7 @@ class Core {
         return $fullURL;
     }
 
-    private static function isFieldValid(array $data, string $field): bool {
+    public static function isFieldValid(array $data, string $field): bool {
         if (!isset($data[$field])) {
             return false;
         }
@@ -191,40 +191,6 @@ class Core {
         }
 
         return false;
-    }
-
-    /**
-     * Check if all the required data is provided
-     * And data provided is not empty
-     *
-     * @param $entityClass string the Entity class
-     * @param $data array Array of required data keys
-     * @return bool Whether data required is provided & is valid or not
-     */
-    public static function hasRequiredFields(string $entityClass, array $data): bool {
-
-        // Loops through each required field, and bails early with false if at least one is invalid
-        foreach ($entityClass::getRequiredFields() as $field) {
-            if (!self::isFieldValid($data, $field)) {
-                return false;
-            }
-        }
-
-        // Otherwise data provided is ok and data required is provided
-        return true;
-    }
-
-    /**
-     * Get all invalid required data fields
-     *
-     * @param $data array Data/values to check fields against
-     * @param $requiredFields string[] Array of required data keys
-     * @return string[] An array of invalid data fields
-     */
-    public static function getInvalidFields(array $data, array $requiredFields): array {
-        return array_filter($requiredFields, static function(string $field) use ($data) {
-            return !self::isFieldValid($data, $field);
-        });
     }
 
     private function setCORSHeaders() {
