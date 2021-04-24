@@ -21,6 +21,7 @@ use App\Utils\StringHelper;
 class ProjectImage extends APIEntity {
 
     use Timestamped;
+    use Validated;
 
     public static $displayName = "Project Image";
 

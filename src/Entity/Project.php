@@ -23,6 +23,7 @@ class Project extends APIEntity {
     use Filterable;
     use Searchable;
     use Timestamped;
+    use Validated;
 
     public const PUBLIC_STATUS = "published";
 
