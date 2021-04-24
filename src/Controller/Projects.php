@@ -102,11 +102,10 @@ class Projects extends Controller {
         if (User::isLoggedIn()) {
             $isNew = $projectId === null;
             if ($isNew) {
-                $project = Project::factory($data);
-                if ($errors = $project->getErrors()) {
-                    return $this->getInvalidFieldsResponse($errors);
+                $project = Project::insert($data);
+                if ($project->hasErrors()) {
+                    return $this->getInvalidFieldsResponse($project->getErrors());
                 }
-                $project->save();
                 $project->reload();
                 return self::getInsertResponse(Project::class, $project);
             }

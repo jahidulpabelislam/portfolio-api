@@ -379,11 +379,17 @@ abstract class Entity implements Arrayable {
         return $values;
     }
 
+    protected function beforeSave() {
+
+    }
+
     /**
      * Save values to the Entity Table in the Database
      * Will either be a new insert or a update to an existing Entity
      */
     public function save(): bool {
+        $this->beforeSave();
+
         $isNew = !$this->isLoaded();
 
         $wasSuccessful = false;

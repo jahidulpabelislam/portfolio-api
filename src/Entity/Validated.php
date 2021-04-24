@@ -4,19 +4,37 @@ namespace App\Entity;
 
 trait Validated {
 
-    public function getErrors(): array {
-        $errors = [];
-        foreach (static::getRequiredFields() as $field) {
-            if (!$this->{$field}) {
-                $errors[$field] = "$field is a required field.";
-            }
-        }
+    protected $errors = [];
 
-        return $errors;
+    public function getErrors(): array {
+        return $this->errors;
     }
 
     public function hasErrors(): bool {
         return count($this->getErrors());
+    }
+
+    protected function addError(string $field, string $error): void {
+        $this->errors[$field] = $error;
+    }
+
+    public function validate(): void {
+        $this->errors = []; // Always clear first
+        foreach (static::getRequiredFields() as $field) {
+            if (!$this->{$field}) {
+                $this->addError($field, "$field is a required field.");
+            }
+        }
+    }
+
+    public function save(): bool {
+        $this->validate();
+
+        if ($this->hasErrors()) {
+            return false;
+        }
+
+        return parent::save();
     }
 
 }
