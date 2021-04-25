@@ -232,8 +232,8 @@ class Core {
         $content = $response->getContent();
         $defaults = [
             "meta" => [
-                "status" => "",
-                "message" => "",
+                "status_code" => "",
+                "status_message" => "",
                 "method" => $this->method,
                 "uri" => $this->uri,
                 "params" => $this->params,
@@ -251,8 +251,8 @@ class Core {
             $response->setStatus(304);
         }
 
-        $content["meta"]["status"] = $response->getStatusCode();
-        $content["meta"]["message"] = $response->getStatusMessage();
+        $content["meta"]["status_code"] = $response->getStatusCode();
+        $content["meta"]["status_message"] = $response->getStatusMessage();
 
         $response->setContent($content);
 
