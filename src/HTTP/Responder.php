@@ -121,7 +121,7 @@ trait Responder {
         ];
 
         if (!$count) {
-            $content["meta"]["message"] = "No {$entityClass::getDisplayName()}s found.";
+            $content["meta"]["message"] = "No {$entityClass::getPluralDisplayName()} found.";
         }
 
         $response = new Response(200, $content);

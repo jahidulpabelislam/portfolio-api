@@ -59,6 +59,10 @@ abstract class Entity implements Arrayable {
         return static::$displayName;
     }
 
+    public static function getPluralDisplayName(): string {
+        return static::$displayName . "s";
+    }
+
     public static function getColumnLabel(string $column): string {
         $label = $column;
         $label = str_replace("_", " ", $label);
