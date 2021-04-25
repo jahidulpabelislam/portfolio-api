@@ -22,6 +22,9 @@ use DateTime;
 
 abstract class Entity implements Arrayable {
 
+    /**
+     * @var Connection
+     */
     protected static $db;
 
     public static $displayName = "";
@@ -29,7 +32,8 @@ abstract class Entity implements Arrayable {
     protected static $tableName = "";
 
     protected $identifier = null;
-    protected $columns = null;
+
+    protected $columns;
 
     protected static $defaultColumns = [];
 
@@ -120,7 +124,7 @@ abstract class Entity implements Arrayable {
         return static::getQuery()->count($where, $params);
     }
 
-    private function setId(?int $id) {
+    private function setId(?int $id): void {
         $this->identifier = $id;
     }
 
@@ -128,7 +132,7 @@ abstract class Entity implements Arrayable {
         return $this->identifier;
     }
 
-    protected function setValue(string $column, $value, bool $fromDb = false) {
+    protected function setValue(string $column, $value, bool $fromDb = false): void {
         if (in_array($column, static::getIntColumns())) {
             $value = (int)$value;
         }
@@ -152,7 +156,7 @@ abstract class Entity implements Arrayable {
         $this->columns[$column] = $value;
     }
 
-    public function setValues(array $values, bool $fromDb = false) {
+    public function setValues(array $values, bool $fromDb = false): void {
         $columns = array_keys($this->columns);
         foreach ($columns as $column) {
             if (array_key_exists($column, $values)) {
@@ -311,13 +315,13 @@ abstract class Entity implements Arrayable {
             $ins = [];
             foreach ($values as $i => $value) {
                 $key = "{$column}_" . ($i + 1);
-                $ins[] = ":{$key}";
+                $ins[] = ":$key";
                 $params[$key] = $value;
             }
 
-            $where = "{$column} in (" . implode(", ", $ins) . ")";
+            $where = "$column in (" . implode(", ", $ins) . ")";
         } else {
-            $where = "{$column} = :{$column}";
+            $where = "$column = :$column";
             $params = [$column => $value];
         }
 
@@ -342,7 +346,7 @@ abstract class Entity implements Arrayable {
         return null;
     }
 
-    public function reload() {
+    public function reload(): void {
         if ($this->isLoaded()) {
             $row = static::select("*", $this->getId());
             if ($row) {

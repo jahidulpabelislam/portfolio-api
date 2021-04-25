@@ -67,7 +67,7 @@ class ProjectImage extends APIEntity {
         return Core::get()->getRouter()->makeUrl(
             "projectImage",
             [
-                "id" => $this->id,
+                "id" => $this->getId(),
                 "projectId" => $this->project_id,
             ]
         );

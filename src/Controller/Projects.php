@@ -235,7 +235,7 @@ class Projects extends Controller {
         $newFilename = $projectNameFormatted;
         $newFilename .= "-" . date("Ymd-His");
         $newFilename .= "-" . random_int(0, 99);
-        $newFilename .= ".{$imageFileExt}";
+        $newFilename .= ".$imageFileExt";
 
         $newFileLocation = $directory . $newFilename;
 

@@ -45,7 +45,7 @@ class Core {
      */
     protected $router = null;
 
-    private function initRoutes() {
+    private function initRoutes(): void {
         $router = $this->router;
 
         $router->setBasePath("/v" . Config::get()->api_version);
@@ -92,11 +92,11 @@ class Core {
         return $this->router;
     }
 
-    private function extractMethodFromRequest() {
+    private function extractMethodFromRequest(): void {
         $this->method = strtoupper($_SERVER["REQUEST_METHOD"]);
     }
 
-    private function extractURIFromRequest() {
+    private function extractURIFromRequest(): void {
         $this->uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 
         // Get the individual parts of the request URI as an array
@@ -123,17 +123,17 @@ class Core {
         return $value;
     }
 
-    private function extractDataFromRequest() {
+    private function extractDataFromRequest(): void {
         $this->data = self::sanitizeData($_POST);
         $this->params = self::sanitizeData($_GET);
         $this->request = self::sanitizeData($_REQUEST);
     }
 
-    private function extractFilesFromRequest() {
+    private function extractFilesFromRequest(): void {
         $this->files = $_FILES;
     }
 
-    public function extractFromRequest() {
+    public function extractFromRequest(): void {
         $this->extractMethodFromRequest();
         $this->extractURIFromRequest();
         $this->extractDataFromRequest();
@@ -193,7 +193,7 @@ class Core {
         return false;
     }
 
-    private function setCORSHeaders() {
+    private function setCORSHeaders(): void {
         $originURL = $_SERVER["HTTP_ORIGIN"] ?? "";
 
         // Strip the protocol from domain
@@ -216,8 +216,8 @@ class Core {
         $secondsToCache = 2678400; // 31 days
 
         return [
-            "Cache-Control" => "max-age={$secondsToCache}, public",
-            "Expires" => new DateTime("+{$secondsToCache} seconds"),
+            "Cache-Control" => "max-age=$secondsToCache, public",
+            "Expires" => new DateTime("+$secondsToCache seconds"),
             "Pragma" => "cache",
             "ETag" => true,
         ];
@@ -226,7 +226,7 @@ class Core {
     /**
      * Process the response.
      */
-    public function processResponse() {
+    public function processResponse(): void {
         $response = $this->response;
 
         $content = $response->getContent();
@@ -259,7 +259,7 @@ class Core {
         $response->addHeader("Content-Type", "application/json");
     }
 
-    public function handleRequest() {
+    public function handleRequest(): void {
         $this->extractFromRequest();
 
         $this->response = $this->getRouter()->performRequest();

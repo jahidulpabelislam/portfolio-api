@@ -9,6 +9,9 @@ class Response {
 
     private const CACHE_TIMEZONE = "Europe/London";
 
+    /**
+     * @var DateTimeZone|null
+     */
     private static $cacheTimeZone = null;
 
     public static function getCacheTimeZone(): DateTimeZone {
@@ -31,7 +34,7 @@ class Response {
         $this->headers = new Headers($headers);
     }
 
-    public function setCacheHeaders(array $headers) {
+    public function setCacheHeaders(array $headers): void {
         $timeZone = static::getCacheTimeZone();
 
         if (isset($headers["Expires"]) && $headers["Expires"] instanceof DateTime) {
@@ -48,7 +51,7 @@ class Response {
         }
     }
 
-    public function setStatus(int $code, ?string $message = null) {
+    public function setStatus(int $code, ?string $message = null): void {
         $this->statusCode = $code;
         $this->statusMessage = $message;
     }
@@ -65,7 +68,7 @@ class Response {
         return $this->statusMessage;
     }
 
-    public function addHeader(string $header, $value) {
+    public function addHeader(string $header, $value): void {
         $this->headers->set($header, $value);
     }
 
@@ -73,7 +76,7 @@ class Response {
         return $this->headers;
     }
 
-    public function setContent(array $content) {
+    public function setContent(array $content): void {
         $this->content = $content;
     }
 
@@ -85,20 +88,20 @@ class Response {
         return md5(json_encode($this->getContent()));
     }
 
-    protected function sendHeaders() {
+    protected function sendHeaders(): void {
         foreach ($this->headers as $name => $value) {
-            header("{$name}: {$value}");
+            header("$name: $value");
         }
 
         header("HTTP/1.1 {$this->getStatusCode()} {$this->getStatusMessage()}");
     }
 
-    protected function sendContent(bool $pretty) {
+    protected function sendContent(bool $pretty): void {
         $encodeParams = $pretty ? JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES : 0;
         echo json_encode($this->getContent(), $encodeParams);
     }
 
-    public function send(bool $pretty = false) {
+    public function send(bool $pretty = false): void {
         $this->sendHeaders();
         $this->sendContent($pretty);
     }

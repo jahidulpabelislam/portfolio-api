@@ -78,7 +78,7 @@ class Project extends APIEntity {
     /**
      * Helper function to get all Project Image Entities linked to this Project
      */
-    public function loadProjectImages(bool $reload = false) {
+    public function loadProjectImages(bool $reload = false): void {
         if ($this->isLoaded() && ($reload || $this->images === null)) {
             $this->images = ProjectImage::getByColumn("project_id", $this->getId());
         }
@@ -87,7 +87,7 @@ class Project extends APIEntity {
     /**
      * @inheritDoc
      */
-    public function reload() {
+    public function reload(): void {
         parent::reload();
         if ($this->isLoaded() && $this->images !== null) {
             $this->loadProjectImages(true);
@@ -125,7 +125,7 @@ class Project extends APIEntity {
     }
 
     public function getAPIURL(): string {
-        return Core::get()->getRouter()->makeUrl("project", ["id" => $this->id]);
+        return Core::get()->getRouter()->makeUrl("project", ["id" => $this->getId()]);
     }
 
     public function getAPILinks(): array {

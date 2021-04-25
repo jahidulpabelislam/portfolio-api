@@ -41,7 +41,7 @@ class Connection {
         $username = $config["username"];
         $password = $config["password"];
 
-        $dsn = "mysql:host={$host};dbname={$database};charset-UTF-8";
+        $dsn = "mysql:host=$host;dbname=$database;charset-UTF-8";
         $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
 
         try {
@@ -70,7 +70,7 @@ class Connection {
             if (isset($params)) {
                 $bindings = [];
                 foreach ($params as $key => $value) {
-                    $bindings[":{$key}"] = $value;
+                    $bindings[":$key"] = $value;
                 }
 
                 $stmt = $this->pdo->prepare($query);
@@ -84,7 +84,7 @@ class Connection {
         }
         catch (PDOException $error) {
             throw new Exception(
-                "Error executing query on database: {$error->getMessage()}, using query: {$query} and params: " . print_r($params, true),
+                "Error executing query on database: {$error->getMessage()}, using query: $query and params: " . print_r($params, true),
                 $error->getCode(),
                 $error->getPrevious()
             );

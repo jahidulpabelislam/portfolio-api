@@ -93,7 +93,7 @@ class Query {
             $where = static::arrayToQueryString($where, "\n\tAND ");
 
             return [
-                "WHERE {$where}",
+                "WHERE $where",
                 $params,
             ];
         }
@@ -127,8 +127,8 @@ class Query {
         $columns = static::arrayToQueryString($columns);
 
         $sqlParts = [
-            "SELECT {$columns}",
-            "FROM {$table}",
+            "SELECT $columns",
+            "FROM $table",
         ];
 
         [$whereClause, $params] = static::generateWhereClause($where, $params);
@@ -143,16 +143,16 @@ class Query {
 
         $orderBy = static::arrayToQueryString($orderBy);
         if ($orderBy) {
-            $sqlParts[] = "ORDER BY {$orderBy}";
+            $sqlParts[] = "ORDER BY $orderBy";
         }
 
         if ($limit) {
-            $limitPart = "LIMIT {$limit}";
+            $limitPart = "LIMIT $limit";
 
             // Generate a offset, using limit & page values
             if ($page > 1) {
                 $offset = $limit * ($page - 1);
-                $limitPart .= " OFFSET {$offset}";
+                $limitPart .= " OFFSET $offset";
             }
 
             $sqlParts[] = $limitPart;
@@ -271,13 +271,13 @@ class Query {
 
         $valuesQueries = [];
         foreach ($values as $column => $value) {
-            $valuesQueries[] = "{$column} = :{$column}";
+            $valuesQueries[] = "$column = :$column";
         }
         $valuesQuery = static::arrayToQueryString($valuesQueries);
 
         $sqlParts = [
-            ($isInsert ? "INSERT INTO" : "UPDATE") . " {$this->table}",
-            "SET {$valuesQuery}",
+            ($isInsert ? "INSERT INTO" : "UPDATE") . " $this->table",
+            "SET $valuesQuery",
         ];
 
         if (!$isInsert) {
@@ -319,7 +319,7 @@ class Query {
      * @return int
      */
     public function delete($where = null, ?array $params = null): int {
-        $sqlParts = ["DELETE FROM {$this->table}"];
+        $sqlParts = ["DELETE FROM $this->table"];
 
         [$whereClause, $params] = static::generateWhereClause($where, $params);
         if ($whereClause) {

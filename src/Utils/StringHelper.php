@@ -22,9 +22,7 @@ class StringHelper {
 
     public static function removeSlashes(string $url): string {
         $url = self::removeLeadingSlash($url);
-        $url = self::removeTrailingSlash($url);
-
-        return $url;
+        return self::removeTrailingSlash($url);
     }
 
     public static function addTrailingSlash(string $url): string {
@@ -48,7 +46,7 @@ class StringHelper {
     public static function addLeadingSlash(string $url): string {
         $url = self::removeLeadingSlash($url);
 
-        return "/{$url}";
+        return "/$url";
     }
 
     public static function stringToBoolean(?string $string, ?bool $default = false): ?bool {

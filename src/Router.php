@@ -27,7 +27,7 @@ class Router {
     protected $routes = [];
     protected $namedRoutes = [];
 
-    public function setBasePath(string $basePath) {
+    public function setBasePath(string $basePath): void {
         $this->basePath = $basePath;
     }
 
@@ -38,10 +38,10 @@ class Router {
     /**
      * @param $path string
      * @param $method string
-     * @param $callback \Closure|array
+     * @param $callback Closure|array
      * @param $name string|null
      */
-    public function addRoute(string $path, string $method, $callback, string $name = null) {
+    public function addRoute(string $path, string $method, $callback, string $name = null): void {
         if (!isset($this->routes[$path])) {
             $this->routes[$path] = [];
         }
@@ -80,14 +80,14 @@ class Router {
      */
     public function makePath(string $name, array $params): string {
         if (!isset($this->namedRoutes[$name])) {
-            throw new Exception("Named route {$name} not defined");
+            throw new Exception("Named route $name not defined");
         }
 
         $path = $this->namedRoutes[$name];
         $url = $this->getFullPath($path);
 
         foreach ($params as $identifier => $value) {
-            $url = str_replace("/{{$identifier}}/", "/{$value}/", $url);
+            $url = str_replace("/{{$identifier}}/", "/$value/", $url);
         }
 
         return $url;
@@ -115,9 +115,7 @@ class Router {
 
         $regex = preg_replace("/\/{([A-Za-z]*?)}\//", "/(?<$1>[^/]*)/", $path);
         $regex = str_replace("/", "\/", $regex);
-        $regex = "/^{$regex}$/";
-
-        return $regex;
+        return "/^{$regex}$/";
     }
 
     /**
@@ -184,7 +182,7 @@ class Router {
                 $response = $this->executeAction();
             }
             catch (DBException $exception) {
-                error_log($exception->getMessage() . ". Full error: {$exception}");
+                error_log($exception->getMessage() . ". Full error: $exception");
                 $response = new Response();
             }
         }

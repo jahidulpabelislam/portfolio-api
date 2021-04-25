@@ -73,11 +73,11 @@ trait Responder {
         $shouldBeVersion = Config::get()->api_version;
 
         $shouldBeURI = $this->core->uriParts;
-        $shouldBeURI[0] = "v{$shouldBeVersion}";
+        $shouldBeURI[0] = "v$shouldBeVersion";
         $shouldBeURL = Core::makeFullURL($shouldBeURI);
 
         return new Response(404, [
-            "error" => "Unrecognised API version. Current version is {$shouldBeVersion}, so please update requested URL to {$shouldBeURL}.",
+            "error" => "Unrecognised API version. Current version is $shouldBeVersion, so please update requested URL to $shouldBeURL.",
         ]);
     }
 
@@ -212,7 +212,7 @@ trait Responder {
      */
     public static function getItemNotFoundResponse(string $entityClass, $id): Response {
         return new Response(404, [
-            "error" => "No {$entityClass::$displayName} identified by {$id} found.",
+            "error" => "No {$entityClass::$displayName} identified by $id found.",
         ]);
     }
 
@@ -261,7 +261,7 @@ trait Responder {
         }
 
         return new Response(500, [
-            "error" => "Failed to update the {$entityClass::$displayName} identified by {$id}.",
+            "error" => "Failed to update the {$entityClass::$displayName} identified by $id.",
         ]);
     }
 
@@ -293,7 +293,7 @@ trait Responder {
         }
 
         return new Response(500, [
-            "error" => "Failed to delete the {$entityClass::$displayName} identified by {$id}.",
+            "error" => "Failed to delete the {$entityClass::$displayName} identified by $id.",
         ]);
     }
 

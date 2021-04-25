@@ -28,8 +28,8 @@ trait Searchable {
 
         $where = [];
         foreach (static::getSearchableColumns() as $column) {
-            $where[] = "{$column} LIKE :search";
-            $where[] = "{$column} LIKE :searchReversed";
+            $where[] = "$column LIKE :search";
+            $where[] = "$column LIKE :searchReversed";
         }
 
         return [
