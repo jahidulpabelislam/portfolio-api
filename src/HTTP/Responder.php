@@ -121,7 +121,7 @@ trait Responder {
         ];
 
         if (!$count) {
-            $content["meta"]["message"] = "No {$entityClass::$displayName}s found.";
+            $content["meta"]["message"] = "No {$entityClass::getDisplayName()}s found.";
         }
 
         $response = new Response(200, $content);
@@ -212,7 +212,7 @@ trait Responder {
      */
     public static function getItemNotFoundResponse(string $entityClass, $id): Response {
         return new Response(404, [
-            "error" => "No {$entityClass::$displayName} identified by $id found.",
+            "error" => "No {$entityClass::getDisplayName()} identified by $id found.",
         ]);
     }
 
@@ -245,7 +245,7 @@ trait Responder {
         }
 
         return new Response(500, [
-            "error" => "Failed to insert the new {$entityClass::$displayName}.",
+            "error" => "Failed to insert the new {$entityClass::getDisplayName()}.",
         ]);
     }
 
@@ -261,7 +261,7 @@ trait Responder {
         }
 
         return new Response(500, [
-            "error" => "Failed to update the {$entityClass::$displayName} identified by $id.",
+            "error" => "Failed to update the {$entityClass::getDisplayName()} identified by $id.",
         ]);
     }
 
@@ -293,7 +293,7 @@ trait Responder {
         }
 
         return new Response(500, [
-            "error" => "Failed to delete the {$entityClass::$displayName} identified by $id.",
+            "error" => "Failed to delete the {$entityClass::getDisplayName()} identified by $id.",
         ]);
     }
 
