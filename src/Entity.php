@@ -55,6 +55,12 @@ abstract class Entity implements Arrayable {
 
     protected static $defaultLimit = 10;
 
+    public static function getColumnLabel(string $column): string {
+        $label = $column;
+        $label = str_replace("_", " ", $label);
+        return ucwords($label);
+    }
+
     public static function getIntColumns(): array {
         return static::$intColumns;
     }

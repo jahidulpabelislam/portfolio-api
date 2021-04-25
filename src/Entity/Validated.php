@@ -22,7 +22,8 @@ trait Validated {
         $this->errors = []; // Always clear first
         foreach (static::getRequiredFields() as $field) {
             if (!$this->{$field}) {
-                $this->addError($field, "$field is a required field.");
+                $label = static::getColumnLabel($field);
+                $this->addError($field, "$label is a required field.");
             }
         }
     }
