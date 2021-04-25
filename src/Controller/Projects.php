@@ -319,7 +319,7 @@ class Projects extends Controller {
             if ($projectImage && !empty($projectImage->project_id) && $projectImage->project_id !== $projectId) {
                 $responseContent = $response->getContent();
                 $responseContent["data"] = [];
-                $responseContent["error"] = "No {$projectImage::getDisplayName()} found identified by $imageId for Project: $projectId.";
+                $responseContent["error"] = "No {$projectImage::getDisplayName()} found identified by '$imageId' for Project: '$projectId'.";
                 $response->setContent($responseContent);
             }
 
