@@ -77,7 +77,7 @@ abstract class Entity implements Arrayable {
         return static::$arrayColumns;
     }
 
-    public static function getRequiredFields(): array {
+    public static function getRequiredColumns(): array {
         return static::$requiredColumns;
     }
 

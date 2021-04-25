@@ -42,7 +42,7 @@ class Auth extends Controller {
             ]);
         }
 
-        return $this->getInvalidFieldsResponse($errors);
+        return $this->getInvalidInputResponse($errors);
     }
 
     /**

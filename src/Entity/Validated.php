@@ -14,16 +14,16 @@ trait Validated {
         return count($this->getErrors());
     }
 
-    protected function addError(string $field, string $error): void {
-        $this->errors[$field] = $error;
+    protected function addError(string $column, string $error): void {
+        $this->errors[$column] = $error;
     }
 
     public function validate(): void {
         $this->errors = []; // Always clear first
-        foreach (static::getRequiredFields() as $field) {
-            if (!$this->{$field}) {
-                $label = static::getColumnLabel($field);
-                $this->addError($field, "$label is a required field.");
+        foreach (static::getRequiredColumns() as $column) {
+            if (!$this->{$column}) {
+                $label = static::getColumnLabel($column);
+                $this->addError($column, "$label is a required field.");
             }
         }
     }

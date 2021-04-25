@@ -104,7 +104,7 @@ class Projects extends Controller {
             if ($isNew) {
                 $project = Project::insert($data);
                 if ($project->hasErrors()) {
-                    return $this->getInvalidFieldsResponse($project->getErrors());
+                    return $this->getInvalidInputResponse($project->getErrors());
                 }
                 $project->reload();
                 return self::getInsertResponse(Project::class, $project);
@@ -293,7 +293,7 @@ class Projects extends Controller {
             $errors = [
                 "image" => "image is a required field."
             ];
-            return $this->getInvalidFieldsResponse($errors);
+            return $this->getInvalidInputResponse($errors);
         }
 
         return self::getNotAuthorisedResponse();

@@ -84,7 +84,7 @@ trait Responder {
     /**
      * Send necessary meta data back when required data/fields is not provided/valid
      */
-    public function getInvalidFieldsResponse(array $errors): Response {
+    public function getInvalidInputResponse(array $errors): Response {
         return new Response(400, [
             "error" => "The necessary data was not provided and/or invalid.",
             "errors" => $errors,
