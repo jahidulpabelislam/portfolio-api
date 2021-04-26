@@ -9,14 +9,13 @@
  * @copyright 2010-2020 JPI
  */
 
-namespace App\Controller;
+namespace App\HTTP\Controller;
 
-use App\Controller;
-use App\Core;
 use App\Entity\Collection as EntityCollection;
 use App\Entity\Project;
 use App\Entity\ProjectImage;
 use App\Entity\User;
+use App\HTTP\Controller;
 use App\HTTP\Response;
 use Exception;
 

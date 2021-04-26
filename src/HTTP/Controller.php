@@ -1,8 +1,6 @@
 <?php
 
-namespace App;
-
-use App\HTTP\Responder;
+namespace App\HTTP;
 
 abstract class Controller {
 

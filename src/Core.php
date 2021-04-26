@@ -13,8 +13,8 @@
 
 namespace App;
 
-use App\Controller\Auth;
-use App\Controller\Projects;
+use App\HTTP\Controller\Auth;
+use App\HTTP\Controller\Projects;
 use App\HTTP\Response;
 use App\Utils\Singleton;
 use App\Utils\StringHelper;

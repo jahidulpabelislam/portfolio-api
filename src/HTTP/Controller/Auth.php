@@ -10,11 +10,10 @@
  * @copyright 2010-2020 JPI
  */
 
-namespace App\Controller;
+namespace App\HTTP\Controller;
 
-use App\Controller;
-use App\Core;
 use App\Entity\User;
+use App\HTTP\Controller;
 use App\HTTP\Response;
 
 class Auth extends Controller {
