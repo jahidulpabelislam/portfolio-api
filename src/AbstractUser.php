@@ -25,13 +25,7 @@ abstract class AbstractUser {
     }
 
     public static function hasErrors(array $data): bool {
-        foreach (static::getRequiredColumns() as $field) {
-            if (!Core::isFieldValid($data, $field)) {
-                return true;
-            }
-        }
-
-        return false;
+        return count(static::getErrors($data));
     }
 
     /**
