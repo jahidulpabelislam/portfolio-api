@@ -12,23 +12,16 @@
 
 namespace App\Entity;
 
+use App\AbstractUser;
 use App\Config;
-use App\Entity;
 use Exception;
 use Firebase\JWT\JWT;
 
-class User extends Entity {
+class User extends AbstractUser {
 
     private const JWT_ALG = "HS512";
     private const JWT_EXPIRATION_HOURS = 6;
 
-    /**
-     * Authenticate a user trying to login
-     * If successful store generate JWT and return, else return null
-     *
-     * @param $data array Submitted data to support in login attempt
-     * @return string|null
-     */
     public static function login(array $data): ?string {
         // TODO: Actually do the logging in here (e.g store in cookie, session or database etc.)
 
@@ -55,21 +48,11 @@ class User extends Entity {
         return $jwt;
     }
 
-    /**
-     * Do the log out here (e.g removing cookie, session or database etc.)
-     *
-     * @return bool
-     */
     public static function logout(): bool {
         // TODO: Actually do the log out here (e.g removing cookie, session or database etc.)
         return true;
     }
 
-    /**
-     * Check whether the current user is logged in (e.g check against stored cookie, session or database etc.)
-     *
-     * @return bool
-     */
     public static function isLoggedIn(): bool {
         // SAMPLE!!
         // TODO: Actually do the check of logged in status (e.g check against stored cookie, session or database etc.)
