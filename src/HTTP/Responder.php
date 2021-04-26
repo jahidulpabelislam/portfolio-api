@@ -86,8 +86,10 @@ trait Responder {
      */
     public function getInvalidInputResponse(array $errors): Response {
         return new Response(400, [
-            "error" => "The necessary data was not provided and/or invalid.",
-            "errors" => $errors,
+            "errors" => [
+                "message" => "The necessary data was not provided and/or invalid.",
+                "inputs" => $errors,
+            ],
         ]);
     }
 
