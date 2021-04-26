@@ -290,7 +290,7 @@ class Projects extends Controller {
             }
 
             $errors = [
-                "image" => "image is a required field."
+                "image" => "Image is a required field."
             ];
             return $this->getInvalidInputResponse($errors);
         }
