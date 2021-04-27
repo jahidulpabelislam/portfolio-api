@@ -13,7 +13,7 @@
 
 namespace App;
 
-use App\Database\Collection as DbCollection;
+use App\Database\Collection as DBCollection;
 use App\Database\Connection;
 use App\Database\Query;
 use App\Entity\Collection as EntityCollection;
@@ -114,7 +114,7 @@ abstract class Entity implements Arrayable {
      * @param $orderBy string[]|string|null
      * @param $limit int|null
      * @param $page int|string|null
-     * @return DbCollection|array|null
+     * @return DBCollection|array|null
      */
     public static function select(
         $columns = "*",
@@ -146,12 +146,12 @@ abstract class Entity implements Arrayable {
         return $this->identifier;
     }
 
-    protected function setValue(string $column, $value, bool $fromDb = false): void {
+    protected function setValue(string $column, $value, bool $fromDB = false): void {
         if (in_array($column, static::getIntColumns())) {
             $value = (int)$value;
         }
         else if (in_array($column, static::getArrayColumns())) {
-            if ($fromDb && is_string($value)) {
+            if ($fromDB && is_string($value)) {
                 $value = explode(static::$arrayColumnSeparator, $value);
             }
             else if (!is_array($value)) {
@@ -170,11 +170,11 @@ abstract class Entity implements Arrayable {
         $this->columns[$column] = $value;
     }
 
-    public function setValues(array $values, bool $fromDb = false): void {
+    public function setValues(array $values, bool $fromDB = false): void {
         $columns = array_keys($this->columns);
         foreach ($columns as $column) {
             if (array_key_exists($column, $values)) {
-                $this->setValue($column, $values[$column], $fromDb);
+                $this->setValue($column, $values[$column], $fromDB);
             }
         }
     }
@@ -231,10 +231,10 @@ abstract class Entity implements Arrayable {
     }
 
     /**
-     * @param $rows DbCollection
+     * @param $rows DBCollection
      * @return static[]
      */
-    private static function populateEntitiesFromDB(DbCollection $rows): array {
+    private static function populateEntitiesFromDB(DBCollection $rows): array {
         $entities = [];
 
         foreach ($rows as $row) {
