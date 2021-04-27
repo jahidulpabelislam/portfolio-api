@@ -239,10 +239,6 @@ class Core {
                 "params" => $this->params,
             ],
         ];
-        if ($this->method === "POST") {
-            $defaults["meta"]["data"] = $this->data;
-            $defaults["meta"]["files"] = $this->files;
-        }
         $content = array_replace_recursive($defaults, $content);
 
         $this->setCORSHeaders();
