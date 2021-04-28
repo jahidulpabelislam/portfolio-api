@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Utils\StringHelper;
+
 trait Validated {
 
     protected $errors = [];
@@ -26,7 +28,7 @@ trait Validated {
         $this->errors = []; // Always clear first
         foreach (static::getRequiredColumns() as $column) {
             if (!$this->{$column}) {
-                $label = static::getColumnLabel($column);
+                $label = StringHelper::machineToDisplay($column);
                 $this->addError($column, "$label is a required field.");
             }
         }

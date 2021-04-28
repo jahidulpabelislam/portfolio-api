@@ -57,4 +57,9 @@ class StringHelper {
         return filter_var($string, FILTER_VALIDATE_BOOLEAN);
     }
 
+    public static function machineToDisplay(string $value): string {
+        $value = str_replace("_", " ", $value);
+        return ucwords($value);
+    }
+
 }
