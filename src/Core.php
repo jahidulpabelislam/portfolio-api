@@ -175,12 +175,12 @@ class Core {
         return $fullURL;
     }
 
-    public static function isFieldValid(array $data, string $field): bool {
-        if (!isset($data[$field])) {
+    public static function isValueValid(array $data, string $key): bool {
+        if (!isset($data[$key])) {
             return false;
         }
 
-        $value = $data[$field];
+        $value = $data[$key];
 
         if (is_array($value)) {
             return (count($value) > 0);

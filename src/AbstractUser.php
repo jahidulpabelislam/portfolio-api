@@ -17,10 +17,10 @@ abstract class AbstractUser {
 
     public static function getErrors(array $data): array {
         $errors = [];
-        foreach (static::getRequiredColumns() as $field) {
-            if (!Core::isFieldValid($data, $field)) {
-                $label = StringHelper::machineToDisplay($field);
-                $errors[$field] = "$label is a required field.";
+        foreach (static::getRequiredColumns() as $column) {
+            if (!Core::isValueValid($data, $column)) {
+                $label = StringHelper::machineToDisplay($column);
+                $errors[$column] = "$label is a required field.";
             }
         }
 
