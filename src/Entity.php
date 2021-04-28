@@ -37,8 +37,6 @@ abstract class Entity implements Arrayable {
 
     protected static $defaultColumns = [];
 
-    protected static $requiredColumns = [];
-
     protected static $intColumns = [];
 
     protected static $dateTimeColumns = [];
@@ -83,10 +81,6 @@ abstract class Entity implements Arrayable {
 
     public static function getArrayColumns(): array {
         return static::$arrayColumns;
-    }
-
-    public static function getRequiredColumns(): array {
-        return static::$requiredColumns;
     }
 
     public static function getDB(): Connection {

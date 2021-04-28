@@ -6,6 +6,10 @@ trait Validated {
 
     protected $errors = [];
 
+    public static function getRequiredColumns(): array {
+        return static::$requiredColumns ?? [];
+    }
+
     public function getErrors(): array {
         return $this->errors;
     }
