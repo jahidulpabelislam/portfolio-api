@@ -391,7 +391,7 @@ abstract class Entity implements Arrayable {
         return $values;
     }
 
-    protected function beforeSave() {
+    protected function beforeSave(): void {
 
     }
 
@@ -402,30 +402,18 @@ abstract class Entity implements Arrayable {
     public function save(): bool {
         $this->beforeSave();
 
-        $isNew = !$this->isLoaded();
-
-        $wasSuccessful = false;
-        $query = static::getQuery();
-        $values = $this->getValuesToSave();
-        if ($isNew) {
-            $newId = $query->insert($values);
-            if ($newId) {
-                $this->setId($newId);
-                $wasSuccessful = true;
+        if ($this->isLoaded()) {
+            $rowsAffected = static::getQuery()->update($this->getValuesToSave(), $this->getId());
+            if ($rowsAffected === 0) {
+                // Updating failed so reset id
+                $this->setId(null);
             }
-        }
-        else {
-            $rowsAffected = $query->update($values, $this->getId());
-            $wasSuccessful = $rowsAffected > 0;
-        }
-
-        if ($wasSuccessful) {
-            return true;
+        } else {
+            $newId = static::getQuery()->insert($this->getValuesToSave());
+            $this->setId($newId);
         }
 
-        // Saving failed so reset id
-        $this->setId(null);
-        return false;
+        return $this->isLoaded();
     }
 
     /**
