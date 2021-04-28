@@ -38,13 +38,8 @@ abstract class Entity implements Arrayable {
     protected static $defaultColumns = [];
 
     protected static $intColumns = [];
-
     protected static $dateTimeColumns = [];
-    protected static $dateTimeFormat = "Y-m-d H:i:s";
-
     protected static $dateColumns = [];
-    protected static $dateFormat = "Y-m-d";
-
     protected static $arrayColumns = [];
     protected static $arrayColumnSeparator = ",";
 
@@ -379,10 +374,10 @@ abstract class Entity implements Arrayable {
             }
             else if ($value instanceof DateTime) {
                 if (in_array($column, $dateColumns)) {
-                    $value = $value->format(static::$dateFormat);
+                    $value = $value->format("Y-m-d");
                 }
                 else if (in_array($column, $dateTimeColumns)) {
-                    $value = $value->format(static::$dateTimeFormat);
+                    $value = $value->format("Y-m-d H:i:s");
                 }
             }
             $values[$column] = $value;
