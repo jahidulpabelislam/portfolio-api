@@ -22,10 +22,7 @@ use DateTime;
 
 abstract class Entity implements Arrayable {
 
-    /**
-     * @var Connection
-     */
-    protected static $db;
+    use DatabaseAware;
 
     protected static $displayName = "";
 
@@ -70,24 +67,6 @@ abstract class Entity implements Arrayable {
 
     public static function getArrayColumns(): array {
         return static::$arrayColumns;
-    }
-
-    public static function getDB(): Connection {
-        if (!static::$db) {
-            $config = Config::get();
-            static::$db = new Connection([
-                "host" => $config->db_host,
-                "database" => $config->db_name,
-                "username" => $config->db_username,
-                "password" => $config->db_password,
-            ]);
-        }
-
-        return static::$db;
-    }
-
-    public static function getQuery(): Query {
-        return new Query(static::getDB(), static::$tableName);
     }
 
     /**
