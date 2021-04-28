@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Utils\StringHelper;
+
 abstract class AbstractUser {
 
     protected static $requiredColumns = [
@@ -17,7 +19,8 @@ abstract class AbstractUser {
         $errors = [];
         foreach (static::getRequiredColumns() as $field) {
             if (!Core::isFieldValid($data, $field)) {
-                $errors[$field] = "$field is a required field.";
+                $label = StringHelper::machineToDisplay($field);
+                $errors[$field] = "$label is a required field.";
             }
         }
 
