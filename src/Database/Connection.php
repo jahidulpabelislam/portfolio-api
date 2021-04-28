@@ -75,12 +75,11 @@ class Connection {
 
                 $stmt = $this->pdo->prepare($query);
                 $stmt->execute($bindings);
-            }
-            else {
-                $stmt = $this->pdo->query($query);
+
+                return $stmt;
             }
 
-            return $stmt;
+            return $this->pdo->query($query);
         }
         catch (PDOException $error) {
             throw new Exception(
