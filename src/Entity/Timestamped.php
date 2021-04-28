@@ -32,7 +32,7 @@ trait Timestamped {
         }
     }
 
-    public function beforeSave() {
+    public function beforeSave(): void {
         $isNew = !$this->isLoaded();
 
         if ($isNew && (!isset(static::$hasCreatedAt) || static::$hasCreatedAt)) {
