@@ -9,7 +9,7 @@
  * @copyright 2010-2020 JPI
  */
 
-require_once(__DIR__ . "/bootstrap.php");
+require_once __DIR__ . "/bootstrap.php";
 
 use App\Core;
 
