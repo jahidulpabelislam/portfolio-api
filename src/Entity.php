@@ -27,7 +27,7 @@ abstract class Entity implements Arrayable {
      */
     protected static $db;
 
-    public static $displayName = "";
+    protected static $displayName = "";
 
     protected static $tableName = "";
 
@@ -241,16 +241,12 @@ abstract class Entity implements Arrayable {
      * @return int|null
      */
     protected static function getLimit($limit = null): ?int {
-        // If limit specified use unless it's bigger than default
         if (is_numeric($limit)) {
             $limit = (int)$limit;
-            if (static::$defaultLimit && static::$defaultLimit < $limit) {
-                $limit = static::$defaultLimit;
-            }
         }
 
         // If invalid use default
-        if (!$limit || $limit < 1) {
+        if (!$limit || $limit < 1 || static::$defaultLimit < $limit) {
             $limit = static::$defaultLimit;
         }
 
@@ -338,12 +334,8 @@ abstract class Entity implements Arrayable {
      * @return EntityCollection|static|null
      */
     public static function getById($id) {
-        if (is_numeric($id)) {
-            return static::get((int)$id);
-        }
-
-        if (is_array($id)) {
-            return static::getByColumn("id", $id);
+        if (is_numeric($id) || is_array($id)) {
+            return static::getByColumn("id", $id, is_numeric($id) ? 1 : null);
         }
 
         return null;
