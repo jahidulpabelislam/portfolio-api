@@ -207,7 +207,7 @@ class Core {
 
         $this->processResponse();
 
-        $sendPretty = StringHelper::stringToBoolean($this->params["pretty"] ?? null);
+        $sendPretty = StringHelper::stringToBoolean($this->getRequest()->params["pretty"] ?? null);
         $this->response->send($sendPretty);
     }
 
