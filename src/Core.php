@@ -132,7 +132,7 @@ class Core {
     }
 
     private function setCORSHeaders(): void {
-        $originURL = $_SERVER["HTTP_ORIGIN"] ?? "";
+        $originURL = $this->getRequest()->headers->get("Origin", "");
 
         // Strip the protocol from domain
         $originDomain = str_replace(["http://", "https://"], "", $originURL);
@@ -144,10 +144,6 @@ class Core {
             $this->response->addHeader("Access-Control-Allow-Headers", "Process-Data, Authorization");
             $this->response->addHeader("Vary", "Origin");
         }
-    }
-
-    public function getETagFromRequest(): ?string {
-        return $_SERVER["HTTP_IF_NONE_MATCH"] ?? null;
     }
 
     public static function getDefaultCacheHeaders(): array {
@@ -182,7 +178,7 @@ class Core {
 
         $this->setCORSHeaders();
 
-        if ($response->headers->get("ETag", "") === $this->getETagFromRequest()) {
+        if ($response->headers->get("ETag", "") === $request->headers->get("If-None-Match")) {
             $response->setStatus(304);
         }
 

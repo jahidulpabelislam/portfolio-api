@@ -17,6 +17,8 @@ class Request {
 
     public $files;
 
+    public $headers;
+
     /**
      * @param $value array|string
      * @return array|string
@@ -49,6 +51,8 @@ class Request {
         $this->params = self::sanitizeData($_GET);
 
         $this->files = $_FILES;
+
+        $this->headers = new Headers(apache_request_headers());
     }
 
     /**
