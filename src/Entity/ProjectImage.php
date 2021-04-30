@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The Project Image Entity object class (extends the base Entity class, where most of the ORM functionality lies).
  * Within this holds and methods where it overwrites or add extra custom functionality from the base Entity class.
@@ -13,21 +14,20 @@
 
 namespace App\Entity;
 
-if (!defined("ROOT")) {
-    die();
-}
-
+use App\APIEntity;
 use App\Core;
-use App\Entity;
-use App\Utilities;
+use App\Utils\StringHelper;
 
-class ProjectImage extends Entity {
+class ProjectImage extends APIEntity {
+
+    use Timestamped;
+    use Validated;
 
     public static $displayName = "Project Image";
 
     protected static $tableName = "portfolio_project_image";
 
-    protected $columns = [
+    protected static $defaultColumns = [
         "project_id" => null,
         "sort_order_number" => 0,
         "file" => "",
@@ -54,13 +54,32 @@ class ProjectImage extends Entity {
         // Check if the deletion was ok
         if ($isDeleted && !empty($this->file)) {
             // Makes sure there is a leading slash
-            $filePath = ROOT . Utilities::addLeadingSlash($this->file);
+            $filePath = ROOT . StringHelper::addLeadingSlash($this->file);
             if (file_exists($filePath)) {
                 unlink($filePath);
             }
         }
 
         return $isDeleted;
+    }
+
+    public function getAPIURL(): string {
+        return Core::get()->getRouter()->makeUrl(
+            "projectImage",
+            [
+                "id" => $this->getId(),
+                "projectId" => $this->project_id,
+            ]
+        );
+    }
+
+    public function getAPIResponse(): array {
+        $response = parent::getAPIResponse();
+
+        $response["url"] = Core::makeFullURL($response["file"]);
+        unset($response["file"]);
+
+        return $response;
     }
 
 }

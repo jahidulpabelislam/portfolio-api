@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A RESTful API router.
  *
@@ -11,160 +12,157 @@
 
 namespace App;
 
-if (!defined("ROOT")) {
-    die();
-}
-
-use App\Controller\Auth;
-use App\Controller\Projects;
+use App\Database\Exception as DBException;
+use App\HTTP\Responder;
+use App\HTTP\Response;
+use App\Utils\StringHelper;
+use Exception;
 
 class Router {
 
     use Responder;
 
-    /**
-     * Check that the requested API version is valid, if so return empty array
-     * else return appropriate response (array)
-     */
-    private function checkAPIVersion(): ?array {
-        $version = $this->core->uriParts[0] ?? "";
+    protected $basePath = "";
 
-        $shouldBeVersion = "v" . Config::get()->api_version;
-        if ($version !== $shouldBeVersion) {
-            $response = $this->getUnrecognisedAPIVersionResponse();
-        }
+    protected $routes = [];
+    protected $namedRoutes = [];
 
-        return $response ?? null;
+    public function setBasePath(string $basePath): void {
+        $this->basePath = $basePath;
+    }
+
+    public function getBasePath(): string {
+        return $this->basePath;
     }
 
     /**
-     * @return array An appropriate response to auth request
+     * @param $path string
+     * @param $method string
+     * @param $callback Closure|array
+     * @param $name string|null
      */
-    private function executeAuthAction(): ?array {
-        $uriParts = $this->core->uriParts;
-        $method = $this->core->method;
-
-        $authAction = $uriParts[2] ?? "";
-
-        if ($method === "POST") {
-            if ($authAction === "login" && !isset($uriParts[3])) {
-                $response = (new Auth($this->core))->login();
-            }
-        }
-        else if ($method === "DELETE") {
-            if ($authAction === "logout" && !isset($uriParts[3])) {
-                $response = Auth::logout();
-            }
-        }
-        else if ($method === "GET") {
-            if ($authAction === "status" && !isset($uriParts[3])) {
-                $response = Auth::getAuthStatus();
-            }
-        }
-        else {
-            $response = $this->getMethodNotAllowedResponse();
+    public function addRoute(string $path, string $method, $callback, string $name = null): void {
+        if (!isset($this->routes[$path])) {
+            $this->routes[$path] = [];
         }
 
-        return $response ?? null;
+        $route = [];
+
+        if (is_array($callback)) {
+            $route["controller"] = $callback[0];
+            $route["function"] = $callback[1];
+        }
+        else if (is_callable($callback)) {
+            $route["callable"] = $callback;
+        }
+
+        $this->routes[$path][$method] = $route;
+
+        if ($name) {
+            $this->namedRoutes[$name] = $path;
+        }
     }
 
-    private function executeProjectsGetAction(): ?array {
-        $uriParts = $this->core->uriParts;
-
-        if (isset($uriParts[2]) && $uriParts[2] !== "") {
-            $projectId = $uriParts[2];
-
-            if (isset($uriParts[3]) && $uriParts[3] === "images") {
-                if (isset($uriParts[4]) && $uriParts[4] !== "" && !isset($uriParts[5])) {
-                    $response = Projects::getProjectImage($projectId, $uriParts[4]);
-                }
-                else if (!isset($uriParts[4])) {
-                    $response = Projects::getProjectImages($projectId);
-                }
-            }
-            else if (!isset($uriParts[3])) {
-                $response = Projects::getProject($projectId);
-            }
-        }
-        else if (!isset($uriParts[2])) {
-            $response = (new Projects($this->core))->getProjects();
+    protected function getFullPath(string $path): string {
+        $basePath = $this->getBasePath();
+        if ($basePath !== "") {
+            $path = StringHelper::addTrailingSlash($basePath) . StringHelper::removeLeadingSlash($path);
         }
 
-        return $response ?? null;
-    }
-
-    private function executeProjectsPostAction(): ?array {
-        $uriParts = $this->core->uriParts;
-
-        if (
-            isset($uriParts[2], $uriParts[3]) && !isset($uriParts[4])
-            && $uriParts[2] !== "" && $uriParts[3] === "images"
-        ) {
-            $response = (new Projects($this->core))->addProjectImage($uriParts[2]);
-        }
-        else if (!isset($uriParts[2])) {
-            $response = (new Projects($this->core))->addProject();
-        }
-
-        return $response ?? null;
-    }
-
-    private function executeProjectsPutAction(): ?array {
-        $uriParts = $this->core->uriParts;
-
-        if (isset($uriParts[2]) && $uriParts[2] !== "" && !isset($uriParts[3])) {
-            $response = (new Projects($this->core))->updateProject($uriParts[2]);
-        }
-
-        return $response ?? null;
-    }
-
-    private function executeProjectsDeleteAction(): ?array {
-        $uriParts = $this->core->uriParts;
-
-        if (isset($uriParts[2]) && $uriParts[2] !== "") {
-            if (
-                isset($uriParts[3], $uriParts[4]) && !isset($uriParts[5])
-                && $uriParts[3] === "images" && $uriParts[4] !== ""
-            ) {
-                $response = Projects::deleteProjectImage($uriParts[2], $uriParts[4]);
-            }
-            else if (!isset($uriParts[3])) {
-                $response = Projects::deleteProject($uriParts[2]);
-            }
-        }
-
-        return $response ?? null;
+        return $path;
     }
 
     /**
-     * @return array An appropriate response to projects request
+     * @param $name string
+     * @param $params array
+     * @return string
+     * @throws Exception
      */
-    private function executeProjectsAction(): ?array {
-        $methodFormatted = ucfirst(strtolower($this->core->method));
-        $functionName = "executeProjects{$methodFormatted}Action";
-        if (method_exists($this, $functionName)) {
-            return $this->{$functionName}();
+    public function makePath(string $name, array $params): string {
+        if (!isset($this->namedRoutes[$name])) {
+            throw new Exception("Named route $name not defined");
         }
 
-        return $this->getMethodNotAllowedResponse();
+        $path = $this->namedRoutes[$name];
+        $url = $this->getFullPath($path);
+
+        foreach ($params as $identifier => $value) {
+            $url = str_replace("/{{$identifier}}/", "/$value/", $url);
+        }
+
+        return $url;
+    }
+
+    public function makeUrl(string $name, array $params): string {
+        $path = $this->makePath($name, $params);
+        return Core::makeFullURL($path);
+    }
+
+    private function getIdentifiersFromMatches(array $matches): array {
+        $identifiers = [];
+
+        foreach ($matches as $key => $match) {
+            if (is_numeric($key)) {
+                $identifiers[$key] = $match;
+            }
+        }
+
+        return $identifiers;
+    }
+
+    private function pathToRegex(string $path): string {
+        $path = $this->getFullPath($path);
+
+        $regex = preg_replace("/\/{([A-Za-z]*?)}\//", "/(?<$1>[^/]*)/", $path);
+        $regex = str_replace("/", "\/", $regex);
+        return "/^{$regex}$/";
     }
 
     /**
      * Try and execute the requested action
      *
-     * @return array An appropriate response to request
+     * @return Response An appropriate response to request
+     * @throws DBException
      */
-    private function executeAction(): ?array {
-        $entityName = $this->core->uriParts[1] ?? null;
+    private function executeAction(): Response {
+        $uri = $this->core->uri;
+        $method = $this->core->method;
 
-        // Make sure value is the correct case
-        if ($entityName && strtolower($entityName) === $entityName) {
-            $entityNameFormatted = ucfirst($entityName);
-            $functionName = "execute{$entityNameFormatted}Action";
-            if (method_exists($this, $functionName)) {
-                return $this->{$functionName}();
+        foreach ($this->routes as $path => $routes) {
+            $pathRegex = $this->pathToRegex($path);
+            if (preg_match($pathRegex, $uri, $matches)) {
+                if (isset($routes[$method])) {
+                    $route = $routes[$method];
+                    array_shift($matches);
+                    $identifiers = $this->getIdentifiersFromMatches($matches);
+
+                    if (isset($route["callable"])) {
+                        return $route["callable"](...$identifiers);
+                    }
+
+                    $controllerClass = $route["controller"];
+                    $controller = new $controllerClass($this->core);
+
+                    return call_user_func_array([$controller, $route["function"]], $identifiers);
+                }
+
+                return $this->getMethodNotAllowedResponse();
             }
+        }
+
+        return $this->getUnrecognisedURIResponse();
+    }
+
+    /**
+     * Check that the requested API version is valid, if so return empty array
+     * else return appropriate response (array)
+     */
+    private function checkAPIVersion(): ?Response {
+        $version = $this->core->uriParts[0] ?? null;
+
+        $shouldBeVersion = "v" . Config::get()->api_version;
+        if ($version !== $shouldBeVersion) {
+            return $this->getUnrecognisedAPIVersionResponse();
         }
 
         return null;
@@ -173,18 +171,19 @@ class Router {
     /**
      * Try and perform the necessary actions needed to fulfil the request that a user made
      */
-    public function performRequest(): ?array {
+    public function performRequest(): Response {
         // Here check the requested API version, if okay return empty array
         // else returns appropriate response
         $response = $this->checkAPIVersion();
 
         // Only try to perform the action if API version check above returned okay
         if ($response === null) {
-            $response = $this->executeAction();
-
-            // If at this point response is empty, we didn't recognise the action
-            if ($response === null) {
-                $response = $this->getUnrecognisedURIResponse();
+            try {
+                $response = $this->executeAction();
+            }
+            catch (DBException $exception) {
+                error_log($exception->getMessage() . ". Full error: $exception");
+                $response = new Response();
             }
         }
 

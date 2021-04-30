@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Sets Constants for Connection to the Database & API's Auth
  * as well as other settings.
@@ -12,13 +13,11 @@
 
 namespace App;
 
-if (!defined("ROOT")) {
-    die();
-}
+use App\Utils\Singleton;
 
 class Config {
 
-    private static $instance;
+    use Singleton;
 
     public $debug = false;
 
@@ -29,17 +28,6 @@ class Config {
         if ($environment === "development") {
             $this->debug = true;
         }
-    }
-
-    /**
-     * Singleton getter
-     */
-    public static function get(): Config {
-        if (!self::$instance) {
-            self::$instance = new Config();
-        }
-
-        return self::$instance;
     }
 
     public function __get(string $name) {

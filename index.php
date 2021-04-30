@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The base endpoint for all requests for this API.
  *
@@ -8,9 +9,9 @@
  * @copyright 2010-2020 JPI
  */
 
-require_once(__DIR__ . "/bootstrap.php");
+require_once __DIR__ . "/bootstrap.php";
 
 use App\Core;
 
-$core = new Core();
+$core = Core::get();
 $core->handleRequest();

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The middle man for querying the database from an Entity.
  * Builds the SQL queries and executes/runs them and returns in appropriate format.
@@ -26,7 +27,7 @@ class Query {
      * @param $parts array
      * @param $params array|null
      * @param $function string
-     * @return array[]|array|int
+     * @return array[]|array|int|null
      */
     private function execute(array $parts, ?array $params, string $function = "execute") {
         $query = implode("\n", $parts);
@@ -92,7 +93,7 @@ class Query {
             $where = static::arrayToQueryString($where, "\n\tAND ");
 
             return [
-                "WHERE {$where}",
+                "WHERE $where",
                 $params,
             ];
         }
@@ -113,13 +114,21 @@ class Query {
      * @param $page int|null
      * @return array [array, array|null]
      */
-    protected static function generateSelectQuery(string $table, $columns = "*", $where = null, ?array $params = [], $orderBy = null, ?int $limit = null, ?int $page = null): array {
-        $columns = $columns?: "*";
+    protected static function generateSelectQuery(
+        string $table,
+        $columns = "*",
+        $where = null,
+        ?array $params = [],
+        $orderBy = null,
+        ?int $limit = null,
+        ?int $page = null
+    ): array {
+        $columns = $columns ?: "*";
         $columns = static::arrayToQueryString($columns);
 
         $sqlParts = [
-            "SELECT {$columns}",
-            "FROM {$table}",
+            "SELECT $columns",
+            "FROM $table",
         ];
 
         [$whereClause, $params] = static::generateWhereClause($where, $params);
@@ -134,16 +143,16 @@ class Query {
 
         $orderBy = static::arrayToQueryString($orderBy);
         if ($orderBy) {
-            $sqlParts[] = "ORDER BY {$orderBy}";
+            $sqlParts[] = "ORDER BY $orderBy";
         }
 
         if ($limit) {
-            $limitPart = "LIMIT {$limit}";
+            $limitPart = "LIMIT $limit";
 
             // Generate a offset, using limit & page values
             if ($page > 1) {
                 $offset = $limit * ($page - 1);
-                $limitPart .= " OFFSET {$offset}";
+                $limitPart .= " OFFSET $offset";
             }
 
             $sqlParts[] = $limitPart;
@@ -153,22 +162,90 @@ class Query {
     }
 
     /**
+     * Get the page to use for a SQL query
+     * Can specify the page and it will make sure it is valid
+     *
+     * @param $page int|string|null
+     * @return int|null
+     */
+    protected static function getPage($page = null): ?int {
+        if (is_numeric($page)) {
+            $page = (int)$page;
+        }
+
+        // If invalid use page 1
+        if (!$page || $page < 1) {
+            $page = 1;
+        }
+
+        return $page;
+    }
+
+    /**
      * @param $columns string[]|string|null
      * @param $where string[]|string|int|null
      * @param $params array|null
      * @param $orderBy string[]|string|null
      * @param $limit int|null
-     * @param $page int|null
-     * @return array[]|array|null
+     * @param $page int|string|null
+     * @return Collection|array|null
      */
-    public function select($columns = "*", $where = null, ?array $params = null, $orderBy = null, ?int $limit = null, ?int $page = null): ?array {
-        [$sqlParts, $params] = static::generateSelectQuery($this->table, $columns, $where, $params, $orderBy, $limit, $page);
+    public function select(
+        $columns = "*",
+        $where = null,
+        ?array $params = null,
+        $orderBy = null,
+        ?int $limit = null,
+        $page = null
+    ) {
+        $page = $limit ? static::getPage($page) : null;
+
+        [$sqlParts, $params] = static::generateSelectQuery(
+            $this->table,
+            $columns,
+            $where,
+            $params,
+            $orderBy,
+            $limit,
+            $page
+        );
 
         if (($where && is_numeric($where)) || $limit === 1) {
             return $this->execute($sqlParts, $params, "getOne");
         }
 
-        return $this->execute($sqlParts, $params, "getAll");
+        $rows = $this->execute($sqlParts, $params, "getAll");
+
+        $totalCount = null;
+        if ($limit) {
+            $count = count($rows);
+
+            /**
+             * Do a DB query to get total count if:
+             *    - none found on a specific page than 1
+             *    - count is the limit
+             * Else we can work out the total
+             */
+            if ((!$count && $page > 1) || $count === $limit) {
+                // Replace the SELECT part in query with a simple count
+                $sqlParts[0] = "SELECT COUNT(*) as count";
+
+                array_pop($sqlParts); // Remove the LIMIT part in query
+
+                // Remove the ORDER BY part in query if added
+                if ($orderBy) {
+                    array_pop($sqlParts);
+                }
+
+                $row = $this->execute($sqlParts, $params, "getOne");
+                $totalCount = $row["count"] ?? 0;
+            }
+            else {
+                $totalCount = $limit * ($page - 1) + $count;
+            }
+        }
+
+        return new Collection($rows, $totalCount, $limit, $page);
     }
 
     /**
@@ -178,7 +255,7 @@ class Query {
      */
     public function count($where = null, ?array $params = null): int {
         $row = $this->select("COUNT(*) as total_count", $where, $params, null, 1);
-        return $row['total_count'] ?? 0;
+        return $row["total_count"] ?? 0;
     }
 
     /**
@@ -194,13 +271,13 @@ class Query {
 
         $valuesQueries = [];
         foreach ($values as $column => $value) {
-            $valuesQueries[] = "{$column} = :{$column}";
+            $valuesQueries[] = "$column = :$column";
         }
         $valuesQuery = static::arrayToQueryString($valuesQueries);
 
         $sqlParts = [
-            ($isInsert ? "INSERT INTO" : "UPDATE") . " {$this->table}",
-            "SET {$valuesQuery}",
+            ($isInsert ? "INSERT INTO" : "UPDATE") . " $this->table",
+            "SET $valuesQuery",
         ];
 
         if (!$isInsert) {
@@ -242,7 +319,7 @@ class Query {
      * @return int
      */
     public function delete($where = null, ?array $params = null): int {
-        $sqlParts = ["DELETE FROM {$this->table}"];
+        $sqlParts = ["DELETE FROM $this->table"];
 
         [$whereClause, $params] = static::generateWhereClause($where, $params);
         if ($whereClause) {

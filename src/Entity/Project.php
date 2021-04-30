@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The Project Entity object class (extends the base Entity class, where most of the ORM functionality lies).
  * Within this holds and methods where it overwrites or add extra custom functionality from the base Entity class.
@@ -13,23 +14,26 @@
 
 namespace App\Entity;
 
-if (!defined("ROOT")) {
-    die();
-}
+use App\APIEntity;
+use App\Core;
+use DateTime;
 
-use App\Entity;
+class Project extends APIEntity {
 
-class Project extends Entity {
+    use Filterable;
+    use Searchable;
+    use Timestamped;
+    use Validated;
 
-    private const PUBLIC_STATUS = "published";
+    public const PUBLIC_STATUS = "published";
 
     public static $displayName = "Project";
 
     protected static $tableName = "portfolio_project";
 
-    protected $columns = [
+    protected static $defaultColumns = [
         "name" => "",
-        "date" => "",
+        "date" => null,
         "type" => "",
         "link" => "",
         "github" => "",
@@ -37,7 +41,7 @@ class Project extends Entity {
         "short_description" => "",
         "long_description" => "",
         "colour" => "",
-        "skills" => "",
+        "skills" => [],
         "status" => "draft",
     ];
 
@@ -49,6 +53,10 @@ class Project extends Entity {
         "long_description",
         "short_description",
     ];
+
+    protected static $dateColumns = ["date"];
+
+    protected static $arrayColumns = ["skills"];
 
     protected static $searchableColumns = [
         "name",
@@ -62,77 +70,28 @@ class Project extends Entity {
     protected static $orderByColumn = "date";
     protected static $orderByASC = false;
 
+    /**
+     * @var Collection|null
+     */
     public $images = null;
-
-    public function toArray(): array {
-        $projectArray = parent::toArray();
-
-        if (isset($projectArray["skills"])) {
-            $skills = explode(",", $projectArray["skills"]);
-            array_walk($skills, "trim");
-            $projectArray["skills"] = $skills;
-        }
-
-        if ($this->images !== null) {
-            $projectArray["images"] = array_map(static function(ProjectImage $image) {
-                return $image->toArray();
-            }, $this->images);
-        }
-
-        return $projectArray;
-    }
 
     /**
      * Helper function to get all Project Image Entities linked to this Project
      */
-    public function loadProjectImages() {
-        if ($this->isLoaded()) {
-            $this->images = ProjectImage::getByColumn("project_id", $this->id);
+    public function loadProjectImages(bool $reload = false): void {
+        if ($this->isLoaded() && ($reload || $this->images === null)) {
+            $this->images = ProjectImage::getByColumn("project_id", $this->getId());
         }
     }
 
     /**
-     * Adds filter by public projects if (admin) user isn't currently logged in
-     *
-     * @param $where string[]|string|int|null
-     * @param $params array|null
-     * @param $limit int|string|null
-     * @return array
+     * @inheritDoc
      */
-    private static function addStatusWhere($where, ?array $params, $limit = null): array {
-        // As the user isn't logged in, filter by status = public
-        if (!User::isLoggedIn()) {
-
-            if ($params === null) {
-                $params = [];
-            }
-
-            if (is_numeric($where)) {
-                $params["id"] = (int)$where;
-                $where = ["id = :id"];
-                $limit = 1;
-            }
-            else if (is_string($where)) {
-                $where = [$where];
-            }
-            else if (!is_array($where)) {
-                $where = [];
-            }
-
-            $where[] = "status = :status";
-            $params["status"] = self::PUBLIC_STATUS;
+    public function reload(): void {
+        parent::reload();
+        if ($this->isLoaded() && $this->images !== null) {
+            $this->loadProjectImages(true);
         }
-        return [$where, $params, $limit];
-    }
-
-    public static function get($where = null, ?array $params = null, $limit = null, $page = null) {
-        [$where, $params, $limit] = static::addStatusWhere($where, $params, $limit);
-        return parent::get($where, $params, $limit, $page);
-    }
-
-    public static function getCount($where = null, ?array $params = null): int {
-        [$where, $params] = static::addStatusWhere($where, $params);
-        return parent::getCount($where, $params);
     }
 
     /**
@@ -153,6 +112,41 @@ class Project extends Entity {
         }
 
         return $isDeleted;
+    }
+
+    public function toArray(): array {
+        $array = parent::toArray();
+
+        if ($this->images instanceof Collection) {
+            $array["images"] = $this->images->toArray();
+        }
+
+        return $array;
+    }
+
+    public function getAPIURL(): string {
+        return Core::get()->getRouter()->makeUrl("project", ["id" => $this->getId()]);
+    }
+
+    public function getAPILinks(): array {
+        $links = parent::getAPILinks();
+        $links["images"] = Core::get()->getRouter()->makeUrl("projectImages", ["projectId" => $this->getId()]);
+        return $links;
+    }
+
+    public function getAPIResponse(): array {
+        $response = parent::getAPIResponse();
+
+        if ($this->images instanceof Collection) {
+            $response["images"] = [];
+            foreach ($this->images as $image) {
+                $imageResponse = $image->getAPIResponse();
+                $imageResponse["_links"] = $image->getAPILinks();
+                $response["images"][] = $imageResponse;
+            }
+        }
+
+        return $response;
     }
 
 }

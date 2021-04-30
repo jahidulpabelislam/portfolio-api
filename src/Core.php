@@ -1,4 +1,5 @@
 <?php
+
 /**
  * All the general functions for the API.
  *
@@ -12,21 +13,21 @@
 
 namespace App;
 
-if (!defined("ROOT")) {
-    die();
-}
-
+use App\HTTP\Controller\Auth;
+use App\HTTP\Controller\Projects;
+use App\HTTP\Response;
+use App\Utils\Singleton;
+use App\Utils\StringHelper;
 use DateTime;
-use DateTimeZone;
 
 class Core {
 
-    private const CACHE_TIMEZONE = "Europe/London";
+    use Singleton;
 
-    private static $cacheTimeZone = null;
-    private static $rowDateTimeFormat = "Y-m-d H:i:s e";
-
-    private $response = [];
+    /**
+     * @var Response|null
+     */
+    private $response = null;
 
     public $method = "GET";
 
@@ -39,15 +40,67 @@ class Core {
 
     public $files = [];
 
-    private function extractMethodFromRequest() {
+    /**
+     * @var Router|null
+     */
+    protected $router = null;
+
+    private function initRoutes(): void {
+        $router = $this->router;
+
+        $router->setBasePath("/v" . Config::get()->api_version);
+
+        $projectsController = Projects::class;
+        $authController = Auth::class;
+
+        $successResponseCallback = static function () {
+            return new Response(200);
+        };
+
+        $router->addRoute("/projects/{projectId}/images/{id}/", "GET", [$projectsController, "getProjectImage"], "projectImage");
+        $router->addRoute("/projects/{projectId}/images/{id}/", "DELETE", [$projectsController, "deleteProjectImage"]);
+        $router->addRoute("/projects/{projectId}/images/{id}/", "OPTIONS", $successResponseCallback);
+
+        $router->addRoute("/projects/{projectId}/images/", "GET", [$projectsController, "getProjectImages"], "projectImages");
+        $router->addRoute("/projects/{projectId}/images/", "POST", [$projectsController, "addProjectImage"]);
+        $router->addRoute("/projects/{projectId}/images/", "OPTIONS", $successResponseCallback);
+
+        $router->addRoute("/projects/{id}/", "GET", [$projectsController, "getProject"], "project");
+        $router->addRoute("/projects/{id}/", "PUT", [$projectsController, "updateProject"]);
+        $router->addRoute("/projects/{id}/", "DELETE", [$projectsController, "deleteProject"]);
+        $router->addRoute("/projects/{id}/", "OPTIONS", $successResponseCallback);
+
+        $router->addRoute("/projects/", "GET", [$projectsController, "getProjects"]);
+        $router->addRoute("/projects/", "POST", [$projectsController, "addProject"]);
+        $router->addRoute("/projects/", "OPTIONS", $successResponseCallback);
+
+        $router->addRoute("/auth/login/", "POST", [$authController, "login"]);
+        $router->addRoute("/auth/login/", "OPTIONS", $successResponseCallback);
+
+        $router->addRoute("/auth/logout/", "DELETE", [$authController, "logout"]);
+        $router->addRoute("/auth/logout/", "OPTIONS", $successResponseCallback);
+
+        $router->addRoute("/auth/status/", "GET", [$authController, "getStatus"]);
+        $router->addRoute("/auth/status/", "OPTIONS", $successResponseCallback);
+    }
+
+    public function getRouter(): Router {
+        if ($this->router === null) {
+            $this->router = new Router($this);
+            $this->initRoutes();
+        }
+        return $this->router;
+    }
+
+    private function extractMethodFromRequest(): void {
         $this->method = strtoupper($_SERVER["REQUEST_METHOD"]);
     }
 
-    private function extractURIFromRequest() {
+    private function extractURIFromRequest(): void {
         $this->uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 
         // Get the individual parts of the request URI as an array
-        $uri = Utilities::removeSlashes($this->uri);
+        $uri = StringHelper::removeSlashes($this->uri);
         $this->uriParts = explode("/", $uri);
     }
 
@@ -70,17 +123,17 @@ class Core {
         return $value;
     }
 
-    private function extractDataFromRequest() {
+    private function extractDataFromRequest(): void {
         $this->data = self::sanitizeData($_POST);
         $this->params = self::sanitizeData($_GET);
         $this->request = self::sanitizeData($_REQUEST);
     }
 
-    private function extractFilesFromRequest() {
+    private function extractFilesFromRequest(): void {
         $this->files = $_FILES;
     }
 
-    public function extractFromRequest() {
+    public function extractFromRequest(): void {
         $this->extractMethodFromRequest();
         $this->extractURIFromRequest();
         $this->extractDataFromRequest();
@@ -88,32 +141,46 @@ class Core {
     }
 
     /**
-     * Generates a full URL from the URI user requested
-     *
-     * @param $uriParts string[]|null The URI user request as an array
-     * @return string The full URI user requested
+     * @param $uri string|string[]
+     * @return string
      */
-    public function getAPIURL(array $uriParts = null): string {
-        $uri = $this->uri;
-        if ($uriParts !== null) {
-            $uri = implode("/", $uriParts);
-            $uri = Utilities::addLeadingSlash($uri);
+    public static function makeFullURL($uri): string {
+        if (is_array($uri)) {
+            $uri = implode("/", $uri);
         }
 
         $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
-        $domain = Utilities::removeTrailingSlash($_SERVER["SERVER_NAME"]);
+        $domain = StringHelper::removeTrailingSlash($_SERVER["SERVER_NAME"]);
+        $uri = StringHelper::removeLeadingSlash($uri);
 
-        $fullURL = "{$protocol}://{$domain}{$uri}";
+        return StringHelper::addTrailingSlash("$protocol://$domain/$uri");
+    }
+
+    /**
+     * Generates a full URL of current request
+     *
+     * @return string The full URI user requested
+     */
+    public function getRequestedURL(): string {
+         return static::makeFullURL($this->uri);
+    }
+
+    public static function makeUrl(string $base, array $params): string {
+        $fullURL = StringHelper::addTrailingSlash($base);
+
+        if ($params && count($params)) {
+            $fullURL .= "?" . http_build_query($params);
+        }
 
         return $fullURL;
     }
 
-    private static function isFieldValid(array $data, string $field): bool {
-        if (!isset($data[$field])) {
+    public static function isValueValid(array $data, string $key): bool {
+        if (!isset($data[$key])) {
             return false;
         }
 
-        $value = $data[$field];
+        $value = $data[$key];
 
         if (is_array($value)) {
             return (count($value) > 0);
@@ -126,45 +193,7 @@ class Core {
         return false;
     }
 
-    /**
-     * Check if all the required data is provided
-     * And data provided is not empty
-     *
-     * @param $entityClass string the Entity class
-     * @param $data array Array of required data keys
-     * @return bool Whether data required is provided & is valid or not
-     */
-    public static function hasRequiredFields(string $entityClass, array $data): bool {
-
-        // Loops through each required field, and bails early with false if at least one is invalid
-        foreach ($entityClass::getRequiredFields() as $field) {
-            if (!self::isFieldValid($data, $field)) {
-                return false;
-            }
-        }
-
-        // Otherwise data provided is ok and data required is provided
-        return true;
-    }
-
-    /**
-     * Get all invalid required data fields
-     *
-     * @param $data array Data/values to check fields against
-     * @param $requiredFields string[] Array of required data keys
-     * @return string[] An array of invalid data fields
-     */
-    public static function getInvalidFields(array $data, array $requiredFields): array {
-        return array_filter($requiredFields, static function(string $field) use ($data) {
-            return !self::isFieldValid($data, $field);
-        });
-    }
-
-    private static function setHeader(string $header, string $value) {
-        header("{$header}: {$value}");
-    }
-
-    private function setCORSHeaders() {
+    private function setCORSHeaders(): void {
         $originURL = $_SERVER["HTTP_ORIGIN"] ?? "";
 
         // Strip the protocol from domain
@@ -172,139 +201,69 @@ class Core {
 
         // If the domain if allowed send correct header response back
         if (in_array($originDomain, Config::get()->allowed_domains)) {
-            self::setHeader("Access-Control-Allow-Origin", $originURL);
-            self::setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-            self::setHeader("Access-Control-Allow-Headers", "Process-Data, Authorization");
-
-            // Override meta data, and respond with all endpoints available
-            if ($this->method === "OPTIONS") {
-                $this->response["meta"]["ok"] = true;
-                $this->response["meta"]["status"] = 200;
-                $this->response["meta"]["message"] = "OK";
-            }
+            $this->response->addHeader("Access-Control-Allow-Origin", $originURL);
+            $this->response->addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            $this->response->addHeader("Access-Control-Allow-Headers", "Process-Data, Authorization");
+            $this->response->addHeader("Vary", "Origin");
         }
     }
 
-    private static function getCacheTimeZone(): DateTimeZone {
-        if (static::$cacheTimeZone === null) {
-            static::$cacheTimeZone = new DateTimeZone(self::CACHE_TIMEZONE);
-        }
-
-        return static::$cacheTimeZone;
+    public function getETagFromRequest(): ?string {
+        return $_SERVER["HTTP_IF_NONE_MATCH"] ?? null;
     }
 
-    private static function createDateTimeFromRow(array $row): DateTime {
-        $dateTime = DateTime::createFromFormat(static::$rowDateTimeFormat, $row["updated_at"]);
-        $dateTime->setTimezone(static::getCacheTimeZone());
+    public static function getDefaultCacheHeaders(): array {
+        $secondsToCache = 2678400; // 31 days
 
-        return $dateTime;
-    }
-
-    private function setLastModifiedHeaders() {
-        $response = $this->response;
-
-        if (empty($response["rows"]) && empty($response["row"])) {
-            return;
-        }
-
-        $latestDate = null;
-        $latestRow = $response["row"] ?? $response["rows"][0] ?? null;
-        if ($latestRow && !empty($latestRow["updated_at"])) {
-            $latestDate = self::createDateTimeFromRow($latestRow);
-        }
-
-        if (!empty($response["rows"]) && count($response["rows"]) > 1) {
-            foreach ($response["rows"] as $i => $row) {
-                if (!$i || empty($row["updated_at"])) {
-                    continue;
-                }
-
-                $updatedAtDate = self::createDateTimeFromRow($row);
-
-                if ($updatedAtDate > $latestDate) {
-                    $latestDate = $updatedAtDate;
-                    $latestRow = $row;
-                }
-            }
-        }
-
-        if ($latestDate) {
-            $lastModified = $latestDate->format("D, j M Y H:i:s");
-
-            self::setHeader("Last-Modified", $lastModified . " GMT");
-            self::setHeader("ETag", md5($latestRow["id"] . $latestRow["updated_at"]));
-        }
-    }
-
-    private function setCacheHeaders() {
-        $notCachedURLs = [
-            "/v" . Config::get()->api_version . "/auth/session/",
+        return [
+            "Cache-Control" => "max-age=$secondsToCache, public",
+            "Expires" => new DateTime("+$secondsToCache seconds"),
+            "Pragma" => "cache",
+            "ETag" => true,
         ];
-
-        // Set cache for 31 days for some GET Requests
-        if ($this->method === "GET" && !in_array($this->uri, $notCachedURLs)) {
-            $secondsToCache = 2678400; // 31 days
-
-            self::setHeader("Cache-Control", "max-age={$secondsToCache}, public");
-
-            $gmtTimeZone = static::getCacheTimeZone();
-            $nowDate = new DateTime("+{$secondsToCache} seconds");
-            $nowDate = $nowDate->setTimezone($gmtTimeZone);
-            $expiresTime = $nowDate->format("D, d M Y H:i:s");
-            self::setHeader("Expires", "{$expiresTime} GMT");
-
-            self::setHeader("Pragma", "cache");
-
-            $this->setLastModifiedHeaders();
-        }
     }
 
     /**
-     * Send the response response back
-     *
-     * @param $response array The response generated from the request so far
+     * Process the response.
      */
-    public function sendResponse(array $response) {
-        $isSuccessful = $response["meta"]["ok"] ?? false;
+    public function processResponse(): void {
+        $response = $this->response;
+
+        $content = $response->getContent();
         $defaults = [
             "meta" => [
-                "ok" => false,
-                "status" => ($isSuccessful ? 200 : 500),
-                "message" => ($isSuccessful ? "OK" : "Internal Server Error"),
+                "status_code" => "",
+                "status_message" => "",
                 "method" => $this->method,
                 "uri" => $this->uri,
                 "params" => $this->params,
-                "data" => $this->data,
-                "files" => $this->files,
             ],
         ];
-        $this->response = array_replace_recursive($defaults, $response);
+        $content = array_replace_recursive($defaults, $content);
 
         $this->setCORSHeaders();
-        $this->setCacheHeaders();
 
-        $status = $this->response["meta"]["status"];
-        $message = $this->response["meta"]["message"];
+        if ($response->headers->get("ETag", "") === $this->getETagFromRequest()) {
+            $response->setStatus(304);
+        }
 
-        header("HTTP/1.1 {$status} {$message}");
-        self::setHeader("Content-Type", "application/json");
+        $content["meta"]["status_code"] = $response->getStatusCode();
+        $content["meta"]["status_message"] = $response->getStatusMessage();
 
-        // Check if requested to send json
-        $accepts = explode(", ", $_SERVER["HTTP_ACCEPT"]);
-        $isSendingJson = in_array("application/json", $accepts);
+        $response->setContent($content);
 
-        $encodeParams = $isSendingJson ? 0 : JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
-        echo json_encode($this->response, $encodeParams);
-        die();
+        $response->addHeader("Content-Type", "application/json");
     }
 
-    public function handleRequest() {
+    public function handleRequest(): void {
         $this->extractFromRequest();
 
-        $router = new Router($this);
-        $response = $router->performRequest();
+        $this->response = $this->getRouter()->performRequest();
 
-        $this->sendResponse($response);
+        $this->processResponse();
+
+        $sendPretty = StringHelper::stringToBoolean($this->params["pretty"] ?? null);
+        $this->response->send($sendPretty);
     }
 
 }
