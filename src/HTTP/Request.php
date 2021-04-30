@@ -60,4 +60,8 @@ class Request {
         return Core::makeFullURL($this->uri);
     }
 
+    public function getParam(string $key, $default = null) {
+        return $this->params[$key] ?? $default;
+    }
+
 }
