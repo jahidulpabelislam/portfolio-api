@@ -125,8 +125,8 @@ class Router {
      * @throws DBException
      */
     private function executeAction(): Response {
-        $uri = $this->core->uri;
-        $method = $this->core->method;
+        $uri = $this->request->uri;
+        $method = $this->request->method;
 
         foreach ($this->routes as $path => $routes) {
             $pathRegex = $this->pathToRegex($path);
@@ -141,7 +141,7 @@ class Router {
                     }
 
                     $controllerClass = $route["controller"];
-                    $controller = new $controllerClass($this->core);
+                    $controller = new $controllerClass($this->request);
 
                     return call_user_func_array([$controller, $route["function"]], $identifiers);
                 }
@@ -158,7 +158,7 @@ class Router {
      * else return appropriate response (array)
      */
     private function checkAPIVersion(): ?Response {
-        $version = $this->core->uriParts[0] ?? null;
+        $version = $this->request->uriParts[0] ?? null;
 
         $shouldBeVersion = "v" . Config::get()->api_version;
         if ($version !== $shouldBeVersion) {

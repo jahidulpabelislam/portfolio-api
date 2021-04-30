@@ -48,7 +48,7 @@ class Projects extends Controller {
      * @return Response
      */
     public function getProjects(): Response {
-        $params = $this->core->params;
+        $params = $this->request->params;
 
         $limit = $params["limit"] ?? null;
         $page = $params["page"] ?? null;
@@ -143,7 +143,7 @@ class Projects extends Controller {
      * @return Response
      */
     public function addProject(): Response {
-        return $this->saveProject($this->core->data);
+        return $this->saveProject($this->request->data);
     }
 
     /**
@@ -153,7 +153,7 @@ class Projects extends Controller {
      * @return Response
      */
     public function updateProject($projectId): Response {
-        return $this->saveProject($this->core->params, $projectId);
+        return $this->saveProject($this->request->params, $projectId);
     }
 
     /**
@@ -278,7 +278,7 @@ class Projects extends Controller {
      */
     public function addProjectImage($projectId): Response {
         if (User::isLoggedIn()) {
-            $files = $this->core->files;
+            $files = $this->request->files;
             if (isset($files["image"])) {
                 // Check the Project trying to add a Image for exists
                 $project = self::getProjectEntity($projectId);

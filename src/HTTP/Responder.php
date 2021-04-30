@@ -19,10 +19,10 @@ use App\Entity\Collection as EntityCollection;
 
 trait Responder {
 
-    protected $core;
+    protected $request;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
+    public function __construct(Request $request) {
+        $this->request = $request;
     }
 
     /**
@@ -30,7 +30,7 @@ trait Responder {
      */
     public function getMethodNotAllowedResponse(): Response {
         return new Response(405, [
-            "error" => "Method {$this->core->method} not allowed on " . $this->core->getRequestedURL() . ".",
+            "error" => "Method {$this->request->method} not allowed on " . $this->request->getURL() . ".",
         ]);
     }
 
@@ -62,7 +62,7 @@ trait Responder {
      */
     public function getUnrecognisedURIResponse(): Response {
         return new Response(404, [
-            "error" => "Unrecognised URI (" . $this->core->getRequestedURL() . ").",
+            "error" => "Unrecognised URI (" . $this->request->getURL() . ").",
         ]);
     }
 
@@ -72,7 +72,7 @@ trait Responder {
     public function getUnrecognisedAPIVersionResponse(): Response {
         $shouldBeVersion = Config::get()->api_version;
 
-        $shouldBeURI = $this->core->uriParts;
+        $shouldBeURI = $this->request->uriParts;
         $shouldBeURI[0] = "v$shouldBeVersion";
         $shouldBeURL = Core::makeFullURL($shouldBeURI);
 
@@ -116,7 +116,7 @@ trait Responder {
             "meta" => [
                 "count" => $count,
                 "links" => [
-                    "self" => $this->core->getRequestedURL(),
+                    "self" => $this->request->getURL(),
                 ],
             ],
             "data" => $data,
@@ -143,7 +143,7 @@ trait Responder {
      * @return Response
      */
     public function getPaginatedItemsResponse(string $entityClass, EntityCollection $collection): Response {
-        $params = $this->core->params;
+        $params = $this->request->params;
 
         // The items response is the base response, and the extra meta is added below
         $response = $this->getItemsResponse($entityClass, $collection);
@@ -161,7 +161,7 @@ trait Responder {
         $lastPage = ceil($totalCount / $limit);
         $content["meta"]["total_pages"] = $lastPage;
 
-        $pageURL = $this->core->getRequestedURL();
+        $pageURL = $this->request->getURL();
 
         // Always update to the used value if param was passed (incase it was different)
         if (isset($params["limit"])) {

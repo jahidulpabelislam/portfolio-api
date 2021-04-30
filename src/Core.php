@@ -16,6 +16,7 @@ namespace App;
 use App\HTTP\Controller\Auth;
 use App\HTTP\Controller\Projects;
 use App\HTTP\Response;
+use App\HTTP\Request;
 use App\Utils\Singleton;
 use App\Utils\StringHelper;
 use DateTime;
@@ -25,20 +26,14 @@ class Core {
     use Singleton;
 
     /**
+     * @var Request|null
+     */
+    protected $request = null;
+
+    /**
      * @var Response|null
      */
     private $response = null;
-
-    public $method = "GET";
-
-    public $uri = "";
-    public $uriParts = [];
-
-    public $data = [];
-    public $params = [];
-    public $request = [];
-
-    public $files = [];
 
     /**
      * @var Router|null
@@ -86,58 +81,10 @@ class Core {
 
     public function getRouter(): Router {
         if ($this->router === null) {
-            $this->router = new Router($this);
+            $this->router = new Router($this->getRequest());
             $this->initRoutes();
         }
         return $this->router;
-    }
-
-    private function extractMethodFromRequest(): void {
-        $this->method = strtoupper($_SERVER["REQUEST_METHOD"]);
-    }
-
-    private function extractURIFromRequest(): void {
-        $this->uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
-
-        // Get the individual parts of the request URI as an array
-        $uri = StringHelper::removeSlashes($this->uri);
-        $this->uriParts = explode("/", $uri);
-    }
-
-    /**
-     * @param $value array|string
-     * @return array|string
-     */
-    private static function sanitizeData($value) {
-        if (is_array($value)) {
-            $newArrayValues = [];
-            foreach ($value as $subKey => $subValue) {
-                $newArrayValues[$subKey] = self::sanitizeData($subValue);
-            }
-            $value = $newArrayValues;
-        }
-        else if (is_string($value)) {
-            $value = urldecode(stripslashes(trim($value)));
-        }
-
-        return $value;
-    }
-
-    private function extractDataFromRequest(): void {
-        $this->data = self::sanitizeData($_POST);
-        $this->params = self::sanitizeData($_GET);
-        $this->request = self::sanitizeData($_REQUEST);
-    }
-
-    private function extractFilesFromRequest(): void {
-        $this->files = $_FILES;
-    }
-
-    public function extractFromRequest(): void {
-        $this->extractMethodFromRequest();
-        $this->extractURIFromRequest();
-        $this->extractDataFromRequest();
-        $this->extractFilesFromRequest();
     }
 
     /**
@@ -154,15 +101,6 @@ class Core {
         $uri = StringHelper::removeLeadingSlash($uri);
 
         return StringHelper::addTrailingSlash("$protocol://$domain/$uri");
-    }
-
-    /**
-     * Generates a full URL of current request
-     *
-     * @return string The full URI user requested
-     */
-    public function getRequestedURL(): string {
-         return static::makeFullURL($this->uri);
     }
 
     public static function makeUrl(string $base, array $params): string {
@@ -227,6 +165,7 @@ class Core {
      * Process the response.
      */
     public function processResponse(): void {
+        $request = $this->getRequest();
         $response = $this->response;
 
         $content = $response->getContent();
@@ -234,9 +173,9 @@ class Core {
             "meta" => [
                 "status_code" => "",
                 "status_message" => "",
-                "method" => $this->method,
-                "uri" => $this->uri,
-                "params" => $this->params,
+                "method" => $request->method,
+                "uri" => $request->uri,
+                "params" => $request->params,
             ],
         ];
         $content = array_replace_recursive($defaults, $content);
@@ -255,9 +194,15 @@ class Core {
         $response->addHeader("Content-Type", "application/json");
     }
 
-    public function handleRequest(): void {
-        $this->extractFromRequest();
+    public function getRequest(): Request {
+        if (is_null($this->request)) {
+            $this->request = new Request();
+        }
 
+        return $this->request;
+    }
+
+    public function handleRequest(): void {
         $this->response = $this->getRouter()->performRequest();
 
         $this->processResponse();

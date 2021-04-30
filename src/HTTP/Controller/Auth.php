@@ -27,7 +27,7 @@ class Auth extends Controller {
      * @return Response
      */
     public function login(): Response {
-        $data = $this->core->data;
+        $data = $this->request->data;
         if (!$errors = User::getErrors($data)) {
             $jwt = User::login($data);
             if ($jwt) {
