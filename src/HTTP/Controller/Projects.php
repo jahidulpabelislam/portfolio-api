@@ -91,26 +91,34 @@ class Projects extends Controller {
     }
 
     /**
-     * Try to either insert or update a Project
+     * Try and add a Project a user has attempted to add
      *
-     * @param $data array The values to save
-     * @param $projectId int|string|null The Id of the Project to update (Only if a update request)
      * @return Response
      */
-    private function saveProject(array $data, $projectId = null): Response {
+    public function addProject(): Response {
         if (User::isLoggedIn()) {
-            $isNew = is_null($projectId);
-            if ($isNew) {
-                $project = Project::insert($data);
-                if ($project->hasErrors()) {
-                    return $this->getInvalidInputResponse($project->getErrors());
-                }
-                $project->reload();
-                return self::getInsertResponse(Project::class, $project);
+            $project = Project::insert($this->request->data);
+            if ($project->hasErrors()) {
+                return $this->getInvalidInputResponse($project->getErrors());
             }
+            $project->reload();
+            return self::getInsertResponse(Project::class, $project);
+        }
 
+        return self::getNotAuthorisedResponse();
+    }
+
+    /**
+     * Try to edit a Project a user has added before
+     *
+     * @param $projectId int|string The Id of the Project to update
+     * @return Response
+     */
+    public function updateProject($projectId): Response {
+        if (User::isLoggedIn()) {
             $project = self::getProjectEntity($projectId, true);
             if ($project) {
+                $data = $this->request->params;
                 $project->setValues($data);
                 $project->save();
 
@@ -135,25 +143,6 @@ class Projects extends Controller {
         }
 
         return self::getNotAuthorisedResponse();
-    }
-
-    /**
-     * Try and add a Project a user has attempted to add
-     *
-     * @return Response
-     */
-    public function addProject(): Response {
-        return $this->saveProject($this->request->data);
-    }
-
-    /**
-     * Try to edit a Project a user has added before
-     *
-     * @param $projectId int|string The Id of the Project to update
-     * @return Response
-     */
-    public function updateProject($projectId): Response {
-        return $this->saveProject($this->request->params, $projectId);
     }
 
     /**
