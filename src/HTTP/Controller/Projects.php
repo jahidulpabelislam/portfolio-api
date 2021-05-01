@@ -60,6 +60,8 @@ class Projects extends Controller implements AuthGuarded {
         $limit = $params["limit"] ?? null;
         $page = $params["page"] ?? null;
 
+        $params["filters"] = $params["filters"] ?? [];
+
         // As the user isn't logged in, filter by status = public
         if (!User::isLoggedIn()) {
             $params["filters"]["status"] = Project::PUBLIC_STATUS;
