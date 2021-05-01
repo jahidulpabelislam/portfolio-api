@@ -177,7 +177,7 @@ class Router {
         $response = $this->checkAPIVersion();
 
         // Only try to perform the action if API version check above returned okay
-        if ($response === null) {
+        if (is_null($response)) {
             try {
                 $response = $this->executeAction();
             }

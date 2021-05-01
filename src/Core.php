@@ -80,7 +80,7 @@ class Core {
     }
 
     public function getRouter(): Router {
-        if ($this->router === null) {
+        if (is_null($this->router)) {
             $this->router = new Router($this->getRequest());
             $this->initRoutes();
         }

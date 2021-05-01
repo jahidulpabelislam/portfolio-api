@@ -99,7 +99,7 @@ class Projects extends Controller {
      */
     private function saveProject(array $data, $projectId = null): Response {
         if (User::isLoggedIn()) {
-            $isNew = $projectId === null;
+            $isNew = is_null($projectId);
             if ($isNew) {
                 $project = Project::insert($data);
                 if ($project->hasErrors()) {

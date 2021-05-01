@@ -15,7 +15,7 @@ class Response {
     private static $cacheTimeZone = null;
 
     public static function getCacheTimeZone(): DateTimeZone {
-        if (static::$cacheTimeZone === null) {
+        if (is_null(static::$cacheTimeZone)) {
             static::$cacheTimeZone = new DateTimeZone(self::CACHE_TIMEZONE);
         }
 
@@ -61,7 +61,7 @@ class Response {
     }
 
     public function getStatusMessage(): string {
-        if ($this->statusMessage === null) {
+        if (is_null($this->statusMessage)) {
             $this->statusMessage = Status::getMessageForCode($this->getStatusCode());
         }
 

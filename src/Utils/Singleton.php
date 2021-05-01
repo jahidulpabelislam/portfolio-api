@@ -10,7 +10,7 @@ trait Singleton {
      * @return static
      */
     public static function get() {
-        if (static::$instance === null) {
+        if (is_null(static::$instance)) {
             static::$instance = new static();
         }
 

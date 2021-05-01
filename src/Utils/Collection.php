@@ -73,7 +73,7 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
     }
 
     public function offsetSet($offset, $item): void {
-        if ($offset === null) {
+        if (is_null($offset)) {
             $this->add($item);
         }
         else {
@@ -94,7 +94,7 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
     // Countable //
 
     public function count(): int {
-        if ($this->count === null) {
+        if (is_null($this->count)) {
             $this->count = count($this->items);
         }
 

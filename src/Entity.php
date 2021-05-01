@@ -168,7 +168,7 @@ abstract class Entity implements Arrayable {
     }
 
     public function isLoaded(): bool {
-        return $this->getId() !== null;
+        return !is_null($this->getId());
     }
 
     public static function factory(?array $data = null): Entity {
@@ -253,7 +253,7 @@ abstract class Entity implements Arrayable {
 
         $rows = static::select("*", $where, $params, $orderBy, $limit, $page);
 
-        if ($rows === null) {
+        if (is_null($rows)) {
             return null;
         }
 
