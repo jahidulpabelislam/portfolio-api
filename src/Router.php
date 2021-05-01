@@ -147,7 +147,7 @@ class Router {
 
                     if (
                         $controller instanceof AuthGuarded
-                        && !in_array($route["function"], $controller->publicMethods)
+                        && !in_array($route["function"], $controller->publicFunctions)
                         && !User::isLoggedIn()
                     ) {
                         return static::getNotAuthorisedResponse();
