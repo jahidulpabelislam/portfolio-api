@@ -155,6 +155,9 @@ class Router {
 
                     return call_user_func_array([$controller, $route["function"]], $identifiers);
                 }
+                else if ($method === "OPTIONS") {
+                    return new Response(200);
+                }
 
                 return $this->getMethodNotAllowedResponse();
             }
