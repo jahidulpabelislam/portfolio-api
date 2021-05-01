@@ -127,7 +127,7 @@ class Core {
         // If the domain if allowed send correct header response back
         if (in_array($originDomain, Config::get()->allowed_domains)) {
             $this->response->addHeader("Access-Control-Allow-Origin", $originURL);
-            $this->response->addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            $this->response->addHeader("Access-Control-Allow-Methods", implode(", ", $this->getRouter()->getMethodsForPath()));
             $this->response->addHeader("Access-Control-Allow-Headers", "Process-Data, Authorization");
             $this->response->addHeader("Vary", "Origin");
         }

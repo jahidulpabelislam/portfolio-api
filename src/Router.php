@@ -166,6 +166,18 @@ class Router {
         return $this->getUnrecognisedURIResponse();
     }
 
+    public function getMethodsForPath(): array {
+        $uri = $this->request->uri;
+        foreach ($this->routes as $path => $routes) {
+            $pathRegex = $this->pathToRegex($path);
+            if (preg_match($pathRegex, $uri, $matches)) {
+                return array_keys($routes);
+            }
+        }
+
+        return [];
+    }
+
     /**
      * Check that the requested API version is valid, if so return empty array
      * else return appropriate response (array)
