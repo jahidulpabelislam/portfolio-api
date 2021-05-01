@@ -12,8 +12,8 @@ class Request {
     public $uri;
     public $uriParts;
 
-    public $data;
     public $params;
+    public $data;
 
     public $files;
 
@@ -47,10 +47,12 @@ class Request {
         $uri = StringHelper::removeSlashes($this->uri);
         $this->uriParts = explode("/", $uri);
 
-        $this->data = self::sanitizeData($_POST);
         $this->params = self::sanitizeData($_GET);
 
-        $this->files = $_FILES;
+        if ($this->method === "POST") {
+            $this->data = self::sanitizeData($_POST);
+            $this->files = $_FILES;
+        }
 
         $this->headers = new Headers(apache_request_headers());
     }
