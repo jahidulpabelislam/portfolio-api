@@ -55,10 +55,10 @@ class Projects extends Controller {
 
         // As the user isn't logged in, filter by status = public
         if (!User::isLoggedIn()) {
-            $params["status"] = Project::PUBLIC_STATUS;
+            $params["filters"]["status"] = Project::PUBLIC_STATUS;
         }
 
-        $query = Project::buildQueryFromFilters($params);
+        $query = Project::buildQueryFromFilters($params["filters"]);
 
         $where = $query["where"];
         $queryParams = $query["params"];
