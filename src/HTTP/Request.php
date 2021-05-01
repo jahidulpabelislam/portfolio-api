@@ -60,14 +60,14 @@ class Request {
     /**
      * Generates a full URL of current request
      *
-     * @return string The full URI user requested
+     * @return string
      */
     public function getURL(): string {
         return Core::makeFullURL($this->uri);
     }
 
-    public function getParam(string $key, $default = null) {
-        return $this->params[$key] ?? $default;
+    public function getParam(string $param, $default = null) {
+        return $this->params[$param] ?? $default;
     }
 
 }

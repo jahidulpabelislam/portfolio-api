@@ -33,12 +33,20 @@ class Core {
     /**
      * @var Response|null
      */
-    private $response = null;
+    protected $response = null;
 
     /**
      * @var Router|null
      */
     protected $router = null;
+
+    public function getRequest(): Request {
+        if (is_null($this->request)) {
+            $this->request = new Request();
+        }
+
+        return $this->request;
+    }
 
     private function initRoutes(): void {
         $router = $this->router;
@@ -71,6 +79,7 @@ class Core {
             $this->router = new Router($this->getRequest());
             $this->initRoutes();
         }
+
         return $this->router;
     }
 
@@ -123,7 +132,7 @@ class Core {
         $originURL = $origins[0] ?? "";
 
         // Strip the protocol from domain
-        $originDomain = str_replace(["http://", "https://"], "", $originURL);
+        $originDomain = str_replace(["https://", "http://"], "", $originURL);
 
         // If the domain if allowed send correct header response back
         if (in_array($originDomain, Config::get()->allowed_domains)) {
@@ -176,14 +185,6 @@ class Core {
         $response->setContent($content);
 
         $response->addHeader("Content-Type", "application/json");
-    }
-
-    public function getRequest(): Request {
-        if (is_null($this->request)) {
-            $this->request = new Request();
-        }
-
-        return $this->request;
     }
 
     public function handleRequest(): void {
