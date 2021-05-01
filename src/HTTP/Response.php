@@ -90,6 +90,10 @@ class Response {
 
     protected function sendHeaders(): void {
         foreach ($this->headers as $name => $value) {
+            if (is_array($value)) {
+                $value = implode(", ", $value);
+            }
+
             header("$name: $value");
         }
 

@@ -119,7 +119,8 @@ class Core {
     }
 
     private function setCORSHeaders(): void {
-        $originURL = $this->getRequest()->headers->get("Origin", "");
+        $origins = $this->getRequest()->headers->get("Origin");
+        $originURL = $origins[0] ?? "";
 
         // Strip the protocol from domain
         $originDomain = str_replace(["http://", "https://"], "", $originURL);
@@ -127,7 +128,7 @@ class Core {
         // If the domain if allowed send correct header response back
         if (in_array($originDomain, Config::get()->allowed_domains)) {
             $this->response->addHeader("Access-Control-Allow-Origin", $originURL);
-            $this->response->addHeader("Access-Control-Allow-Methods", implode(", ", $this->getRouter()->getMethodsForPath()));
+            $this->response->addHeader("Access-Control-Allow-Methods", $this->getRouter()->getMethodsForPath());
             $this->response->addHeader("Access-Control-Allow-Headers", "Authorization");
             $this->response->addHeader("Vary", "Origin");
         }
@@ -137,7 +138,7 @@ class Core {
         $secondsToCache = 2678400; // 31 days
 
         return [
-            "Cache-Control" => "max-age=$secondsToCache, public",
+            "Cache-Control" => ["max-age=$secondsToCache", "public"],
             "Expires" => new DateTime("+$secondsToCache seconds"),
             "Pragma" => "cache",
             "ETag" => true,
