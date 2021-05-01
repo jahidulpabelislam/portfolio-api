@@ -13,6 +13,8 @@
 namespace App;
 
 use App\Database\Exception as DBException;
+use App\Entity\User;
+use App\HTTP\Controller\AuthGuarded;
 use App\HTTP\Responder;
 use App\HTTP\Response;
 use App\Utils\StringHelper;
@@ -142,6 +144,14 @@ class Router {
 
                     $controllerClass = $route["controller"];
                     $controller = new $controllerClass($this->request);
+
+                    if (
+                        $controller instanceof AuthGuarded
+                        && !in_array($route["function"], $controller->publicMethods)
+                        && !User::isLoggedIn()
+                    ) {
+                        return static::getNotAuthorisedResponse();
+                    }
 
                     return call_user_func_array([$controller, $route["function"]], $identifiers);
                 }

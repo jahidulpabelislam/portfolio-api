@@ -6,4 +6,6 @@ abstract class Controller {
 
     use Responder;
 
+    public $publicFunctions = [];
+
 }

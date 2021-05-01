@@ -19,7 +19,14 @@ use App\HTTP\Controller;
 use App\HTTP\Response;
 use Exception;
 
-class Projects extends Controller {
+class Projects extends Controller implements AuthGuarded {
+
+    public $publicFunctions = [
+        "getProjects",
+        "getProject",
+        "getProjectImages",
+        "getProjectImage",
+    ];
 
     /**
      * @param $projectId int|string
@@ -96,16 +103,12 @@ class Projects extends Controller {
      * @return Response
      */
     public function addProject(): Response {
-        if (User::isLoggedIn()) {
-            $project = Project::insert($this->request->data);
-            if ($project->hasErrors()) {
-                return $this->getInvalidInputResponse($project->getErrors());
-            }
-            $project->reload();
-            return self::getInsertResponse(Project::class, $project);
+        $project = Project::insert($this->request->data);
+        if ($project->hasErrors()) {
+            return $this->getInvalidInputResponse($project->getErrors());
         }
-
-        return self::getNotAuthorisedResponse();
+        $project->reload();
+        return self::getInsertResponse(Project::class, $project);
     }
 
     /**
@@ -115,34 +118,30 @@ class Projects extends Controller {
      * @return Response
      */
     public function updateProject($projectId): Response {
-        if (User::isLoggedIn()) {
-            $project = self::getProjectEntity($projectId, true);
-            if ($project) {
-                $data = $this->request->params;
-                $project->setValues($data);
-                $project->save();
+        $project = self::getProjectEntity($projectId, true);
+        if ($project) {
+            $data = $this->request->params;
+            $project->setValues($data);
+            $project->save();
 
-                // If images were passed update the sort order
-                if (!empty($data["images"])) {
-                    $orders = [];
-                    foreach ($data["images"] as $i => $image) {
-                        $imageData = json_decode($image, true);
-                        $orders[$imageData["id"]] = $i + 1;
-                    }
-
-                    foreach ($project->images as $projectImage) {
-                        $projectImage->sort_order_number = $orders[$projectImage->getId()];
-                        $projectImage->save();
-                    }
+            // If images were passed update the sort order
+            if (!empty($data["images"])) {
+                $orders = [];
+                foreach ($data["images"] as $i => $image) {
+                    $imageData = json_decode($image, true);
+                    $orders[$imageData["id"]] = $i + 1;
                 }
 
-                $project->reload();
+                foreach ($project->images as $projectImage) {
+                    $projectImage->sort_order_number = $orders[$projectImage->getId()];
+                    $projectImage->save();
+                }
             }
 
-            return self::getUpdateResponse(Project::class, $project, $projectId);
+            $project->reload();
         }
 
-        return self::getNotAuthorisedResponse();
+        return self::getUpdateResponse(Project::class, $project, $projectId);
     }
 
     /**
@@ -152,18 +151,14 @@ class Projects extends Controller {
      * @return Response
      */
     public static function deleteProject($projectId): Response {
-        if (User::isLoggedIn()) {
-            $isDeleted = false;
+        $isDeleted = false;
 
-            $project = self::getProjectEntity($projectId);
-            if ($project) {
-                $isDeleted = $project->delete();
-            }
-
-            return self::getItemDeletedResponse(Project::class, $project, $projectId, $isDeleted);
+        $project = self::getProjectEntity($projectId);
+        if ($project) {
+            $isDeleted = $project->delete();
         }
 
-        return self::getNotAuthorisedResponse();
+        return self::getItemDeletedResponse(Project::class, $project, $projectId, $isDeleted);
     }
 
     /**
@@ -266,25 +261,21 @@ class Projects extends Controller {
      * @throws Exception
      */
     public function addProjectImage($projectId): Response {
-        if (User::isLoggedIn()) {
-            $files = $this->request->files;
-            if (isset($files["image"])) {
-                // Check the Project trying to add a Image for exists
-                $project = self::getProjectEntity($projectId);
-                if ($project) {
-                    return self::uploadProjectImage($project, $files["image"]);
-                }
-
-                return self::getItemNotFoundResponse(Project::class, $projectId);
+        $files = $this->request->files;
+        if (isset($files["image"])) {
+            // Check the Project trying to add a Image for exists
+            $project = self::getProjectEntity($projectId);
+            if ($project) {
+                return self::uploadProjectImage($project, $files["image"]);
             }
 
-            $errors = [
-                "image" => "Image is a required field."
-            ];
-            return $this->getInvalidInputResponse($errors);
+            return self::getItemNotFoundResponse(Project::class, $projectId);
         }
 
-        return self::getNotAuthorisedResponse();
+        $errors = [
+            "image" => "Image is a required field."
+        ];
+        return $this->getInvalidInputResponse($errors);
     }
 
     /**
@@ -325,25 +316,21 @@ class Projects extends Controller {
      * @return Response
      */
     public static function deleteProjectImage($projectId, $imageId): Response {
-        if (User::isLoggedIn()) {
-            // Check the Project of the Image trying to edit actually exists
-            $project = self::getProjectEntity($projectId);
-            if ($project) {
-                $isDeleted = false;
+        // Check the Project of the Image trying to edit actually exists
+        $project = self::getProjectEntity($projectId);
+        if ($project) {
+            $isDeleted = false;
 
-                // Delete row from database
-                $projectImage = ProjectImage::getById($imageId);
-                if ($projectImage) {
-                    $isDeleted = $projectImage->delete();
-                }
-
-                return self::getItemDeletedResponse(ProjectImage::class, $projectImage, $imageId, $isDeleted);
+            // Delete row from database
+            $projectImage = ProjectImage::getById($imageId);
+            if ($projectImage) {
+                $isDeleted = $projectImage->delete();
             }
 
-            return self::getItemNotFoundResponse(Project::class, $projectId);
+            return self::getItemDeletedResponse(ProjectImage::class, $projectImage, $imageId, $isDeleted);
         }
 
-        return self::getNotAuthorisedResponse();
+        return self::getItemNotFoundResponse(Project::class, $projectId);
     }
 
 }
