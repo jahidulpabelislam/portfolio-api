@@ -54,10 +54,7 @@ class Request {
             $this->files = $_FILES;
         }
 
-        $this->headers = new Headers();
-        foreach (apache_request_headers() as $header => $value) {
-            $this->headers->set($header, $value);
-        }
+        $this->headers = new Headers(apache_request_headers());
     }
 
     /**
