@@ -167,11 +167,10 @@ class Projects extends Controller implements AuthGuarded {
      * Get a particular Project defined by $projectId
      *
      * @param $projectId int|string The Id of the Project to get
-     * @param $includeLinkedData bool Whether to also get and include linked entity/data (images)
      * @return Response
      */
-    public static function getProject($projectId, bool $includeLinkedData = true): Response {
-        $project = self::getProjectEntity($projectId, $includeLinkedData);
+    public static function getProject($projectId): Response {
+        $project = self::getProjectEntity($projectId, true);
 
         return self::getItemResponse(Project::class, $project, $projectId);
     }
@@ -201,15 +200,6 @@ class Projects extends Controller implements AuthGuarded {
      * @throws Exception
      */
     private static function uploadProjectImage(Project $project, array $image): Response {
-        $response = [];
-        $statusCode = 500;
-
-        $projectId = $project->getId();
-        $projectName = $project->name;
-
-        $projectNameFormatted = strtolower($projectName);
-        $projectNameFormatted = preg_replace("/[^a-z0-9]+/", "-", $projectNameFormatted);
-
         // Get the file ext
         $imageFileExt = pathinfo(basename($image["name"]), PATHINFO_EXTENSION);
 
@@ -217,7 +207,7 @@ class Projects extends Controller implements AuthGuarded {
         $directory = "/project-images/";
 
         // The full path for new file on the server
-        $newFilename = $projectNameFormatted;
+        $newFilename = preg_replace("/[^a-z0-9]+/", "-", strtolower($project->name));
         $newFilename .= "-" . date("Ymd-His");
         $newFilename .= "-" . random_int(0, 99);
         $newFilename .= ".$imageFileExt";
@@ -234,7 +224,7 @@ class Projects extends Controller implements AuthGuarded {
                 // Add new image with location into the database
                 $imageData = [
                     "file" => $newFileLocation,
-                    "project_id" => $projectId,
+                    "project_id" => $project->getId(),
                     "sort_order_number" => 999, // High enough number
                 ];
                 $projectImage = ProjectImage::insert($imageData);
@@ -243,16 +233,15 @@ class Projects extends Controller implements AuthGuarded {
             }
 
             // Else there was a problem uploading file to server
-            $response["error"] = "Sorry, there was an error uploading your image.";
-        }
-        else {
-            // Else bad request as file uploaded is not a image
-            $statusCode = 400;
-
-            $response["error"] = "File is not an image.";
+            return new Response(500, [
+                "error" => "Sorry, there was an error uploading your image.",
+            ]);
         }
 
-        return new Response($statusCode, $response);
+        // Else bad request as file uploaded is not a image
+        return new Response(400, [
+            "error" => "File is not an image.",
+        ]);
     }
 
     /**
@@ -288,7 +277,7 @@ class Projects extends Controller implements AuthGuarded {
      * @return Response
      */
     public static function getProjectImage($projectId, $imageId): Response {
-        // Check the Project trying to get Images for exists
+        // Check the Project trying to get Image for exists
         $project = self::getProjectEntity($projectId);
         if ($project) {
             $projectImage = ProjectImage::getById($imageId);
@@ -307,7 +296,7 @@ class Projects extends Controller implements AuthGuarded {
             return $response;
         }
 
-        return self::getItemResponse(Project::class, $project, $projectId);
+        return self::getItemNotFoundResponse(Project::class, $projectId);
     }
 
     /**
@@ -323,7 +312,6 @@ class Projects extends Controller implements AuthGuarded {
         if ($project) {
             $isDeleted = false;
 
-            // Delete row from database
             $projectImage = ProjectImage::getById($imageId);
             if ($projectImage) {
                 $isDeleted = $projectImage->delete();
