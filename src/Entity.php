@@ -219,7 +219,7 @@ abstract class Entity implements Arrayable {
         }
 
         // If invalid use default
-        if (!$limit || $limit < 1 || static::$defaultLimit < $limit) {
+        if (!$limit || $limit < 1 || (static::$defaultLimit && static::$defaultLimit < $limit)) {
             $limit = static::$defaultLimit;
         }
 
