@@ -194,6 +194,7 @@ trait Responder {
         }
 
         $response->setContent($content);
+        $response->setCacheHeaders(Core::getDefaultCacheHeaders());
 
         return $response;
     }
