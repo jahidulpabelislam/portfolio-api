@@ -11,6 +11,7 @@
 
 namespace App\HTTP\Controller;
 
+use App\Core;
 use App\Entity\Collection as EntityCollection;
 use App\Entity\Project;
 use App\Entity\ProjectImage;
@@ -282,18 +283,15 @@ class Projects extends Controller implements AuthGuarded {
         if ($project) {
             $projectImage = ProjectImage::getById($imageId);
 
-            $response = self::getItemResponse(ProjectImage::class, $projectImage, $imageId);
-
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
             if ($projectImage && !empty($projectImage->project_id) && $projectImage->project_id !== $projectId) {
-                $responseContent = $response->getContent();
-                $responseContent["data"] = [];
-                $responseContent["error"] = "No {$projectImage::getDisplayName()} found identified by '$imageId' for Project: '$projectId'.";
-                $response->setContent($responseContent);
+                return new Response(404, [
+                    "error" =>  "No {$projectImage::getDisplayName()} found identified by '$imageId' for Project: '$projectId'.",
+                ]);
             }
 
-            return $response;
+            return self::getItemResponse(ProjectImage::class, $projectImage, $imageId);
         }
 
         return self::getItemNotFoundResponse(Project::class, $projectId);
