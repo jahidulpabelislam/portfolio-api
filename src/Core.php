@@ -138,7 +138,7 @@ class Core {
         if (in_array($originDomain, Config::get()->allowed_domains)) {
             $this->response->addHeader("Access-Control-Allow-Origin", $originURL);
             $this->response->addHeader("Access-Control-Allow-Methods", $this->getRouter()->getMethodsForPath());
-            $this->response->addHeader("Access-Control-Allow-Headers", "Authorization");
+            $this->response->addHeader("Access-Control-Allow-Headers", ["Authorization", "Content-Type"]);
             $this->response->addHeader("Vary", "Origin");
         }
     }

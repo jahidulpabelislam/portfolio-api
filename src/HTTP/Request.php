@@ -49,8 +49,11 @@ class Request {
 
         $this->params = self::sanitizeData($_GET);
 
-        if ($this->method === "POST") {
-            $this->data = self::sanitizeData($_POST);
+        if (in_array($this->method, ["POST", "PUT"])) {
+            $json = file_get_contents("php://input");
+            $data = json_decode($json, true);
+            $this->data = self::sanitizeData($data);
+
             $this->files = $_FILES;
         }
 

@@ -123,7 +123,7 @@ class Projects extends Controller implements AuthGuarded {
     public function updateProject($projectId): Response {
         $project = self::getProjectEntity($projectId, true);
         if ($project) {
-            $data = $this->request->params;
+            $data = $this->request->data;
             $project->setValues($data);
             $project->save();
 
@@ -131,8 +131,7 @@ class Projects extends Controller implements AuthGuarded {
             if (!empty($data["images"])) {
                 $orders = [];
                 foreach ($data["images"] as $i => $image) {
-                    $imageData = json_decode($image, true);
-                    $orders[$imageData["id"]] = $i + 1;
+                    $orders[$image["id"]] = $i + 1;
                 }
 
                 foreach ($project->images as $projectImage) {
