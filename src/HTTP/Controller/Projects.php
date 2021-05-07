@@ -188,7 +188,9 @@ class Projects extends Controller implements AuthGuarded {
             return $this->getItemsResponse(ProjectImage::class, $project->images);
         }
 
-        return self::getItemNotFoundResponse(Project::class, $projectId);
+        return self::getItemNotFoundResponse(Project::class, $projectId)
+            ->withCacheHeaders(Core::getDefaultCacheHeaders())
+        ;
     }
 
     /**
@@ -285,15 +287,19 @@ class Projects extends Controller implements AuthGuarded {
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
             if ($projectImage && !empty($projectImage->project_id) && $projectImage->project_id !== $projectId) {
-                return new Response(404, [
+                $response = new Response(404, [
                     "error" =>  "No {$projectImage::getDisplayName()} found identified by '$imageId' for Project: '$projectId'.",
                 ]);
             }
-
-            return self::getItemResponse(ProjectImage::class, $projectImage, $imageId);
+            else {
+                return self::getItemResponse(ProjectImage::class, $projectImage, $imageId);
+            }
+        }
+        else {
+            $response = self::getItemNotFoundResponse(Project::class, $projectId);
         }
 
-        return self::getItemNotFoundResponse(Project::class, $projectId);
+        return $response->withCacheHeaders(Core::getDefaultCacheHeaders());
     }
 
     /**

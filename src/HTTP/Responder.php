@@ -230,12 +230,12 @@ trait Responder {
      */
     public static function getItemResponse(string $entityClass, ?APIEntity $entity, $id): Response {
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
-            return static::getItemFoundResponse($entity)
-                ->withCacheHeaders(Core::getDefaultCacheHeaders())
-            ;
+            $response = static::getItemFoundResponse($entity);
+        } else {
+            $response = static::getItemNotFoundResponse($entityClass, $id);
         }
 
-        return static::getItemNotFoundResponse($entityClass, $id);
+        return $response->withCacheHeaders(Core::getDefaultCacheHeaders());
     }
 
     public static function getInsertResponse(string $entityClass, ?APIEntity $entity): Response {
