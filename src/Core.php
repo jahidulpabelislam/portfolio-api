@@ -136,10 +136,11 @@ class Core {
 
         // If the domain if allowed send correct header response back
         if (in_array($originDomain, Config::get()->allowed_domains)) {
-            $this->response->addHeader("Access-Control-Allow-Origin", $originURL);
-            $this->response->addHeader("Access-Control-Allow-Methods", $this->getRouter()->getMethodsForPath());
-            $this->response->addHeader("Access-Control-Allow-Headers", ["Authorization", "Content-Type"]);
-            $this->response->addHeader("Vary", "Origin");
+            $this->response->withHeader("Access-Control-Allow-Origin", $originURL)
+                ->withHeader("Access-Control-Allow-Methods", $this->getRouter()->getMethodsForPath())
+                ->withHeader("Access-Control-Allow-Headers", ["Authorization", "Content-Type"])
+                ->withHeader("Vary", "Origin")
+            ;
         }
     }
 
@@ -182,9 +183,9 @@ class Core {
         $content["meta"]["status_code"] = $response->getStatusCode();
         $content["meta"]["status_message"] = $response->getStatusMessage();
 
-        $response->setContent($content);
-
-        $response->addHeader("Content-Type", "application/json");
+        $response->withContent($content)
+            ->withHeader("Content-Type", "application/json")
+        ;
     }
 
     public function handleRequest(): void {

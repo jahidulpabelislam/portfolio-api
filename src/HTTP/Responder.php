@@ -126,9 +126,9 @@ trait Responder {
             $content["meta"]["message"] = "No {$entityClass::getPluralDisplayName()} found.";
         }
 
-        $response = new Response(200, $content);
-        $response->setCacheHeaders(Core::getDefaultCacheHeaders());
-        return $response;
+        return (new Response(200, $content))
+            ->withCacheHeaders(Core::getDefaultCacheHeaders())
+        ;
     }
 
     /**
@@ -193,10 +193,9 @@ trait Responder {
             $content["meta"]["links"]["next_page"] = Core::makeUrl($pageURL, $params);
         }
 
-        $response->setContent($content);
-        $response->setCacheHeaders(Core::getDefaultCacheHeaders());
-
-        return $response;
+        return $response->withContent($content)
+            ->withCacheHeaders(Core::getDefaultCacheHeaders())
+        ;
     }
 
     private static function getItemFoundResponse(APIEntity $entity): Response {
@@ -231,9 +230,9 @@ trait Responder {
      */
     public static function getItemResponse(string $entityClass, ?APIEntity $entity, $id): Response {
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
-            $response = static::getItemFoundResponse($entity);
-            $response->setCacheHeaders(Core::getDefaultCacheHeaders());
-            return $response;
+            return static::getItemFoundResponse($entity)
+                ->withCacheHeaders(Core::getDefaultCacheHeaders())
+            ;
         }
 
         return static::getItemNotFoundResponse($entityClass, $id);
@@ -241,10 +240,10 @@ trait Responder {
 
     public static function getInsertResponse(string $entityClass, ?APIEntity $entity): Response {
         if ($entity && $entity->isLoaded()) {
-            $response = static::getItemFoundResponse($entity);
-            $response->setStatus(201);
-            $response->addHeader("Location", $entity->getAPIURL());
-            return $response;
+            return static::getItemFoundResponse($entity)
+                ->withStatus(201)
+                ->withHeader("Location", $entity->getAPIURL())
+            ;
         }
 
         return new Response(500, [

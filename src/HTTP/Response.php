@@ -35,10 +35,8 @@ class Response {
     }
 
     public function setCacheHeaders(array $headers): void {
-        $timeZone = static::getCacheTimeZone();
-
         if (isset($headers["Expires"]) && $headers["Expires"] instanceof DateTime) {
-            $headers["Expires"]->setTimezone($timeZone);
+            $headers["Expires"]->setTimezone(static::getCacheTimeZone());
             $headers["Expires"] = $headers["Expires"]->format("D, d M Y H:i:s") . " GMT";
         }
 
@@ -51,9 +49,19 @@ class Response {
         }
     }
 
+    public function withCacheHeaders(array $headers): Response {
+        $this->setCacheHeaders($headers);
+        return $this;
+    }
+
     public function setStatus(int $code, ?string $message = null): void {
         $this->statusCode = $code;
         $this->statusMessage = $message;
+    }
+
+    public function withStatus(int $code, ?string $message = null): Response {
+        $this->setStatus($code, $message);
+        return $this;
     }
 
     public function getStatusCode(): int {
@@ -72,12 +80,22 @@ class Response {
         $this->headers->set($header, $value);
     }
 
+    public function withHeader(string $header, $value): Response {
+        $this->addHeader($header, $value);
+        return $this;
+    }
+
     public function getHeaders(): Headers {
         return $this->headers;
     }
 
     public function setContent(array $content): void {
         $this->content = $content;
+    }
+
+    public function withContent(array $content): Response {
+        $this->setContent($content);
+        return $this;
     }
 
     public function getContent(): array {
