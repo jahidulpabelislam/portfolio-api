@@ -127,6 +127,10 @@ class Projects extends Controller implements AuthGuarded {
             $project->setValues($data);
             $project->save();
 
+            if ($project->hasErrors()) {
+                return $this->getInvalidInputResponse($project->getErrors());
+            }
+
             // If images were passed update the sort order
             if (!empty($data["images"])) {
                 $orders = [];
