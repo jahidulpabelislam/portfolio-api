@@ -287,11 +287,7 @@ trait Responder {
         }
 
         if ($isDeleted) {
-            return new Response(200, [
-                "data" => [
-                    "id" => (int)$id,
-                ],
-            ]);
+            return new Response(204);
         }
 
         return new Response(500, [
