@@ -44,7 +44,7 @@ trait Responder {
     }
 
     public static function getLoggedOutResponse(): Response {
-        return new Response(200, [
+        return new Response(204, [
             "meta" => [
                 "message" => "Successfully logged out.",
             ],
