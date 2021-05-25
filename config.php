@@ -1,9 +1,5 @@
 <?php
 
-if (!defined("API_VERSION")) {
-    define("API_VERSION", "3");
-}
-
 // The Host/IP of database server
 if (!defined("DB_HOST")) {
     define("DB_HOST", "127.0.0.1");

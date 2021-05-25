@@ -25,6 +25,8 @@ class Core {
 
     use Singleton;
 
+    public const VERSION = "3";
+
     /**
      * @var Request|null
      */
@@ -51,7 +53,7 @@ class Core {
     private function initRoutes(): void {
         $router = $this->router;
 
-        $router->setBasePath("/v" . Config::get()->api_version);
+        $router->setBasePath("/v" . static::VERSION);
 
         $projectsController = Projects::class;
         $authController = Auth::class;

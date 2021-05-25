@@ -186,7 +186,7 @@ class Router {
     private function checkAPIVersion(): ?Response {
         $version = $this->request->uriParts[0] ?? null;
 
-        $shouldBeVersion = "v" . Config::get()->api_version;
+        $shouldBeVersion = "v" . Core::VERSION;
         if ($version !== $shouldBeVersion) {
             return $this->getUnrecognisedAPIVersionResponse();
         }

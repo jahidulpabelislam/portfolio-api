@@ -70,7 +70,7 @@ trait Responder {
      * Generate response data to send back when the requested API version is not recognised
      */
     public function getUnrecognisedAPIVersionResponse(): Response {
-        $shouldBeVersion = Config::get()->api_version;
+        $shouldBeVersion = Core::VERSION;
 
         $shouldBeURI = $this->request->uriParts;
         $shouldBeURI[0] = "v$shouldBeVersion";
