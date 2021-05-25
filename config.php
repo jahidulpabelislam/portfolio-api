@@ -1,34 +1,19 @@
 <?php
 
-// The Host/IP of database server
-if (!defined("DB_HOST")) {
-    define("DB_HOST", "127.0.0.1");
-}
+use App\Config;
 
-// Database name to use in server
-if (!defined("DB_NAME")) {
-    define("DB_NAME", "jpi");
-}
+Config::get()->debug = false;
 
-// Username to database
-if (!defined("DB_USERNAME")) {
-    define("DB_USERNAME", "root");
-}
-
-// Password for the user above
-if (!defined("DB_PASSWORD")) {
-    define("DB_PASSWORD", "");
-}
+Config::get()->db_host = "127.0.0.1";
+Config::get()->db_name = "jpi";
+Config::get()->db_username = "root";
+Config::get()->db_password = "";
 
 // The secret key to use in Firebase's JWT
-if (!defined("PORTFOLIO_ADMIN_SECRET_KEY")) {
-    define("PORTFOLIO_ADMIN_SECRET_KEY", "changeme");
-}
+Config::get()->portfolio_admin_secret_key = "changeme";
 
 // A list of other domains that can call this API
-if (!defined("ALLOWED_DOMAINS")) {
-    define("ALLOWED_DOMAINS",  [
-        "jahidulpabelislam.com",
-        "cms.jahidulpabelislam.com",
-    ]);
-}
+Config::get()->allowed_domains = [
+    "jahidulpabelislam.com",
+    "cms.jahidulpabelislam.com",
+];

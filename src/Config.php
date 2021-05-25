@@ -19,24 +19,14 @@ class Config {
 
     use Singleton;
 
-    public $debug = false;
+    protected $values = [];
 
-    private function __construct() {
-        $environment = getenv("APPLICATION_ENV") ?? "production";
-
-        // Only want debugging on development site
-        if ($environment === "development") {
-            $this->debug = true;
-        }
+    public function __set(string $key, $value) {
+        $this->values[$key] = $value;
     }
 
-    public function __get(string $name) {
-        $name = strtoupper($name);
-        if (defined($name)) {
-            return constant($name);
-        }
-
-        return null;
+    public function __get(string $key) {
+        return $this->values[$key] ?? null;
     }
 
 }
