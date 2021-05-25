@@ -111,24 +111,6 @@ class Core {
         return $fullURL;
     }
 
-    public static function isValueValid(array $data, string $key): bool {
-        if (!isset($data[$key])) {
-            return false;
-        }
-
-        $value = $data[$key];
-
-        if (is_array($value)) {
-            return (count($value) > 0);
-        }
-
-        if (is_string($value)) {
-            return ($value !== "");
-        }
-
-        return false;
-    }
-
     private function setCORSHeaders(): void {
         $origins = $this->getRequest()->headers->get("Origin");
         $originURL = $origins[0] ?? "";

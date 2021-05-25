@@ -16,7 +16,7 @@ abstract class AbstractUser {
         $data = $request->data;
         $errors = [];
         foreach (static::$requiredColumns as $column) {
-            if (!Core::isValueValid($data, $column)) {
+            if (empty($data[$column])) {
                 $label = StringHelper::machineToDisplay($column);
                 $errors[$column] = "$label is a required field.";
             }
