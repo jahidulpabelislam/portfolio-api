@@ -14,15 +14,17 @@
 namespace App;
 
 use App\Database\Collection as DBCollection;
-use App\Database\Connection;
-use App\Database\Query;
 use App\Entity\Collection as EntityCollection;
+use App\Entity\Validated;
 use App\Utils\Arrayable;
+use App\Utils\StringHelper;
 use DateTime;
+use Exception;
 
 abstract class Entity implements Arrayable {
 
     use DatabaseAware;
+    use Validated;
 
     protected static $displayName = "";
 
@@ -109,24 +111,53 @@ abstract class Entity implements Arrayable {
     }
 
     protected function setValue(string $column, $value, bool $fromDB = false): void {
+        $label = StringHelper::machineToDisplay($column);
+
+        unset($this->errors[$column]);
+
         if (in_array($column, static::getIntColumns())) {
-            $value = (int)$value;
+            if (is_numeric($value) && $value == (int)$value) {
+                $value = (int)$value;
+            }
+            else if (!is_null($value)) {
+                $this->addError($column, "$label must be a integer.");
+            }
         }
         else if (in_array($column, static::getArrayColumns())) {
             if ($fromDB && is_string($value)) {
                 $value = explode(static::$arrayColumnSeparator, $value);
             }
-            else if (!is_array($value)) {
-                $value = []; // Unexpected value, set to empty array
+            else if (!is_array($value) && !is_null($value)) {
+                $this->addError($column, "$label must be an array.");
             }
         }
         else if (in_array($column, static::getDateColumns()) || in_array($column, static::getDateTimeColumns())) {
             if (!empty($value) && (is_string($value) || is_numeric($value))) {
-                $value = new DateTime($value);
+                try {
+                    $value = new DateTime($value);
+                }
+                catch (Exception $exception) {
+                    error_log("Error creating DateTime instance: " . $exception->getMessage());
+                    $this->addError(
+                        $column,
+                        "$label is a invalid date" . (in_array($column, static::getDateTimeColumns()) ? " time" : "") . " format."
+                    );
+                }
             }
-            else if (!($value instanceof DateTime)) {
-                $value = null; // Unexpected value, set to null
+            else if (!($value instanceof DateTime) && !is_null($value)) {
+                $this->addError(
+                    $column,
+                    "$label must be a date" . (in_array($column, static::getDateTimeColumns()) ? " time" : "") . "."
+                );
             }
+        }
+
+        // Unexpected value, set to null
+        if (isset($this->errors[$column])) {
+            $value = null;
+        }
+        else if (!$value && in_array($column, static::getRequiredColumns())) {
+            $this->addError($column, "$label is a required field.");
         }
 
         $this->columns[$column] = $value;
@@ -351,16 +382,14 @@ abstract class Entity implements Arrayable {
         return $values;
     }
 
-    protected function beforeSave(): void {
-
-    }
-
     /**
      * Save values to the Entity Table in the Database
      * Will either be a new insert or a update to an existing Entity
      */
     public function save(): bool {
-        $this->beforeSave();
+        if ($this->hasErrors()) {
+            return false;
+        }
 
         if ($this->isLoaded()) {
             $rowsAffected = static::getQuery()->update($this->getValuesToSave(), $this->getId());

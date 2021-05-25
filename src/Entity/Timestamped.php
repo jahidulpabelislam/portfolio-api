@@ -32,7 +32,7 @@ trait Timestamped {
         }
     }
 
-    public function beforeSave(): void {
+    public function save(): bool {
         $isNew = !$this->isLoaded();
 
         if ($isNew && (!isset(static::$hasCreatedAt) || static::$hasCreatedAt)) {
@@ -42,6 +42,8 @@ trait Timestamped {
         if (!isset(static::$hasUpdatedAt) || static::$hasUpdatedAt) {
             $this->setValue("updated_at", new DateTime());
         }
+
+        return parent::save();
     }
 
 }

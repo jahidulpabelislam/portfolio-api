@@ -24,24 +24,4 @@ trait Validated {
         $this->errors[$column] = $error;
     }
 
-    public function validate(): void {
-        $this->errors = []; // Always clear first
-        foreach (static::getRequiredColumns() as $column) {
-            if (!$this->{$column}) {
-                $label = StringHelper::machineToDisplay($column);
-                $this->addError($column, "$label is a required field.");
-            }
-        }
-    }
-
-    public function save(): bool {
-        $this->validate();
-
-        if ($this->hasErrors()) {
-            return false;
-        }
-
-        return parent::save();
-    }
-
 }
