@@ -14,6 +14,7 @@ namespace App\Entity;
 
 use App\AbstractUser;
 use App\Config;
+use App\HTTP\Request;
 use Exception;
 use Firebase\JWT\JWT;
 
@@ -22,7 +23,7 @@ class User extends AbstractUser {
     private const JWT_ALG = "HS512";
     private const JWT_EXPIRATION_HOURS = 6;
 
-    public static function login(array $data): ?string {
+    public static function login(Request $request): ?string {
         // TODO: Actually do the logging in here (e.g store in cookie, session or database etc.)
 
         // SAMPLE!!
@@ -48,18 +49,17 @@ class User extends AbstractUser {
         return $jwt;
     }
 
-    public static function logout(): bool {
+    public static function logout(Request $request): bool {
         // TODO: Actually do the log out here (e.g removing cookie, session or database etc.)
         return true;
     }
 
-    public static function isLoggedIn(): bool {
+    public static function isLoggedIn(Request $request): bool {
         // SAMPLE!!
         // TODO: Actually do the check of logged in status (e.g check against stored cookie, session or database etc.)
-        $headers = apache_request_headers();
 
-        $auth = $headers["Authorization"] ?? "";
-        [$jwt] = sscanf($auth, "Bearer %s");
+        $auth = $request->headers->get("Authorization", []);
+        [$jwt] = sscanf($auth[0] ?? "", "Bearer %s");
 
         if (!empty($jwt)) {
             try {

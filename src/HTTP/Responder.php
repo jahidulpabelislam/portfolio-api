@@ -13,7 +13,6 @@
 namespace App\HTTP;
 
 use App\APIEntity;
-use App\Config;
 use App\Core;
 use App\Entity\Collection as EntityCollection;
 

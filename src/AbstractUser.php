@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\HTTP\Request;
 use App\Utils\StringHelper;
 
 abstract class AbstractUser {
@@ -11,13 +12,10 @@ abstract class AbstractUser {
         "password",
     ];
 
-    public static function getRequiredColumns(): array {
-        return static::$requiredColumns;
-    }
-
-    public static function getErrors(array $data): array {
+    public static function getErrors(Request $request): array {
+        $data = $request->data;
         $errors = [];
-        foreach (static::getRequiredColumns() as $column) {
+        foreach (static::$requiredColumns as $column) {
             if (!Core::isValueValid($data, $column)) {
                 $label = StringHelper::machineToDisplay($column);
                 $errors[$column] = "$label is a required field.";
@@ -27,31 +25,29 @@ abstract class AbstractUser {
         return $errors;
     }
 
-    public static function hasErrors(array $data): bool {
-        return count(static::getErrors($data));
-    }
-
     /**
      * Authenticate a user trying to login
      * If successful store generate JWT and return, else return null
      *
-     * @param $data array Submitted data to support in login attempt
+     * @param $request Request
      * @return string|null
      */
-    abstract public static function login(array $data): ?string;
+    abstract public static function login(Request $request): ?string;
 
     /**
      * Do the log out here (e.g removing cookie, session or database etc.)
      *
+     * @param $request Request
      * @return bool
      */
-    abstract public static function logout(): bool;
+    abstract public static function logout(Request $request): bool;
 
     /**
      * Check whether the current user is logged in (e.g check against stored cookie, session or database etc.)
      *
+     * @param $request Request
      * @return bool
      */
-    abstract public static function isLoggedIn(): bool;
+    abstract public static function isLoggedIn(Request $request): bool;
 
 }

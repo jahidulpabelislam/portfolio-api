@@ -27,9 +27,8 @@ class Auth extends Controller {
      * @return Response
      */
     public function login(): Response {
-        $data = $this->request->data;
-        if (!$errors = User::getErrors($data)) {
-            $jwt = User::login($data);
+        if (!$errors = User::getErrors($this->request)) {
+            $jwt = User::login($this->request);
             if ($jwt) {
                 return new Response(200, [
                     "data" => $jwt,
@@ -49,8 +48,8 @@ class Auth extends Controller {
      *
      * @return Response
      */
-    public static function logout(): Response {
-        if (User::logout()) {
+    public function logout(): Response {
+        if (User::logout($this->request)) {
             return self::getLoggedOutResponse();
         }
 
@@ -63,9 +62,9 @@ class Auth extends Controller {
      *
      * @return Response
      */
-    public static function getStatus(): Response {
+    public function getStatus(): Response {
         return new Response(200, [
-            "data" => User::isLoggedIn(),
+            "data" => User::isLoggedIn($this->request),
         ]);
     }
 

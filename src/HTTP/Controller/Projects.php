@@ -34,10 +34,10 @@ class Projects extends Controller implements AuthGuarded {
      * @param $includeLinkedData bool
      * @return Project|null
      */
-    private static function getProjectEntity($projectId, bool $includeLinkedData = false): ?Project {
+    private function getProjectEntity($projectId, bool $includeLinkedData = false): ?Project {
         $where = ["id = :id"];
         $params = ["id" => $projectId];
-        if (!User::isLoggedIn()) {
+        if (!User::isLoggedIn($this->request)) {
             $where[] = "status = :status";
             $params["status"] = Project::PUBLIC_STATUS;
         }
@@ -64,7 +64,7 @@ class Projects extends Controller implements AuthGuarded {
         $params["filters"] = $params["filters"] ?? [];
 
         // As the user isn't logged in, filter by status = public
-        if (!User::isLoggedIn()) {
+        if (!User::isLoggedIn($this->request)) {
             $params["filters"]["status"] = Project::PUBLIC_STATUS;
         }
 
