@@ -25,7 +25,7 @@ class Core {
 
     use Singleton;
 
-    public const VERSION = "3";
+    public const VERSION = "4";
 
     /**
      * @var Request|null
