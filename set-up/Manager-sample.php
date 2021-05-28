@@ -10,15 +10,14 @@
  * @copyright 2010-2020 JPI
  */
 
-namespace App\Entity;
+namespace App\Auth;
 
-use App\AbstractUser;
 use App\Config;
 use App\HTTP\Request;
 use Exception;
 use Firebase\JWT\JWT;
 
-class User extends AbstractUser {
+class Manager extends AbstractManager {
 
     private const JWT_ALG = "HS512";
     private const JWT_EXPIRATION_HOURS = 6;

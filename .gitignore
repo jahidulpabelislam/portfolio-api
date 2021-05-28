@@ -5,7 +5,8 @@ logs/*.log
 vendor/*
 
 Hasher.php
-User.php
+
+*/Auth/Manager.php
 
 project-images/*
 

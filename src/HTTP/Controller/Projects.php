@@ -11,11 +11,11 @@
 
 namespace App\HTTP\Controller;
 
+use App\Auth\Manager as AuthManager;
 use App\Core;
 use App\Entity\Collection as EntityCollection;
 use App\Entity\Project;
 use App\Entity\ProjectImage;
-use App\Entity\User;
 use App\HTTP\Controller;
 use App\HTTP\Response;
 use Exception;
@@ -37,7 +37,7 @@ class Projects extends Controller implements AuthGuarded {
     private function getProjectEntity($projectId, bool $includeLinkedData = false): ?Project {
         $where = ["id = :id"];
         $params = ["id" => $projectId];
-        if (!User::isLoggedIn($this->request)) {
+        if (!AuthManager::isLoggedIn($this->request)) {
             $where[] = "status = :status";
             $params["status"] = Project::PUBLIC_STATUS;
         }
@@ -64,7 +64,7 @@ class Projects extends Controller implements AuthGuarded {
         $params["filters"] = $params["filters"] ?? [];
 
         // As the user isn't logged in, filter by status = public
-        if (!User::isLoggedIn($this->request)) {
+        if (!AuthManager::isLoggedIn($this->request)) {
             $params["filters"]["status"] = Project::PUBLIC_STATUS;
         }
 

@@ -1,11 +1,11 @@
 <?php
 
-namespace App;
+namespace App\Auth;
 
 use App\HTTP\Request;
 use App\Utils\StringHelper;
 
-abstract class AbstractUser {
+abstract class AbstractManager {
 
     protected static $requiredColumns = [
         "username",

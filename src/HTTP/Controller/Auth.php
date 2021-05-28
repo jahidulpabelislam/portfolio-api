@@ -12,7 +12,7 @@
 
 namespace App\HTTP\Controller;
 
-use App\Entity\User;
+use App\Auth\Manager as AuthManager;
 use App\HTTP\Controller;
 use App\HTTP\Response;
 
@@ -27,8 +27,8 @@ class Auth extends Controller {
      * @return Response
      */
     public function login(): Response {
-        if (!$errors = User::getErrors($this->request)) {
-            $jwt = User::login($this->request);
+        if (!$errors = AuthManager::getErrors($this->request)) {
+            $jwt = AuthManager::login($this->request);
             if ($jwt) {
                 return new Response(200, [
                     "data" => $jwt,
@@ -49,7 +49,7 @@ class Auth extends Controller {
      * @return Response
      */
     public function logout(): Response {
-        if (User::logout($this->request)) {
+        if (AuthManager::logout($this->request)) {
             return self::getLoggedOutResponse();
         }
 
@@ -64,7 +64,7 @@ class Auth extends Controller {
      */
     public function getStatus(): Response {
         return new Response(200, [
-            "data" => User::isLoggedIn($this->request),
+            "data" => AuthManager::isLoggedIn($this->request),
         ]);
     }
 
