@@ -2,8 +2,6 @@
 
 namespace App\Entity;
 
-use App\Utils\StringHelper;
-
 trait Validated {
 
     protected $errors = [];

@@ -1,13 +1,7 @@
 <?php
 
 /**
- * Class for storing any helper functions which constructs responses
- *
- * PHP version 7.1+
- *
- * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @since Class available since Release: v3.3.0
- * @copyright 2010-2020 JPI
+ * Class for storing any helper functions which constructs responses.
  */
 
 namespace App\HTTP;

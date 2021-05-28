@@ -1,13 +1,7 @@
 <?php
 
 /**
- * The controller for this API's Authentication.
- *
- * PHP version 7.1+
- *
- * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @since Class available since Release: v2.0.0
- * @copyright 2010-2020 JPI
+ * The controller for this API's authentication.
  */
 
 namespace App\HTTP\Controller;

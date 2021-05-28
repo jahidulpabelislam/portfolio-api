@@ -4,12 +4,6 @@
  * The Project Entity object class (extends the base Entity class, where most of the ORM functionality lies).
  * Within this holds and methods where it overwrites or add extra custom functionality from the base Entity class.
  * Also holds any method only custom to Project entities.
- *
- * PHP version 7.1+
- *
- * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @since Class available since Release: v3.0.0
- * @copyright 2010-2020 JPI
  */
 
 namespace App\Entity;

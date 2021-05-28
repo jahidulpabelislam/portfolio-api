@@ -1,14 +1,9 @@
 <?php
 
 /**
- * Connects to a database and set up to send and receive data
+ * Connects to a database and set up to send and receive data.
  *
  * MySQL & PDO specific.
- *
- * PHP version 7.1+
- *
- * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @copyright 2010-2020 JPI
  */
 
 namespace App\Database;

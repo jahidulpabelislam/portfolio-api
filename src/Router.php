@@ -2,12 +2,6 @@
 
 /**
  * A RESTful API router.
- *
- * PHP version 7.1+
- *
- * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @since Class available since Release: v2.0.0
- * @copyright 2010-2020 JPI
  */
 
 namespace App;

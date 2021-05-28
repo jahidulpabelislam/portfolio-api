@@ -1,14 +1,7 @@
 <?php
 
 /**
- * All the general functions for the API.
- *
- * Can be used by multiple API's.
- *
- * PHP version 7.1+
- *
- * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @copyright 2010-2020 JPI
+ * The 'index' of the application/API.
  */
 
 namespace App;

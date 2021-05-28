@@ -1,14 +1,9 @@
 <?php
 
 /**
- * The base Entity object class for Project & Projects Images.
+ * The base Entity object class for database tables.
+ *
  * Holds all ORM style functions.
- *
- * PHP version 7.1+
- *
- * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @since Class available since Release: v3.0.0
- * @copyright 2010-2020 JPI
  */
 
 namespace App;

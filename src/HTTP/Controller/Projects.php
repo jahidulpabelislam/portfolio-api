@@ -2,11 +2,6 @@
 
 /**
  * All the custom functions for the Projects part of the API that allow to perform all user requests.
- *
- * PHP version 7.1+
- *
- * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @copyright 2010-2020 JPI
  */
 
 namespace App\HTTP\Controller;

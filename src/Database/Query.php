@@ -3,12 +3,6 @@
 /**
  * The middle man for querying the database from an Entity.
  * Builds the SQL queries and executes/runs them and returns in appropriate format.
- *
- * PHP version 7.1+
- *
- * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @since Class available since Release: v3.8.5
- * @copyright 2010-2020 JPI
  */
 
 namespace App\Database;
