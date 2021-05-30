@@ -1,11 +1,10 @@
 <?php
 
-namespace App;
+namespace App\Database;
 
-use App\Database\Connection;
-use App\Database\Query;
+use App\Config;
 
-trait DatabaseAware {
+trait AwareTrait {
 
     /**
      * @var Connection
