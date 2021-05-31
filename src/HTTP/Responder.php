@@ -67,7 +67,7 @@ trait Responder {
 
         $shouldBeURI = $this->request->uriParts;
         $shouldBeURI[0] = "v$shouldBeVersion";
-        $shouldBeURL = Core::makeFullURL($shouldBeURI);
+        $shouldBeURL = Core::get()->makeFullURL($shouldBeURI);
 
         return new Response(404, [
             "error" => "Unrecognised API version. Current version is $shouldBeVersion, so please update requested URL to $shouldBeURL.",

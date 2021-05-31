@@ -82,13 +82,15 @@ class Core {
      * @param $uri string|string[]
      * @return string
      */
-    public static function makeFullURL($uri): string {
+    public function makeFullURL($uri): string {
         if (is_array($uri)) {
             $uri = implode("/", $uri);
         }
 
-        $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
-        $domain = StringHelper::removeTrailingSlash($_SERVER["SERVER_NAME"]);
+        $request = $this->getRequest();
+
+        $protocol = $request->server->get("HTTPS") !== "off" ? "https" : "http";
+        $domain = StringHelper::removeTrailingSlash($request->server->get("SERVER_NAME"));
         $uri = StringHelper::removeLeadingSlash($uri);
 
         return StringHelper::addTrailingSlash("$protocol://$domain/$uri");

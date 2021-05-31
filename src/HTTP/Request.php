@@ -3,9 +3,12 @@
 namespace App\HTTP;
 
 use App\Core;
+use App\Utils\ArrayCollection;
 use App\Utils\StringHelper;
 
 class Request {
+
+    public $server;
 
     public $method;
 
@@ -39,9 +42,11 @@ class Request {
     }
 
     public function __construct() {
-        $this->method = strtoupper($_SERVER["REQUEST_METHOD"]);
+        $this->server = new ArrayCollection($_SERVER);
 
-        $this->uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+        $this->method = strtoupper($this->server->get("REQUEST_METHOD"));
+
+        $this->uri = parse_url($this->server->get("REQUEST_URI"), PHP_URL_PATH);
 
         // Get the individual parts of the request URI as an array
         $uri = StringHelper::removeSlashes($this->uri);
@@ -66,7 +71,7 @@ class Request {
      * @return string
      */
     public function getURL(): string {
-        return Core::makeFullURL($this->uri);
+        return Core::get()->makeFullURL($this->uri);
     }
 
     public function getParam(string $param, $default = null) {

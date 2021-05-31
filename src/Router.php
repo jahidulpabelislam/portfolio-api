@@ -91,7 +91,7 @@ class Router {
 
     public function makeUrl(string $name, array $params): string {
         $path = $this->makePath($name, $params);
-        return Core::makeFullURL($path);
+        return Core::get()->makeFullURL($path);
     }
 
     private function getIdentifiersFromMatches(array $matches): array {
