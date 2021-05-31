@@ -124,6 +124,7 @@ class Response {
     }
 
     public function send(bool $pretty = false): void {
+        $this->addHeader("Content-Type", "application/json");
         $this->sendHeaders();
         $this->sendContent($pretty);
     }

@@ -160,9 +160,7 @@ class Core {
         $content["meta"]["status_code"] = $response->getStatusCode();
         $content["meta"]["status_message"] = $response->getStatusMessage();
 
-        $response->withContent($content)
-            ->withHeader("Content-Type", "application/json")
-        ;
+        $response->setContent($content);
     }
 
     public function handleRequest(): void {
