@@ -148,7 +148,7 @@ class Core {
                 "status_message" => "",
                 "method" => $request->method,
                 "uri" => $request->uri,
-                "params" => $request->params,
+                "params" => $request->params->toArray(),
             ],
         ];
         $content = array_replace_recursive($defaults, $content);

@@ -136,7 +136,7 @@ trait Responder {
      * @return Response
      */
     public function getPaginatedItemsResponse(string $entityClass, EntityCollection $collection): Response {
-        $params = $this->request->params;
+        $params = (clone $this->request->params)->toArray();
 
         // The items response is the base response, and the extra meta is added below
         $response = $this->getItemsResponse($entityClass, $collection);

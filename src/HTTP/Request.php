@@ -4,6 +4,7 @@ namespace App\HTTP;
 
 use App\Core;
 use App\Utils\ArrayCollection;
+use App\Utils\Collection;
 use App\Utils\StringHelper;
 
 class Request {
@@ -24,11 +25,11 @@ class Request {
 
     /**
      * @param $value array|string
-     * @return array|string
+     * @return Collection|string
      */
     private static function sanitizeData($value) {
         if (is_array($value)) {
-            $newArrayValues = [];
+            $newArrayValues = new Collection();
             foreach ($value as $subKey => $subValue) {
                 $newArrayValues[$subKey] = self::sanitizeData($subValue);
             }
@@ -75,7 +76,7 @@ class Request {
     }
 
     public function getParam(string $param, $default = null) {
-        return $this->params[$param] ?? $default;
+        return $this->params->get($param, $default);
     }
 
 }

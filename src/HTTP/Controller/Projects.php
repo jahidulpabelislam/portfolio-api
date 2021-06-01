@@ -13,6 +13,7 @@ use App\Entity\Project;
 use App\Entity\ProjectImage;
 use App\HTTP\Controller;
 use App\HTTP\Response;
+use App\Utils\Collection;
 use Exception;
 
 class Projects extends Controller implements AuthGuarded {
@@ -51,30 +52,32 @@ class Projects extends Controller implements AuthGuarded {
      * @return Response
      */
     public function getProjects(): Response {
-        $params = $this->request->params;
+        $params = clone $this->request->params;
 
-        $limit = $params["limit"] ?? null;
-        $page = $params["page"] ?? null;
-
-        $params["filters"] = $params["filters"] ?? [];
+        if (!isset($params["filters"])) {
+            $params["filters"] = new Collection();
+        }
 
         // As the user isn't logged in, filter by status = public
         if (!AuthManager::isLoggedIn($this->request)) {
             $params["filters"]["status"] = Project::PUBLIC_STATUS;
         }
 
-        $query = Project::buildQueryFromFilters($params["filters"]);
+        $query = Project::buildQueryFromFilters($params["filters"]->toArray());
 
         $where = $query["where"];
         $queryParams = $query["params"];
 
-        $search = $params["search"] ?? null;
+        $search = $this->request->getParam("search");
         if ($search) {
             $searchQuery = Project::buildSearchQuery($search);
 
             $where = array_merge($where, $searchQuery["where"]);
             $queryParams = array_merge($queryParams, $searchQuery["params"]);
         }
+
+        $limit = $this->request->getParam("limit");
+        $page = $this->request->getParam("page");
 
         $projects = Project::get($where, $queryParams, $limit, $page);
 
@@ -101,7 +104,7 @@ class Projects extends Controller implements AuthGuarded {
      * @return Response
      */
     public function addProject(): Response {
-        $project = Project::insert($this->request->data);
+        $project = Project::insert($this->request->data->toArray());
         if ($project->hasErrors()) {
             return $this->getInvalidInputResponse($project->getErrors());
         }
@@ -119,7 +122,7 @@ class Projects extends Controller implements AuthGuarded {
         $project = self::getProjectEntity($projectId, true);
         if ($project) {
             $data = $this->request->data;
-            $project->setValues($data);
+            $project->setValues($data->toArray());
             $project->save();
 
             if ($project->hasErrors()) {
