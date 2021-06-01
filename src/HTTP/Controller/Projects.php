@@ -119,7 +119,7 @@ class Projects extends Controller implements AuthGuarded {
      * @return Response
      */
     public function updateProject($projectId): Response {
-        $project = self::getProjectEntity($projectId, true);
+        $project = $this->getProjectEntity($projectId, true);
         if ($project) {
             $data = $this->request->data;
             $project->setValues($data->toArray());
@@ -154,10 +154,10 @@ class Projects extends Controller implements AuthGuarded {
      * @param $projectId int|string The Id of the Project to delete
      * @return Response
      */
-    public static function deleteProject($projectId): Response {
+    public function deleteProject($projectId): Response {
         $isDeleted = false;
 
-        $project = self::getProjectEntity($projectId);
+        $project = $this->getProjectEntity($projectId);
         if ($project) {
             $isDeleted = $project->delete();
         }
@@ -171,8 +171,8 @@ class Projects extends Controller implements AuthGuarded {
      * @param $projectId int|string The Id of the Project to get
      * @return Response
      */
-    public static function getProject($projectId): Response {
-        $project = self::getProjectEntity($projectId, true);
+    public function getProject($projectId): Response {
+        $project = $this->getProjectEntity($projectId, true);
 
         return self::getItemResponse(Project::class, $project, $projectId);
     }
@@ -185,7 +185,7 @@ class Projects extends Controller implements AuthGuarded {
      */
     public function getProjectImages($projectId): Response {
         // Check the Project trying to get Images for exists
-        $project = self::getProjectEntity($projectId, true);
+        $project = $this->getProjectEntity($projectId, true);
         if ($project) {
             return $this->getItemsResponse(ProjectImage::class, $project->images);
         }
@@ -259,7 +259,7 @@ class Projects extends Controller implements AuthGuarded {
         $files = $this->request->files;
         if (isset($files["image"])) {
             // Check the Project trying to add a Image for exists
-            $project = self::getProjectEntity($projectId);
+            $project = $this->getProjectEntity($projectId);
             if ($project) {
                 return self::uploadProjectImage($project, $files["image"]);
             }
@@ -280,9 +280,9 @@ class Projects extends Controller implements AuthGuarded {
      * @param $imageId int|string The Id of the Project Image to get
      * @return Response
      */
-    public static function getProjectImage($projectId, $imageId): Response {
+    public function getProjectImage($projectId, $imageId): Response {
         // Check the Project trying to get Image for exists
-        $project = self::getProjectEntity($projectId);
+        $project = $this->getProjectEntity($projectId);
         if ($project) {
             $projectImage = ProjectImage::getById($imageId);
 
@@ -311,9 +311,9 @@ class Projects extends Controller implements AuthGuarded {
      * @param $imageId int|string The Id of the Project Image to delete
      * @return Response
      */
-    public static function deleteProjectImage($projectId, $imageId): Response {
+    public function deleteProjectImage($projectId, $imageId): Response {
         // Check the Project of the Image trying to edit actually exists
-        $project = self::getProjectEntity($projectId);
+        $project = $this->getProjectEntity($projectId);
         if ($project) {
             $isDeleted = false;
 
