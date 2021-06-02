@@ -6,13 +6,13 @@ $config = Config::get();
 
 $config->debug = false;
 
-$config->db_host = "127.0.0.1";
-$config->db_name = "jpi";
-$config->db_username = "root";
-$config->db_password = "";
+$config->db_host = "overrideme";
+$config->db_name = "overrideme";
+$config->db_username = "overrideme";
+$config->db_password = "overrideme";
 
 // The secret key to use in Firebase's JWT
-$config->portfolio_admin_secret_key = "changeme";
+$config->portfolio_admin_secret_key = "overrideme";
 
 // A list of other domains that can call this API
 $config->allowed_domains = [
