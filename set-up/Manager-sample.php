@@ -2,12 +2,6 @@
 
 /**
  * The functions for the handling of authentication for this API.
- *
- * PHP version 7.1+
- *
- * @author Jahidul Pabel Islam <me@jahidulpabelislam.com>
- * @since Class available since Release: v3.8.0
- * @copyright 2010-2020 JPI
  */
 
 namespace App\Auth;
