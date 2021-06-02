@@ -218,7 +218,7 @@ class Projects extends Controller implements AuthGuarded {
 
         $newFileLocation = $directory . $newFilename;
 
-        $newImageFullPath = ROOT . $newFileLocation;
+        $newImageFullPath = APP_ROOT . $newFileLocation;
 
         // Check if file is a actual image
         $fileType = mime_content_type($image["tmp_name"]);

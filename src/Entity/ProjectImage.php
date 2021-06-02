@@ -47,7 +47,7 @@ class ProjectImage extends APIEntity {
         // Check if the deletion was ok
         if ($isDeleted && !empty($this->file)) {
             // Makes sure there is a leading slash
-            $filePath = ROOT . StringHelper::addLeadingSlash($this->file);
+            $filePath = APP_ROOT . StringHelper::addLeadingSlash($this->file);
             if (file_exists($filePath)) {
                 unlink($filePath);
             }
