@@ -89,7 +89,7 @@ class Core {
 
         $request = $this->getRequest();
 
-        $protocol = $request->server->get("HTTPS") !== "off" ? "https" : "http";
+        $protocol = $request->server->get("HTTPS") === "on" ? "https" : "http";
         $domain = StringHelper::removeTrailingSlash($request->server->get("SERVER_NAME"));
         $uri = StringHelper::removeLeadingSlash($uri);
 
