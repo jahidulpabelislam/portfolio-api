@@ -140,7 +140,9 @@ class Core {
         $this->response = $this->getRouter()->performRequest();
 
         if ($this->response->headers->get("ETag", "") === $request->headers->get("If-None-Match")) {
-            $this->response->setStatus(304);
+            $this->response->withStatus(304)
+                ->withContent(null)
+            ;
         }
 
         $this->setCORSHeaders();

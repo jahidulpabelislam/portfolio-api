@@ -89,11 +89,11 @@ class Response {
         return $this->headers;
     }
 
-    public function setContent(array $content): void {
+    public function setContent(?array $content): void {
         $this->content = $content;
     }
 
-    public function withContent(array $content): Response {
+    public function withContent(?array $content): Response {
         $this->setContent($content);
         return $this;
     }
@@ -107,12 +107,14 @@ class Response {
     }
 
     protected function sendHeaders(): void {
-        foreach ($this->headers as $name => $value) {
-            if (is_array($value)) {
-                $value = implode(", ", $value);
-            }
+        if (!is_null($this->content)) {
+            foreach ($this->headers as $name => $value) {
+                if (is_array($value)) {
+                    $value = implode(", ", $value);
+                }
 
-            header("$name: $value");
+                header("$name: $value");
+            }
         }
 
         header("HTTP/1.1 {$this->getStatusCode()} {$this->getStatusMessage()}");
@@ -124,9 +126,14 @@ class Response {
     }
 
     public function send(bool $pretty = false): void {
-        $this->addHeader("Content-Type", "application/json");
+        if (!is_null($this->content)) {
+            $this->addHeader("Content-Type", "application/json");
+        }
         $this->sendHeaders();
-        $this->sendContent($pretty);
+
+        if (!is_null($this->content)) {
+            $this->sendContent($pretty);
+        }
     }
 
 }
