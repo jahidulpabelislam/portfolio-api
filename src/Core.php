@@ -134,43 +134,18 @@ class Core {
         ];
     }
 
-    /**
-     * Process the response.
-     */
-    public function processResponse(): void {
+    public function handleRequest(): void {
         $request = $this->getRequest();
-        $response = $this->response;
 
-        $content = $response->getContent();
-        $defaults = [
-            "meta" => [
-                "status_code" => "",
-                "status_message" => "",
-                "method" => $request->method,
-                "uri" => $request->uri,
-                "params" => $request->params->toArray(),
-            ],
-        ];
-        $content = array_replace_recursive($defaults, $content);
+        $this->response = $this->getRouter()->performRequest();
+
+        if ($this->response->headers->get("ETag", "") === $request->headers->get("If-None-Match")) {
+            $this->response->setStatus(304);
+        }
 
         $this->setCORSHeaders();
 
-        if ($response->headers->get("ETag", "") === $request->headers->get("If-None-Match")) {
-            $response->setStatus(304);
-        }
-
-        $content["meta"]["status_code"] = $response->getStatusCode();
-        $content["meta"]["status_message"] = $response->getStatusMessage();
-
-        $response->setContent($content);
-    }
-
-    public function handleRequest(): void {
-        $this->response = $this->getRouter()->performRequest();
-
-        $this->processResponse();
-
-        $sendPretty = StringHelper::stringToBoolean($this->getRequest()->getParam("pretty"));
+        $sendPretty = StringHelper::stringToBoolean($request->getParam("pretty"));
         $this->response->send($sendPretty);
     }
 
