@@ -11,10 +11,12 @@ class Query {
 
     protected $connection;
     protected $table;
+    protected $debug;
 
-    public function __construct(Connection $connection, string $table) {
+    public function __construct(Connection $connection, string $table, $debug = false) {
         $this->connection = $connection;
         $this->table = $table;
+        $this->debug = $debug;
     }
 
     /**
@@ -24,7 +26,7 @@ class Query {
      * @return array[]|array|int|null
      */
     private function execute(array $parts, ?array $params, string $function = "execute") {
-        $query = implode("\n", $parts);
+        $query = implode($this->debug ? "\n" : " ", $parts);
         $query .= ";";
         return $this->connection->{$function}($query, $params);
     }
@@ -37,13 +39,19 @@ class Query {
      * @param $separator string
      * @return string
      */
-    private static function arrayToQueryString($value, string $separator = ",\n\t"): string {
+    private function arrayToQueryString($value, string $separator = ", "): string {
         if ($value && is_array($value) && count($value) === 1) {
             $value = array_shift($value);
         }
 
         if (is_array($value) && count($value)) {
-            $value = "\n\t" . implode($separator, $value);
+            if ($this->debug) {
+                $separator .= "\n\t";
+            }
+            $value = implode($separator, $value);
+            if ($this->debug) {
+                $value = "\n\t" . $value;
+            }
         }
 
         if (!$value || !is_string($value)) {
@@ -76,7 +84,7 @@ class Query {
      * @param $params array|null
      * @return array [string|null, array|null]
      */
-    private static function generateWhereClause($where, ?array $params): array {
+    private function generateWhereClause($where, ?array $params): array {
         if ($where) {
             if (is_numeric($where)) {
                 $params = static::initArray($params);
@@ -84,7 +92,7 @@ class Query {
                 $where = "id = :id";
             }
 
-            $where = static::arrayToQueryString($where, "\n\tAND ");
+            $where = $this->arrayToQueryString($where," AND ");
 
             return [
                 "WHERE $where",
@@ -108,7 +116,7 @@ class Query {
      * @param $page int|null
      * @return array [array, array|null]
      */
-    protected static function generateSelectQuery(
+    protected function generateSelectQuery(
         string $table,
         $columns = "*",
         $where = null,
@@ -118,14 +126,14 @@ class Query {
         ?int $page = null
     ): array {
         $columns = $columns ?: "*";
-        $columns = static::arrayToQueryString($columns);
+        $columns = $this->arrayToQueryString($columns);
 
         $sqlParts = [
             "SELECT $columns",
             "FROM $table",
         ];
 
-        [$whereClause, $params] = static::generateWhereClause($where, $params);
+        [$whereClause, $params] = $this->generateWhereClause($where, $params);
         if ($whereClause) {
             $sqlParts[] = $whereClause;
 
@@ -135,7 +143,7 @@ class Query {
             }
         }
 
-        $orderBy = static::arrayToQueryString($orderBy);
+        $orderBy = $this->arrayToQueryString($orderBy);
         if ($orderBy) {
             $sqlParts[] = "ORDER BY $orderBy";
         }
@@ -194,7 +202,7 @@ class Query {
     ) {
         $page = $limit ? static::getPage($page) : null;
 
-        [$sqlParts, $params] = static::generateSelectQuery(
+        [$sqlParts, $params] = $this->generateSelectQuery(
             $this->table,
             $columns,
             $where,
@@ -267,7 +275,7 @@ class Query {
         foreach ($values as $column => $value) {
             $valuesQueries[] = "$column = :$column";
         }
-        $valuesQuery = static::arrayToQueryString($valuesQueries);
+        $valuesQuery = $this->arrayToQueryString($valuesQueries);
 
         $sqlParts = [
             ($isInsert ? "INSERT INTO" : "UPDATE") . " $this->table",
@@ -275,7 +283,7 @@ class Query {
         ];
 
         if (!$isInsert) {
-            [$whereClause, $params] = static::generateWhereClause($where, $params);
+            [$whereClause, $params] = $this->generateWhereClause($where, $params);
             if ($whereClause) {
                 $sqlParts[] = $whereClause;
             }
@@ -315,7 +323,7 @@ class Query {
     public function delete($where = null, ?array $params = null): int {
         $sqlParts = ["DELETE FROM $this->table"];
 
-        [$whereClause, $params] = static::generateWhereClause($where, $params);
+        [$whereClause, $params] = $this->generateWhereClause($where, $params);
         if ($whereClause) {
             $sqlParts[] = $whereClause;
         }
