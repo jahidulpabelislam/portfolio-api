@@ -13,7 +13,7 @@ class Query {
     protected $table;
     protected $debug;
 
-    public function __construct(Connection $connection, string $table, $debug = false) {
+    public function __construct(Connection $connection, string $table, bool $debug = false) {
         $this->connection = $connection;
         $this->table = $table;
         $this->debug = $debug;
