@@ -11,19 +11,16 @@ trait Searchable {
     /**
      * Build where clause(s) for like searches on searchable columns
      *
-     * @param $search string
+     * @param $value string
      * @return array
      */
-    public static function buildSearchQuery(string $search): array {
-        $words = explode(" ", $search);
+    public static function buildSearchQuery(string $value): array {
+        $words = explode(" ", $value);
         $wordsReversed = array_reverse($words);
 
-        $searchFormatted = "%" . implode("%", $words) . "%";
-        $searchFormattedReversed = "%" . implode("%", $wordsReversed) . "%";
-
         $params = [
-            "search" => $searchFormatted,
-            "searchReversed" => $searchFormattedReversed,
+            "search" => "%" . implode("%", $words) . "%",
+            "searchReversed" => "%" . implode("%", $wordsReversed) . "%",
         ];
 
         $where = [];
@@ -37,5 +34,4 @@ trait Searchable {
             "params" => $params,
         ];
     }
-
 }
