@@ -21,7 +21,8 @@ class Auth extends Controller {
      * @return Response
      */
     public function login(): Response {
-        if (!$errors = AuthManager::getErrors($this->request)) {
+        $errors = AuthManager::getErrors($this->request);
+        if (!$errors) {
             $jwt = AuthManager::login($this->request);
             if ($jwt) {
                 return new Response(200, [
