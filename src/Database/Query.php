@@ -40,25 +40,25 @@ class Query {
      * @return string
      */
     private function arrayToQueryString($value, string $separator = ", "): string {
-        if ($value && is_array($value) && count($value) === 1) {
-            $value = array_shift($value);
-        }
-
-        if (is_array($value) && count($value)) {
-            if ($this->debug) {
-                $separator .= "\n\t";
+        if (is_array($value)) {
+            if (count($value) === 1) {
+                $value = array_shift($value);
+            } else {
+                if ($this->debug) {
+                    $separator .= "\n\t";
+                }
+                $value = implode($separator, $value);
+                if ($this->debug) {
+                    $value = "\n\t" . $value;
+                }
             }
-            $value = implode($separator, $value);
-            if ($this->debug) {
-                $value = "\n\t" . $value;
-            }
         }
 
-        if (!$value || !is_string($value)) {
-            return "";
+        if (is_string($value)) {
+            return $value;
         }
 
-        return $value;
+        return "";
     }
 
     /**
