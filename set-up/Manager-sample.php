@@ -58,7 +58,7 @@ class Manager extends AbstractManager {
             try {
                 $secretKey = Config::get()->portfolio_admin_secret_key;
 
-                $token = JWT::decode($jwt, $secretKey, [self::JWT_ALG]);
+                JWT::decode($jwt, $secretKey, [self::JWT_ALG]);
 
                 // An exception is thrown if auth bearer token provided isn't valid
                 // So assume all is valid here
@@ -66,11 +66,10 @@ class Manager extends AbstractManager {
             }
             catch (Exception $e) {
                 $errorMessage = $e->getMessage();
-                error_log("Failed auth check with error: {$errorMessage}");
+                error_log("Failed auth check with error: $errorMessage");
             }
         }
 
         return false;
     }
-
 }

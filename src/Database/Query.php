@@ -272,7 +272,7 @@ class Query {
         $params = array_merge($params, $values);
 
         $valuesQueries = [];
-        foreach ($values as $column => $value) {
+        foreach (array_keys($values) as $column) {
             $valuesQueries[] = "$column = :$column";
         }
         $valuesQuery = $this->arrayToQueryString($valuesQueries);
@@ -332,5 +332,4 @@ class Query {
 
         return $rowsDeleted;
     }
-
 }

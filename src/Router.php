@@ -165,7 +165,7 @@ class Router {
         $uri = $this->request->uri;
         foreach ($this->routes as $path => $routes) {
             $pathRegex = $this->pathToRegex($path);
-            if (preg_match($pathRegex, $uri, $matches)) {
+            if (preg_match($pathRegex, $uri)) {
                 return array_keys($routes);
             }
         }
@@ -209,5 +209,4 @@ class Router {
 
         return $response;
     }
-
 }
