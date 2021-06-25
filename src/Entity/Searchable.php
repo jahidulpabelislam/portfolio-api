@@ -32,7 +32,7 @@ trait Searchable {
         $query = static::getQuery();
 
         return [
-            "where" => ["(" . $query->arrayToQueryString($where, " OR ", 2) . $query->getIndent(1) . ")"],
+            "where" => ["(" . $query->arrayToString($where, " OR ", 2) . $query->getIndent(1) . ")"],
             "params" => $params,
         ];
     }

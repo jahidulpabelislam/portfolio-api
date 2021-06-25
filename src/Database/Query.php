@@ -48,14 +48,14 @@ class Query {
      * @param $level int
      * @return string
      */
-    public function arrayToQueryString($value, string $separator = ", ", int $level = 1): string {
-        if (is_array($value)) {
-            if (count($value) === 1) {
-                $value = array_shift($value);
-            } else {
+    public function arrayToString($value, string $separator = ", ", int $level = 1): string {
+        if ($value && is_array($value)) {
+            if (count($value) > 1) {
                 $separator .= $this->getIndent($level);
-                $value = $this->getIndent($level) . implode($separator, $value);
+                return $this->getIndent($level) . implode($separator, $value);
             }
+
+            $value = array_shift($value);
         }
 
         if (is_string($value)) {
@@ -96,7 +96,7 @@ class Query {
                 $where = "id = :id";
             }
 
-            $where = $this->arrayToQueryString($where," AND ");
+            $where = $this->arrayToString($where, " AND ");
 
             return [
                 "WHERE $where",
@@ -130,7 +130,7 @@ class Query {
         ?int $page = null
     ): array {
         $columns = $columns ?: "*";
-        $columns = $this->arrayToQueryString($columns);
+        $columns = $this->arrayToString($columns);
 
         $sqlParts = [
             "SELECT $columns",
@@ -147,7 +147,7 @@ class Query {
             }
         }
 
-        $orderBy = $this->arrayToQueryString($orderBy);
+        $orderBy = $this->arrayToString($orderBy);
         if ($orderBy) {
             $sqlParts[] = "ORDER BY $orderBy";
         }
@@ -279,7 +279,7 @@ class Query {
         foreach (array_keys($values) as $column) {
             $valuesQueries[] = "$column = :$column";
         }
-        $valuesQuery = $this->arrayToQueryString($valuesQueries);
+        $valuesQuery = $this->arrayToString($valuesQueries);
 
         $sqlParts = [
             ($isInsert ? "INSERT INTO" : "UPDATE") . " $this->table",
