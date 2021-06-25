@@ -31,26 +31,30 @@ class Query {
         return $this->connection->{$function}($query, $params);
     }
 
+    public function getIndent(int $level = 1): string {
+        if ($this->debug) {
+            return "\n" . str_repeat("\t", $level);
+        }
+
+        return "";
+    }
+
     /**
      * Convenient function to pluck/get out the single value from an array if it's the only value.
      * Then build a string value if an array.
      *
      * @param $value string[]|string|null
      * @param $separator string
+     * @param $level int
      * @return string
      */
-    private function arrayToQueryString($value, string $separator = ", "): string {
+    public function arrayToQueryString($value, string $separator = ", ", int $level = 1): string {
         if (is_array($value)) {
             if (count($value) === 1) {
                 $value = array_shift($value);
             } else {
-                if ($this->debug) {
-                    $separator .= "\n\t";
-                }
-                $value = implode($separator, $value);
-                if ($this->debug) {
-                    $value = "\n\t" . $value;
-                }
+                $separator .= $this->getIndent($level);
+                $value = $this->getIndent($level) . implode($separator, $value);
             }
         }
 
