@@ -61,11 +61,10 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
 
         foreach ($this->items as $key => $item) {
             if ($item instanceof Arrayable) {
-                $array[$key] = $item->toArray();
+                $item = $item->toArray();
             }
-            else {
-                $array[$key] = $item;
-            }
+
+            $array[$key] = $item;
         }
 
         return $array;
