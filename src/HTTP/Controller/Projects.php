@@ -288,14 +288,13 @@ class Projects extends Controller implements AuthGuarded {
 
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
-            if ($projectImage && !empty($projectImage->project_id) && $projectImage->project_id !== $projectId) {
-                $response = new Response(404, [
-                    "error" =>  "No {$projectImage::getDisplayName()} found identified by '$imageId' for Project: '$projectId'.",
-                ]);
-            }
-            else {
+            if (!$projectImage || $projectImage->project_id === $projectId) {
                 return self::getItemResponse(ProjectImage::class, $projectImage, $imageId);
             }
+
+            $response = new Response(404, [
+                "error" =>  "No {$projectImage::getDisplayName()} found identified by '$imageId' for Project: '$projectId'.",
+            ]);
         }
         else {
             $response = self::getItemNotFoundResponse(Project::class, $projectId);
