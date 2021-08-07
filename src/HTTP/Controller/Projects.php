@@ -18,12 +18,16 @@ use Exception;
 
 class Projects extends Controller implements AuthGuarded {
 
-    public $publicFunctions = [
+    protected $publicFunctions = [
         "getProjects",
         "getProject",
         "getProjectImages",
         "getProjectImage",
     ];
+
+    public function getPublicFunctions(): array {
+        return $this->publicFunctions;
+    }
 
     /**
      * @param $projectId int|string
