@@ -18,7 +18,7 @@ abstract class AbstractManager {
         foreach (static::$requiredColumns as $column) {
             if (empty($data[$column])) {
                 $label = StringHelper::machineToDisplay($column);
-                $errors[$column] = "$label is a required field.";
+                $errors[$column] = "$label is required.";
             }
         }
 
@@ -49,5 +49,4 @@ abstract class AbstractManager {
      * @return bool
      */
     abstract public static function isLoggedIn(Request $request): bool;
-
 }

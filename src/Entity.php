@@ -153,7 +153,7 @@ abstract class Entity implements Arrayable {
             $value = null;
         }
         else if (!$value && in_array($column, static::getRequiredColumns())) {
-            $this->addError($column, "$label is a required field.");
+            $this->addError($column, "$label is required.");
         }
 
         $this->columns[$column] = $value;
@@ -437,5 +437,4 @@ abstract class Entity implements Arrayable {
 
         return $array;
     }
-
 }
