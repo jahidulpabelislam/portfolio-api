@@ -105,7 +105,6 @@ trait Responder {
 
         $content = [
             "data" => $data,
-            "_count" => $count,
             "_links" => [
                 "self" => $this->request->getURL(),
             ],
