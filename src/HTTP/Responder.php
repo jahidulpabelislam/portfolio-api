@@ -19,7 +19,7 @@ trait Responder {
     }
 
     /**
-     * Generate meta data to send back when the method provided is not allowed on the URI
+     * Response when the method provided is not allowed on the URI
      */
     public function getMethodNotAllowedResponse(): Response {
         return new Response(405, [
@@ -28,7 +28,7 @@ trait Responder {
     }
 
     /**
-     * Send necessary meta data back when user isn't logged in correctly
+     * Response when user isn't logged in correctly
      */
     public static function getNotAuthorisedResponse(): Response {
         return new Response(401, [
@@ -48,18 +48,12 @@ trait Responder {
         ]);
     }
 
-    /**
-     * Generate response data to send back when the URI provided is not recognised
-     */
     public function getUnrecognisedURIResponse(): Response {
         return new Response(404, [
             "error" => "Unrecognised URI (" . $this->request->getURL() . ").",
         ]);
     }
 
-    /**
-     * Generate response data to send back when the requested API version is not recognised
-     */
     public function getUnrecognisedAPIVersionResponse(): Response {
         $shouldBeVersion = Core::VERSION;
 
@@ -72,9 +66,6 @@ trait Responder {
         ]);
     }
 
-    /**
-     * Send necessary meta data back when required data/fields is not provided/valid
-     */
     public function getInvalidInputResponse(array $errors): Response {
         return new Response(400, [
             "errors" => [
@@ -280,5 +271,4 @@ trait Responder {
             "error" => "Failed to delete the {$entityClass::getDisplayName()} identified by '$id'.",
         ]);
     }
-
 }
