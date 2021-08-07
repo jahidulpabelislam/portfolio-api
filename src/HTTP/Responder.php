@@ -38,9 +38,7 @@ trait Responder {
 
     public static function getLoggedOutResponse(): Response {
         return new Response(204, [
-            "meta" => [
-                "message" => "Successfully logged out.",
-            ],
+            "message" => "Successfully logged out.",
         ]);
     }
 
@@ -106,17 +104,15 @@ trait Responder {
         }
 
         $content = [
-            "meta" => [
-                "count" => $count,
-                "links" => [
-                    "self" => $this->request->getURL(),
-                ],
-            ],
             "data" => $data,
+            "_count" => $count,
+            "_links" => [
+                "self" => $this->request->getURL(),
+            ],
         ];
 
         if (!$count) {
-            $content["meta"]["message"] = "No {$entityClass::getPluralDisplayName()} found.";
+            $content["message"] = "No {$entityClass::getPluralDisplayName()} found.";
         }
 
         return (new Response(200, $content))
@@ -143,16 +139,16 @@ trait Responder {
 
         $content = $response->getContent();
 
-        unset($content["meta"]["links"]);
+        unset($content["_links"]);
 
         $totalCount = $collection->getTotalCount();
-        $content["meta"]["total_count"] = $totalCount;
+        $content["_total_count"] = $totalCount;
 
         $limit = $collection->getLimit();
         $page = $collection->getPage();
 
         $lastPage = ceil($totalCount / $limit);
-        $content["meta"]["total_pages"] = $lastPage;
+        $content["_total_pages"] = $lastPage;
 
         $pageURL = $this->request->getURL();
 
@@ -164,7 +160,7 @@ trait Responder {
             $params["page"] = $page;
         }
 
-        $content["meta"]["links"] = [
+        $content["_links"] = [
             "self" => Core::makeUrl($pageURL, $params),
         ];
 
@@ -177,13 +173,13 @@ trait Responder {
                 unset($params["page"]);
             }
 
-            $content["meta"]["links"]["previous_page"] = Core::makeUrl($pageURL, $params);
+            $content["_links"]["previous_page"] = Core::makeUrl($pageURL, $params);
         }
 
         $hasNextPage = $page < $lastPage;
         if ($hasNextPage) {
             $params["page"] = $page + 1;
-            $content["meta"]["links"]["next_page"] = Core::makeUrl($pageURL, $params);
+            $content["_links"]["next_page"] = Core::makeUrl($pageURL, $params);
         }
 
         return $response->withContent($content)
@@ -193,10 +189,8 @@ trait Responder {
 
     private static function getItemFoundResponse(APIEntity $entity): Response {
         return new Response(200, [
-            "meta" => [
-                "links" => $entity->getAPILinks(),
-            ],
             "data" => $entity->getAPIResponse(),
+            "_links" => $entity->getAPILinks(),
         ]);
     }
 
