@@ -22,13 +22,13 @@ class ProjectImage extends APIEntity {
 
     protected static $defaultColumns = [
         "project_id" => null,
-        "sort_order_number" => 0,
+        "position" => 0,
         "file" => "",
     ];
 
-    protected static $intColumns = ["project_id", "sort_order_number"];
+    protected static $intColumns = ["project_id", "position"];
 
-    protected static $orderByColumn = "sort_order_number";
+    protected static $orderByColumn = "position";
 
     protected static $defaultLimit = null;
 

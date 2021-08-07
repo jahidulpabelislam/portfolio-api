@@ -141,7 +141,7 @@ class Projects extends Controller implements AuthGuarded {
                 }
 
                 foreach ($project->images as $projectImage) {
-                    $projectImage->sort_order_number = $orders[$projectImage->getId()];
+                    $projectImage->position = $orders[$projectImage->getId()];
                     $projectImage->save();
                 }
             }
@@ -233,7 +233,7 @@ class Projects extends Controller implements AuthGuarded {
                 $imageData = [
                     "file" => $newFileLocation,
                     "project_id" => $project->getId(),
-                    "sort_order_number" => 999, // High enough number
+                    "position" => 999, // High enough number
                 ];
                 $projectImage = ProjectImage::insert($imageData);
                 $projectImage->reload();
