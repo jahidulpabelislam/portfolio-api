@@ -2,7 +2,7 @@
 
 namespace App\Utils;
 
-class StringHelper {
+class Str {
 
     public static function removeLeadingSlash(string $url): string {
         if ($url[0] === "/") {
@@ -61,5 +61,4 @@ class StringHelper {
         $value = str_replace("_", " ", $value);
         return ucwords($value);
     }
-
 }

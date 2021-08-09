@@ -11,7 +11,7 @@ use App\Database\Exception as DBException;
 use App\HTTP\Controller\AuthGuarded;
 use App\HTTP\Responder;
 use App\HTTP\Response;
-use App\Utils\StringHelper;
+use App\Utils\Str;
 use Exception;
 
 class Router {
@@ -62,7 +62,7 @@ class Router {
     protected function getFullPath(string $path): string {
         $basePath = $this->getBasePath();
         if ($basePath !== "") {
-            $path = StringHelper::addTrailingSlash($basePath) . StringHelper::removeLeadingSlash($path);
+            $path = Str::addTrailingSlash($basePath) . Str::removeLeadingSlash($path);
         }
 
         return $path;

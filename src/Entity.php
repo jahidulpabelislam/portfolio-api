@@ -13,7 +13,7 @@ use App\Database\Collection as DBCollection;
 use App\Entity\Collection as EntityCollection;
 use App\Entity\Validated;
 use App\Utils\Arrayable;
-use App\Utils\StringHelper;
+use App\Utils\Str;
 use DateTime;
 use Exception;
 
@@ -107,7 +107,7 @@ abstract class Entity implements Arrayable {
     }
 
     protected function setValue(string $column, $value, bool $fromDB = false): void {
-        $label = StringHelper::machineToDisplay($column);
+        $label = Str::machineToDisplay($column);
 
         unset($this->errors[$column]);
 

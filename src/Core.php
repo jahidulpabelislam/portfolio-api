@@ -11,7 +11,7 @@ use App\HTTP\Controller\Projects;
 use App\HTTP\Response;
 use App\HTTP\Request;
 use App\Utils\Singleton;
-use App\Utils\StringHelper;
+use App\Utils\Str;
 use DateTime;
 
 class Core {
@@ -90,14 +90,14 @@ class Core {
         $request = $this->getRequest();
 
         $protocol = $request->server->get("HTTPS") === "on" ? "https" : "http";
-        $domain = StringHelper::removeTrailingSlash($request->server->get("SERVER_NAME"));
-        $uri = StringHelper::removeLeadingSlash($uri);
+        $domain = Str::removeTrailingSlash($request->server->get("SERVER_NAME"));
+        $uri = Str::removeLeadingSlash($uri);
 
-        return StringHelper::addTrailingSlash("$protocol://$domain/$uri");
+        return Str::addTrailingSlash("$protocol://$domain/$uri");
     }
 
     public static function makeUrl(string $base, array $params): string {
-        $fullURL = StringHelper::addTrailingSlash($base);
+        $fullURL = Str::addTrailingSlash($base);
 
         if ($params && count($params)) {
             $fullURL .= "?" . http_build_query($params);
@@ -147,8 +147,7 @@ class Core {
 
         $this->setCORSHeaders();
 
-        $sendPretty = StringHelper::stringToBoolean($request->getParam("pretty"));
+        $sendPretty = Str::stringToBoolean($request->getParam("pretty"));
         $this->response->send($sendPretty);
     }
-
 }

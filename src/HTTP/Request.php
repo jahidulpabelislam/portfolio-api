@@ -5,7 +5,7 @@ namespace App\HTTP;
 use App\Core;
 use App\Utils\ArrayCollection;
 use App\Utils\Collection;
-use App\Utils\StringHelper;
+use App\Utils\Str;
 
 class Request {
 
@@ -50,7 +50,7 @@ class Request {
         $this->uri = parse_url($this->server->get("REQUEST_URI"), PHP_URL_PATH);
 
         // Get the individual parts of the request URI as an array
-        $uri = StringHelper::removeSlashes($this->uri);
+        $uri = Str::removeSlashes($this->uri);
         $this->uriParts = explode("/", $uri);
 
         $this->params = self::sanitizeData($_GET);
@@ -78,5 +78,4 @@ class Request {
     public function getParam(string $param, $default = null) {
         return $this->params->get($param, $default);
     }
-
 }

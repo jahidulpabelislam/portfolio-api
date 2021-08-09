@@ -3,7 +3,7 @@
 namespace App\Auth;
 
 use App\HTTP\Request;
-use App\Utils\StringHelper;
+use App\Utils\Str;
 
 abstract class AbstractManager {
 
@@ -17,7 +17,7 @@ abstract class AbstractManager {
         $errors = [];
         foreach (static::$requiredColumns as $column) {
             if (empty($data[$column])) {
-                $label = StringHelper::machineToDisplay($column);
+                $label = Str::machineToDisplay($column);
                 $errors[$column] = "$label is required.";
             }
         }
