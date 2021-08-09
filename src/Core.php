@@ -147,7 +147,7 @@ class Core {
 
         $this->setCORSHeaders();
 
-        $sendPretty = Str::stringToBoolean($request->getParam("pretty"));
+        $sendPretty = Str::toBool($request->getParam("pretty"));
         $this->response->send($sendPretty);
     }
 }
