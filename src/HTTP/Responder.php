@@ -23,7 +23,7 @@ trait Responder {
      */
     public function getMethodNotAllowedResponse(): Response {
         return new Response(405, [
-            "error" => "Method {$this->request->method} not allowed on " . $this->request->getURL() . ".",
+            "message" => "Method {$this->request->method} not allowed on " . $this->request->getURL() . ".",
         ]);
     }
 
@@ -32,7 +32,7 @@ trait Responder {
      */
     public static function getNotAuthorisedResponse(): Response {
         return new Response(401, [
-            "error" => "You need to be logged in!",
+            "message" => "You need to be logged in!",
         ]);
     }
 
@@ -44,13 +44,13 @@ trait Responder {
 
     public static function getUnsuccessfulLogoutResponse(): Response {
         return new Response(500, [
-            "error" => "Couldn't successfully process your logout request!",
+            "message" => "Couldn't successfully process your logout request!",
         ]);
     }
 
     public function getUnrecognisedURIResponse(): Response {
         return new Response(404, [
-            "error" => "Unrecognised URI (" . $this->request->getURL() . ").",
+            "message" => "Unrecognised URI (" . $this->request->getURL() . ").",
         ]);
     }
 
@@ -62,16 +62,14 @@ trait Responder {
         $shouldBeURL = Core::get()->makeFullURL($shouldBeURI);
 
         return new Response(404, [
-            "error" => "Unrecognised API version. Current version is $shouldBeVersion, so please update requested URL to $shouldBeURL.",
+            "message" => "Unrecognised API version. Current version is $shouldBeVersion, so please update requested URL to $shouldBeURL.",
         ]);
     }
 
     public function getInvalidInputResponse(array $errors): Response {
         return new Response(400, [
-            "errors" => [
-                "message" => "The necessary data was not provided and/or invalid.",
-                "inputs" => $errors,
-            ],
+            "message" => "The necessary data was not provided and/or invalid.",
+            "errors" => $errors,
         ]);
     }
 
@@ -191,7 +189,7 @@ trait Responder {
      */
     public static function getItemNotFoundResponse(string $entityClass, $id): Response {
         return new Response(404, [
-            "error" => "No {$entityClass::getDisplayName()} identified by '$id' found.",
+            "message" => "No {$entityClass::getDisplayName()} identified by '$id' found.",
         ]);
     }
 
@@ -224,7 +222,7 @@ trait Responder {
         }
 
         return new Response(500, [
-            "error" => "Failed to insert the new {$entityClass::getDisplayName()}.",
+            "message" => "Failed to insert the new {$entityClass::getDisplayName()}.",
         ]);
     }
 
@@ -240,7 +238,7 @@ trait Responder {
         }
 
         return new Response(500, [
-            "error" => "Failed to update the {$entityClass::getDisplayName()} identified by '$id'.",
+            "message" => "Failed to update the {$entityClass::getDisplayName()} identified by '$id'.",
         ]);
     }
 
@@ -268,7 +266,7 @@ trait Responder {
         }
 
         return new Response(500, [
-            "error" => "Failed to delete the {$entityClass::getDisplayName()} identified by '$id'.",
+            "message" => "Failed to delete the {$entityClass::getDisplayName()} identified by '$id'.",
         ]);
     }
 }

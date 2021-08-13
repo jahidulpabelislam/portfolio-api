@@ -242,7 +242,7 @@ class Projects extends Controller implements AuthGuarded {
 
             // Else there was a problem uploading file to server
             return new Response(500, [
-                "error" => "Sorry, there was an error uploading your image.",
+                "message" => "Sorry, there was an error uploading your image.",
             ]);
         }
 
@@ -271,10 +271,9 @@ class Projects extends Controller implements AuthGuarded {
             return self::getItemNotFoundResponse(Project::class, $projectId);
         }
 
-        $errors = [
+        return $this->getInvalidInputResponse([
             "image" => "Image is a required field."
-        ];
-        return $this->getInvalidInputResponse($errors);
+        ]);
     }
 
     /**
@@ -297,7 +296,7 @@ class Projects extends Controller implements AuthGuarded {
             }
 
             $response = new Response(404, [
-                "error" =>  "No {$projectImage::getDisplayName()} found identified by '$imageId' for Project: '$projectId'.",
+                "message" =>  "No {$projectImage::getDisplayName()} found identified by '$imageId' for Project: '$projectId'.",
             ]);
         }
         else {
@@ -330,5 +329,4 @@ class Projects extends Controller implements AuthGuarded {
 
         return self::getItemNotFoundResponse(Project::class, $projectId);
     }
-
 }
