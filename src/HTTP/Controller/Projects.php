@@ -208,47 +208,37 @@ class Projects extends Controller implements AuthGuarded {
      * @throws Exception
      */
     private static function uploadProjectImage(Project $project, array $image): Response {
-        // Get the file ext
-        $imageFileExt = pathinfo(basename($image["name"]), PATHINFO_EXTENSION);
-
-        // The directory to upload file
-        $directory = "/project-images/";
-
-        // The full path for new file on the server
-        $newFilename = preg_replace("/[^a-z0-9]+/", "-", strtolower($project->name));
-        $newFilename .= "-" . date("Ymd-His");
-        $newFilename .= "-" . random_int(0, 99);
-        $newFilename .= ".$imageFileExt";
-
-        $newFileLocation = $directory . $newFilename;
-
-        $newImageFullPath = APP_ROOT . $newFileLocation;
-
-        // Check if file is a actual image
-        $fileType = mime_content_type($image["tmp_name"]);
-        if (strpos($fileType, "image/") === 0) {
-            // Try to upload file
-            if (move_uploaded_file($image["tmp_name"], $newImageFullPath)) {
-                // Add new image with location into the database
-                $imageData = [
-                    "file" => $newFileLocation,
-                    "project_id" => $project->getId(),
-                    "position" => 999, // High enough number
-                ];
-                $projectImage = ProjectImage::insert($imageData);
-                $projectImage->reload();
-                return self::getInsertResponse(ProjectImage::class, $projectImage);
-            }
-
-            // Else there was a problem uploading file to server
-            return new Response(500, [
-                "message" => "Sorry, there was an error uploading your image.",
+        if (strpos(mime_content_type($image["tmp_name"]), "image/") !== 0) {
+            return new Response(400, [
+                "error" => "File is not an image.",
             ]);
         }
 
-        // Else bad request as file uploaded is not a image
-        return new Response(400, [
-            "error" => "File is not an image.",
+        $fileExt = pathinfo(basename($image["name"]), PATHINFO_EXTENSION);
+
+        $parts = [
+            preg_replace("/[^a-z0-9]+/", "-", strtolower($project->name)),
+            date("Ymd-His"),
+            random_int(0, 99)
+        ];
+        $newFilename = implode("-", $parts) . ".$fileExt";
+
+        $newPath = "/project-images/$newFilename";
+
+        $newPathFull = APP_ROOT . $newPath;
+
+        if (move_uploaded_file($image["tmp_name"], $newPathFull)) {
+            $projectImage = ProjectImage::insert([
+                "file" => $newPath,
+                "project_id" => $project->getId(),
+                "position" => 999, // High enough number
+            ]);
+            $projectImage->reload();
+            return self::getInsertResponse(ProjectImage::class, $projectImage);
+        }
+
+        return new Response(500, [
+            "message" => "Sorry, there was an error uploading your image.",
         ]);
     }
 
