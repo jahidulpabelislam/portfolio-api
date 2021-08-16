@@ -48,7 +48,7 @@ The first two versions were developed within the [Portfolio repo](https://github
 | [/projects/](https://api.jahidulpabelislam.com/v4/projects/)                                           |                All projects                 | &#10004; | &#10004; | &#10006; | &#10006; |
 | [/projects/{projectId}/](https://api.jahidulpabelislam.com/v4/projects/13/)                            |              A single project               | &#10004; | &#10006; | &#10004; | &#10004; |
 | [/projects/{projectId}/images/](https://api.jahidulpabelislam.com/v4/projects/13/images/)              |     Images attached to a single project     | &#10004; | &#10004; | &#10006; | &#10006; |
-| [/projects/{projectId}/images/{imageId}/](https://api.jahidulpabelislam.com/v4/projects/13/images/72/) | A single image attached to a single project | &#10004; | &#10006; | &#10004; | &#10004; |
+| [/projects/{projectId}/images/{imageId}/](https://api.jahidulpabelislam.com/v4/projects/13/images/72/) | A single image attached to a single project | &#10004; | &#10006; |  &#10006; | &#10004; |
 
 #### Auth
 
