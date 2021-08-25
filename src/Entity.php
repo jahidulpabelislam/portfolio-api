@@ -9,7 +9,7 @@
 namespace App;
 
 use App\Database\AwareTrait as DatabaseAware;
-use App\Database\Collection as DBCollection;
+use JPI\Database\Collection as DBCollection;
 use App\Entity\Collection as EntityCollection;
 use App\Entity\Validated;
 use App\Utils\Arrayable;

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d85ce955324630768cfaa0ac62c367a0",
+    "content-hash": "443cc9441329533881cb4d4dabc33979",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -106,12 +106,62 @@
                 "source": "https://github.com/jahidulpabelislam/database/tree/v1.0.0"
             },
             "time": "2021-03-14T14:24:12+00:00"
+        },
+        {
+            "name": "jpi/query",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jahidulpabelislam/query.git",
+                "reference": "79643801637cd26f8b68b83b084bc97197238837"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jahidulpabelislam/query/zipball/79643801637cd26f8b68b83b084bc97197238837",
+                "reference": "79643801637cd26f8b68b83b084bc97197238837",
+                "shasum": ""
+            },
+            "require": {
+                "jpi/database": "^1",
+                "php": "^7.1"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "JPI\\Database\\": "src/"
+                }
+            },
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Jahidul Pabel Islam",
+                    "email": "me@jahidulpabelislam.com"
+                }
+            ],
+            "description": "Library to simplify querying a database",
+            "keywords": [
+                "database",
+                "db",
+                "mysql",
+                "query",
+                "sql"
+            ],
+            "support": {
+                "source": "https://github.com/jahidulpabelislam/query/tree/master",
+                "issues": "https://github.com/jahidulpabelislam/query/issues"
+            },
+            "time": "2021-08-25T21:47:39+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "jpi/query": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

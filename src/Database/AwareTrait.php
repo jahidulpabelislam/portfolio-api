@@ -4,6 +4,7 @@ namespace App\Database;
 
 use App\Config;
 use JPI\Database\Connection;
+use JPI\Database\Query;
 
 trait AwareTrait {
 
@@ -29,5 +30,4 @@ trait AwareTrait {
     public static function getQuery(): Query {
         return new Query(static::getDB(), static::$tableName, Config::get()->debug);
     }
-
 }
