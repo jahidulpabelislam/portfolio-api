@@ -7,12 +7,12 @@
 namespace App;
 
 use App\Auth\Manager as AuthManager;
-use App\Database\Exception as DBException;
 use App\HTTP\Controller\AuthGuarded;
 use App\HTTP\Responder;
 use App\HTTP\Response;
 use App\Utils\Str;
 use Exception;
+use JPI\Database\Exception as DBException;
 
 class Router {
 

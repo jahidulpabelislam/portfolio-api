@@ -7,6 +7,8 @@
 
 namespace App\Database;
 
+use JPI\Database\Connection;
+
 class Query {
 
     protected $connection;

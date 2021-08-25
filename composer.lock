@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1c9450e42a7ce9db529d7cb9cf761e3b",
+    "content-hash": "d85ce955324630768cfaa0ac62c367a0",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -59,6 +59,53 @@
                 "source": "https://github.com/firebase/php-jwt/tree/v5.2.1"
             },
             "time": "2021-02-12T00:02:00+00:00"
+        },
+        {
+            "name": "jpi/database",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jahidulpabelislam/database.git",
+                "reference": "5a33ce4c00cf23a53e534144ec525c637c52c532"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jahidulpabelislam/database/zipball/5a33ce4c00cf23a53e534144ec525c637c52c532",
+                "reference": "5a33ce4c00cf23a53e534144ec525c637c52c532",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pdo": "*",
+                "php": "^7.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "JPI\\Database\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Jahidul Pabel Islam",
+                    "email": "me@jahidulpabelislam.com"
+                }
+            ],
+            "description": "Simple library to make interactions with a database easier",
+            "keywords": [
+                "database",
+                "db",
+                "mysql",
+                "pdo"
+            ],
+            "support": {
+                "issues": "https://github.com/jahidulpabelislam/database/issues",
+                "source": "https://github.com/jahidulpabelislam/database/tree/v1.0.0"
+            },
+            "time": "2021-03-14T14:24:12+00:00"
         }
     ],
     "packages-dev": [],

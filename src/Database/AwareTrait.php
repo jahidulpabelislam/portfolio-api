@@ -3,6 +3,7 @@
 namespace App\Database;
 
 use App\Config;
+use JPI\Database\Connection;
 
 trait AwareTrait {
 
