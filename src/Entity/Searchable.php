@@ -29,10 +29,10 @@ trait Searchable {
             $where[] = "$column LIKE :searchReversed";
         }
 
-        $query = static::getQuery();
+        $where = "\n\t\t" . implode(" OR\n\t\t", $where) . "\n\t";
 
         return [
-            "where" => ["(" . $query->arrayToString($where, " OR ", 2) . $query->getIndent(1) . ")"],
+            "where" => ["($where)"],
             "params" => $params,
         ];
     }
