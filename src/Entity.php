@@ -220,10 +220,10 @@ abstract class Entity implements Arrayable {
     }
 
     /**
-     * @param $rows DBCollection
+     * @param $rows DBCollection|array
      * @return static[]
      */
-    private static function populateEntitiesFromDB(DBCollection $rows): array {
+    private static function populateEntitiesFromDB($rows): array {
         $entities = [];
 
         foreach ($rows as $row) {
@@ -290,12 +290,16 @@ abstract class Entity implements Arrayable {
 
         $entities = static::populateEntitiesFromDB($rows);
 
-        return new EntityCollection(
-            $entities,
-            $rows->getTotalCount(),
-            $rows->getLimit(),
-            $rows->getPage()
-        );
+        $total = null;
+        $limit = null;
+        $page = null;
+        if ($rows instanceof DBCollection) {
+            $total = $rows->getTotalCount();
+            $limit = $rows->getLimit();
+            $page = $rows->getPage();
+        }
+
+        return new EntityCollection($entities, $total, $limit, $page);
     }
 
     /**
