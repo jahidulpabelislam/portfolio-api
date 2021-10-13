@@ -44,7 +44,7 @@ class Projects extends Controller implements AuthGuarded {
 
         $project = Project::get($where, $params, 1);
         if ($project && $includeLinkedData) {
-            $project->loadProjectImages();
+            $project->loadImages();
         }
 
         return $project;
