@@ -18,4 +18,14 @@ class Type extends Entity {
     ];
 
     protected static $defaultLimit = null;
+
+    public static function getByNameOrCreate(string $name): Type {
+        $type = static::getByColumn("name", $name, 1);
+
+        if ($type) {
+            return $type;
+        }
+
+        return static::insert(["name" => $name]);
+    }
 }
