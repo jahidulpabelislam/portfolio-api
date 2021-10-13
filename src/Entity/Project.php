@@ -11,6 +11,7 @@ namespace App\Entity;
 use App\APIEntity;
 use App\Core;
 use App\Entity\Project\Image;
+use App\Entity\Project\Type;
 
 class Project extends APIEntity {
 
@@ -27,7 +28,6 @@ class Project extends APIEntity {
     protected static $defaultColumns = [
         "name" => "",
         "date" => null,
-        "type" => "",
         "url" => "",
         "github_url" => "",
         "download_url" => "",
@@ -69,6 +69,8 @@ class Project extends APIEntity {
      */
     public $images = null;
 
+    public $type = null;
+
     /**
      * Helper function to get all Project Image Entities linked to this Project
      */
@@ -79,12 +81,26 @@ class Project extends APIEntity {
     }
 
     /**
+     * Helper function to get the type entity
+     */
+    public function loadType(bool $reload = false): void {
+        if ($this->isLoaded() && ($reload || is_null($this->type))) {
+            $this->type = Type::getById($this->type_id);
+        }
+    }
+
+    /**
      * @inheritDoc
      */
     public function reload(): void {
         parent::reload();
-        if ($this->isLoaded() && !is_null($this->images)) {
-            $this->loadImages(true);
+        if ($this->isLoaded()) {
+            if (!is_null($this->type)) {
+                $this->loadType(true);
+            }
+            if (!is_null($this->images)) {
+                $this->loadImages(true);
+            }
         }
     }
 
@@ -132,6 +148,7 @@ class Project extends APIEntity {
         $response = parent::getAPIResponse();
 
         unset($response["type_id"]);
+        $response["type"] = $this->type ? $this->type->name : "";
 
         if ($this->images instanceof Collection) {
             $response["images"] = [];

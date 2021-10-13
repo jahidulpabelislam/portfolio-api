@@ -11,6 +11,7 @@ use App\Core;
 use App\Entity\Collection as EntityCollection;
 use App\Entity\Project;
 use App\Entity\Project\Image;
+use App\Entity\Project\Type;
 use App\HTTP\Controller;
 use App\HTTP\Response;
 use App\Utils\Collection;
@@ -44,6 +45,7 @@ class Projects extends Controller implements AuthGuarded {
 
         $project = Project::get($where, $params, 1);
         if ($project && $includeLinkedData) {
+            $project->loadType();
             $project->loadImages();
         }
 
@@ -97,6 +99,13 @@ class Projects extends Controller implements AuthGuarded {
             foreach ($projects as $project) {
                 $project->images = $imagesGrouped[$project->getId()] ?? new EntityCollection();
             }
+
+            $types = Type::getById($projects->pluck("type_id")->toArray());
+            $typesGrouped = $types->groupBy("id");
+
+            foreach ($projects as $project) {
+                $project->type = $typesGrouped[$project->type_id][0] ?? null;
+            }
         }
 
         return $this->getPaginatedItemsResponse(Project::class, $projects);
@@ -127,6 +136,11 @@ class Projects extends Controller implements AuthGuarded {
         if ($project) {
             $data = $this->request->data;
             $project->setValues($data->toArray());
+
+            if (!empty($data["type"])) {
+                $type = Type::getByNameOrCreate($data["type"]);
+                $project->type_id = $type->getId();
+            }
             $project->save();
 
             if ($project->hasErrors()) {
