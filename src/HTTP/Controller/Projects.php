@@ -10,7 +10,7 @@ use App\Auth\Manager as AuthManager;
 use App\Core;
 use App\Entity\Collection as EntityCollection;
 use App\Entity\Project;
-use App\Entity\ProjectImage;
+use App\Entity\Project\Image;
 use App\HTTP\Controller;
 use App\HTTP\Response;
 use App\Utils\Collection;
@@ -91,7 +91,7 @@ class Projects extends Controller implements AuthGuarded {
         }
 
         if (count($projects)) {
-            $images = ProjectImage::getByColumn("project_id", $projects->pluck("id")->toArray());
+            $images = Image::getByColumn("project_id", $projects->pluck("id")->toArray());
             $imagesGrouped = $images->groupBy("project_id");
 
             foreach ($projects as $project) {
@@ -191,7 +191,7 @@ class Projects extends Controller implements AuthGuarded {
         // Check the Project trying to get Images for exists
         $project = $this->getProjectEntity($projectId, true);
         if ($project) {
-            return $this->getItemsResponse(ProjectImage::class, $project->images);
+            return $this->getItemsResponse(Image::class, $project->images);
         }
 
         return self::getItemNotFoundResponse(Project::class, $projectId)
@@ -228,13 +228,13 @@ class Projects extends Controller implements AuthGuarded {
         $newPathFull = APP_ROOT . $newPath;
 
         if (move_uploaded_file($image["tmp_name"], $newPathFull)) {
-            $projectImage = ProjectImage::insert([
+            $projectImage = Image::insert([
                 "file" => $newPath,
                 "project_id" => $project->getId(),
                 "position" => 999, // High enough number
             ]);
             $projectImage->reload();
-            return self::getInsertResponse(ProjectImage::class, $projectImage);
+            return self::getInsertResponse(Image::class, $projectImage);
         }
 
         return new Response(500, [
@@ -277,12 +277,12 @@ class Projects extends Controller implements AuthGuarded {
         // Check the Project trying to get Image for exists
         $project = $this->getProjectEntity($projectId);
         if ($project) {
-            $projectImage = ProjectImage::getById($imageId);
+            $projectImage = Image::getById($imageId);
 
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
             if (!$projectImage || $projectImage->project_id === $projectId) {
-                return self::getItemResponse(ProjectImage::class, $projectImage, $imageId);
+                return self::getItemResponse(Image::class, $projectImage, $imageId);
             }
 
             $response = new Response(404, [
@@ -309,12 +309,12 @@ class Projects extends Controller implements AuthGuarded {
         if ($project) {
             $isDeleted = false;
 
-            $projectImage = ProjectImage::getById($imageId);
+            $projectImage = Image::getById($imageId);
             if ($projectImage) {
                 $isDeleted = $projectImage->delete();
             }
 
-            return self::getItemDeletedResponse(ProjectImage::class, $projectImage, $imageId, $isDeleted);
+            return self::getItemDeletedResponse(Image::class, $projectImage, $imageId, $isDeleted);
         }
 
         return self::getItemNotFoundResponse(Project::class, $projectId);

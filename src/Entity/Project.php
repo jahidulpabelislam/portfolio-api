@@ -10,7 +10,7 @@ namespace App\Entity;
 
 use App\APIEntity;
 use App\Core;
-use DateTime;
+use App\Entity\Project\Image;
 
 class Project extends APIEntity {
 
@@ -73,7 +73,7 @@ class Project extends APIEntity {
      */
     public function loadProjectImages(bool $reload = false): void {
         if ($this->isLoaded() && ($reload || is_null($this->images))) {
-            $this->images = ProjectImage::getByColumn("project_id", $this->getId());
+            $this->images = Image::getByColumn("project_id", $this->getId());
         }
     }
 

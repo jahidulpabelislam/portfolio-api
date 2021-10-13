@@ -6,13 +6,14 @@
  * Also holds any method only custom to Project Image entities.
  */
 
-namespace App\Entity;
+namespace App\Entity\Project;
 
 use App\APIEntity;
+use App\Entity\Timestamped;
 use App\Core;
 use App\Utils\Str;
 
-class ProjectImage extends APIEntity {
+class Image extends APIEntity {
 
     use Timestamped;
 
