@@ -14,11 +14,8 @@ class Type extends Entity {
     protected static $tableName = "portfolio_project_type";
 
     protected static $defaultColumns = [
-        "project_id" => null,
         "name" => "",
     ];
-
-    protected static $intColumns = ["project_id"];
 
     protected static $defaultLimit = null;
 }
