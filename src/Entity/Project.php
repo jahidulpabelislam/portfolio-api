@@ -36,6 +36,7 @@ class Project extends APIEntity {
         "colour" => "",
         "skills" => [],
         "status" => "draft",
+        "type_id" => null,
     ];
 
     protected static $requiredColumns = [
@@ -130,6 +131,8 @@ class Project extends APIEntity {
     public function getAPIResponse(): array {
         $response = parent::getAPIResponse();
 
+        unset($response["type_id"]);
+
         if ($this->images instanceof Collection) {
             $response["images"] = [];
             foreach ($this->images as $image) {
@@ -141,5 +144,4 @@ class Project extends APIEntity {
 
         return $response;
     }
-
 }
