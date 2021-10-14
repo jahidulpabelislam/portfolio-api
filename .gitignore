@@ -1,13 +1,8 @@
 .idea/*
-
 logs/*.log
-
 vendor/*
-
-Hasher.php
-
-*/Auth/Manager.php
-
 project-images/*
-
+Hasher.php
+*/Auth/Manager.php
 config.local.php
+.DS_Store
