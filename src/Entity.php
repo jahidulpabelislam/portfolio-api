@@ -29,6 +29,7 @@ abstract class Entity implements Arrayable {
     protected $identifier = null;
 
     protected $columns;
+    protected $deleted = false;
 
     protected static $defaultColumns = [];
 
@@ -416,6 +417,10 @@ abstract class Entity implements Arrayable {
         return $entity;
     }
 
+    public function isDeleted(): bool {
+        return $this->deleted;
+    }
+
     /**
      * Delete an Entity from the Database
      *
@@ -424,10 +429,10 @@ abstract class Entity implements Arrayable {
     public function delete(): bool {
         if ($this->isLoaded()) {
             $rowsAffected = static::getQuery()->delete($this->getId());
-            return $rowsAffected > 0;
+            $this->deleted = $rowsAffected > 0;
         }
 
-        return false;
+        return $this->deleted;
     }
 
     public function toArray(): array {

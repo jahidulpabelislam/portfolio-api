@@ -10,10 +10,11 @@ namespace App\Entity;
 
 use App\APIEntity;
 use App\Core;
+use App\Entity\Project\CrudService as ProjectCrudService;
 use App\Entity\Project\Image;
 use App\Entity\Project\Type;
 
-class Project extends APIEntity {
+class Project extends APIEntity implements FilterableInterface, SearchableInterface {
 
     use Filterable;
     use Searchable;
@@ -48,8 +49,8 @@ class Project extends APIEntity {
         "short_description",
     ];
 
+    protected static $intColumns = ["type_id"];
     protected static $dateColumns = ["date"];
-
     protected static $arrayColumns = ["skills"];
 
     protected static $searchableColumns = [
@@ -63,6 +64,8 @@ class Project extends APIEntity {
 
     protected static $orderByColumn = "date";
     protected static $orderByASC = false;
+
+    protected static $crudService = ProjectCrudService::class;
 
     /**
      * @var Collection|null

@@ -4,7 +4,7 @@ namespace App\Entity;
 
 trait Filterable {
 
-    protected static function getFilterableColumns(): array {
+    public static function getFilterableColumns(): array {
         return static::$filterableColumns ?? array_keys(static::$defaultColumns);
     }
 

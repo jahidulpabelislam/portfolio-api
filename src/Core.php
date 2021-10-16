@@ -51,18 +51,18 @@ class Core {
         $projectsController = Projects::class;
         $authController = Auth::class;
 
-        $router->addRoute("/projects/{projectId}/images/{id}/", "GET", [$projectsController, "getProjectImage"], "projectImage");
-        $router->addRoute("/projects/{projectId}/images/{id}/", "DELETE", [$projectsController, "deleteProjectImage"]);
+        $router->addRoute("/projects/{projectId}/images/{id}/", "GET", [$projectsController, "getImage"], "projectImage");
+        $router->addRoute("/projects/{projectId}/images/{id}/", "DELETE", [$projectsController, "deleteImage"]);
 
-        $router->addRoute("/projects/{projectId}/images/", "GET", [$projectsController, "getProjectImages"], "projectImages");
-        $router->addRoute("/projects/{projectId}/images/", "POST", [$projectsController, "addProjectImage"]);
+        $router->addRoute("/projects/{projectId}/images/", "GET", [$projectsController, "getImages"], "projectImages");
+        $router->addRoute("/projects/{projectId}/images/", "POST", [$projectsController, "addImage"]);
 
-        $router->addRoute("/projects/{id}/", "GET", [$projectsController, "getProject"], "project");
-        $router->addRoute("/projects/{id}/", "PUT", [$projectsController, "updateProject"]);
-        $router->addRoute("/projects/{id}/", "DELETE", [$projectsController, "deleteProject"]);
+        $router->addRoute("/projects/{id}/", "GET", [$projectsController, "read"], "project");
+        $router->addRoute("/projects/{id}/", "PUT", [$projectsController, "update"]);
+        $router->addRoute("/projects/{id}/", "DELETE", [$projectsController, "delete"]);
 
-        $router->addRoute("/projects/", "GET", [$projectsController, "getProjects"]);
-        $router->addRoute("/projects/", "POST", [$projectsController, "addProject"]);
+        $router->addRoute("/projects/", "GET", [$projectsController, "index"]);
+        $router->addRoute("/projects/", "POST", [$projectsController, "create"]);
 
         $router->addRoute("/auth/login/", "POST", [$authController, "login"]);
         $router->addRoute("/auth/logout/", "DELETE", [$authController, "logout"]);

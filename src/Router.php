@@ -10,6 +10,7 @@ use App\Auth\Manager as AuthManager;
 use App\HTTP\Controller\AuthGuarded;
 use App\HTTP\Responder;
 use App\HTTP\Response;
+use App\Utils\ArrayCollection;
 use App\Utils\Str;
 use Exception;
 use JPI\Database\Exception as DBException;
@@ -98,7 +99,7 @@ class Router {
         $identifiers = [];
 
         foreach ($matches as $key => $match) {
-            if (is_numeric($key)) {
+            if (!is_numeric($key)) {
                 $identifiers[$key] = $match;
             }
         }
@@ -131,6 +132,8 @@ class Router {
                     $route = $routes[$method];
                     array_shift($matches);
                     $identifiers = $this->getIdentifiersFromMatches($matches);
+
+                    $this->request->identifiers = new ArrayCollection($identifiers);
 
                     if (isset($route["callable"])) {
                         return $route["callable"](...$identifiers);

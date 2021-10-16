@@ -2,9 +2,16 @@
 
 namespace App;
 
+use App\Entity\CrudService;
 use DateTime;
 
 abstract class APIEntity extends Entity implements APIEntityInterface {
+
+    protected static $crudService = CrudService::class;
+
+    public static function getCrudService(): CrudService {
+        return new static::$crudService(static::class);
+    }
 
     public function getAPIResponse(): array {
         $response = [

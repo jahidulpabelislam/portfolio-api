@@ -23,6 +23,8 @@ class Request {
 
     public $headers;
 
+    public $identifiers;
+
     /**
      * @param $value array|string
      * @return Collection|string
@@ -64,6 +66,8 @@ class Request {
         }
 
         $this->headers = new Headers(apache_request_headers());
+
+        $this->identifiers = new ArrayCollection();
     }
 
     /**
@@ -77,5 +81,9 @@ class Request {
 
     public function getParam(string $param, $default = null) {
         return $this->params->get($param, $default);
+    }
+
+    public function getIdentifier(string $identifier, $default = null) {
+        return $this->identifiers->get($identifier, $default);
     }
 }

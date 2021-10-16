@@ -248,20 +248,14 @@ trait Responder {
      * @param $entityClass string
      * @param $entity APIEntity|null
      * @param $id int|string|null
-     * @param $isDeleted bool
      * @return Response
      */
-    public static function getItemDeletedResponse(
-        string $entityClass,
-        ?APIEntity $entity,
-        $id,
-        bool $isDeleted = false
-    ): Response {
+    public static function getItemDeletedResponse(string $entityClass, ?APIEntity $entity, $id): Response {
         if (!$id || !$entity || !$entity->isLoaded() || $entity->getId() != $id) {
             return static::getItemNotFoundResponse($entityClass, $id);
         }
 
-        if ($isDeleted) {
+        if ($entity->isDeleted()) {
             return new Response(204);
         }
 

@@ -8,34 +8,27 @@ namespace App\HTTP\Controller;
 
 use App\Auth\Manager as AuthManager;
 use App\Core;
-use App\Entity\Collection as EntityCollection;
 use App\Entity\Project;
 use App\Entity\Project\Image;
-use App\Entity\Project\Type;
-use App\HTTP\Controller;
 use App\HTTP\Response;
-use App\Utils\Collection;
 use Exception;
 
-class Projects extends Controller implements AuthGuarded {
+class Projects extends Crud {
+
+    protected $entityClass = Project::class;
 
     protected $publicFunctions = [
-        "getProjects",
-        "getProject",
-        "getProjectImages",
-        "getProjectImage",
+        "index",
+        "read",
+        "getImages",
+        "getImage",
     ];
-
-    public function getPublicFunctions(): array {
-        return $this->publicFunctions;
-    }
 
     /**
      * @param $projectId int|string
-     * @param $includeLinkedData bool
      * @return Project|null
      */
-    private function getProjectEntity($projectId, bool $includeLinkedData = false): ?Project {
+    private function getProjectEntity($projectId): ?Project {
         $where = ["id = :id"];
         $params = ["id" => $projectId];
         if (!AuthManager::isLoggedIn($this->request)) {
@@ -43,156 +36,7 @@ class Projects extends Controller implements AuthGuarded {
             $params["status"] = Project::PUBLIC_STATUS;
         }
 
-        $project = Project::get($where, $params, 1);
-        if ($project && $includeLinkedData) {
-            $project->loadType();
-            $project->loadImages();
-        }
-
-        return $project;
-    }
-
-    /**
-     * Gets all Projects but paginated, also might include search
-     *
-     * @return Response
-     */
-    public function getProjects(): Response {
-        $params = clone $this->request->params;
-
-        if (!isset($params["filters"])) {
-            $params["filters"] = new Collection();
-        }
-
-        // As the user isn't logged in, filter by status = public
-        if (!AuthManager::isLoggedIn($this->request)) {
-            $params["filters"]["status"] = Project::PUBLIC_STATUS;
-        }
-
-        $query = Project::buildQueryFromFilters($params["filters"]->toArray());
-
-        $where = $query["where"];
-        $queryParams = $query["params"];
-
-        $search = $this->request->getParam("search");
-        if ($search) {
-            $searchQuery = Project::buildSearchQuery($search);
-
-            $where = array_merge($where, $searchQuery["where"]);
-            $queryParams = array_merge($queryParams, $searchQuery["params"]);
-        }
-
-        $limit = $this->request->getParam("limit");
-        $page = $this->request->getParam("page");
-
-        $projects = Project::get($where, $queryParams, $limit, $page);
-
-        if ($projects instanceof Project) {
-            $totalCount = Project::getCount($where, $queryParams);
-            $projects = new EntityCollection([$projects], $totalCount, $limit, $page);
-        }
-
-        if (count($projects)) {
-            $images = Image::getByColumn("project_id", $projects->pluck("id")->toArray());
-            $imagesGrouped = $images->groupBy("project_id");
-
-            foreach ($projects as $project) {
-                $project->images = $imagesGrouped[$project->getId()] ?? new EntityCollection();
-            }
-
-            $types = Type::getById($projects->pluck("type_id")->toArray());
-            $typesGrouped = $types->groupBy("id");
-
-            foreach ($projects as $project) {
-                $project->type = $typesGrouped[$project->type_id][0] ?? null;
-            }
-        }
-
-        return $this->getPaginatedItemsResponse(Project::class, $projects);
-    }
-
-    /**
-     * Try and add a Project a user has attempted to add
-     *
-     * @return Response
-     */
-    public function addProject(): Response {
-        $project = Project::insert($this->request->data->toArray());
-        if ($project->hasErrors()) {
-            return $this->getInvalidInputResponse($project->getErrors());
-        }
-        $project->reload();
-        return self::getInsertResponse(Project::class, $project);
-    }
-
-    /**
-     * Try to edit a Project a user has added before
-     *
-     * @param $projectId int|string The Id of the Project to update
-     * @return Response
-     */
-    public function updateProject($projectId): Response {
-        $project = $this->getProjectEntity($projectId, true);
-        if ($project) {
-            $data = $this->request->data;
-            $project->setValues($data->toArray());
-
-            if (!empty($data["type"])) {
-                $type = Type::getByNameOrCreate($data["type"]);
-                $project->type_id = $type->getId();
-            }
-            $project->save();
-
-            if ($project->hasErrors()) {
-                return $this->getInvalidInputResponse($project->getErrors());
-            }
-
-            // If images were passed update the sort order
-            if (!empty($data["images"])) {
-                $orders = [];
-                foreach ($data["images"] as $i => $image) {
-                    $orders[$image["id"]] = $i + 1;
-                }
-
-                foreach ($project->images as $projectImage) {
-                    $projectImage->position = $orders[$projectImage->getId()];
-                    $projectImage->save();
-                }
-            }
-
-            $project->reload();
-        }
-
-        return self::getUpdateResponse(Project::class, $project, $projectId);
-    }
-
-    /**
-     * Try to delete a Project a user has added before
-     *
-     * @param $projectId int|string The Id of the Project to delete
-     * @return Response
-     */
-    public function deleteProject($projectId): Response {
-        $isDeleted = false;
-
-        $project = $this->getProjectEntity($projectId);
-        if ($project) {
-            $isDeleted = $project->delete();
-        }
-
-        return self::getItemDeletedResponse(Project::class, $project, $projectId, $isDeleted);
-    }
-
-    /**
-     * Get a particular Project defined by $projectId
-     *
-     * @param $projectId int|string The Id of the Project to get
-     * @return Response
-     */
-    public function getProject($projectId): Response {
-        $project = $this->getProjectEntity($projectId, true);
-
-        return self::getItemResponse(Project::class, $project, $projectId);
+        return Project::get($where, $params, 1);
     }
 
     /**
@@ -201,10 +45,11 @@ class Projects extends Controller implements AuthGuarded {
      * @param $projectId int|string The Id of the Project
      * @return Response
      */
-    public function getProjectImages($projectId): Response {
+    public function getImages($projectId): Response {
         // Check the Project trying to get Images for exists
-        $project = $this->getProjectEntity($projectId, true);
+        $project = $this->getProjectEntity($projectId);
         if ($project) {
+            $project->loadImages();
             return $this->getItemsResponse(Image::class, $project->images);
         }
 
@@ -221,7 +66,7 @@ class Projects extends Controller implements AuthGuarded {
      * @return Response
      * @throws Exception
      */
-    private static function uploadProjectImage(Project $project, array $image): Response {
+    private static function uploadImage(Project $project, array $image): Response {
         if (strpos(mime_content_type($image["tmp_name"]), "image/") !== 0) {
             return new Response(400, [
                 "error" => "File is not an image.",
@@ -263,13 +108,13 @@ class Projects extends Controller implements AuthGuarded {
      * @return Response
      * @throws Exception
      */
-    public function addProjectImage($projectId): Response {
+    public function addImage($projectId): Response {
         $files = $this->request->files;
         if (isset($files["image"])) {
             // Check the Project trying to add a Image for exists
             $project = $this->getProjectEntity($projectId);
             if ($project) {
-                return self::uploadProjectImage($project, $files["image"]);
+                return self::uploadImage($project, $files["image"]);
             }
 
             return self::getItemNotFoundResponse(Project::class, $projectId);
@@ -287,11 +132,11 @@ class Projects extends Controller implements AuthGuarded {
      * @param $imageId int|string The Id of the Project Image to get
      * @return Response
      */
-    public function getProjectImage($projectId, $imageId): Response {
+    public function getImage($projectId, $imageId): Response {
         // Check the Project trying to get Image for exists
         $project = $this->getProjectEntity($projectId);
         if ($project) {
-            $projectImage = Image::getById($imageId);
+            $projectImage = Image::getCrudService()->read($this->request);
 
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
@@ -317,20 +162,14 @@ class Projects extends Controller implements AuthGuarded {
      * @param $imageId int|string The Id of the Project Image to delete
      * @return Response
      */
-    public function deleteProjectImage($projectId, $imageId): Response {
+    public function deleteImage($projectId, $imageId): Response {
         // Check the Project of the Image trying to edit actually exists
         $project = $this->getProjectEntity($projectId);
-        if ($project) {
-            $isDeleted = false;
-
-            $projectImage = Image::getById($imageId);
-            if ($projectImage) {
-                $isDeleted = $projectImage->delete();
-            }
-
-            return self::getItemDeletedResponse(Image::class, $projectImage, $imageId, $isDeleted);
+        if (!$project) {
+            return self::getItemNotFoundResponse(Project::class, $projectId);
         }
 
-        return self::getItemNotFoundResponse(Project::class, $projectId);
+        $projectImage = Image::getCrudService()->delete($this->request);
+        return self::getItemDeletedResponse(Image::class, $projectImage, $imageId);
     }
 }
