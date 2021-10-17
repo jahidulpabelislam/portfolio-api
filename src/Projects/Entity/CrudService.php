@@ -27,10 +27,12 @@ class CrudService extends BaseService {
 
         // As the user isn't logged in, filter by status = public
         if (!AuthManager::isLoggedIn($request)) {
-            if (!isset($request->params["filters"])) {
-                $request->params["filters"] = new Collection();
+            $params = clone $request->params;
+            if (!isset($params["filters"])) {
+                $params["filters"] = new Collection();
             }
-            $request->params["filters"]["status"] = Project::PUBLIC_STATUS;
+            $params["filters"]["status"] = Project::PUBLIC_STATUS;
+            $request->params = $params;
         }
 
         $projects = parent::index($request);
