@@ -6,13 +6,16 @@
  * Also holds any method only custom to Project entities.
  */
 
-namespace App\Entity;
+namespace App\Projects\Entity;
 
 use App\APIEntity;
 use App\Core;
-use App\Entity\Project\CrudService as ProjectCrudService;
-use App\Entity\Project\Image;
-use App\Entity\Project\Type;
+use App\Entity\Collection;
+use App\Entity\FilterableInterface;
+use App\Entity\Filterable;
+use App\Entity\SearchableInterface;
+use App\Entity\Searchable;
+use App\Entity\Timestamped;
 
 class Project extends APIEntity implements FilterableInterface, SearchableInterface {
 
@@ -65,7 +68,7 @@ class Project extends APIEntity implements FilterableInterface, SearchableInterf
     protected static $orderByColumn = "date";
     protected static $orderByASC = false;
 
-    protected static $crudService = ProjectCrudService::class;
+    protected static $crudService = CrudService::class;
 
     /**
      * @var Collection|null

@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Entity\Project;
+namespace App\Projects\Entity;
 
 use App\Auth\Manager as AuthManager;
 use App\APIEntity;
 use App\Entity\Collection as EntityCollection;
 use App\Entity\CrudService as BaseService;
-use App\Entity\Project;
 use App\HTTP\Request;
 use App\Utils\Collection;
 

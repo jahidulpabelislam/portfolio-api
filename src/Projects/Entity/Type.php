@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Project;
+namespace App\Projects\Entity;
 
 use App\Entity;
 use App\Entity\Timestamped;

@@ -4,16 +4,17 @@
  * All the custom functions for the Projects part of the API that allow to perform all user requests.
  */
 
-namespace App\HTTP\Controller;
+namespace App\Projects;
 
 use App\Auth\Manager as AuthManager;
 use App\Core;
-use App\Entity\Project;
-use App\Entity\Project\Image;
+use App\Projects\Entity\Project;
+use App\Projects\Entity\Image;
 use App\HTTP\Response;
+use App\HTTP\Controller\Crud;
 use Exception;
 
-class Projects extends Crud {
+class Controller extends Crud {
 
     protected $entityClass = Project::class;
 

@@ -6,7 +6,7 @@
  * Also holds any method only custom to Project Image entities.
  */
 
-namespace App\Entity\Project;
+namespace App\Projects\Entity;
 
 use App\APIEntity;
 use App\Entity\Timestamped;
