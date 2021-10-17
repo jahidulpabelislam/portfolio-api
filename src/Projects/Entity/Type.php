@@ -2,10 +2,11 @@
 
 namespace App\Projects\Entity;
 
-use App\Entity;
+use App\APIEntity;
+use App\Core;
 use App\Entity\Timestamped;
 
-class Type extends Entity {
+class Type extends APIEntity {
 
     use Timestamped;
 
@@ -27,5 +28,14 @@ class Type extends Entity {
         }
 
         return static::insert(["name" => $name]);
+    }
+
+    public function getAPIURL(): string {
+        return Core::get()->getRouter()->makeUrl(
+            "projectType",
+            [
+                "id" => $this->getId(),
+            ]
+        );
     }
 }

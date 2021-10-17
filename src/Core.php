@@ -8,6 +8,8 @@ namespace App;
 
 use App\HTTP\Controller\Auth;
 use App\Projects\Controller as ProjectsController;
+use App\Projects\TypeController;
+use App\Projects\TypeController as ProjectTypesController;
 use App\HTTP\Response;
 use App\HTTP\Request;
 use App\Utils\Singleton;
@@ -49,7 +51,11 @@ class Core {
         $router->setBasePath("/v" . static::VERSION);
 
         $projectsController = ProjectsController::class;
+        $projectTypesController = TypeController::class;
         $authController = Auth::class;
+
+        $router->addRoute("/project-types/{id}/", "GET", [$projectTypesController, "read"], "projectType");
+        $router->addRoute("/project-types/", "GET", [$projectTypesController, "index"]);
 
         $router->addRoute("/projects/{projectId}/images/{id}/", "GET", [$projectsController, "getImage"], "projectImage");
         $router->addRoute("/projects/{projectId}/images/{id}/", "DELETE", [$projectsController, "deleteImage"]);
