@@ -9,6 +9,8 @@ use App\Entity\Collection as EntityCollection;
 class CrudService {
 
     protected $entityClass;
+    protected $paginated = true;
+    protected $perPage = 10;
 
     public function __construct(string $entityClass) {
         $this->entityClass = $entityClass;
@@ -43,14 +45,21 @@ class CrudService {
             }
         }
 
-        $limit = $request->getParam("limit");
-        $page = $request->getParam("page");
+        $limit = null;
+        $page = null;
+        if ($this->paginated) {
+            $limit = (int) $request->getParam("limit");
+            if (!$limit) {
+                $limit = $this->perPage;
+            }
+            $page = $request->getParam("page");
+        }
 
         $entities = $this->entityClass::get($where, $queryParams, $limit, $page);
 
         if ($entities instanceof $this->entityClass) {
             $totalCount = $this->entityClass::getCount($where, $queryParams);
-            $entities = new EntityCollection([$entities], $totalCount, $limit, $page);
+            $entities = new PaginatedCollection([$entities], $totalCount, $limit, $page);
         }
 
         return $entities;

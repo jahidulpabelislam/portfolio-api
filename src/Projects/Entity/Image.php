@@ -31,8 +31,6 @@ class Image extends APIEntity {
 
     protected static $orderByColumn = "position";
 
-    protected static $defaultLimit = null;
-
     /**
      * @inheritDoc
      *

@@ -18,7 +18,7 @@ class Type extends APIEntity {
         "name" => "",
     ];
 
-    protected static $defaultLimit = null;
+    protected static $crudService = TypeCrudService::class;
 
     public static function getByNameOrCreate(string $name): Type {
         $type = static::getByColumn("name", $name, 1);

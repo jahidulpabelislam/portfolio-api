@@ -2,6 +2,7 @@
 
 namespace App\HTTP\Controller;
 
+use App\Entity\PaginatedCollection;
 use App\HTTP\Controller;
 use App\HTTP\Response;
 
@@ -22,7 +23,12 @@ class Crud extends Controller implements AuthGuarded {
      */
     public function index(): Response {
         $entities = $this->entityClass::getCrudService()->index($this->request);
-        return $this->getPaginatedItemsResponse($this->entityClass, $entities);
+
+        if ($entities instanceof PaginatedCollection) {
+            return $this->getPaginatedItemsResponse($this->entityClass, $entities);
+        }
+
+        return $this->getItemsResponse($this->entityClass, $entities);
     }
 
     /**

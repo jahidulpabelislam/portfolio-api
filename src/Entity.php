@@ -11,6 +11,7 @@ namespace App;
 use App\Database\AwareTrait as DatabaseAware;
 use JPI\Database\Collection as DBCollection;
 use App\Entity\Collection as EntityCollection;
+use App\Entity\PaginatedCollection as PaginatedEntityCollection;
 use App\Entity\Validated;
 use App\Utils\Arrayable;
 use App\Utils\Str;
@@ -234,26 +235,6 @@ abstract class Entity implements Arrayable {
         return $entities;
     }
 
-    /**
-     * Get the limit to use for a SQL query
-     * Can specify a limit and it will make sure it is not above the max/default
-     *
-     * @param $limit int|string|null
-     * @return int|null
-     */
-    protected static function getLimit($limit = null): ?int {
-        if (is_numeric($limit)) {
-            $limit = (int)$limit;
-        }
-
-        // If invalid use default
-        if (!$limit || $limit < 1 || (static::$defaultLimit && static::$defaultLimit < $limit)) {
-            $limit = static::$defaultLimit;
-        }
-
-        return $limit;
-    }
-
     protected static function getOrderBy(): array {
         $orderBys = [];
         if (static::$orderByColumn) {
@@ -271,13 +252,12 @@ abstract class Entity implements Arrayable {
     /**
      * @param $where string[]|string|int|null
      * @param $params array|null
-     * @param $limit int|string|null
-     * @param $page int|string|null
+     * @param $limit int|null
+     * @param $page int|null
      * @return EntityCollection|static|null
      */
-    public static function get($where = null, ?array $params = null, $limit = null, $page = null) {
+    public static function get($where = null, ?array $params = null, int $limit = null, int $page = null) {
         $orderBy = static::getOrderBy();
-        $limit = static::getLimit($limit);
 
         $rows = static::select("*", $where, $params, $orderBy, $limit, $page);
 
@@ -291,16 +271,16 @@ abstract class Entity implements Arrayable {
 
         $entities = static::populateEntitiesFromDB($rows);
 
-        $total = null;
-        $limit = null;
-        $page = null;
         if ($rows instanceof DBCollection) {
-            $total = $rows->getTotalCount();
-            $limit = $rows->getLimit();
-            $page = $rows->getPage();
+            return new PaginatedEntityCollection(
+                $entities,
+                $rows->getTotalCount(),
+                $rows->getLimit(),
+                $rows->getPage()
+            );
         }
 
-        return new EntityCollection($entities, $total, $limit, $page);
+        return new EntityCollection($entities);
     }
 
     /**
@@ -308,11 +288,11 @@ abstract class Entity implements Arrayable {
      *
      * @param $column string
      * @param $value string|int|array
-     * @param $limit int|string|null
-     * @param $page int|string|null
+     * @param $limit int|null
+     * @param $page int|null
      * @return EntityCollection|static|null
      */
-    public static function getByColumn(string $column, $value, $limit = null, $page = null) {
+    public static function getByColumn(string $column, $value, int $limit = null, int $page = null) {
         if (is_array($value)) {
             $values = $value;
             $params = [];
