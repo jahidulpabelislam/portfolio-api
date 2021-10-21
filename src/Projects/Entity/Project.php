@@ -58,7 +58,6 @@ class Project extends APIEntity implements FilterableInterface, SearchableInterf
 
     protected static $searchableColumns = [
         "name",
-        "type",
         "skills",
         "long_description",
         "short_description",
