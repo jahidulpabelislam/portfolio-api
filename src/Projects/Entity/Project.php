@@ -153,7 +153,10 @@ class Project extends APIEntity implements FilterableInterface, SearchableInterf
         $response = parent::getAPIResponse();
 
         unset($response["type_id"]);
-        $response["type"] = $this->type ? $this->type->name : "";
+
+        if ($this->type instanceof Type) {
+            $response["type"] = $this->type->name;
+        }
 
         if ($this->images instanceof Collection) {
             $response["images"] = [];
