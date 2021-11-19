@@ -4,7 +4,7 @@
         "ext-pdo": "*",
         "ext-fileinfo": "*",
         "ext-json": "*",
-        "jpi/database": "^1.0",
+        "jpi/database": "dev-master as 1.1.1",
         "jpi/query": "^1.0",
         "firebase/php-jwt": "^5.0"
     },
