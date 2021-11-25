@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fc3f78aa7ce49166c49d9055065d280b",
+    "content-hash": "adcdcd8f4aa0f082628e5a19d97f98cf",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -62,22 +62,23 @@
         },
         {
             "name": "jpi/database",
-            "version": "v1.0.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/database.git",
-                "reference": "5a33ce4c00cf23a53e534144ec525c637c52c532"
+                "reference": "89cda204eeb8a117aa50e98ceb830d1bd4017704"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/database/zipball/5a33ce4c00cf23a53e534144ec525c637c52c532",
-                "reference": "5a33ce4c00cf23a53e534144ec525c637c52c532",
+                "url": "https://api.github.com/repos/jahidulpabelislam/database/zipball/89cda204eeb8a117aa50e98ceb830d1bd4017704",
+                "reference": "89cda204eeb8a117aa50e98ceb830d1bd4017704",
                 "shasum": ""
             },
             "require": {
                 "ext-pdo": "*",
                 "php": "^7.1"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -103,9 +104,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/database/issues",
-                "source": "https://github.com/jahidulpabelislam/database/tree/v1.0.0"
+                "source": "https://github.com/jahidulpabelislam/database/tree/master"
             },
-            "time": "2021-03-14T14:24:12+00:00"
+            "time": "2021-11-10T23:43:18+00:00"
         },
         {
             "name": "jpi/query",
@@ -157,9 +158,18 @@
         }
     ],
     "packages-dev": [],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "jpi/database",
+            "version": "9999999-dev",
+            "alias": "1.1.1",
+            "alias_normalized": "1.1.1.0"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "jpi/database": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
