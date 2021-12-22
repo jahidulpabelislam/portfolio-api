@@ -2,8 +2,8 @@
 
 namespace App\Entity;
 
-use App\Utils\ArrayCollection;
 use App\Entity;
+use App\Utils\ArrayCollection;
 
 class Collection extends ArrayCollection {
 

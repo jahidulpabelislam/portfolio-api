@@ -21,5 +21,4 @@ class Config {
     public function __get(string $key) {
         return $this->values[$key] ?? null;
     }
-
 }

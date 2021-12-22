@@ -21,5 +21,4 @@ trait Validated {
     protected function addError(string $column, string $error): void {
         $this->errors[$column] = $error;
     }
-
 }

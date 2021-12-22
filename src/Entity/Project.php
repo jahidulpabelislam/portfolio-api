@@ -10,7 +10,6 @@ namespace App\Entity;
 
 use App\APIEntity;
 use App\Core;
-use DateTime;
 
 class Project extends APIEntity {
 
@@ -141,5 +140,4 @@ class Project extends APIEntity {
 
         return $response;
     }
-
 }

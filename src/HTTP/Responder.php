@@ -206,7 +206,8 @@ trait Responder {
     public static function getItemResponse(string $entityClass, ?APIEntity $entity, $id): Response {
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
             $response = static::getItemFoundResponse($entity);
-        } else {
+        }
+        else {
             $response = static::getItemNotFoundResponse($entityClass, $id);
         }
 

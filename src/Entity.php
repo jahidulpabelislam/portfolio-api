@@ -9,13 +9,13 @@
 namespace App;
 
 use App\Database\AwareTrait as DatabaseAware;
-use JPI\Database\Collection as DBCollection;
 use App\Entity\Collection as EntityCollection;
 use App\Entity\Validated;
 use App\Utils\Arrayable;
 use App\Utils\Str;
 use DateTime;
 use Exception;
+use JPI\Database\Collection as DBCollection;
 
 abstract class Entity implements Arrayable {
 
@@ -323,7 +323,8 @@ abstract class Entity implements Arrayable {
             }
 
             $where = "$column in (" . implode(", ", $ins) . ")";
-        } else {
+        }
+        else {
             $where = "$column = :$column";
             $params = [$column => $value];
         }
@@ -397,7 +398,8 @@ abstract class Entity implements Arrayable {
                 // Updating failed so reset id
                 $this->setId(null);
             }
-        } else {
+        }
+        else {
             $newId = static::getQuery()->insert($this->getValuesToSave());
             $this->setId($newId);
         }

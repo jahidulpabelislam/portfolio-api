@@ -62,5 +62,4 @@ class Auth extends Controller {
             "data" => AuthManager::isLoggedIn($this->request),
         ]);
     }
-
 }
