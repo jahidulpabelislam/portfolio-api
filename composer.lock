@@ -69,12 +69,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/database.git",
-                "reference": "e4b0512b17acf1e921feceece608821370c7cf6e"
+                "reference": "233be91834f76e5fa0c0ab58160cdcc2fd62fcef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/database/zipball/e4b0512b17acf1e921feceece608821370c7cf6e",
-                "reference": "e4b0512b17acf1e921feceece608821370c7cf6e",
+                "url": "https://api.github.com/repos/jahidulpabelislam/database/zipball/233be91834f76e5fa0c0ab58160cdcc2fd62fcef",
+                "reference": "233be91834f76e5fa0c0ab58160cdcc2fd62fcef",
                 "shasum": ""
             },
             "require": {
@@ -109,7 +109,7 @@
                 "issues": "https://github.com/jahidulpabelislam/database/issues",
                 "source": "https://github.com/jahidulpabelislam/database/tree/master"
             },
-            "time": "2021-12-19T15:01:35+00:00"
+            "time": "2021-12-22T21:59:44+00:00"
         },
         {
             "name": "jpi/query",
@@ -117,12 +117,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/query.git",
-                "reference": "f9a3cdef80dae274809a0fe89f31c20c9b3f9f52"
+                "reference": "65bf770c971d5efc05afb517fba087ee85ebe130"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/query/zipball/f9a3cdef80dae274809a0fe89f31c20c9b3f9f52",
-                "reference": "f9a3cdef80dae274809a0fe89f31c20c9b3f9f52",
+                "url": "https://api.github.com/repos/jahidulpabelislam/query/zipball/65bf770c971d5efc05afb517fba087ee85ebe130",
+                "reference": "65bf770c971d5efc05afb517fba087ee85ebe130",
                 "shasum": ""
             },
             "require": {
@@ -158,7 +158,7 @@
                 "issues": "https://github.com/jahidulpabelislam/query/issues",
                 "source": "https://github.com/jahidulpabelislam/query/tree/master"
             },
-            "time": "2021-10-12T21:55:27+00:00"
+            "time": "2021-12-22T22:03:35+00:00"
         }
     ],
     "packages-dev": [],
