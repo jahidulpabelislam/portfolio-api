@@ -28,6 +28,6 @@ trait AwareTrait {
     }
 
     public static function getQuery(): Query {
-        return new Query(static::getDB(), static::$tableName, Config::get()->debug);
+        return new Query(static::getDB(), static::$tableName);
     }
 }
