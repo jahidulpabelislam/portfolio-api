@@ -168,7 +168,7 @@ abstract class Entity implements Arrayable {
         }
     }
 
-    public function __set(string $name, $value) {
+    public function __set(string $name, $value): void {
         if (array_key_exists($name, $this->columns)) {
             $this->setValue($name, $value);
         }
