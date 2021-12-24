@@ -4,8 +4,8 @@
         "ext-pdo": "*",
         "ext-fileinfo": "*",
         "ext-json": "*",
-        "jpi/database": "dev-master as 1",
-        "jpi/query": "dev-master",
+        "jpi/database": "^1",
+        "jpi/query": "^1",
         "firebase/php-jwt": "^5.0"
     },
     "autoload": {

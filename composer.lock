@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b641813ea56849ec182e7ea83a8f6134",
+    "content-hash": "9824b9fda7e28458b791f3ffb1c7a5ff",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -65,23 +65,22 @@
         },
         {
             "name": "jpi/database",
-            "version": "dev-master",
+            "version": "v1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/database.git",
-                "reference": "233be91834f76e5fa0c0ab58160cdcc2fd62fcef"
+                "reference": "2ea50a282c26b5c18e05f094b81ceddbbf6ad798"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/database/zipball/233be91834f76e5fa0c0ab58160cdcc2fd62fcef",
-                "reference": "233be91834f76e5fa0c0ab58160cdcc2fd62fcef",
+                "url": "https://api.github.com/repos/jahidulpabelislam/database/zipball/2ea50a282c26b5c18e05f094b81ceddbbf6ad798",
+                "reference": "2ea50a282c26b5c18e05f094b81ceddbbf6ad798",
                 "shasum": ""
             },
             "require": {
                 "ext-pdo": "*",
                 "php": "^7.1"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -107,29 +106,28 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/database/issues",
-                "source": "https://github.com/jahidulpabelislam/database/tree/master"
+                "source": "https://github.com/jahidulpabelislam/database/tree/v1.1.2"
             },
-            "time": "2021-12-22T21:59:44+00:00"
+            "time": "2021-12-24T21:08:02+00:00"
         },
         {
             "name": "jpi/query",
-            "version": "dev-master",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/query.git",
-                "reference": "65bf770c971d5efc05afb517fba087ee85ebe130"
+                "reference": "b0335a99ba79c42f4dd4c5a19804d7ba2099a979"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/query/zipball/65bf770c971d5efc05afb517fba087ee85ebe130",
-                "reference": "65bf770c971d5efc05afb517fba087ee85ebe130",
+                "url": "https://api.github.com/repos/jahidulpabelislam/query/zipball/b0335a99ba79c42f4dd4c5a19804d7ba2099a979",
+                "reference": "b0335a99ba79c42f4dd4c5a19804d7ba2099a979",
                 "shasum": ""
             },
             "require": {
                 "jpi/database": "^1",
                 "php": "^7.1"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -156,25 +154,15 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/query/issues",
-                "source": "https://github.com/jahidulpabelislam/query/tree/master"
+                "source": "https://github.com/jahidulpabelislam/query/tree/v1.0.1"
             },
-            "time": "2021-12-22T22:03:35+00:00"
+            "time": "2021-12-24T22:03:57+00:00"
         }
     ],
     "packages-dev": [],
-    "aliases": [
-        {
-            "package": "jpi/database",
-            "version": "9999999-dev",
-            "alias": "1",
-            "alias_normalized": "1.0.0.0"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "jpi/database": 20,
-        "jpi/query": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
@@ -184,5 +172,5 @@
         "ext-json": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
