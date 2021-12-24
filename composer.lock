@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9824b9fda7e28458b791f3ffb1c7a5ff",
+    "content-hash": "e3e70e668cef05a1e83fde08a2bb9805",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -111,6 +111,47 @@
             "time": "2021-12-24T21:08:02+00:00"
         },
         {
+            "name": "jpi/orm",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jahidulpabelislam/orm.git",
+                "reference": "92c63055969dd416e7f9db1105c107d44a6d2fda"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/92c63055969dd416e7f9db1105c107d44a6d2fda",
+                "reference": "92c63055969dd416e7f9db1105c107d44a6d2fda",
+                "shasum": ""
+            },
+            "require": {
+                "jpi/database": "^1",
+                "jpi/query": "^1",
+                "php": "^7.1"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "JPI\\ORM\\": "src/"
+                }
+            },
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Jahidul Pabel Islam",
+                    "email": "me@jahidulpabelislam.com"
+                }
+            ],
+            "support": {
+                "source": "https://github.com/jahidulpabelislam/orm/tree/master",
+                "issues": "https://github.com/jahidulpabelislam/orm/issues"
+            },
+            "time": "2021-12-24T22:44:42+00:00"
+        },
+        {
             "name": "jpi/query",
             "version": "v1.0.1",
             "source": {
@@ -162,7 +203,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "jpi/orm": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
