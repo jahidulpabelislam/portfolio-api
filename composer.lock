@@ -116,12 +116,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "92c63055969dd416e7f9db1105c107d44a6d2fda"
+                "reference": "0046295dc42efcd30cecad893bf88efd4b010e15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/92c63055969dd416e7f9db1105c107d44a6d2fda",
-                "reference": "92c63055969dd416e7f9db1105c107d44a6d2fda",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/0046295dc42efcd30cecad893bf88efd4b010e15",
+                "reference": "0046295dc42efcd30cecad893bf88efd4b010e15",
                 "shasum": ""
             },
             "require": {
@@ -149,7 +149,7 @@
                 "source": "https://github.com/jahidulpabelislam/orm/tree/master",
                 "issues": "https://github.com/jahidulpabelislam/orm/issues"
             },
-            "time": "2021-12-24T22:44:42+00:00"
+            "time": "2021-12-25T22:26:52+00:00"
         },
         {
             "name": "jpi/query",
