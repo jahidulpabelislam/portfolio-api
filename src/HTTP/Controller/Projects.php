@@ -8,13 +8,13 @@ namespace App\HTTP\Controller;
 
 use App\Auth\Manager as AuthManager;
 use App\Core;
-use App\Entity\Collection as EntityCollection;
 use App\Entity\Project;
 use App\Entity\ProjectImage;
 use App\HTTP\Controller;
 use App\HTTP\Response;
 use App\Utils\Collection;
 use Exception;
+use JPI\ORM\Entity\Collection as EntityCollection;
 
 class Projects extends Controller implements AuthGuarded {
 
@@ -91,11 +91,20 @@ class Projects extends Controller implements AuthGuarded {
         }
 
         if (count($projects)) {
-            $images = ProjectImage::getByColumn("project_id", $projects->pluck("id")->toArray());
-            $imagesGrouped = $images->groupBy("project_id");
+            $ids = [];
+            foreach ($projects as $project) {
+                $ids[] = $project->getId();
+            }
+
+            $images = ProjectImage::getByColumn("project_id", $ids);
+
+            $imagesGrouped = [];
+            foreach ($images as $image) {
+                $imagesGrouped[$image->project_id][] = $image;
+            }
 
             foreach ($projects as $project) {
-                $project->images = $imagesGrouped[$project->getId()] ?? new EntityCollection();
+                $project->images = new EntityCollection($imagesGrouped[$project->getId()] ?? []);
             }
         }
 

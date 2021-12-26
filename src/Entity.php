@@ -4,13 +4,15 @@ namespace App;
 
 use App\Utils\Arrayable;
 use App\Utils\Str;
+use DateTime;
 use JPI\Database\Connection;
 use JPI\ORM\Entity as BaseEntity;
 
 abstract class Entity extends BaseEntity implements Arrayable {
 
     protected static $displayName = "";
-    protected static $defaultLimit = null;
+
+    protected static $defaultLimit = 10;
 
     protected static $requiredColumns = [];
 
@@ -22,6 +24,10 @@ abstract class Entity extends BaseEntity implements Arrayable {
 
     public static function getPluralDisplayName(): string {
         return static::$displayName . "s";
+    }
+
+    public static function getRequiredColumns(): array {
+        return static::$requiredColumns;
     }
 
     public static function getDB(): Connection {

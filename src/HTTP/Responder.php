@@ -8,7 +8,7 @@ namespace App\HTTP;
 
 use App\APIEntity;
 use App\Core;
-use App\Entity\Collection as EntityCollection;
+use JPI\ORM\Entity\Collection as EntityCollection;
 
 trait Responder {
 
