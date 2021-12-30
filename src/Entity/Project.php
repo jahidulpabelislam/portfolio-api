@@ -22,7 +22,7 @@ class Project extends APIEntity {
 
     public static $displayName = "Project";
 
-    protected static $tableName = "portfolio_project";
+    protected static $table = "portfolio_project";
 
     protected static $defaultColumns = [
         "name" => "",

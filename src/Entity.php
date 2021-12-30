@@ -7,8 +7,11 @@ use App\Utils\Str;
 use DateTime;
 use JPI\Database\Connection;
 use JPI\ORM\Entity as BaseEntity;
+use JPI\ORM\Entity\Collection;
 
 abstract class Entity extends BaseEntity implements Arrayable {
+
+    protected static $dbConnection = null;
 
     protected static $displayName = "";
 
@@ -30,10 +33,10 @@ abstract class Entity extends BaseEntity implements Arrayable {
         return static::$requiredColumns;
     }
 
-    public static function getDB(): Connection {
-        if (!static::$db) {
+    public static function getDatabaseConnection(): Connection {
+        if (!static::$dbConnection) {
             $config = Config::get();
-            static::$db = new Connection([
+            static::$dbConnection = new Connection([
                 "host" => $config->db_host,
                 "database" => $config->db_name,
                 "username" => $config->db_username,
@@ -41,7 +44,7 @@ abstract class Entity extends BaseEntity implements Arrayable {
             ]);
         }
 
-        return static::$db;
+        return static::$dbConnection;
     }
 
     protected static function getLimit($limit = null): ?int {
@@ -53,6 +56,16 @@ abstract class Entity extends BaseEntity implements Arrayable {
         }
 
         return $limit;
+    }
+
+    public static function get($where = null, ?array $params = null, $limit = null, $page = null) {
+        $result = parent::get($where, $params, $limit, $page);
+
+        if (is_null($result) || ($where && is_numeric($where)) || $limit === 1 || $result instanceof Collection) {
+            return $result;
+        }
+
+        return new Collection($result);
     }
 
     public function getErrors(): array {
