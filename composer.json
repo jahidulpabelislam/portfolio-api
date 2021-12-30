@@ -4,17 +4,11 @@
         "ext-pdo": "*",
         "ext-fileinfo": "*",
         "ext-json": "*",
-        "jpi/database": "^1",
-        "jpi/query": "^1",
+        "jpi/database": "dev-master as 1",
+        "jpi/query": "dev-master as 1",
         "jpi/orm": "dev-master",
         "firebase/php-jwt": "^5.0"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/jahidulpabelislam/orm"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "App\\": "src/"

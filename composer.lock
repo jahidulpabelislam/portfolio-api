@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e3e70e668cef05a1e83fde08a2bb9805",
+    "content-hash": "474a3525096be5ad2a30194304d81218",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -65,22 +65,23 @@
         },
         {
             "name": "jpi/database",
-            "version": "v1.1.2",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/database.git",
-                "reference": "2ea50a282c26b5c18e05f094b81ceddbbf6ad798"
+                "reference": "242eb3a5d681f00959c621bdd60eee42814c62af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/database/zipball/2ea50a282c26b5c18e05f094b81ceddbbf6ad798",
-                "reference": "2ea50a282c26b5c18e05f094b81ceddbbf6ad798",
+                "url": "https://api.github.com/repos/jahidulpabelislam/database/zipball/242eb3a5d681f00959c621bdd60eee42814c62af",
+                "reference": "242eb3a5d681f00959c621bdd60eee42814c62af",
                 "shasum": ""
             },
             "require": {
                 "ext-pdo": "*",
                 "php": "^7.1"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -106,9 +107,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/database/issues",
-                "source": "https://github.com/jahidulpabelislam/database/tree/v1.1.2"
+                "source": "https://github.com/jahidulpabelislam/database/tree/master"
             },
-            "time": "2021-12-24T21:08:02+00:00"
+            "time": "2021-12-30T01:04:48+00:00"
         },
         {
             "name": "jpi/orm",
@@ -136,6 +137,7 @@
                     "JPI\\ORM\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-3.0-only"
             ],
@@ -147,29 +149,30 @@
             ],
             "description": "Simple & lightweight ORM",
             "support": {
-                "source": "https://github.com/jahidulpabelislam/orm/tree/master",
-                "issues": "https://github.com/jahidulpabelislam/orm/issues"
+                "issues": "https://github.com/jahidulpabelislam/orm/issues",
+                "source": "https://github.com/jahidulpabelislam/orm/tree/master"
             },
             "time": "2021-12-30T20:51:06+00:00"
         },
         {
             "name": "jpi/query",
-            "version": "v1.0.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/query.git",
-                "reference": "b0335a99ba79c42f4dd4c5a19804d7ba2099a979"
+                "reference": "8e76d326b4c37fe47077bf11bb3467fc440ddbe6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/query/zipball/b0335a99ba79c42f4dd4c5a19804d7ba2099a979",
-                "reference": "b0335a99ba79c42f4dd4c5a19804d7ba2099a979",
+                "url": "https://api.github.com/repos/jahidulpabelislam/query/zipball/8e76d326b4c37fe47077bf11bb3467fc440ddbe6",
+                "reference": "8e76d326b4c37fe47077bf11bb3467fc440ddbe6",
                 "shasum": ""
             },
             "require": {
                 "jpi/database": "^1",
                 "php": "^7.1"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -196,15 +199,30 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/query/issues",
-                "source": "https://github.com/jahidulpabelislam/query/tree/v1.0.1"
+                "source": "https://github.com/jahidulpabelislam/query/tree/master"
             },
-            "time": "2021-12-24T22:03:57+00:00"
+            "time": "2021-12-25T22:28:07+00:00"
         }
     ],
     "packages-dev": [],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "jpi/database",
+            "version": "9999999-dev",
+            "alias": "1",
+            "alias_normalized": "1.0.0.0"
+        },
+        {
+            "package": "jpi/query",
+            "version": "9999999-dev",
+            "alias": "1",
+            "alias_normalized": "1.0.0.0"
+        }
+    ],
     "minimum-stability": "stable",
     "stability-flags": {
+        "jpi/database": 20,
+        "jpi/query": 20,
         "jpi/orm": 20
     },
     "prefer-stable": false,
