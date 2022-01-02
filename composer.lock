@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "474a3525096be5ad2a30194304d81218",
+    "content-hash": "d3a00b67df772def858db1a32fdc2cd8",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -65,7 +65,7 @@
         },
         {
             "name": "jpi/database",
-            "version": "dev-master",
+            "version": "1.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/database.git",
@@ -107,13 +107,13 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/database/issues",
-                "source": "https://github.com/jahidulpabelislam/database/tree/master"
+                "source": "https://github.com/jahidulpabelislam/database/tree/1.x"
             },
             "time": "2021-12-30T01:04:48+00:00"
         },
         {
             "name": "jpi/orm",
-            "version": "dev-master",
+            "version": "1.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
@@ -150,13 +150,13 @@
             "description": "Simple & lightweight ORM",
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
-                "source": "https://github.com/jahidulpabelislam/orm/tree/master"
+                "source": "https://github.com/jahidulpabelislam/orm/tree/1.x"
             },
             "time": "2021-12-30T20:51:06+00:00"
         },
         {
             "name": "jpi/query",
-            "version": "dev-master",
+            "version": "1.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/query.git",
@@ -199,7 +199,7 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/query/issues",
-                "source": "https://github.com/jahidulpabelislam/query/tree/master"
+                "source": "https://github.com/jahidulpabelislam/query/tree/1.x"
             },
             "time": "2021-12-25T22:28:07+00:00"
         }
@@ -208,13 +208,13 @@
     "aliases": [
         {
             "package": "jpi/database",
-            "version": "9999999-dev",
+            "version": "1.9999999.9999999.9999999-dev",
             "alias": "1",
             "alias_normalized": "1.0.0.0"
         },
         {
             "package": "jpi/query",
-            "version": "9999999-dev",
+            "version": "1.9999999.9999999.9999999-dev",
             "alias": "1",
             "alias_normalized": "1.0.0.0"
         }
