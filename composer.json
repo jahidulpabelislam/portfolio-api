@@ -1,7 +1,6 @@
 {
     "require": {
         "php": "^7.1",
-        "ext-pdo": "*",
         "ext-fileinfo": "*",
         "ext-json": "*",
         "jpi/database": "1.x-dev as 1",
