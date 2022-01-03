@@ -14,12 +14,11 @@ class Config {
 
     protected $values = [];
 
-    public function __set(string $key, $value) {
+    public function __set(string $key, $value): void {
         $this->values[$key] = $value;
     }
 
     public function __get(string $key) {
         return $this->values[$key] ?? null;
     }
-
 }

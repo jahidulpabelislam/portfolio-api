@@ -23,5 +23,4 @@ class Headers extends ArrayCollection {
 
         parent::set($header, $value);
     }
-
 }

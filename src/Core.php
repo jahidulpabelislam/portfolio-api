@@ -8,10 +8,9 @@ namespace App;
 
 use App\HTTP\Controller\Auth;
 use App\Projects\Controller as ProjectsController;
-use App\Projects\TypeController;
 use App\Projects\TypeController as ProjectTypesController;
-use App\HTTP\Response;
 use App\HTTP\Request;
+use App\HTTP\Response;
 use App\Utils\Singleton;
 use App\Utils\Str;
 use DateTime;
@@ -51,7 +50,7 @@ class Core {
         $router->setBasePath("/v" . static::VERSION);
 
         $projectsController = ProjectsController::class;
-        $projectTypesController = TypeController::class;
+        $projectTypesController = ProjectTypesController::class;
         $authController = Auth::class;
 
         $router->addRoute("/project-types/{id}/", "GET", [$projectTypesController, "read"], "projectType");

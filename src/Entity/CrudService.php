@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\APIEntity;
 use App\HTTP\Request;
-use App\Entity\Collection as EntityCollection;
+use JPI\ORM\Entity\Collection as EntityCollection;
 
 class CrudService {
 

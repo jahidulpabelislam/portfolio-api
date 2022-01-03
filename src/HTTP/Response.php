@@ -135,5 +135,4 @@ class Response {
             $this->sendContent($pretty);
         }
     }
-
 }

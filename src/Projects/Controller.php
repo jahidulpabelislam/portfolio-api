@@ -146,7 +146,7 @@ class Controller extends Crud {
             }
 
             $response = new Response(404, [
-                "message" =>  "No {$projectImage::getDisplayName()} found identified by '$imageId' for Project: '$projectId'.",
+                "message" => "No {$projectImage::getDisplayName()} found identified by '$imageId' for Project: '$projectId'.",
             ]);
         }
         else {

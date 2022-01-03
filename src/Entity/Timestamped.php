@@ -45,5 +45,4 @@ trait Timestamped {
 
         return parent::save();
     }
-
 }

@@ -19,7 +19,7 @@ class Image extends APIEntity {
 
     public static $displayName = "Project Image";
 
-    protected static $tableName = "portfolio_project_image";
+    protected static $table = "portfolio_project_image";
 
     protected static $defaultColumns = [
         "project_id" => null,

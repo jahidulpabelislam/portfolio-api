@@ -29,5 +29,4 @@ trait Filterable {
             "params" => $params,
         ];
     }
-
 }

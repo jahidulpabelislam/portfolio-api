@@ -10,12 +10,12 @@ namespace App\Projects\Entity;
 
 use App\APIEntity;
 use App\Core;
-use App\Entity\Collection;
 use App\Entity\FilterableInterface;
 use App\Entity\Filterable;
 use App\Entity\SearchableInterface;
 use App\Entity\Searchable;
 use App\Entity\Timestamped;
+use JPI\ORM\Entity\Collection as EntityCollection;
 
 class Project extends APIEntity implements FilterableInterface, SearchableInterface {
 
@@ -27,7 +27,7 @@ class Project extends APIEntity implements FilterableInterface, SearchableInterf
 
     public static $displayName = "Project";
 
-    protected static $tableName = "portfolio_project";
+    protected static $table = "portfolio_project";
 
     protected static $defaultColumns = [
         "name" => "",
@@ -70,7 +70,7 @@ class Project extends APIEntity implements FilterableInterface, SearchableInterf
     protected static $crudService = CrudService::class;
 
     /**
-     * @var Collection|null
+     * @var EntityCollection|null
      */
     public $images = null;
 
@@ -132,7 +132,7 @@ class Project extends APIEntity implements FilterableInterface, SearchableInterf
     public function toArray(): array {
         $array = parent::toArray();
 
-        if ($this->images instanceof Collection) {
+        if ($this->images instanceof EntityCollection) {
             $array["images"] = $this->images->toArray();
         }
 
@@ -158,7 +158,7 @@ class Project extends APIEntity implements FilterableInterface, SearchableInterf
             $response["type"] = $this->type->name;
         }
 
-        if ($this->images instanceof Collection) {
+        if ($this->images instanceof EntityCollection) {
             $response["images"] = [];
             foreach ($this->images as $image) {
                 $imageResponse = $image->getAPIResponse();

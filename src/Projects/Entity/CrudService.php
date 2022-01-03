@@ -4,10 +4,10 @@ namespace App\Projects\Entity;
 
 use App\Auth\Manager as AuthManager;
 use App\APIEntity;
-use App\Entity\Collection as EntityCollection;
 use App\Entity\CrudService as BaseService;
 use App\HTTP\Request;
 use App\Utils\Collection;
+use JPI\ORM\Entity\Collection as EntityCollection;
 
 class CrudService extends BaseService {
 
@@ -38,18 +38,29 @@ class CrudService extends BaseService {
         $projects = parent::index($request);
 
         if (count($projects)) {
-            $images = Image::getByColumn("project_id", $projects->pluck("id")->toArray());
-            $imagesGrouped = $images->groupBy("project_id");
-
+            $ids = [];
+            $typeIds = [];
             foreach ($projects as $project) {
-                $project->images = $imagesGrouped[$project->getId()] ?? new EntityCollection();
+                $ids[] = $project->getId();
+                $typeIds[$project->type_id] = "";
             }
 
-            $types = Type::getById($projects->pluck("type_id")->toArray());
-            $typesGrouped = $types->groupBy("id");
+            $images = Image::getByColumn("project_id", $ids);
+
+            $imagesGrouped = [];
+            foreach ($images as $image) {
+                $imagesGrouped[$image->project_id][] = $image;
+            }
+
+            $types = Type::getById(array_keys($typeIds));
+            $typesGrouped = [];
+            foreach ($types as $type) {
+                $typesGrouped[$type->getId()] = $type;
+            }
 
             foreach ($projects as $project) {
-                $project->type = $typesGrouped[$project->type_id][0] ?? null;
+                $project->images = new EntityCollection($imagesGrouped[$project->getId()] ?? []);
+                $project->type = $typesGrouped[$project->type_id] ?? null;
             }
         }
 

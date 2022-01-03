@@ -12,7 +12,7 @@ class Type extends APIEntity {
 
     public static $displayName = "Project Type";
 
-    protected static $tableName = "portfolio_project_type";
+    protected static $table = "portfolio_project_type";
 
     protected static $defaultColumns = [
         "name" => "",
