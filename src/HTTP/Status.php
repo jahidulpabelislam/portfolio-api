@@ -61,5 +61,4 @@ class Status {
     public static function getMessageForCode(int $code): ?string {
         return static::CODE_TO_MESSAGE[$code] ?? null;
     }
-
 }

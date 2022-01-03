@@ -16,8 +16,7 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
         $this->items = $items;
     }
 
-    public function __clone()
-    {
+    public function __clone() {
         foreach ($this->getItems() as $key => $item) {
             if (is_object($item)) {
                 $this->set($key, clone $item);
@@ -166,5 +165,4 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
 
         return $collection;
     }
-
 }

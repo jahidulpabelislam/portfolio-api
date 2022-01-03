@@ -11,6 +11,7 @@ namespace App\Entity;
 use App\APIEntity;
 use App\Core;
 use App\Entity\Project\Image;
+use JPI\ORM\Entity\Collection as EntityCollection;
 
 class Project extends APIEntity {
 
@@ -22,7 +23,7 @@ class Project extends APIEntity {
 
     public static $displayName = "Project";
 
-    protected static $tableName = "portfolio_project";
+    protected static $table = "portfolio_project";
 
     protected static $defaultColumns = [
         "name" => "",
@@ -65,7 +66,7 @@ class Project extends APIEntity {
     protected static $orderByASC = false;
 
     /**
-     * @var Collection|null
+     * @var EntityCollection|null
      */
     public $images = null;
 
@@ -111,7 +112,7 @@ class Project extends APIEntity {
     public function toArray(): array {
         $array = parent::toArray();
 
-        if ($this->images instanceof Collection) {
+        if ($this->images instanceof EntityCollection) {
             $array["images"] = $this->images->toArray();
         }
 
@@ -133,7 +134,7 @@ class Project extends APIEntity {
 
         unset($response["type_id"]);
 
-        if ($this->images instanceof Collection) {
+        if ($this->images instanceof EntityCollection) {
             $response["images"] = [];
             foreach ($this->images as $image) {
                 $imageResponse = $image->getAPIResponse();

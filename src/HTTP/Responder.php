@@ -8,7 +8,7 @@ namespace App\HTTP;
 
 use App\APIEntity;
 use App\Core;
-use App\Entity\Collection as EntityCollection;
+use JPI\ORM\Entity\Collection as EntityCollection;
 
 trait Responder {
 
@@ -206,7 +206,8 @@ trait Responder {
     public static function getItemResponse(string $entityClass, ?APIEntity $entity, $id): Response {
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
             $response = static::getItemFoundResponse($entity);
-        } else {
+        }
+        else {
             $response = static::getItemNotFoundResponse($entityClass, $id);
         }
 

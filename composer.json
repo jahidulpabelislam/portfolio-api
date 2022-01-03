@@ -1,11 +1,11 @@
 {
     "require": {
         "php": "^7.1",
-        "ext-pdo": "*",
         "ext-fileinfo": "*",
         "ext-json": "*",
-        "jpi/database": "dev-master as 1.1.1",
-        "jpi/query": "^1.0",
+        "jpi/database": "1.x-dev as 1",
+        "jpi/query": "1.x-dev as 1",
+        "jpi/orm": "1.x-dev",
         "firebase/php-jwt": "^5.0"
     },
     "autoload": {

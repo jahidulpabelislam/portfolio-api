@@ -8,8 +8,8 @@ namespace App;
 
 use App\HTTP\Controller\Auth;
 use App\HTTP\Controller\Projects;
-use App\HTTP\Response;
 use App\HTTP\Request;
+use App\HTTP\Response;
 use App\Utils\Singleton;
 use App\Utils\Str;
 use DateTime;

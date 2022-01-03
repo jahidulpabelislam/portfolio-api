@@ -35,5 +35,4 @@ abstract class APIEntity extends Entity implements APIEntityInterface {
             "self" => $this->getAPIURL(),
         ];
     }
-
 }
