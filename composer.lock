@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "586f5bb8134694c3c167a8004f0f1895",
+    "content-hash": "dc19f5f763523122e57e33561001cc8b",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -227,6 +227,7 @@
                     "JPI\\Utils\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-3.0-only"
             ],
@@ -241,8 +242,8 @@
                 "utilities"
             ],
             "support": {
-                "source": "https://github.com/jahidulpabelislam/utils/tree/v0.1.0",
-                "issues": "https://github.com/jahidulpabelislam/utils/issues"
+                "issues": "https://github.com/jahidulpabelislam/utils/issues",
+                "source": "https://github.com/jahidulpabelislam/utils/tree/v0.1.0"
             },
             "time": "2022-09-18T20:17:10+00:00"
         }

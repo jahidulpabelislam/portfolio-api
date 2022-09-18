@@ -9,12 +9,6 @@
         "jpi/orm": "1.x-dev",
         "firebase/php-jwt": "^5.0"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/jahidulpabelislam/utils"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "App\\": "src/"
