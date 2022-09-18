@@ -6,7 +6,7 @@
 
 namespace App;
 
-use App\Utils\Singleton;
+use JPI\Utils\Singleton;
 
 class Config {
 
