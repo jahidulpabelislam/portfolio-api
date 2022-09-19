@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dc19f5f763523122e57e33561001cc8b",
+    "content-hash": "9c2e483b90c7302728705d51bd99a36c",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -113,16 +113,16 @@
         },
         {
             "name": "jpi/orm",
-            "version": "1.x-dev",
+            "version": "dev-feature/deleted-prop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "fb2aa7cd33a589864db0bae4d5215c5be38dae10"
+                "reference": "bafee0b1bdcc84592be0fc57858536f0a3005f87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/fb2aa7cd33a589864db0bae4d5215c5be38dae10",
-                "reference": "fb2aa7cd33a589864db0bae4d5215c5be38dae10",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/bafee0b1bdcc84592be0fc57858536f0a3005f87",
+                "reference": "bafee0b1bdcc84592be0fc57858536f0a3005f87",
                 "shasum": ""
             },
             "require": {
@@ -130,7 +130,6 @@
                 "jpi/query": "^1",
                 "php": "^7.1"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -150,9 +149,9 @@
             "description": "Simple & lightweight ORM",
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
-                "source": "https://github.com/jahidulpabelislam/orm/tree/v1.0.2"
+                "source": "https://github.com/jahidulpabelislam/orm/tree/feature/deleted-prop"
             },
-            "time": "2022-09-20T22:00:34+00:00"
+            "time": "2022-09-20T22:05:24+00:00"
         },
         {
             "name": "jpi/query",
@@ -278,5 +277,5 @@
         "ext-json": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }
