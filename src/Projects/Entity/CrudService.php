@@ -11,7 +11,7 @@ use JPI\ORM\Entity\Collection as EntityCollection;
 
 class CrudService extends BaseService {
 
-    protected function getEntityFromRequest(Request $request): ?APIEntity {
+    protected function getEntityFromRequest(Request $request): ?Project {
         $where = ["id = :id"];
         $params = ["id" => $request->getIdentifier("id")];
         if (!AuthManager::isLoggedIn($request)) {
@@ -58,7 +58,7 @@ class CrudService extends BaseService {
         return $projects;
     }
 
-    public function read(Request $request): ?APIEntity {
+    public function read(Request $request): ?Project {
         $project = parent::read($request);
 
         if ($project) {
@@ -68,7 +68,7 @@ class CrudService extends BaseService {
         return $project;
     }
 
-    public function update(Request $request): ?APIEntity {
+    public function update(Request $request): ?Project {
         $data = $request->data;
 
         $project = parent::update($request);
