@@ -16,7 +16,7 @@ class CrudService {
         $this->entityClass = $entityClass;
     }
 
-    protected function getEntityFromRequest(Request $request) {
+    protected function getEntityFromRequest(Request $request): ?APIEntity  {
         return $this->entityClass::getById($request->getIdentifier("id"));
     }
 

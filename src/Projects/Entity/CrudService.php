@@ -11,7 +11,7 @@ use JPI\ORM\Entity\Collection as EntityCollection;
 
 class CrudService extends BaseService {
 
-    protected function getEntityFromRequest(Request $request) {
+    protected function getEntityFromRequest(Request $request): ?APIEntity {
         $where = ["id = :id"];
         $params = ["id" => $request->getIdentifier("id")];
         if (!AuthManager::isLoggedIn($request)) {
