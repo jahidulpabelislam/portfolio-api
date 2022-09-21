@@ -91,7 +91,7 @@ class CrudService extends BaseService {
                     }
                 }
 
-                $project->loadImages(true);
+                $project->loadImages(true); // Reload
             }
         }
 
