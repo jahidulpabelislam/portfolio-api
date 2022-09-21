@@ -111,7 +111,10 @@ class Project extends APIEntity {
         $array = parent::toArray();
 
         if ($this->images instanceof EntityCollection) {
-            $array["images"] = $this->images->toArray();
+            $array["images"] = [];
+            foreach ($this->images as $image) {
+                $array["images"][] = $image->toArray();
+            }
         }
 
         return $array;
