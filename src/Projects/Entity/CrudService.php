@@ -13,7 +13,9 @@ class CrudService extends BaseService {
 
     protected function getEntityFromRequest(Request $request): ?Project {
         $where = ["id = :id"];
-        $params = ["id" => $request->getIdentifier("id")];
+
+        $id = $request->getIdentifier('projectId') ?: $request->getIdentifier("id");
+        $params = ["id" => $id];
         if (!AuthManager::isLoggedIn($request)) {
             $where[] = "status = :status";
             $params["status"] = Project::PUBLIC_STATUS;

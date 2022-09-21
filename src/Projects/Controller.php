@@ -26,21 +26,6 @@ class Controller extends Crud {
     ];
 
     /**
-     * @param $projectId int|string
-     * @return Project|null
-     */
-    private function getProjectEntity($projectId): ?Project {
-        $where = ["id = :id"];
-        $params = ["id" => $projectId];
-        if (!AuthManager::isLoggedIn($this->request)) {
-            $where[] = "status = :status";
-            $params["status"] = Project::PUBLIC_STATUS;
-        }
-
-        return Project::get($where, $params, 1);
-    }
-
-    /**
      * Get the Images attached to a Project
      *
      * @param $projectId int|string The Id of the Project
@@ -48,7 +33,7 @@ class Controller extends Crud {
      */
     public function getImages($projectId): Response {
         // Check the Project trying to get Images for exists
-        $project = $this->getProjectEntity($projectId);
+        $project = $this->getEntityInstance()::getCrudService()->read($this->request);
         if ($project) {
             $project->loadImages();
             return $this->getItemsResponse(Image::class, $project->images);
@@ -113,7 +98,7 @@ class Controller extends Crud {
         $files = $this->request->files;
         if (isset($files["image"])) {
             // Check the Project trying to add a Image for exists
-            $project = $this->getProjectEntity($projectId);
+            $project = $this->getEntityInstance()::getCrudService()->read($this->request);
             if ($project) {
                 return self::uploadImage($project, $files["image"]);
             }
@@ -135,7 +120,7 @@ class Controller extends Crud {
      */
     public function getImage($projectId, $imageId): Response {
         // Check the Project trying to get Image for exists
-        $project = $this->getProjectEntity($projectId);
+        $project = $this->getEntityInstance()::getCrudService()->read($this->request);
         if ($project) {
             $image = Image::getCrudService()->read($this->request);
 
@@ -165,7 +150,7 @@ class Controller extends Crud {
      */
     public function deleteImage($projectId, $imageId): Response {
         // Check the Project of the Image trying to edit actually exists
-        $project = $this->getProjectEntity($projectId);
+        $project = $this->getEntityInstance()::getCrudService()->read($this->request);
         if (!$project) {
             return self::getItemNotFoundResponse(Project::class, $projectId);
         }
