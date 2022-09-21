@@ -4,7 +4,7 @@ namespace App;
 
 use DateTime;
 
-abstract class APIEntity extends Entity implements APIEntityInterface {
+abstract class APIEntity extends Entity {
 
     public function getAPIResponse(): array {
         $response = [
