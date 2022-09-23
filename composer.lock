@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9c2e483b90c7302728705d51bd99a36c",
+    "content-hash": "dc19f5f763523122e57e33561001cc8b",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -113,16 +113,16 @@
         },
         {
             "name": "jpi/orm",
-            "version": "dev-feature/deleted-prop",
+            "version": "1.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "bafee0b1bdcc84592be0fc57858536f0a3005f87"
+                "reference": "8174ce95fdd188e07fd96283dcf8f4380fb1b2a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/bafee0b1bdcc84592be0fc57858536f0a3005f87",
-                "reference": "bafee0b1bdcc84592be0fc57858536f0a3005f87",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/8174ce95fdd188e07fd96283dcf8f4380fb1b2a9",
+                "reference": "8174ce95fdd188e07fd96283dcf8f4380fb1b2a9",
                 "shasum": ""
             },
             "require": {
@@ -130,6 +130,7 @@
                 "jpi/query": "^1",
                 "php": "^7.1"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -149,9 +150,9 @@
             "description": "Simple & lightweight ORM",
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
-                "source": "https://github.com/jahidulpabelislam/orm/tree/feature/deleted-prop"
+                "source": "https://github.com/jahidulpabelislam/orm/tree/v1.1.0"
             },
-            "time": "2022-09-20T22:05:24+00:00"
+            "time": "2022-09-23T20:37:25+00:00"
         },
         {
             "name": "jpi/query",
