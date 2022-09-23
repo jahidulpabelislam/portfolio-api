@@ -150,8 +150,11 @@ class Projects extends Controller implements AuthGuarded {
                 }
 
                 foreach ($project->images as $projectImage) {
-                    $projectImage->position = $orders[$projectImage->getId()];
-                    $projectImage->save();
+                    $newPosition = $orders[$projectImage->getId()];
+                    if ($projectImage->position != $newPosition) {
+                        $projectImage->position = $newPosition;
+                        $projectImage->save();
+                    }
                 }
             }
 
