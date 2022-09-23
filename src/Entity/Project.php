@@ -72,7 +72,7 @@ class Project extends APIEntity {
      * Helper function to get all Project Image Entities linked to this Project
      */
     public function loadProjectImages(bool $reload = false): void {
-        if ($this->isLoaded() && ($reload || is_null($this->images))) {
+        if ($this->isLoaded() && !$this->isDeleted() && ($reload || is_null($this->images))) {
             $this->images = ProjectImage::getByColumn("project_id", $this->getId());
         }
     }
@@ -82,7 +82,8 @@ class Project extends APIEntity {
      */
     public function reload(): void {
         parent::reload();
-        if ($this->isLoaded() && !is_null($this->images)) {
+
+        if (!is_null($this->images)) {
             $this->loadProjectImages(true);
         }
     }
@@ -95,10 +96,11 @@ class Project extends APIEntity {
      * @return bool Whether or not deletion was successful
      */
     public function delete(): bool {
+        $this->loadProjectImages(); // Make sure images are loaded first so we can delete later
+
         $isDeleted = parent::delete();
 
         if ($isDeleted) {
-            $this->loadProjectImages();
             foreach ($this->images as $image) {
                 $image->delete();
             }

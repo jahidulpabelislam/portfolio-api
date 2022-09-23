@@ -168,14 +168,12 @@ class Projects extends Controller implements AuthGuarded {
      * @return Response
      */
     public function deleteProject($projectId): Response {
-        $isDeleted = false;
-
         $project = $this->getProjectEntity($projectId);
         if ($project) {
-            $isDeleted = $project->delete();
+            $project->delete();
         }
 
-        return self::getItemDeletedResponse(Project::class, $project, $projectId, $isDeleted);
+        return self::getItemDeletedResponse(Project::class, $project, $projectId);
     }
 
     /**
@@ -316,14 +314,12 @@ class Projects extends Controller implements AuthGuarded {
         // Check the Project of the Image trying to edit actually exists
         $project = $this->getProjectEntity($projectId);
         if ($project) {
-            $isDeleted = false;
-
             $projectImage = ProjectImage::getById($imageId);
             if ($projectImage) {
-                $isDeleted = $projectImage->delete();
+                $projectImage->delete();
             }
 
-            return self::getItemDeletedResponse(ProjectImage::class, $projectImage, $imageId, $isDeleted);
+            return self::getItemDeletedResponse(ProjectImage::class, $projectImage, $imageId);
         }
 
         return self::getItemNotFoundResponse(Project::class, $projectId);
