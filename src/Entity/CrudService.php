@@ -9,6 +9,7 @@ use JPI\ORM\Entity\Collection as EntityCollection;
 class CrudService {
 
     protected $entityClass;
+
     protected $paginated = true;
     protected $perPage = 10;
 
@@ -71,7 +72,7 @@ class CrudService {
         return $entities;
     }
 
-    public function create(Request $request): ?APIEntity {
+    public function create(Request $request): APIEntity {
         $entity = $this->getEntityInstance()::insert($request->data->toArray());
 
         if (!$entity->hasErrors()) {
