@@ -6,7 +6,6 @@
 
 namespace App\Projects;
 
-use App\Auth\Manager as AuthManager;
 use App\Core;
 use App\Projects\Entity\Project;
 use App\Projects\Entity\Image;
@@ -39,7 +38,7 @@ class Controller extends Crud {
             return $this->getItemsResponse(Image::class, $project->images);
         }
 
-        return self::getItemNotFoundResponse(Project::class, $projectId)
+        return self::getItemNotFoundResponse($this->entityClass, $projectId)
             ->withCacheHeaders(Core::getDefaultCacheHeaders())
         ;
     }
@@ -103,7 +102,7 @@ class Controller extends Crud {
                 return self::uploadImage($project, $files["image"]);
             }
 
-            return self::getItemNotFoundResponse(Project::class, $projectId);
+            return self::getItemNotFoundResponse($this->entityClass, $projectId);
         }
 
         return $this->getInvalidInputResponse([
@@ -135,7 +134,7 @@ class Controller extends Crud {
             ]);
         }
         else {
-            $response = self::getItemNotFoundResponse(Project::class, $projectId);
+            $response = self::getItemNotFoundResponse($this->entityClass, $projectId);
         }
 
         return $response->withCacheHeaders(Core::getDefaultCacheHeaders());
@@ -152,7 +151,7 @@ class Controller extends Crud {
         // Check the Project of the Image trying to edit actually exists
         $project = $this->getEntityInstance()::getCrudService()->read($this->request);
         if (!$project) {
-            return self::getItemNotFoundResponse(Project::class, $projectId);
+            return self::getItemNotFoundResponse($this->entityClass, $projectId);
         }
 
         $image = Image::getCrudService()->delete($this->request);

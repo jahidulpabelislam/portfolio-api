@@ -3,7 +3,6 @@
 namespace App\Projects\Entity;
 
 use App\Auth\Manager as AuthManager;
-use App\APIEntity;
 use App\Entity\CrudService as BaseService;
 use App\HTTP\Request;
 use App\Utils\Collection;
@@ -71,30 +70,26 @@ class CrudService extends BaseService {
     }
 
     public function update(Request $request): ?Project {
-        $data = $request->data;
-
         $project = parent::update($request);
 
-        if ($project && !$project->hasErrors()) {
-            // If images were passed update the sort order
-            if (!empty($data["images"])) {
-                $project->loadImages();
+        // If images were passed update the sort order
+        if ($project && !$project->hasErrors() && !empty($request->data["images"])) {
+            $project->loadImages();
 
-                $orders = [];
-                foreach ($data["images"] as $i => $image) {
-                    $orders[$image["id"]] = $i + 1;
-                }
-
-                foreach ($project->images as $image) {
-                    $newPosition = $orders[$image->getId()];
-                    if ($image->position != $newPosition) {
-                        $image->position = $newPosition;
-                        $image->save();
-                    }
-                }
-
-                $project->loadImages(true); // Reload
+            $positions = [];
+            foreach ($request->data["images"] as $i => $image) {
+                $positions[$image["id"]] = $i + 1;
             }
+
+            foreach ($project->images as $image) {
+                $newPosition = $positions[$image->getId()];
+                if ($image->position !== $newPosition) {
+                    $image->position = $newPosition;
+                    $image->save();
+                }
+            }
+
+            $project->loadImages(true); // Reload
         }
 
         return $project;
