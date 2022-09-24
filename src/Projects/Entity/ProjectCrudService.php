@@ -8,7 +8,7 @@ use App\HTTP\Request;
 use App\Utils\Collection;
 use JPI\ORM\Entity\Collection as EntityCollection;
 
-class CrudService extends BaseService {
+class ProjectCrudService extends BaseService {
 
     protected function getEntityFromRequest(Request $request): ?Project {
         $where = ["id = :id"];

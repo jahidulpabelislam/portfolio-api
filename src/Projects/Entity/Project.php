@@ -67,7 +67,7 @@ class Project extends APIEntity implements FilterableInterface, SearchableInterf
     protected static $orderByColumn = "date";
     protected static $orderByASC = false;
 
-    protected static $crudService = CrudService::class;
+    protected static $crudService = ProjectCrudService::class;
 
     /**
      * @var EntityCollection|null
