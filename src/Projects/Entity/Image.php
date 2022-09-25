@@ -6,13 +6,14 @@
  * Also holds any method only custom to Project Image entities.
  */
 
-namespace App\Entity;
+namespace App\Projects\Entity;
 
 use App\APIEntity;
+use App\Entity\Timestamped;
 use App\Core;
 use App\Utils\Str;
 
-class ProjectImage extends APIEntity {
+class Image extends APIEntity {
 
     use Timestamped;
 
@@ -29,8 +30,6 @@ class ProjectImage extends APIEntity {
     protected static $intColumns = ["project_id", "position"];
 
     protected static $orderByColumn = "position";
-
-    protected static $defaultLimit = null;
 
     /**
      * @inheritDoc

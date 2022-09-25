@@ -6,13 +6,18 @@
  * Also holds any method only custom to Project entities.
  */
 
-namespace App\Entity;
+namespace App\Projects\Entity;
 
 use App\APIEntity;
 use App\Core;
+use App\Entity\FilterableInterface;
+use App\Entity\Filterable;
+use App\Entity\SearchableInterface;
+use App\Entity\Searchable;
+use App\Entity\Timestamped;
 use JPI\ORM\Entity\Collection as EntityCollection;
 
-class Project extends APIEntity {
+class Project extends APIEntity implements FilterableInterface, SearchableInterface {
 
     use Filterable;
     use Searchable;
@@ -48,7 +53,6 @@ class Project extends APIEntity {
     ];
 
     protected static $dateColumns = ["date"];
-
     protected static $arrayColumns = ["skills"];
 
     protected static $searchableColumns = [
@@ -63,6 +67,8 @@ class Project extends APIEntity {
     protected static $orderByColumn = "date";
     protected static $orderByASC = false;
 
+    protected static $crudService = ProjectCrudService::class;
+
     /**
      * @var EntityCollection|null
      */
@@ -71,9 +77,9 @@ class Project extends APIEntity {
     /**
      * Helper function to get all Project Image Entities linked to this Project
      */
-    public function loadProjectImages(bool $reload = false): void {
+    public function loadImages(bool $reload = false): void {
         if ($this->isLoaded() && !$this->isDeleted() && ($reload || is_null($this->images))) {
-            $this->images = ProjectImage::getByColumn("project_id", $this->getId());
+            $this->images = Image::getByColumn("project_id", $this->getId());
         }
     }
 
@@ -84,7 +90,7 @@ class Project extends APIEntity {
         parent::reload();
 
         if (!is_null($this->images)) {
-            $this->loadProjectImages(true);
+            $this->loadImages(true);
         }
     }
 
@@ -96,7 +102,7 @@ class Project extends APIEntity {
      * @return bool Whether or not deletion was successful
      */
     public function delete(): bool {
-        $this->loadProjectImages(); // Make sure images are loaded first so we can delete later
+        $this->loadImages(); // Make sure images are loaded first so we can delete later
 
         $isDeleted = parent::delete();
 

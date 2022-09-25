@@ -15,8 +15,6 @@ abstract class Entity extends BaseEntity implements Arrayable {
 
     protected static $displayName = "";
 
-    protected static $defaultLimit = 10;
-
     protected static $requiredColumns = [];
 
     protected $errors = [];
@@ -45,17 +43,6 @@ abstract class Entity extends BaseEntity implements Arrayable {
         }
 
         return static::$dbConnection;
-    }
-
-    protected static function getLimit($limit = null): ?int {
-        $limit = parent::getLimit($limit);
-
-        // If invalid use default
-        if (!$limit || $limit < 1 || (static::$defaultLimit && static::$defaultLimit < $limit)) {
-            $limit = static::$defaultLimit;
-        }
-
-        return $limit;
     }
 
     public static function get($where = null, ?array $params = null, $limit = null, $page = null) {
