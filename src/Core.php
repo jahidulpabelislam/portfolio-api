@@ -11,6 +11,7 @@ use App\Projects\Controller as ProjectsController;
 use App\HTTP\Request;
 use App\HTTP\Response;
 use App\Utils\Str;
+use App\Utils\URL;
 use DateTime;
 use JPI\Utils\Singleton;
 
@@ -46,7 +47,7 @@ class Core {
     private function initRoutes(): void {
         $router = $this->router;
 
-        $router->setBasePath("/v" . static::VERSION);
+        $router->setBasePath("/v" . static::VERSION . "/");
 
         $projectsController = ProjectsController::class;
         $authController = Auth::class;
@@ -90,14 +91,14 @@ class Core {
         $request = $this->getRequest();
 
         $protocol = $request->server->get("HTTPS") === "on" ? "https" : "http";
-        $domain = Str::removeTrailingSlash($request->server->get("SERVER_NAME"));
-        $uri = Str::removeLeadingSlash($uri);
+        $domain = URL::removeTrailingSlash($request->server->get("SERVER_NAME"));
+        $uri = URL::removeLeadingSlash($uri);
 
-        return Str::addTrailingSlash("$protocol://$domain/$uri");
+        return URL::addTrailingSlash("$protocol://$domain/$uri");
     }
 
     public static function makeUrl(string $base, array $params): string {
-        $fullURL = Str::addTrailingSlash($base);
+        $fullURL = URL::addTrailingSlash($base);
 
         if ($params && count($params)) {
             $fullURL .= "?" . http_build_query($params);

@@ -11,7 +11,7 @@ namespace App\Projects\Entity;
 use App\APIEntity;
 use App\Entity\Timestamped;
 use App\Core;
-use App\Utils\Str;
+use App\Utils\URL;
 
 class Image extends APIEntity {
 
@@ -46,7 +46,7 @@ class Image extends APIEntity {
         // Check if the deletion was ok
         if ($isDeleted && !empty($this->file)) {
             // Makes sure there is a leading slash
-            $filePath = APP_ROOT . Str::addLeadingSlash($this->file);
+            $filePath = APP_ROOT . URL::addLeadingSlash($this->file);
             if (file_exists($filePath)) {
                 unlink($filePath);
             }
