@@ -5,7 +5,7 @@ namespace App\HTTP;
 use App\Core;
 use App\Utils\ArrayCollection;
 use App\Utils\Collection;
-use App\Utils\Str;
+use App\Utils\URL;
 
 class Request {
 
@@ -52,7 +52,7 @@ class Request {
         $this->uri = parse_url($this->server->get("REQUEST_URI"), PHP_URL_PATH);
 
         // Get the individual parts of the request URI as an array
-        $uri = Str::removeSlashes($this->uri);
+        $uri = URL::removeSlashes($this->uri);
         $this->uriParts = explode("/", $uri);
 
         $this->params = self::sanitizeData($_GET);

@@ -11,7 +11,7 @@ use App\HTTP\Controller\AuthGuarded;
 use App\HTTP\Responder;
 use App\HTTP\Response;
 use App\Utils\ArrayCollection;
-use App\Utils\Str;
+use App\Utils\URL;
 use Exception;
 use JPI\Database\Exception as DBException;
 
@@ -63,7 +63,7 @@ class Router {
     protected function getFullPath(string $path): string {
         $basePath = $this->getBasePath();
         if ($basePath !== "") {
-            $path = Str::addTrailingSlash($basePath) . Str::removeLeadingSlash($path);
+            $path = URL::addTrailingSlash($basePath) . URL::removeLeadingSlash($path);
         }
 
         return $path;

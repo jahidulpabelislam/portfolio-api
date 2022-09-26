@@ -209,12 +209,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/utils.git",
-                "reference": "161442d86d6c943ff859395fde61146eebf53110"
+                "reference": "3df2c1f603bdeb34b4074d5d3371e350f6f4dc02"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/161442d86d6c943ff859395fde61146eebf53110",
-                "reference": "161442d86d6c943ff859395fde61146eebf53110",
+                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/3df2c1f603bdeb34b4074d5d3371e350f6f4dc02",
+                "reference": "3df2c1f603bdeb34b4074d5d3371e350f6f4dc02",
                 "shasum": ""
             },
             "require": {
@@ -243,9 +243,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/utils/issues",
-                "source": "https://github.com/jahidulpabelislam/utils/tree/v0.1.0"
+                "source": "https://github.com/jahidulpabelislam/utils/tree/v0.2.0"
             },
-            "time": "2022-09-18T20:17:10+00:00"
+            "time": "2022-09-26T21:38:32+00:00"
         }
     ],
     "packages-dev": [],
@@ -278,5 +278,5 @@
         "ext-json": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
