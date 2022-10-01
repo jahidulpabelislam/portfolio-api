@@ -19,18 +19,8 @@ class Router {
 
     use Responder;
 
-    protected $basePath = "";
-
     protected $routes = [];
     protected $namedRoutes = [];
-
-    public function setBasePath(string $basePath): void {
-        $this->basePath = $basePath;
-    }
-
-    public function getBasePath(): string {
-        return $this->basePath;
-    }
 
     /**
      * @param $path string
@@ -61,12 +51,7 @@ class Router {
     }
 
     protected function getFullPath(string $path): string {
-        $basePath = $this->getBasePath();
-        if ($basePath !== "") {
-            $path = URL::addTrailingSlash($basePath) . URL::removeLeadingSlash($path);
-        }
-
-        return $path;
+        return "/v" . Core::VERSION . "/"  . URL::removeLeadingSlash($path);
     }
 
     /**
