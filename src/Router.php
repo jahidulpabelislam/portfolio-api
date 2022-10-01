@@ -11,9 +11,9 @@ use App\HTTP\Controller\AuthGuarded;
 use App\HTTP\Responder;
 use App\HTTP\Response;
 use App\Utils\ArrayCollection;
-use App\Utils\URL;
 use Exception;
 use JPI\Database\Exception as DBException;
+use JPI\Utils\URL;
 
 class Router {
 
@@ -50,8 +50,10 @@ class Router {
         }
     }
 
-    protected function getFullPath(string $path): string {
-        return "/v" . Core::VERSION . "/"  . URL::removeLeadingSlash($path);
+    protected function getFullPath(string $path): URL {
+        return (new URL("/v" . Core::VERSION . "/"))
+            ->addPath($path)
+        ;
     }
 
     /**
@@ -75,7 +77,7 @@ class Router {
         return $url;
     }
 
-    public function makeUrl(string $name, array $params): string {
+    public function makeUrl(string $name, array $params): URL {
         $path = $this->makePath($name, $params);
         return Core::get()->makeFullURL($path);
     }

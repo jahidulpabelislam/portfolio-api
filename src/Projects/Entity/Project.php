@@ -16,6 +16,7 @@ use App\Entity\SearchableInterface;
 use App\Entity\Searchable;
 use App\Entity\Timestamped;
 use JPI\ORM\Entity\Collection as EntityCollection;
+use JPI\Utils\URL;
 
 class Project extends APIEntity implements FilterableInterface, SearchableInterface {
 
@@ -128,13 +129,13 @@ class Project extends APIEntity implements FilterableInterface, SearchableInterf
         return $array;
     }
 
-    public function getAPIURL(): string {
+    public function getAPIURL(): URL {
         return Core::get()->getRouter()->makeUrl("project", ["id" => $this->getId()]);
     }
 
     public function getAPILinks(): array {
         $links = parent::getAPILinks();
-        $links["images"] = Core::get()->getRouter()->makeUrl("projectImages", ["projectId" => $this->getId()]);
+        $links["images"] = (string)Core::get()->getRouter()->makeUrl("projectImages", ["projectId" => $this->getId()]);
         return $links;
     }
 

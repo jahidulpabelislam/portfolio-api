@@ -5,7 +5,7 @@ namespace App\HTTP;
 use App\Core;
 use App\Utils\ArrayCollection;
 use App\Utils\Collection;
-use App\Utils\URL;
+use JPI\Utils\URL;
 
 class Request {
 
@@ -73,9 +73,9 @@ class Request {
     /**
      * Generates a full URL of current request
      *
-     * @return string
+     * @return URL
      */
-    public function getURL(): string {
+    public function getURL(): URL {
         return Core::get()->makeFullURL($this->uri);
     }
 

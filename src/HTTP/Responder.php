@@ -9,6 +9,7 @@ namespace App\HTTP;
 use App\APIEntity;
 use App\Core;
 use JPI\ORM\Entity\Collection as EntityCollection;
+use JPI\Utils\URL;
 
 trait Responder {
 
@@ -57,9 +58,10 @@ trait Responder {
     public function getUnrecognisedAPIVersionResponse(): Response {
         $shouldBeVersion = Core::VERSION;
 
-        $shouldBeURI = $this->request->uriParts;
-        $shouldBeURI[0] = "v$shouldBeVersion";
-        $shouldBeURL = Core::get()->makeFullURL($shouldBeURI);
+        $shouldBeURIParts = $this->request->uriParts;
+        $shouldBeURIParts[0] = "v$shouldBeVersion";
+
+        $shouldBeURL = Core::get()->makeFullURL(implode("/", $shouldBeURIParts));
 
         return new Response(404, [
             "message" => "Unrecognised API version. Current version is $shouldBeVersion, so please update requested URL to $shouldBeURL.",
@@ -95,7 +97,7 @@ trait Responder {
         $content = [
             "data" => $data,
             "_links" => [
-                "self" => $this->request->getURL(),
+                "self" => (string)$this->request->getURL(),
             ],
         ];
 
@@ -138,7 +140,7 @@ trait Responder {
         $lastPage = ceil($totalCount / $limit);
         $content["_total_pages"] = $lastPage;
 
-        $pageURL = $this->request->getURL();
+        $url = $this->request->getURL();
 
         // Always update to the used value if param was passed (incase it was different)
         if (isset($params["limit"])) {
@@ -148,26 +150,28 @@ trait Responder {
             $params["page"] = $page;
         }
 
+        $url->setParams($params);
+
         $content["_links"] = [
-            "self" => Core::makeUrl($pageURL, $params),
+            "self" => (string)$url,
         ];
 
         $hasPreviousPage = ($page > 1) && ($lastPage >= ($page - 1));
         if ($hasPreviousPage) {
             if ($page > 2) {
-                $params["page"] = $page - 1;
+                $url->setParam("page", $page - 1);
             }
             else {
-                unset($params["page"]);
+                $url->removeParam("page");
             }
 
-            $content["_links"]["previous_page"] = Core::makeUrl($pageURL, $params);
+            $content["_links"]["previous_page"] = (string)$url;
         }
 
         $hasNextPage = $page < $lastPage;
         if ($hasNextPage) {
-            $params["page"] = $page + 1;
-            $content["_links"]["next_page"] = Core::makeUrl($pageURL, $params);
+            $url->setParam("page", $page + 1);
+            $content["_links"]["next_page"] = (string)$url;
         }
 
         return $response->withContent($content)
@@ -218,7 +222,7 @@ trait Responder {
         if ($entity && $entity->isLoaded()) {
             return static::getItemFoundResponse($entity)
                 ->withStatus(201)
-                ->withHeader("Location", $entity->getAPIURL())
+                ->withHeader("Location", (string)$entity->getAPIURL())
             ;
         }
 

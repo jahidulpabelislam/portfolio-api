@@ -39,7 +39,7 @@ abstract class APIEntity extends Entity {
 
     public function getAPILinks(): array {
         return [
-            "self" => $this->getAPIURL(),
+            "self" => (string)$this->getAPIURL(),
         ];
     }
 }
