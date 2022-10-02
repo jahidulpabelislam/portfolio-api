@@ -47,8 +47,6 @@ class Core {
     private function initRoutes(): void {
         $router = $this->router;
 
-        $router->setBasePath("/v" . static::VERSION . "/");
-
         $projectsController = ProjectsController::class;
         $authController = Auth::class;
 
