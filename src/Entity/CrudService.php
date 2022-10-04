@@ -62,6 +62,15 @@ class CrudService {
 
         $page = $request->hasParam("page") ? $request->getParam("page") : 1;
 
+        if (is_numeric($page)) {
+            $page = (int)$page;
+        }
+
+        // If invalid use page 1
+        if (!$page || $page < 1) {
+            $page = 1;
+        }
+
         $entities = $entity::get($where, $queryParams, $limit, $page);
 
         // Handle where limit is 1
