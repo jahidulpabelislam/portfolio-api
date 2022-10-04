@@ -59,7 +59,8 @@ class CrudService {
         if (!$limit) {
             $limit = $this->perPage;
         }
-        $page = $request->getParam("page");
+
+        $page = $request->hasParam("page") ? $request->getParam("page") : 1;
 
         $entities = $entity::get($where, $queryParams, $limit, $page);
 

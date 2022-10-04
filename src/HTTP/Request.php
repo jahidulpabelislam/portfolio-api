@@ -79,6 +79,10 @@ class Request {
         return Core::get()->makeFullURL($this->uri);
     }
 
+    public function hasParam(string $param): bool {
+        return isset($this->params[$param]);
+    }
+
     public function getParam(string $param, $default = null) {
         return $this->params->get($param, $default);
     }
