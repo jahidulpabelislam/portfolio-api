@@ -11,7 +11,7 @@ namespace App\Projects\Entity;
 use App\APIEntity;
 use App\Entity\Timestamped;
 use App\Core;
-use App\Utils\URL;
+use JPI\Utils\URL;
 
 class Image extends APIEntity {
 
@@ -55,7 +55,7 @@ class Image extends APIEntity {
         return $isDeleted;
     }
 
-    public function getAPIURL(): string {
+    public function getAPIURL(): URL {
         return Core::get()->getRouter()->makeUrl(
             "projectImage",
             [
@@ -68,7 +68,7 @@ class Image extends APIEntity {
     public function getAPIResponse(): array {
         $response = parent::getAPIResponse();
 
-        $response["url"] = Core::get()->makeFullURL($response["file"]);
+        $response["url"] = (string)Core::get()->makeFullURL($response["file"]);
         unset($response["file"]);
 
         return $response;

@@ -11,9 +11,9 @@ use App\Projects\Controller as ProjectsController;
 use App\HTTP\Request;
 use App\HTTP\Response;
 use App\Utils\Str;
-use App\Utils\URL;
 use DateTime;
 use JPI\Utils\Singleton;
+use JPI\Utils\URL;
 
 class Core {
 
@@ -78,31 +78,17 @@ class Core {
     }
 
     /**
-     * @param $uri string|string[]
-     * @return string
+     * @param $uri string
+     * @return URL
      */
-    public function makeFullURL($uri): string {
-        if (is_array($uri)) {
-            $uri = implode("/", $uri);
-        }
-
+    public function makeFullURL(string $uri): URL {
         $request = $this->getRequest();
 
-        $protocol = $request->server->get("HTTPS") === "on" ? "https" : "http";
-        $domain = URL::removeTrailingSlash($request->server->get("SERVER_NAME"));
-        $uri = URL::removeLeadingSlash($uri);
-
-        return URL::addTrailingSlash("$protocol://$domain/$uri");
-    }
-
-    public static function makeUrl(string $base, array $params): string {
-        $fullURL = URL::addTrailingSlash($base);
-
-        if ($params && count($params)) {
-            $fullURL .= "?" . http_build_query($params);
-        }
-
-        return $fullURL;
+        return (new URL())
+            ->setScheme($request->server->get("HTTPS") === "on" ? "https" : "http")
+            ->setHost($request->server->get("SERVER_NAME"))
+            ->setPath($uri)
+        ;
     }
 
     private function setCORSHeaders(): void {
