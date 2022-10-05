@@ -1,7 +1,9 @@
 <?php
 
-namespace App;
+namespace App\Entity;
 
+use App\Config;
+use App\Exception;
 use App\Utils\Arrayable;
 use App\Utils\Str;
 use DateTime;
@@ -9,7 +11,7 @@ use JPI\Database\Connection;
 use JPI\ORM\Entity as BaseEntity;
 use JPI\ORM\Entity\Collection;
 
-abstract class Entity extends BaseEntity implements Arrayable {
+abstract class AbstractEntity extends BaseEntity implements Arrayable {
 
     protected static $dbConnection = null;
 

@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\API;
 
-use App\APIEntity;
 use App\Core;
 use App\HTTP\Response;
 use JPI\ORM\Entity\Collection as EntityCollection;
@@ -113,7 +112,7 @@ trait Responder {
         ;
     }
 
-    private static function getItemFoundResponse(APIEntity $entity): Response {
+    private static function getItemFoundResponse(AbstractEntity $entity): Response {
         return new Response(200, [
             "data" => $entity->getAPIResponse(),
             "_links" => $entity->getAPILinks(),
@@ -137,11 +136,11 @@ trait Responder {
      * else if not found return necessary meta
      *
      * @param $entityClass string
-     * @param $entity APIEntity|null
+     * @param $entity AbstractEntity|null
      * @param $id int|string|null
      * @return Response
      */
-    public static function getItemResponse(string $entityClass, ?APIEntity $entity, $id): Response {
+    public static function getItemResponse(string $entityClass, ?AbstractEntity $entity, $id): Response {
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
             $response = static::getItemFoundResponse($entity);
         }
@@ -152,7 +151,7 @@ trait Responder {
         return $response->withCacheHeaders(Core::getDefaultCacheHeaders());
     }
 
-    public static function getInsertResponse(string $entityClass, ?APIEntity $entity): Response {
+    public static function getInsertResponse(string $entityClass, ?AbstractEntity $entity): Response {
         if ($entity && $entity->isLoaded()) {
             return static::getItemFoundResponse($entity)
                 ->withStatus(201)
@@ -167,11 +166,11 @@ trait Responder {
 
     /**
      * @param $entityClass string
-     * @param $entity APIEntity|null
+     * @param $entity AbstractEntity|null
      * @param $id int|string|null
      * @return Response
      */
-    public static function getUpdateResponse(string $entityClass, ?APIEntity $entity, $id): Response {
+    public static function getUpdateResponse(string $entityClass, ?AbstractEntity $entity, $id): Response {
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
             return static::getItemFoundResponse($entity);
         }
@@ -185,11 +184,11 @@ trait Responder {
      * Return the response when a item was attempted to be deleted
      *
      * @param $entityClass string
-     * @param $entity APIEntity|null
+     * @param $entity AbstractEntity|null
      * @param $id int|string|null
      * @return Response
      */
-    public static function getItemDeletedResponse(string $entityClass, ?APIEntity $entity, $id): Response {
+    public static function getItemDeletedResponse(string $entityClass, ?AbstractEntity $entity, $id): Response {
         if (!$id || !$entity || !$entity->isLoaded() || $entity->getId() != $id) {
             return static::getItemNotFoundResponse($entityClass, $id);
         }

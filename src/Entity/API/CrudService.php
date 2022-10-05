@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\API;
 
-use App\APIEntity;
+use App\Entity\FilterableInterface;
+use App\Entity\SearchableInterface;
 use App\HTTP\Request;
 use JPI\ORM\Entity\Collection as EntityCollection;
 
@@ -17,11 +18,11 @@ class CrudService {
         $this->entityClass = $entityClass;
     }
 
-    public function getEntityInstance(): APIEntity {
+    public function getEntityInstance(): AbstractEntity {
         return new $this->entityClass();
     }
 
-    protected function getEntityFromRequest(Request $request): ?APIEntity  {
+    protected function getEntityFromRequest(Request $request): ?AbstractEntity  {
         return $this->getEntityInstance()::getById($request->getIdentifier("id"));
     }
 
@@ -82,7 +83,7 @@ class CrudService {
         return $entities;
     }
 
-    public function create(Request $request): APIEntity {
+    public function create(Request $request): AbstractEntity {
         $entity = $this->getEntityInstance()::insert($request->data->toArray());
 
         if (!$entity->hasErrors()) {
@@ -92,11 +93,11 @@ class CrudService {
         return $entity;
     }
 
-    public function read(Request $request): ?APIEntity {
+    public function read(Request $request): ?AbstractEntity {
         return $this->getEntityFromRequest($request);
     }
 
-    public function update(Request $request): ?APIEntity {
+    public function update(Request $request): ?AbstractEntity {
         $entity = $this->getEntityFromRequest($request);
 
         if (!$entity) {
@@ -113,7 +114,7 @@ class CrudService {
         return $entity;
     }
 
-    public function delete(Request $request): ?APIEntity {
+    public function delete(Request $request): ?AbstractEntity {
         $entity = $this->getEntityFromRequest($request);
 
         if ($entity) {

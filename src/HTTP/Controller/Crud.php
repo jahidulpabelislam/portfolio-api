@@ -2,8 +2,8 @@
 
 namespace App\HTTP\Controller;
 
-use App\APIEntity;
-use App\Entity\Responder as EntityResponder;
+use App\Entity\API\AbstractEntity as AbstractAPIEntity;
+use App\Entity\API\Responder as EntityResponder;
 use App\HTTP\Controller;
 use App\HTTP\Response;
 
@@ -19,7 +19,7 @@ abstract class Crud extends Controller implements AuthGuarded {
         return $this->publicFunctions;
     }
 
-    public function getEntityInstance(): APIEntity {
+    public function getEntityInstance(): AbstractAPIEntity {
         return new $this->entityClass();
     }
 
