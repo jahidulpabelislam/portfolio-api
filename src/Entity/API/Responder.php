@@ -3,10 +3,13 @@
 namespace App\Entity\API;
 
 use App\Core;
+use App\HTTP\Request;
 use App\HTTP\Response;
 use JPI\ORM\Entity\Collection as EntityCollection;
 
 trait Responder {
+
+    abstract public function getRequest(): Request;
 
     abstract public function getEntityInstance(): AbstractEntity;
 
@@ -34,7 +37,7 @@ trait Responder {
         $content = [
             "data" => $data,
             "_links" => [
-                "self" => (string)$this->request->getURL(),
+                "self" => (string)$this->getRequest()->getURL(),
             ],
         ];
 
@@ -59,7 +62,7 @@ trait Responder {
      * @return Response
      */
     public function getPaginatedItemsResponse(EntityCollection $collection, AbstractEntity $entityInstance = null): Response {
-        $params = (clone $this->request->params)->toArray();
+        $params = (clone $this->getRequest()->params)->toArray();
 
         // The items response is the base response, and the extra meta is added below
         $response = $this->getItemsResponse($collection, $entityInstance);
@@ -77,7 +80,7 @@ trait Responder {
         $lastPage = ceil($totalCount / $limit);
         $content["_total_pages"] = $lastPage;
 
-        $url = $this->request->getURL();
+        $url = $this->getRequest()->getURL();
 
         // Always update to the used value if param was passed (incase it was different)
         if (isset($params["limit"])) {
