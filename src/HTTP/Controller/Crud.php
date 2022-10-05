@@ -3,10 +3,13 @@
 namespace App\HTTP\Controller;
 
 use App\APIEntity;
+use App\Entity\Responder as EntityResponder;
 use App\HTTP\Controller;
 use App\HTTP\Response;
 
 abstract class Crud extends Controller implements AuthGuarded {
+
+    use EntityResponder;
 
     protected $publicFunctions = [];
 

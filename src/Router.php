@@ -144,11 +144,15 @@ class Router {
                     return new Response(200);
                 }
 
-                return $this->getMethodNotAllowedResponse();
+                return new Response(405, [
+                    "message" => "Method {$this->request->method} not allowed on " . $this->request->getURL() . ".",
+                ]);
             }
         }
 
-        return $this->getUnrecognisedURIResponse();
+        return new Response(404, [
+            "message" => "Unrecognised URI (" . $this->request->getURL() . ").",
+        ]);
     }
 
     public function getMethodsForPath(): array {
@@ -170,12 +174,19 @@ class Router {
     private function checkAPIVersion(): ?Response {
         $version = $this->request->uriParts[0] ?? null;
 
-        $shouldBeVersion = "v" . Core::VERSION;
-        if ($version !== $shouldBeVersion) {
-            return $this->getUnrecognisedAPIVersionResponse();
+        $shouldBeVersionPart = "v" . Core::VERSION;
+        if ($version === $shouldBeVersionPart) {
+            return null;
         }
 
-        return null;
+        $shouldBeURIParts = $this->request->uriParts;
+        $shouldBeURIParts[0] = $shouldBeVersionPart;
+
+        $shouldBeURL = Core::get()->makeFullURL(implode("/", $shouldBeURIParts));
+
+        return new Response(404, [
+            "message" => "Unrecognised API version. Current version is " . Core::VERSION . ", so please update requested URL to $shouldBeURL.",
+        ]);
     }
 
     /**

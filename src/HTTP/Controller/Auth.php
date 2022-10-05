@@ -45,10 +45,14 @@ class Auth extends Controller {
      */
     public function logout(): Response {
         if (AuthManager::logout($this->request)) {
-            return self::getLoggedOutResponse();
+            return new Response(204, [
+                "message" => "Successfully logged out.",
+            ]);
         }
 
-        return self::getUnsuccessfulLogOutResponse();
+        return new Response(500, [
+            "message" => "Couldn't successfully process your logout request!",
+        ]);
     }
 
     /**
