@@ -8,16 +8,20 @@ use JPI\ORM\Entity\Collection as EntityCollection;
 
 trait Responder {
 
+    abstract public function getEntityInstance(): AbstractEntity;
+
     /**
      * Return a response when items were requested,
      * so check if some found return the items (with necessary meta)
      * else if not found return necessary meta
      *
-     * @param $entityClass string
      * @param $entities EntityCollection
+     * @param $entityInstance AbstractEntity|null
      * @return Response
      */
-    public function getItemsResponse(string $entityClass, EntityCollection $entities): Response {
+    public function getItemsResponse(EntityCollection $entities, AbstractEntity $entityInstance = null): Response {
+        $entityInstance = $entityInstance ?? $this->getEntityInstance();
+
         $count = count($entities);
         $data = [];
 
@@ -35,7 +39,7 @@ trait Responder {
         ];
 
         if (!$count) {
-            $content["message"] = "No {$entityClass::getPluralDisplayName()} found.";
+            $content["message"] = "No {$entityInstance::getPluralDisplayName()} found.";
         }
 
         return (new Response(200, $content))
@@ -50,15 +54,15 @@ trait Responder {
      *
      * Use getItemsResponse function as the base response, then just adds additional meta data
      *
-     * @param $entityClass string
      * @param $collection EntityCollection
+     * @param $entityInstance AbstractEntity|null
      * @return Response
      */
-    public function getPaginatedItemsResponse(string $entityClass, EntityCollection $collection): Response {
+    public function getPaginatedItemsResponse(EntityCollection $collection, AbstractEntity $entityInstance = null): Response {
         $params = (clone $this->request->params)->toArray();
 
         // The items response is the base response, and the extra meta is added below
-        $response = $this->getItemsResponse($entityClass, $collection);
+        $response = $this->getItemsResponse($collection, $entityInstance);
 
         $content = $response->getContent();
 
@@ -112,7 +116,7 @@ trait Responder {
         ;
     }
 
-    private static function getItemFoundResponse(AbstractEntity $entity): Response {
+    private function getItemFoundResponse(AbstractEntity $entity): Response {
         return new Response(200, [
             "data" => $entity->getAPIResponse(),
             "_links" => $entity->getAPILinks(),
@@ -120,13 +124,15 @@ trait Responder {
     }
 
     /**
-     * @param $entityClass string
      * @param $id int|string|null
+     * @param $entityInstance AbstractEntity|null
      * @return Response
      */
-    public static function getItemNotFoundResponse(string $entityClass, $id): Response {
+    public function getItemNotFoundResponse($id, AbstractEntity $entityInstance = null): Response {
+        $entityInstance = $entityInstance ?? $this->getEntityInstance();
+
         return new Response(404, [
-            "message" => "No {$entityClass::getDisplayName()} identified by '$id' found.",
+            "message" => "No {$entityInstance::getDisplayName()} identified by '$id' found.",
         ]);
     }
 
@@ -135,62 +141,70 @@ trait Responder {
      * so check if found return the item (with necessary meta)
      * else if not found return necessary meta
      *
-     * @param $entityClass string
      * @param $entity AbstractEntity|null
      * @param $id int|string|null
+     * @param $entityInstance AbstractEntity|null
      * @return Response
      */
-    public static function getItemResponse(string $entityClass, ?AbstractEntity $entity, $id): Response {
+    public function getItemResponse(?AbstractEntity $entity, $id, AbstractEntity $entityInstance = null): Response {
+        $entityInstance = $entityInstance ?? $this->getEntityInstance();
+
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
-            $response = static::getItemFoundResponse($entity);
+            $response = $this->getItemFoundResponse($entity);
         }
         else {
-            $response = static::getItemNotFoundResponse($entityClass, $id);
+            $response = $this->getItemNotFoundResponse($id, $entityInstance);
         }
 
         return $response->withCacheHeaders(Core::getDefaultCacheHeaders());
     }
 
-    public static function getInsertResponse(string $entityClass, ?AbstractEntity $entity): Response {
+    public function getInsertResponse(?AbstractEntity $entity, AbstractEntity $entityInstance = null): Response {
+        $entityInstance = $entityInstance ?? $this->getEntityInstance();
+
         if ($entity && $entity->isLoaded()) {
-            return static::getItemFoundResponse($entity)
+            return $this->getItemFoundResponse($entity)
                 ->withStatus(201)
                 ->withHeader("Location", (string)$entity->getAPIURL())
             ;
         }
 
         return new Response(500, [
-            "message" => "Failed to insert the new {$entityClass::getDisplayName()}.",
+            "message" => "Failed to insert the new {$entityInstance::getDisplayName()}.",
         ]);
     }
 
     /**
-     * @param $entityClass string
      * @param $entity AbstractEntity|null
      * @param $id int|string|null
+     * @param $entityInstance AbstractEntity|null
      * @return Response
      */
-    public static function getUpdateResponse(string $entityClass, ?AbstractEntity $entity, $id): Response {
+    public function getUpdateResponse(?AbstractEntity $entity, $id, AbstractEntity $entityInstance = null): Response {
+        $entityInstance = $entityInstance ?? $this->getEntityInstance();
+
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
-            return static::getItemFoundResponse($entity);
+            return $this->getItemFoundResponse($entity);
         }
 
         return new Response(500, [
-            "message" => "Failed to update the {$entityClass::getDisplayName()} identified by '$id'.",
+            "message" => "Failed to update the {$entityInstance::getDisplayName()} identified by '$id'.",
         ]);
     }
 
     /**
      * Return the response when a item was attempted to be deleted
      *
-     * @param $entityClass string
      * @param $entity AbstractEntity|null
      * @param $id int|string|null
+     * @param $entityInstance AbstractEntity|null
      * @return Response
      */
-    public static function getItemDeletedResponse(string $entityClass, ?AbstractEntity $entity, $id): Response {
+    public function getItemDeletedResponse(?AbstractEntity $entity, $id, AbstractEntity $entityInstance = null): Response {
+        $entityInstance = $entityInstance ?? $this->getEntityInstance();
+
         if (!$id || !$entity || !$entity->isLoaded() || $entity->getId() != $id) {
-            return static::getItemNotFoundResponse($entityClass, $id);
+            return $this->getItemNotFoundResponse($id, $entityInstance);
         }
 
         if ($entity->isDeleted()) {
@@ -198,7 +212,7 @@ trait Responder {
         }
 
         return new Response(500, [
-            "message" => "Failed to delete the {$entityClass::getDisplayName()} identified by '$id'.",
+            "message" => "Failed to delete the {$entityInstance::getDisplayName()} identified by '$id'.",
         ]);
     }
 }

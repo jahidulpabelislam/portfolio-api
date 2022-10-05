@@ -35,10 +35,10 @@ class Controller extends Crud {
         $project = $this->getEntityInstance()::getCrudService()->read($this->request);
         if ($project) {
             $project->loadImages();
-            return $this->getItemsResponse(Image::class, $project->images);
+            return $this->getItemsResponse($project->images, new Image());
         }
 
-        return self::getItemNotFoundResponse($this->entityClass, $projectId)
+        return $this->getItemNotFoundResponse($projectId)
             ->withCacheHeaders(Core::getDefaultCacheHeaders())
         ;
     }
@@ -51,7 +51,7 @@ class Controller extends Crud {
      * @return Response
      * @throws Exception
      */
-    private static function uploadImage(Project $project, array $image): Response {
+    private function uploadImage(Project $project, array $image): Response {
         if (strpos(mime_content_type($image["tmp_name"]), "image/") !== 0) {
             return new Response(400, [
                 "error" => "File is not an image.",
@@ -78,7 +78,7 @@ class Controller extends Crud {
                 "position" => 999, // High enough number
             ]);
             $projectImage->reload();
-            return self::getInsertResponse(Image::class, $projectImage);
+            return $this->getInsertResponse($projectImage, new Image());
         }
 
         return new Response(500, [
@@ -99,10 +99,10 @@ class Controller extends Crud {
             // Check the Project trying to add a Image for exists
             $project = $this->getEntityInstance()::getCrudService()->read($this->request);
             if ($project) {
-                return self::uploadImage($project, $files["image"]);
+                return $this->uploadImage($project, $files["image"]);
             }
 
-            return self::getItemNotFoundResponse($this->entityClass, $projectId);
+            return $this->getItemNotFoundResponse($projectId);
         }
 
         return $this->getInvalidInputResponse([
@@ -126,7 +126,7 @@ class Controller extends Crud {
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
             if (!$image || $image->project_id === $projectId) {
-                return self::getItemResponse(Image::class, $image, $imageId);
+                return $this->getItemResponse($image, $imageId, new Image());
             }
 
             $response = new Response(404, [
@@ -134,7 +134,7 @@ class Controller extends Crud {
             ]);
         }
         else {
-            $response = self::getItemNotFoundResponse($this->entityClass, $projectId);
+            $response = $this->getItemNotFoundResponse($projectId);
         }
 
         return $response->withCacheHeaders(Core::getDefaultCacheHeaders());
@@ -151,10 +151,10 @@ class Controller extends Crud {
         // Check the Project of the Image trying to edit actually exists
         $project = $this->getEntityInstance()::getCrudService()->read($this->request);
         if (!$project) {
-            return self::getItemNotFoundResponse($this->entityClass, $projectId);
+            return $this->getItemNotFoundResponse($projectId);
         }
 
         $image = Image::getCrudService()->delete($this->request);
-        return self::getItemDeletedResponse(Image::class, $image, $imageId);
+        return $this->getItemDeletedResponse($image, $imageId, new Image());
     }
 }
