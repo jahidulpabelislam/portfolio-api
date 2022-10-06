@@ -7,9 +7,10 @@
 namespace App;
 
 use App\HTTP\Controller\Auth;
-use App\Projects\Controller as ProjectsController;
 use App\HTTP\Request;
 use App\HTTP\Response;
+use App\HTTP\Router;
+use App\Projects\Controller as ProjectsController;
 use App\Utils\Str;
 use DateTime;
 use JPI\Utils\Singleton;

@@ -4,12 +4,11 @@
  * A RESTful API router.
  */
 
-namespace App;
+namespace App\HTTP;
 
 use App\Auth\Manager as AuthManager;
+use App\Core;
 use App\HTTP\Controller\AuthGuarded;
-use App\HTTP\Responder;
-use App\HTTP\Response;
 use App\Utils\ArrayCollection;
 use Exception;
 use JPI\Database\Exception as DBException;
