@@ -7,13 +7,13 @@
 namespace App\Projects;
 
 use App\Core;
-use App\Projects\Entity\Project;
-use App\Projects\Entity\Image;
+use App\HTTP\AbstractCrudController;
 use App\HTTP\Response;
-use App\HTTP\Controller\Crud;
+use App\Projects\Entity\Image;
+use App\Projects\Entity\Project;
 use Exception;
 
-class Controller extends Crud {
+class Controller extends AbstractCrudController {
 
     protected $entityClass = Project::class;
 

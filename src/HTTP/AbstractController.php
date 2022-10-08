@@ -2,7 +2,7 @@
 
 namespace App\HTTP;
 
-abstract class Controller {
+abstract class AbstractController {
 
     use Responder;
 }

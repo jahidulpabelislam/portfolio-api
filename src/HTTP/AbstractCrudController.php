@@ -1,13 +1,12 @@
 <?php
 
-namespace App\HTTP\Controller;
+namespace App\HTTP;
 
 use App\Entity\API\AbstractEntity as AbstractAPIEntity;
 use App\Entity\API\Responder as EntityResponder;
-use App\HTTP\Controller;
-use App\HTTP\Response;
+use App\HTTP\Controller\AuthGuarded;
 
-abstract class Crud extends Controller implements AuthGuarded {
+abstract class AbstractCrudController extends AbstractController implements AuthGuarded {
 
     use EntityResponder;
 
