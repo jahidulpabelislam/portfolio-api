@@ -6,7 +6,7 @@
 
 namespace App;
 
-use App\HTTP\AuthController;
+use App\Auth\Controller;
 use App\HTTP\Request;
 use App\HTTP\Response;
 use App\HTTP\Router;
@@ -49,7 +49,7 @@ class Core {
         $router = $this->router;
 
         $projectsController = ProjectsController::class;
-        $authController = AuthController::class;
+        $authController = Controller::class;
 
         $router->addRoute("/projects/{projectId}/images/{id}/", "GET", [$projectsController, "getImage"], "projectImage");
         $router->addRoute("/projects/{projectId}/images/{id}/", "DELETE", [$projectsController, "deleteImage"]);

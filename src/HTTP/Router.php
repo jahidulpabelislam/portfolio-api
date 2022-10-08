@@ -6,9 +6,9 @@
 
 namespace App\HTTP;
 
+use App\Auth\GuardedControllerInterface;
 use App\Auth\Manager as AuthManager;
 use App\Core;
-use App\HTTP\Controller\AuthGuarded;
 use App\Utils\ArrayCollection;
 use Exception;
 use JPI\Database\Exception as DBException;
@@ -129,7 +129,7 @@ class Router {
                     $controller = new $controllerClass($this->request);
 
                     if (
-                        $controller instanceof AuthGuarded
+                        $controller instanceof GuardedControllerInterface
                         && !in_array($route["function"], $controller->getPublicFunctions())
                         && !AuthManager::isLoggedIn($this->request)
                     ) {

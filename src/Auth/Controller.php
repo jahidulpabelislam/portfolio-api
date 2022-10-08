@@ -4,11 +4,13 @@
  * The controller for this API's authentication.
  */
 
-namespace App\HTTP;
+namespace App\Auth;
 
 use App\Auth\Manager as AuthManager;
+use App\HTTP\AbstractController;
+use App\HTTP\Response;
 
-class AuthController extends AbstractController {
+class Controller extends AbstractController {
 
     /**
      * Call to authenticate a user

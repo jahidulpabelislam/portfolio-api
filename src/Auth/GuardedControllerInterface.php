@@ -1,8 +1,8 @@
 <?php
 
-namespace App\HTTP\Controller;
+namespace App\Auth;
 
-interface AuthGuarded {
+interface GuardedControllerInterface {
 
     public function getPublicFunctions(): array;
 }

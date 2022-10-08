@@ -2,11 +2,11 @@
 
 namespace App\HTTP;
 
+use App\Auth\GuardedControllerInterface;
 use App\Entity\API\AbstractEntity as AbstractAPIEntity;
 use App\Entity\API\Responder as EntityResponder;
-use App\HTTP\Controller\AuthGuarded;
 
-abstract class AbstractCrudController extends AbstractController implements AuthGuarded {
+abstract class AbstractCrudController extends AbstractController implements GuardedControllerInterface {
 
     use EntityResponder;
 
