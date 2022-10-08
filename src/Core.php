@@ -23,9 +23,9 @@ class Core {
     public const VERSION = "4";
 
     /**
-     * @var Request|null
+     * @var Request
      */
-    protected $request = null;
+    protected $request;
 
     /**
      * @var Response|null
@@ -33,15 +33,17 @@ class Core {
     protected $response = null;
 
     /**
-     * @var Router|null
+     * @var Router
      */
-    protected $router = null;
+    protected $router;
+
+    protected function __construct() {
+        $this->request = new Request();
+        $this->router = new Router($this->getRequest());
+        $this->initRoutes();
+    }
 
     public function getRequest(): Request {
-        if (is_null($this->request)) {
-            $this->request = new Request();
-        }
-
         return $this->request;
     }
 
@@ -70,11 +72,6 @@ class Core {
     }
 
     public function getRouter(): Router {
-        if (is_null($this->router)) {
-            $this->router = new Router($this->getRequest());
-            $this->initRoutes();
-        }
-
         return $this->router;
     }
 
