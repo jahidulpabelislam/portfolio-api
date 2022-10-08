@@ -6,11 +6,7 @@
 
 namespace App;
 
-use JPI\Utils\Singleton;
-
 class Config {
-
-    use Singleton;
 
     protected $values = [];
 

@@ -1,9 +1,5 @@
 <?php
 
-use App\Config;
-
-$config = Config::get();
-
 $config->debug = false;
 
 $config->db_host = "overrideme";

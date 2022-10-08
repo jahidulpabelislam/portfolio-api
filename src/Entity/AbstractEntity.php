@@ -2,8 +2,7 @@
 
 namespace App\Entity;
 
-use App\Config;
-use App\Exception;
+use App\Core;
 use App\Utils\Arrayable;
 use App\Utils\Str;
 use DateTime;
@@ -35,7 +34,7 @@ abstract class AbstractEntity extends BaseEntity implements Arrayable {
 
     public static function getDatabaseConnection(): Connection {
         if (!static::$dbConnection) {
-            $config = Config::get();
+            $config = Core::get()->getConfig();
             static::$dbConnection = new Connection([
                 "host" => $config->db_host,
                 "database" => $config->db_name,

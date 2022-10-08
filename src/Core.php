@@ -23,6 +23,11 @@ class Core {
     public const VERSION = "4";
 
     /**
+     * @var Config
+     */
+    protected $config;
+
+    /**
      * @var Request
      */
     protected $request;
@@ -38,9 +43,23 @@ class Core {
     protected $router;
 
     protected function __construct() {
+        $config = new Config();
+
+        include_once __DIR__ . "/../config.php";
+
+        if (file_exists(__DIR__ . "/../config.local.php")) {
+            include_once __DIR__ . "/../config.local.php";
+        }
+
+        $this->config = $config;
+
         $this->request = new Request();
         $this->router = new Router($this->getRequest());
         $this->initRoutes();
+    }
+
+    public function getConfig(): Config {
+        return $this->config;
     }
 
     public function getRequest(): Request {
@@ -97,7 +116,7 @@ class Core {
         $originDomain = str_replace(["https://", "http://"], "", $originURL);
 
         // If the domain if allowed send correct header response back
-        if (in_array($originDomain, Config::get()->allowed_domains)) {
+        if (in_array($originDomain, $this->getConfig()->allowed_domains)) {
             $this->response->withHeader("Access-Control-Allow-Origin", $originURL)
                 ->withHeader("Access-Control-Allow-Methods", $this->getRouter()->getMethodsForPath())
                 ->withHeader("Access-Control-Allow-Headers", ["Authorization", "Content-Type", "Process-Data"])
