@@ -1,12 +1,14 @@
 <?php
 
-namespace App\HTTP\Controller;
+namespace App\HTTP;
 
-use App\APIEntity;
-use App\HTTP\Controller;
-use App\HTTP\Response;
+use App\Auth\GuardedControllerInterface;
+use App\Entity\API\AbstractEntity as AbstractAPIEntity;
+use App\Entity\API\Responder as EntityResponder;
 
-abstract class Crud extends Controller implements AuthGuarded {
+abstract class AbstractCrudController extends AbstractController implements GuardedControllerInterface {
+
+    use EntityResponder;
 
     protected $publicFunctions = [];
 
@@ -16,7 +18,7 @@ abstract class Crud extends Controller implements AuthGuarded {
         return $this->publicFunctions;
     }
 
-    public function getEntityInstance(): APIEntity {
+    public function getEntityInstance(): AbstractAPIEntity {
         return new $this->entityClass();
     }
 
@@ -29,10 +31,10 @@ abstract class Crud extends Controller implements AuthGuarded {
         $entities = $this->getEntityInstance()::getCrudService()->index($this->request);
 
         if ($entities->getTotalCount()) {
-            return $this->getPaginatedItemsResponse($this->entityClass, $entities);
+            return $this->getPaginatedItemsResponse($entities);
         }
 
-        return $this->getItemsResponse($this->entityClass, $entities);
+        return $this->getItemsResponse($entities);
     }
 
     /**
@@ -45,7 +47,7 @@ abstract class Crud extends Controller implements AuthGuarded {
         if ($entity->hasErrors()) {
             return $this->getInvalidInputResponse($entity->getErrors());
         }
-        return self::getInsertResponse($this->entityClass, $entity);
+        return $this->getInsertResponse($entity);
     }
 
     /**
@@ -56,7 +58,7 @@ abstract class Crud extends Controller implements AuthGuarded {
      */
     public function read($id): Response {
         $entity = $this->getEntityInstance()::getCrudService()->read($this->request);
-        return self::getItemResponse($this->entityClass, $entity, $id);
+        return $this->getItemResponse($entity, $id);
     }
 
     /**
@@ -72,7 +74,7 @@ abstract class Crud extends Controller implements AuthGuarded {
             return $this->getInvalidInputResponse($entity->getErrors());
         }
 
-        return self::getUpdateResponse($this->entityClass, $entity, $id);
+        return $this->getUpdateResponse($entity, $id);
     }
 
     /**
@@ -83,6 +85,6 @@ abstract class Crud extends Controller implements AuthGuarded {
      */
     public function delete($id): Response {
         $entity = $this->getEntityInstance()::getCrudService()->delete($this->request);
-        return self::getItemDeletedResponse($this->entityClass, $entity, $id);
+        return $this->getItemDeletedResponse($entity, $id);
     }
 }

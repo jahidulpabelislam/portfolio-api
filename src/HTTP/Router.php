@@ -4,12 +4,11 @@
  * A RESTful API router.
  */
 
-namespace App;
+namespace App\HTTP;
 
+use App\Auth\GuardedControllerInterface;
 use App\Auth\Manager as AuthManager;
-use App\HTTP\Controller\AuthGuarded;
-use App\HTTP\Responder;
-use App\HTTP\Response;
+use App\Core;
 use App\Utils\ArrayCollection;
 use Exception;
 use JPI\Database\Exception as DBException;
@@ -130,7 +129,7 @@ class Router {
                     $controller = new $controllerClass($this->request);
 
                     if (
-                        $controller instanceof AuthGuarded
+                        $controller instanceof GuardedControllerInterface
                         && !in_array($route["function"], $controller->getPublicFunctions())
                         && !AuthManager::isLoggedIn($this->request)
                     ) {
@@ -144,11 +143,15 @@ class Router {
                     return new Response(200);
                 }
 
-                return $this->getMethodNotAllowedResponse();
+                return new Response(405, [
+                    "message" => "Method {$this->request->method} not allowed on " . $this->request->getURL() . ".",
+                ]);
             }
         }
 
-        return $this->getUnrecognisedURIResponse();
+        return new Response(404, [
+            "message" => "Unrecognised URI (" . $this->request->getURL() . ").",
+        ]);
     }
 
     public function getMethodsForPath(): array {
@@ -170,12 +173,19 @@ class Router {
     private function checkAPIVersion(): ?Response {
         $version = $this->request->uriParts[0] ?? null;
 
-        $shouldBeVersion = "v" . Core::VERSION;
-        if ($version !== $shouldBeVersion) {
-            return $this->getUnrecognisedAPIVersionResponse();
+        $shouldBeVersionPart = "v" . Core::VERSION;
+        if ($version === $shouldBeVersionPart) {
+            return null;
         }
 
-        return null;
+        $shouldBeURIParts = $this->request->uriParts;
+        $shouldBeURIParts[0] = $shouldBeVersionPart;
+
+        $shouldBeURL = Core::get()->makeFullURL(implode("/", $shouldBeURIParts));
+
+        return new Response(404, [
+            "message" => "Unrecognised API version. Current version is " . Core::VERSION . ", so please update requested URL to $shouldBeURL.",
+        ]);
     }
 
     /**

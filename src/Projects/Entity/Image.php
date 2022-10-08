@@ -8,12 +8,12 @@
 
 namespace App\Projects\Entity;
 
-use App\APIEntity;
-use App\Entity\Timestamped;
 use App\Core;
+use App\Entity\API\AbstractEntity as AbstractAPIEntity;
+use App\Entity\Timestamped;
 use JPI\Utils\URL;
 
-class Image extends APIEntity {
+class Image extends AbstractAPIEntity {
 
     use Timestamped;
 

@@ -4,13 +4,13 @@
  * The controller for this API's authentication.
  */
 
-namespace App\HTTP\Controller;
+namespace App\Auth;
 
 use App\Auth\Manager as AuthManager;
-use App\HTTP\Controller;
+use App\HTTP\AbstractController;
 use App\HTTP\Response;
 
-class Auth extends Controller {
+class Controller extends AbstractController {
 
     /**
      * Call to authenticate a user
@@ -45,10 +45,14 @@ class Auth extends Controller {
      */
     public function logout(): Response {
         if (AuthManager::logout($this->request)) {
-            return self::getLoggedOutResponse();
+            return new Response(204, [
+                "message" => "Successfully logged out.",
+            ]);
         }
 
-        return self::getUnsuccessfulLogOutResponse();
+        return new Response(500, [
+            "message" => "Couldn't successfully process your logout request!",
+        ]);
     }
 
     /**

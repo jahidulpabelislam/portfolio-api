@@ -8,17 +8,17 @@
 
 namespace App\Projects\Entity;
 
-use App\APIEntity;
 use App\Core;
-use App\Entity\FilterableInterface;
+use App\Entity\API\AbstractEntity as AbstractAPIEntity;
 use App\Entity\Filterable;
-use App\Entity\SearchableInterface;
+use App\Entity\FilterableInterface;
 use App\Entity\Searchable;
+use App\Entity\SearchableInterface;
 use App\Entity\Timestamped;
 use JPI\ORM\Entity\Collection as EntityCollection;
 use JPI\Utils\URL;
 
-class Project extends APIEntity implements FilterableInterface, SearchableInterface {
+class Project extends AbstractAPIEntity implements FilterableInterface, SearchableInterface {
 
     use Filterable;
     use Searchable;

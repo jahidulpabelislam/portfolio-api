@@ -1,11 +1,11 @@
 <?php
 
-namespace App;
+namespace App\Entity\API;
 
-use App\Entity\CrudService;
+use App\Entity\AbstractEntity as BaseEntity;
 use DateTime;
 
-abstract class APIEntity extends Entity {
+abstract class AbstractEntity extends BaseEntity {
 
     protected static $crudService = CrudService::class;
 

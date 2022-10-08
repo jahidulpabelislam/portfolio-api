@@ -6,10 +6,11 @@
 
 namespace App;
 
-use App\HTTP\Controller\Auth;
-use App\Projects\Controller as ProjectsController;
+use App\Auth\Controller as AuthController;
 use App\HTTP\Request;
 use App\HTTP\Response;
+use App\HTTP\Router;
+use App\Projects\Controller as ProjectsController;
 use App\Utils\Str;
 use DateTime;
 use JPI\Utils\Singleton;
@@ -48,7 +49,7 @@ class Core {
         $router = $this->router;
 
         $projectsController = ProjectsController::class;
-        $authController = Auth::class;
+        $authController = AuthController::class;
 
         $router->addRoute("/projects/{projectId}/images/{id}/", "GET", [$projectsController, "getImage"], "projectImage");
         $router->addRoute("/projects/{projectId}/images/{id}/", "DELETE", [$projectsController, "deleteImage"]);
