@@ -58,7 +58,7 @@ abstract class AbstractCrudController extends AbstractController implements Guar
      */
     public function read($id): Response {
         $entity = $this->getEntityInstance()::getCrudService()->read($this->request);
-        return $this->getItemResponse($this->entityClass, $entity, $id);
+        return $this->getItemResponse($entity, $id);
     }
 
     /**
