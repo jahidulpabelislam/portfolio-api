@@ -62,12 +62,36 @@ class Request {
             $data = json_decode($json, true);
             $this->data = self::sanitizeData($data);
 
-            $this->files = $_FILES;
+            $files = [];
+            foreach ($_FILES as $key => $item) {
+                $files[$key] = $this->normaliseFileItem($item);
+            }
+            $this->files = $files;
         }
 
         $this->headers = new Headers(apache_request_headers());
 
         $this->identifiers = new ArrayCollection();
+    }
+
+    private function normaliseFileItem(array $item): array {
+        if (!is_array($item["tmp_name"])) {
+            return $item;
+        }
+
+        $normalised = [];
+
+        foreach (array_keys($item["tmp_name"]) as $key) {
+            $normalised[$key] = $this->normaliseFileItem([
+                "tmp_name" => $item["tmp_name"][$key],
+                "size" => $item["size"][$key],
+                "error" => $item["error"][$key],
+                "name" => $item["name"][$key],
+                "type" => $item["type"][$key],
+            ]);
+        }
+
+        return $normalised;
     }
 
     /**
