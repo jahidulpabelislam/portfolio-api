@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "80496b55d2736ddb95789a81a26d04ee",
+    "content-hash": "d1992aa10d2b90e1b34500243bf6fead",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -205,22 +205,21 @@
         },
         {
             "name": "jpi/utils",
-            "version": "0.x-dev",
+            "version": "dev-feature/collection",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/utils.git",
-                "reference": "029677436936c235862de2ed6664f836c879037f"
+                "reference": "a9f623eed33be6e8526f90e1c1c031a3d37f8d7b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/029677436936c235862de2ed6664f836c879037f",
-                "reference": "029677436936c235862de2ed6664f836c879037f",
+                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/a9f623eed33be6e8526f90e1c1c031a3d37f8d7b",
+                "reference": "a9f623eed33be6e8526f90e1c1c031a3d37f8d7b",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -243,9 +242,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/utils/issues",
-                "source": "https://github.com/jahidulpabelislam/utils/tree/v0.3.0"
+                "source": "https://github.com/jahidulpabelislam/utils/tree/feature/collection"
             },
-            "time": "2022-10-15T16:21:50+00:00"
+            "time": "2022-10-17T21:39:21+00:00"
         }
     ],
     "packages-dev": [],
