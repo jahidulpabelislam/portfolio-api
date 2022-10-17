@@ -3,7 +3,6 @@
 namespace App\HTTP;
 
 use App\Core;
-use App\Utils\ArrayCollection;
 use App\Utils\Collection;
 use JPI\Utils\URL;
 
@@ -45,7 +44,7 @@ class Request {
     }
 
     public function __construct() {
-        $this->server = new ArrayCollection($_SERVER);
+        $this->server = new Collection($_SERVER);
 
         $this->method = strtoupper($this->server->get("REQUEST_METHOD"));
 
@@ -71,7 +70,7 @@ class Request {
 
         $this->headers = new Headers(apache_request_headers());
 
-        $this->identifiers = new ArrayCollection();
+        $this->identifiers = new Collection();
     }
 
     private function normaliseFileItem(array $item): array {

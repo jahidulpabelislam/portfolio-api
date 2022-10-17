@@ -9,7 +9,7 @@ namespace App\HTTP;
 use App\Auth\GuardedControllerInterface;
 use App\Auth\Manager as AuthManager;
 use App\Core;
-use App\Utils\ArrayCollection;
+use App\Utils\Collection;
 use Exception;
 use JPI\Database\Exception as DBException;
 use JPI\Utils\URL;
@@ -119,7 +119,7 @@ class Router {
                     array_shift($matches);
                     $identifiers = $this->getIdentifiersFromMatches($matches);
 
-                    $this->request->identifiers = new ArrayCollection($identifiers);
+                    $this->request->identifiers = new Collection($identifiers);
 
                     if (isset($route["callable"])) {
                         return $route["callable"](...$identifiers);

@@ -209,12 +209,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/utils.git",
-                "reference": "a9f623eed33be6e8526f90e1c1c031a3d37f8d7b"
+                "reference": "ffe66f1c25b6607972efa754457f8cdd4e9ea5b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/a9f623eed33be6e8526f90e1c1c031a3d37f8d7b",
-                "reference": "a9f623eed33be6e8526f90e1c1c031a3d37f8d7b",
+                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/ffe66f1c25b6607972efa754457f8cdd4e9ea5b6",
+                "reference": "ffe66f1c25b6607972efa754457f8cdd4e9ea5b6",
                 "shasum": ""
             },
             "require": {
@@ -244,7 +244,7 @@
                 "issues": "https://github.com/jahidulpabelislam/utils/issues",
                 "source": "https://github.com/jahidulpabelislam/utils/tree/feature/collection"
             },
-            "time": "2022-10-17T21:39:21+00:00"
+            "time": "2022-10-21T21:04:56+00:00"
         }
     ],
     "packages-dev": [],
@@ -277,5 +277,5 @@
         "ext-json": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }
