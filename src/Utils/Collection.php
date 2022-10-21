@@ -15,32 +15,38 @@ class Collection extends BaseCollection implements Arrayable {
                 $item = $item->toArray();
             }
 
-            $array[$key] = (array) $item;
+            $array[$key] = $item;
         }
 
         return $array;
     }
 
-    protected static function getFromItem($item, $key, $default = null) {
-        $value = $default;
+    protected static function getFromItem($item, string $key) {
+        if (is_array($item)) {
+            return $item[$key] ?? null;
+        }
+
         if (is_object($item)) {
+            if ($item instanceof ArrayAccess && isset($item[$key])) {
+                return $item[$key];
+            }
+
             if (isset($item->{$key})) {
-                $value = $item->{$key};
+                return $item->{$key};
             }
-            else if (method_exists($item, $key)) {
-                $value = $item->{$key}();
+
+            if (method_exists($item, $key)) {
+                return $item->{$key}();
             }
-            else if ($item instanceof Arrayable) {
+
+            if ($item instanceof Arrayable) {
                 $array = $item->toArray();
                 if (isset($array[$key])) {
-                    $value = $array[$key];
+                    return $array[$key];
                 }
             }
         }
-        else if ((is_array($item) || $item instanceof ArrayAccess) && isset($item[$key])) {
-            $value = $item[$key];
-        }
 
-        return $value;
+        return null;
     }
 }
