@@ -11,6 +11,7 @@ use App\HTTP\Request;
 use App\HTTP\Response;
 use App\HTTP\Router;
 use App\Projects\Controller as ProjectsController;
+use App\Utils\Collection;
 use App\Utils\Str;
 use DateTime;
 use JPI\Utils\Singleton;
@@ -43,7 +44,7 @@ class Core {
     protected $router;
 
     protected function __construct() {
-        $config = new Config();
+        $config = new Collection();
 
         include_once __DIR__ . "/../config.php";
 
