@@ -32,7 +32,7 @@ class Request {
         if (is_array($value)) {
             $newArrayValues = new Collection();
             foreach ($value as $subKey => $subValue) {
-                $newArrayValues[$subKey] = self::sanitizeData($subValue);
+                $newArrayValues[(string)$subKey] = self::sanitizeData($subValue);
             }
             $value = $newArrayValues;
         }
