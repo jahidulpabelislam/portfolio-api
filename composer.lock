@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d1992aa10d2b90e1b34500243bf6fead",
+    "content-hash": "80496b55d2736ddb95789a81a26d04ee",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -223,16 +223,16 @@
         },
         {
             "name": "jpi/utils",
-            "version": "dev-feature/collection",
+            "version": "0.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/utils.git",
-                "reference": "9c1c80557af7e5c4afd1903eb0a71e3057752b71"
+                "reference": "d261abad0f0409e0f52ea78c46ea0637d5e65506"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/9c1c80557af7e5c4afd1903eb0a71e3057752b71",
-                "reference": "9c1c80557af7e5c4afd1903eb0a71e3057752b71",
+                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/d261abad0f0409e0f52ea78c46ea0637d5e65506",
+                "reference": "d261abad0f0409e0f52ea78c46ea0637d5e65506",
                 "shasum": ""
             },
             "require": {
@@ -241,6 +241,7 @@
             "require-dev": {
                 "jpi/codestyles": "^1.0.1"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -259,13 +260,18 @@
             ],
             "description": "Library with various utility classes",
             "keywords": [
-                "utilities"
+                "collection",
+                "helpers",
+                "singleton",
+                "url",
+                "utilities",
+                "utility"
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/utils/issues",
-                "source": "https://github.com/jahidulpabelislam/utils/tree/feature/collection"
+                "source": "https://github.com/jahidulpabelislam/utils/tree/v0.4.0"
             },
-            "time": "2022-10-24T15:34:01+00:00"
+            "time": "2022-10-24T22:03:29+00:00"
         }
     ],
     "packages-dev": [],
