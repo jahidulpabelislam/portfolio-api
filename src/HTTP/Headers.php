@@ -2,9 +2,9 @@
 
 namespace App\HTTP;
 
-use App\Utils\ArrayCollection;
+use App\Utils\Collection;
 
-class Headers extends ArrayCollection {
+class Headers extends Collection {
 
     public function __construct(array $items = []) {
         foreach ($items as $header => $value) {

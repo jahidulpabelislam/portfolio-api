@@ -2,58 +2,10 @@
 
 namespace App\Utils;
 
+use JPI\Utils\Collection as BaseCollection;
 use ArrayAccess;
-use ArrayIterator;
-use Countable;
-use IteratorAggregate;
 
-class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate {
-
-    protected $items;
-    protected $count = null;
-
-    public function __construct(array $items = []) {
-        $this->items = $items;
-    }
-
-    public function __clone() {
-        foreach ($this->getItems() as $key => $item) {
-            if (is_object($item)) {
-                $this->set($key, clone $item);
-            }
-        }
-    }
-
-    protected function resetCount(): void {
-        $this->count = null;
-    }
-
-    public function set($key, $item): void {
-        $this->items[$key] = $item;
-        $this->resetCount();
-    }
-
-    public function add($item): void {
-        $this->items[] = $item;
-        $this->resetCount();
-    }
-
-    public function removeByKey($key): void {
-        unset($this->items[$key]);
-        $this->resetCount();
-    }
-
-    protected function doesKeyExist($key): bool {
-        return array_key_exists($key, $this->items);
-    }
-
-    public function get($key, $default = null) {
-        return $this->items[$key] ?? $default;
-    }
-
-    public function getItems(): array {
-        return $this->items;
-    }
+class Collection extends BaseCollection implements Arrayable {
 
     public function toArray(): array {
         $array = [];
@@ -69,100 +21,32 @@ class Collection implements Arrayable, ArrayAccess, Countable, IteratorAggregate
         return $array;
     }
 
-    // ArrayAccess //
-
-    public function offsetExists($offset): bool {
-        return $this->doesKeyExist($offset);
-    }
-
-    public function offsetGet($offset) {
-        return $this->get($offset);
-    }
-
-    public function offsetSet($offset, $item): void {
-        if (is_null($offset)) {
-            $this->add($item);
-        }
-        else {
-            $this->set($offset, $item);
-        }
-    }
-
-    public function offsetUnset($offset): void {
-        $this->removeByKey($offset);
-    }
-
-    // IteratorAggregate //
-
-    public function getIterator(): ArrayIterator {
-        return new ArrayIterator($this->items);
-    }
-
-    // Countable //
-
-    public function count(): int {
-        if (is_null($this->count)) {
-            $this->count = count($this->items);
+    protected static function getFromItem($item, string $key) {
+        if (is_array($item)) {
+            return $item[$key] ?? null;
         }
 
-        return $this->count;
-    }
-
-    protected static function getFromItem($item, $key, $default = null) {
-        $value = $default;
         if (is_object($item)) {
+            if ($item instanceof ArrayAccess && isset($item[$key])) {
+                return $item[$key];
+            }
+
             if (isset($item->{$key})) {
-                $value = $item->{$key};
+                return $item->{$key};
             }
-            else if (method_exists($item, $key)) {
-                $value = $item->{$key}();
+
+            if (method_exists($item, $key)) {
+                return $item->{$key}();
             }
-            else if ($item instanceof Arrayable) {
+
+            if ($item instanceof Arrayable) {
                 $array = $item->toArray();
                 if (isset($array[$key])) {
-                    $value = $array[$key];
+                    return $array[$key];
                 }
             }
         }
-        else if ((is_array($item) || $item instanceof ArrayAccess) && isset($item[$key])) {
-            $value = $item[$key];
-        }
 
-        return $value;
-    }
-
-    public function pluck($toPluck, $keyedBy = null): Collection {
-        $plucked = new Collection();
-
-        foreach ($this->items as $item) {
-            $value = static::getFromItem($item, $toPluck);
-
-            if ($keyedBy) {
-                $keyValue = static::getFromItem($item, $keyedBy);
-                $plucked->set($keyValue, $value);
-            }
-            else {
-                $plucked->add($value);
-            }
-        }
-
-        return $plucked;
-    }
-
-    public function groupBy($key): Collection {
-        $collection = new Collection();
-
-        foreach ($this->items as $item) {
-            $value = static::getFromItem($item, $key);
-
-            if (!isset($collection[$value])) {
-                $collection->set($value, new static([$item]));
-            }
-            else {
-                $collection[$value]->add($item);
-            }
-        }
-
-        return $collection;
+        return null;
     }
 }
