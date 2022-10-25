@@ -30,7 +30,7 @@ abstract class AbstractCrudController extends AbstractController implements Guar
     public function index(): Response {
         $entities = $this->getEntityInstance()::getCrudService()->index($this->request);
 
-        if ($entities->getTotalCount()) {
+        if ($entities->getLimit()) {
             return $this->getPaginatedItemsResponse($entities);
         }
 
