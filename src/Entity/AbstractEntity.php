@@ -49,7 +49,12 @@ abstract class AbstractEntity extends BaseEntity implements Arrayable {
     public static function get($where = null, ?array $params = null, $limit = null, $page = null) {
         $result = parent::get($where, $params, $limit, $page);
 
-        if (is_null($result) || ($where && is_numeric($where)) || $limit == 1 || $result instanceof Collection) {
+        if (
+            $result instanceof Collection ||
+            $result === null ||
+            $limit == 1 ||
+            ($where && is_numeric($where))
+        ) {
             return $result;
         }
 
