@@ -148,6 +148,7 @@ class CrudService {
     public function create(Request $request): AbstractEntity {
         $entity = $this->getEntityInstance();
         $this->checkAndSetValues($entity, $request);
+        $entity->save();
         $entity->reload();
 
         return $entity;
