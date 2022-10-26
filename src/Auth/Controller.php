@@ -13,33 +13,32 @@ use App\HTTP\Response;
 class Controller extends AbstractController {
 
     /**
-     * Call to authenticate a user
+     * Call to authenticate a user.
      *
-     * If successful return appropriate success message with JWT
-     * else return appropriate error message
+     * If successful return appropriate success message with JWT else return appropriate error message.
      *
      * @return Response
      */
     public function login(): Response {
         $errors = AuthManager::getErrors($this->request);
-        if (!$errors) {
-            $jwt = AuthManager::login($this->request);
-            if ($jwt) {
-                return new Response(200, [
-                    "data" => $jwt,
-                ]);
-            }
+        if ($errors) {
+            return $this->getInvalidInputResponse($errors);
+        }
 
-            return new Response(401, [
-                "error" => "Wrong username and/or password.",
+        $jwt = AuthManager::login($this->request);
+        if ($jwt) {
+            return new Response(200, [
+                "data" => $jwt,
             ]);
         }
 
-        return $this->getInvalidInputResponse($errors);
+        return new Response(401, [
+            "error" => "Wrong username and/or password.",
+        ]);
     }
 
     /**
-     * Call logout, then return appropriate success or error message
+     * Call logout, then return appropriate success or error message.
      *
      * @return Response
      */
@@ -56,12 +55,11 @@ class Controller extends AbstractController {
     }
 
     /**
-     * Check whether the current user is logged in
-     * then return appropriate response depending on check
+     * Check whether the current user is logged in then return appropriate response depending on check.
      *
      * @return Response
      */
-    public function getStatus(): Response {
+    public function status(): Response {
         return new Response(200, [
             "data" => AuthManager::isLoggedIn($this->request),
         ]);

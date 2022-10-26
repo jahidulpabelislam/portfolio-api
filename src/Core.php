@@ -87,7 +87,7 @@ class Core {
 
         $router->addRoute("/auth/login/", "POST", [$authController, "login"]);
         $router->addRoute("/auth/logout/", "DELETE", [$authController, "logout"]);
-        $router->addRoute("/auth/status/", "GET", [$authController, "getStatus"]);
+        $router->addRoute("/auth/status/", "GET", [$authController, "status"]);
     }
 
     public function getRouter(): Router {
