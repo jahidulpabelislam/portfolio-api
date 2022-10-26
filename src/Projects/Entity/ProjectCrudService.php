@@ -10,6 +10,15 @@ use JPI\ORM\Entity\Collection as EntityCollection;
 
 class ProjectCrudService extends BaseService {
 
+    protected static $requiredColumns = [
+        "name",
+        "date",
+        "type",
+        "tags",
+        "long_description",
+        "short_description",
+    ];
+
     protected function getEntityFromRequest(Request $request): ?Project {
         $where = ["id = :id"];
 
@@ -73,7 +82,7 @@ class ProjectCrudService extends BaseService {
         $project = parent::update($request);
 
         // If images were passed update the sort order
-        if ($project && !$project->hasErrors() && !empty($request->data["images"])) {
+        if ($project && !empty($request->data["images"])) {
             $project->loadImages();
 
             $positions = [];

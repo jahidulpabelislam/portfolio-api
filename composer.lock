@@ -120,12 +120,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "a93b04961c7e724bfdfc816b21a5f098f2e4e58a"
+                "reference": "d6bce0f8e10a10b8f10b6edc3563b446b1845594"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/a93b04961c7e724bfdfc816b21a5f098f2e4e58a",
-                "reference": "a93b04961c7e724bfdfc816b21a5f098f2e4e58a",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/d6bce0f8e10a10b8f10b6edc3563b446b1845594",
+                "reference": "d6bce0f8e10a10b8f10b6edc3563b446b1845594",
                 "shasum": ""
             },
             "require": {
@@ -165,9 +165,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
-                "source": "https://github.com/jahidulpabelislam/orm/tree/1.x"
+                "source": "https://github.com/jahidulpabelislam/orm/tree/v1.1.2"
             },
-            "time": "2022-10-23T23:12:19+00:00"
+            "time": "2022-10-26T21:52:53+00:00"
         },
         {
             "name": "jpi/query",
@@ -304,5 +304,5 @@
         "ext-json": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }

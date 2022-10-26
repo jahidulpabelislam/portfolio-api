@@ -26,8 +26,6 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
 
     public const PUBLIC_STATUS = "published";
 
-    public static $displayName = "Project";
-
     protected static $table = "portfolio_project";
 
     protected static $defaultColumns = [
@@ -42,15 +40,6 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
         "colour" => "",
         "tags" => [],
         "status" => "draft",
-    ];
-
-    protected static $requiredColumns = [
-        "name",
-        "date",
-        "type",
-        "tags",
-        "long_description",
-        "short_description",
     ];
 
     protected static $dateColumns = ["date"];
