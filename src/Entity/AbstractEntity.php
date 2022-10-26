@@ -46,6 +46,15 @@ abstract class AbstractEntity extends BaseEntity implements Arrayable {
         return static::$dbConnection;
     }
 
+    /**
+     * Always return a collection if multiple.
+     *
+     * @param string[]|string|int|null $where
+     * @param array|null $params
+     * @param int|string|null $limit
+     * @param int|string|null $page
+     * @return \JPI\ORM\Entity\Collection|static|null
+     */
     public static function get($where = null, ?array $params = null, $limit = null, $page = null) {
         $result = parent::get($where, $params, $limit, $page);
 
