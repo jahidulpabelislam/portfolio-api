@@ -7,7 +7,17 @@ use DateTime;
 
 abstract class AbstractEntity extends BaseEntity {
 
+    protected static $displayName = "";
+
     protected static $crudService = CrudService::class;
+
+    public static function getDisplayName(): string {
+        return static::$displayName;
+    }
+
+    public static function getPluralDisplayName(): string {
+        return static::$displayName . "s";
+    }
 
     public static function getCrudService(): CrudService {
         return new static::$crudService(static::class);

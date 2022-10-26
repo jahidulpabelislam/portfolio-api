@@ -14,19 +14,9 @@ abstract class AbstractEntity extends BaseEntity implements Arrayable {
 
     protected static $dbConnection = null;
 
-    protected static $displayName = "";
-
     protected static $requiredColumns = [];
 
     protected $errors = [];
-
-    public static function getDisplayName(): string {
-        return static::$displayName;
-    }
-
-    public static function getPluralDisplayName(): string {
-        return static::$displayName . "s";
-    }
 
     public static function getRequiredColumns(): array {
         return static::$requiredColumns;
@@ -139,7 +129,6 @@ abstract class AbstractEntity extends BaseEntity implements Arrayable {
         if ($this->hasErrors()) {
             return false;
         }
-
         return parent::save();
     }
 
