@@ -88,7 +88,15 @@ class CrudService {
         return $entities;
     }
 
-    protected function checkAndSetValues(AbstractEntity $entity, Request $request): void {
+    /**
+     * Checks the data in the request + sets entity values from valid data.
+     *
+     * @param AbstractEntity $entity
+     * @param Request $request
+     * @return void
+     * @throws InvalidDataException
+     */
+    protected function setValuesFromRequest(AbstractEntity $entity, Request $request): void {
         $errors = [];
 
         $intColumns = $entity::getIntColumns();
@@ -147,7 +155,7 @@ class CrudService {
 
     public function create(Request $request): AbstractEntity {
         $entity = $this->getEntityInstance();
-        $this->checkAndSetValues($entity, $request);
+        $this->setValuesFromRequest($entity, $request);
         $entity->save();
         $entity->reload();
 
@@ -165,7 +173,7 @@ class CrudService {
             return null;
         }
 
-        $this->checkAndSetValues($entity, $request);
+        $this->setValuesFromRequest($entity, $request);
 
         $entity->save();
         $entity->reload();
