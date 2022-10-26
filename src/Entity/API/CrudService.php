@@ -136,7 +136,7 @@ class CrudService {
                 }
             }
             else if (in_array($column, $dateColumns) || in_array($column, $dateTimeColumns)) {
-                if (!empty($value) && (is_string($value) || is_numeric($value))) {
+                if (is_string($value) || is_numeric($value)) {
                     try {
                         $value = new DateTime($value);
                     }
