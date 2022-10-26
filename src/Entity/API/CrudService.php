@@ -130,23 +130,16 @@ class CrudService {
                     $errors[$column] = "$label must be a integer.";
                 }
             }
-            else if (in_array($column, $arrayColumns)) {
-                if (!is_array($value)) {
-                    $errors[$column] = "$label must be an array.";
+            else if (in_array($column, $dateColumns) || in_array($column, $dateTimeColumns)) {
+                try {
+                    $value = new DateTime($value);
+                }
+                catch (Exception $exception) {
+                    $errors[$column] = "$label is a invalid date" . (in_array($column, $dateTimeColumns) ? " time" : "") . " format.";
                 }
             }
-            else if (in_array($column, $dateColumns) || in_array($column, $dateTimeColumns)) {
-                if (is_string($value) || is_numeric($value)) {
-                    try {
-                        $value = new DateTime($value);
-                    }
-                    catch (Exception $exception) {
-                        $errors[$column] = "$label is a invalid date" . (in_array($column, $dateTimeColumns) ? " time" : "") . " format.";
-                    }
-                }
-                else {
-                    $errors[$column] = "$label must be a date" . (in_array($column, $dateTimeColumns) ? " time" : "") . ".";
-                }
+            else if (in_array($column, $arrayColumns) && !is_array($value)) {
+                $errors[$column] = "$label must be an array.";
             }
 
             if (!array_key_exists($column, $errors)) {
