@@ -15,7 +15,7 @@ abstract class AbstractEntity extends BaseEntity {
     }
 
     public static function getPluralDisplayName(): string {
-        return static::$displayName . "s";
+        return static::getDisplayName() . "s";
     }
 
     public static function getCrudService(): CrudService {
