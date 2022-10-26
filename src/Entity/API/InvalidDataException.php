@@ -9,10 +9,11 @@ class InvalidDataException extends Exception
 {
     protected $errors;
 
-    public function __construct($message = "", $code = 0, Throwable $previous = null, array $invalidErrors = [])
+    public function __construct(array $errors, $message = "", $code = 0, Throwable $previous = null)
     {
+        $this->errors = $errors;
+
         parent::__construct($message, $code, $previous);
-        $this->errors = $invalidErrors;
     }
 
     public function getErrors(): array {

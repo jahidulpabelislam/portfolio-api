@@ -148,7 +148,7 @@ class CrudService {
         }
 
         if ($errors) {
-            throw new InvalidDataException('', 0, null, $errors);
+            throw new InvalidDataException($errors);
         }
     }
 
