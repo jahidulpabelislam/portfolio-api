@@ -108,7 +108,7 @@ class CrudService {
 
         $data = $request->data->toArray();
 
-        // Make sure data submitted are all valid.
+        // Make sure data submitted is all valid.
         foreach ($entity::getColumns() as $column) {
             $label = Str::machineToDisplay($column);
 
