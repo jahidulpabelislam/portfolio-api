@@ -10,7 +10,7 @@ use JPI\ORM\Entity\Collection as EntityCollection;
 
 class ProjectCrudService extends BaseService {
 
-    protected static $requiredData = [
+    protected static $requiredColumns = [
         "name",
         "date",
         "type",

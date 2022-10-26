@@ -17,7 +17,7 @@ class CrudService {
     protected $paginated = true;
     protected $perPage = 10;
 
-    protected static $requiredData = [];
+    protected static $requiredColumns = [];
 
     public function __construct(string $entityClass) {
         $this->entityClass = $entityClass;
@@ -96,7 +96,10 @@ class CrudService {
         $dateTimeColumns = $entity::getDateTimeColumns();
         $dateColumns = $entity::getDateColumns();
 
-        foreach ($request->data->toArray() as $column => $value) {
+        $data = $request->data->toArray();
+
+        // Make sure data submitted are all valid.
+        foreach ($data as $column => $value) {
             $label = Str::machineToDisplay($column);
 
             if (in_array($column, $intColumns)) {
@@ -129,6 +132,12 @@ class CrudService {
             if (!array_key_exists($column, $errors)) {
                 $entity->$column = $value;
             }
+        }
+
+        // Make sure all required columns were submitted.
+        $missingColumns = array_diff(static::$requiredColumns, array_keys($data));
+        foreach ($missingColumns as $column) {
+            $errors[$column] = Str::machineToDisplay($column) . " is required.";
         }
 
         if ($errors) {
