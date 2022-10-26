@@ -4,8 +4,6 @@ namespace App\Entity;
 
 use App\Core;
 use App\Utils\Arrayable;
-use App\Utils\Str;
-use DateTime;
 use JPI\Database\Connection;
 use JPI\ORM\Entity as BaseEntity;
 use JPI\ORM\Entity\Collection;
