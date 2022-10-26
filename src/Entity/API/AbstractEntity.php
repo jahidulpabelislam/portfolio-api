@@ -4,15 +4,14 @@ namespace App\Entity\API;
 
 use App\Entity\AbstractEntity as BaseEntity;
 use DateTime;
+use ReflectionClass;
 
 abstract class AbstractEntity extends BaseEntity {
-
-    protected static $displayName = "";
 
     protected static $crudService = CrudService::class;
 
     public static function getDisplayName(): string {
-        return static::$displayName;
+        return static::$displayName ?? (new ReflectionClass(static::class))->getShortName();
     }
 
     public static function getPluralDisplayName(): string {
