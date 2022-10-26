@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "80496b55d2736ddb95789a81a26d04ee",
+    "content-hash": "1bdf258bb219f487c6f640ccbcc29ef3",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -116,16 +116,16 @@
         },
         {
             "name": "jpi/orm",
-            "version": "1.x-dev",
+            "version": "dev-get-columns-method",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "a93b04961c7e724bfdfc816b21a5f098f2e4e58a"
+                "reference": "b1d52698499866daa21a348d659ab4f7c9ab4fdb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/a93b04961c7e724bfdfc816b21a5f098f2e4e58a",
-                "reference": "a93b04961c7e724bfdfc816b21a5f098f2e4e58a",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/b1d52698499866daa21a348d659ab4f7c9ab4fdb",
+                "reference": "b1d52698499866daa21a348d659ab4f7c9ab4fdb",
                 "shasum": ""
             },
             "require": {
@@ -136,7 +136,6 @@
             "require-dev": {
                 "jpi/codestyles": "^1.0.1"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -165,9 +164,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
-                "source": "https://github.com/jahidulpabelislam/orm/tree/1.x"
+                "source": "https://github.com/jahidulpabelislam/orm/tree/get-columns-method"
             },
-            "time": "2022-10-23T23:12:19+00:00"
+            "time": "2022-10-26T20:27:52+00:00"
         },
         {
             "name": "jpi/query",
@@ -304,5 +303,5 @@
         "ext-json": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }

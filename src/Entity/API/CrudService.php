@@ -104,11 +104,23 @@ class CrudService {
         $dateTimeColumns = $entity::getDateTimeColumns();
         $dateColumns = $entity::getDateColumns();
 
+        $requiredColumns = static::$requiredColumns;
+
         $data = $request->data->toArray();
 
         // Make sure data submitted are all valid.
-        foreach ($data as $column => $value) {
+        foreach ($entity::getColumns() as $column) {
             $label = Str::machineToDisplay($column);
+
+            if (empty($data[$column])) {
+                if (in_array($column, $requiredColumns)) {
+                    $errors[$column] = Str::machineToDisplay($column) . " is required.";
+                }
+
+                continue;
+            }
+
+            $value = $data[$column];
 
             if (in_array($column, $intColumns)) {
                 if (is_numeric($value) && $value == (int)$value) {
@@ -140,12 +152,6 @@ class CrudService {
             if (!array_key_exists($column, $errors)) {
                 $entity->$column = $value;
             }
-        }
-
-        // Make sure all required columns were submitted.
-        $missingColumns = array_diff(static::$requiredColumns, array_keys($data));
-        foreach ($missingColumns as $column) {
-            $errors[$column] = Str::machineToDisplay($column) . " is required.";
         }
 
         if ($errors) {
