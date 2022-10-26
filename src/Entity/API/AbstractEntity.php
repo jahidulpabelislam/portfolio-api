@@ -11,7 +11,11 @@ abstract class AbstractEntity extends BaseEntity {
     protected static $crudService = CrudService::class;
 
     public static function getDisplayName(): string {
-        return static::$displayName ?? (new ReflectionClass(static::class))->getShortName();
+        if (isset(static::$displayName)) {
+            return static::$displayName;
+        }
+
+        return (new ReflectionClass(static::class))->getShortName();
     }
 
     public static function getPluralDisplayName(): string {
