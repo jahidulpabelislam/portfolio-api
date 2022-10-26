@@ -114,7 +114,7 @@ class CrudService {
 
             if (empty($data[$column])) {
                 if (in_array($column, $requiredColumns)) {
-                    $errors[$column] = Str::machineToDisplay($column) . " is required.";
+                    $errors[$column] = "$label is required.";
                 }
 
                 continue;
