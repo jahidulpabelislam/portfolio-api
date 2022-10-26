@@ -47,7 +47,7 @@ abstract class AbstractCrudController extends AbstractController implements Guar
         try {
             $entity = $this->getEntityInstance()::getCrudService()->create($this->request);
         } catch (InvalidDataException $exception) {
-            return $this->getInvalidInputResponse($exception->getInvalidErrors());
+            return $this->getInvalidInputResponse($exception->getErrors());
         }
 
         return $this->getInsertResponse($entity);
@@ -74,7 +74,7 @@ abstract class AbstractCrudController extends AbstractController implements Guar
         try {
             $entity = $this->getEntityInstance()::getCrudService()->update($this->request);
         } catch (InvalidDataException $exception) {
-            return $this->getInvalidInputResponse($exception->getInvalidErrors());
+            return $this->getInvalidInputResponse($exception->getErrors());
         }
 
         return $this->getUpdateResponse($entity, $id);

@@ -7,15 +7,15 @@ use Throwable;
 
 class InvalidDataException extends Exception
 {
-    protected $invalidErrors;
+    protected $errors;
 
     public function __construct($message = "", $code = 0, Throwable $previous = null, array $invalidErrors = [])
     {
         parent::__construct($message, $code, $previous);
-        $this->invalidErrors = $invalidErrors;
+        $this->errors = $invalidErrors;
     }
 
-    public function getInvalidErrors(): array {
-        return $this->invalidErrors;
+    public function getErrors(): array {
+        return $this->errors;
     }
 }
