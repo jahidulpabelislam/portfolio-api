@@ -40,7 +40,7 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
         "short_description" => "",
         "long_description" => "",
         "colour" => "",
-        "skills" => [],
+        "tags" => [],
         "status" => "draft",
     ];
 
@@ -48,18 +48,18 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
         "name",
         "date",
         "type",
-        "skills",
+        "tags",
         "long_description",
         "short_description",
     ];
 
     protected static $dateColumns = ["date"];
-    protected static $arrayColumns = ["skills"];
+    protected static $arrayColumns = ["tags"];
 
     protected static $searchableColumns = [
         "name",
         "type",
-        "skills",
+        "tags",
         "long_description",
         "short_description",
         "status",
