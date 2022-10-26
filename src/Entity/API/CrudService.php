@@ -94,7 +94,7 @@ class CrudService {
      * @param AbstractEntity $entity
      * @param Request $request
      * @return void
-     * @throws InvalidDataException
+     * @throws InvalidDataException If there are validation errors on data submitted or missing data.
      */
     protected function setValuesFromRequest(AbstractEntity $entity, Request $request): void {
         $errors = [];
