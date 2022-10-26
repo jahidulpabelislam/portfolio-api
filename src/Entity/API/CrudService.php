@@ -5,6 +5,9 @@ namespace App\Entity\API;
 use App\Entity\FilterableInterface;
 use App\Entity\SearchableInterface;
 use App\HTTP\Request;
+use App\Utils\Str;
+use DateTime;
+use Exception;
 use JPI\ORM\Entity\Collection as EntityCollection;
 
 class CrudService {
@@ -13,6 +16,8 @@ class CrudService {
 
     protected $paginated = true;
     protected $perPage = 10;
+
+    protected static $requiredData = [];
 
     public function __construct(string $entityClass) {
         $this->entityClass = $entityClass;
@@ -83,12 +88,58 @@ class CrudService {
         return $entities;
     }
 
-    public function create(Request $request): AbstractEntity {
-        $entity = $this->getEntityInstance()::insert($request->data->toArray());
+    protected function checkAndSetValues(AbstractEntity $entity, Request $request): void {
+        $errors = [];
 
-        if (!$entity->hasErrors()) {
-            $entity->reload();
+        $intColumns = $entity::getIntColumns();
+        $arrayColumns = $entity::getArrayColumns();
+        $dateTimeColumns = $entity::getDateTimeColumns();
+        $dateColumns = $entity::getDateColumns();
+
+        foreach ($request->data->toArray() as $column => $value) {
+            $label = Str::machineToDisplay($column);
+
+            if (in_array($column, $intColumns)) {
+                if (is_numeric($value) && $value == (int)$value) {
+                    $value = (int)$value;
+                }
+                else {
+                    $errors[$column] = "$label must be a integer.";
+                }
+            }
+            else if (in_array($column, $arrayColumns)) {
+                if (!is_array($value)) {
+                    $errors[$column] = "$label must be an array.";
+                }
+            }
+            else if (in_array($column, $dateColumns) || in_array($column, $dateTimeColumns)) {
+                if (!empty($value) && (is_string($value) || is_numeric($value))) {
+                    try {
+                        $value = new DateTime($value);
+                    }
+                    catch (Exception $exception) {
+                        $errors[$column] = "$label is a invalid date" . (in_array($column, $dateTimeColumns) ? " time" : "") . " format.";
+                    }
+                }
+                else {
+                    $errors[$column] = "$label must be a date" . (in_array($column, $dateTimeColumns) ? " time" : "") . ".";
+                }
+            }
+
+            if (!array_key_exists($column, $errors)) {
+                $entity->$column = $value;
+            }
         }
+
+        if ($errors) {
+            throw new InvalidDataException('', 0, null, $errors);
+        }
+    }
+
+    public function create(Request $request): AbstractEntity {
+        $entity = $this->getEntityInstance();
+        $this->checkAndSetValues($entity, $request);
+        $entity->reload();
 
         return $entity;
     }
@@ -104,12 +155,10 @@ class CrudService {
             return null;
         }
 
-        $entity->setValues($request->data->toArray());
-        $entity->save();
+        $this->checkAndSetValues($entity, $request);
 
-        if (!$entity->hasErrors()) {
-            $entity->reload();
-        }
+        $entity->save();
+        $entity->reload();
 
         return $entity;
     }

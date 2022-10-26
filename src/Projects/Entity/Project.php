@@ -44,15 +44,6 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
         "status" => "draft",
     ];
 
-    protected static $requiredColumns = [
-        "name",
-        "date",
-        "type",
-        "tags",
-        "long_description",
-        "short_description",
-    ];
-
     protected static $dateColumns = ["date"];
     protected static $arrayColumns = ["tags"];
 

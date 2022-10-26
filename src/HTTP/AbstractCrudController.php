@@ -4,6 +4,7 @@ namespace App\HTTP;
 
 use App\Auth\GuardedControllerInterface;
 use App\Entity\API\AbstractEntity as AbstractAPIEntity;
+use App\Entity\API\InvalidDataException;
 use App\Entity\API\Responder as EntityResponder;
 
 abstract class AbstractCrudController extends AbstractController implements GuardedControllerInterface {
@@ -43,10 +44,12 @@ abstract class AbstractCrudController extends AbstractController implements Guar
      * @return Response
      */
     public function create(): Response {
-        $entity = $this->getEntityInstance()::getCrudService()->create($this->request);
-        if ($entity->hasErrors()) {
-            return $this->getInvalidInputResponse($entity->getErrors());
+        try {
+            $entity = $this->getEntityInstance()::getCrudService()->create($this->request);
+        } catch (InvalidDataException $exception) {
+            return $this->getInvalidInputResponse($exception->getInvalidErrors());
         }
+
         return $this->getInsertResponse($entity);
     }
 
@@ -68,10 +71,10 @@ abstract class AbstractCrudController extends AbstractController implements Guar
      * @return Response
      */
     public function update($id): Response {
-        $entity = $this->getEntityInstance()::getCrudService()->update($this->request);
-
-        if ($entity && $entity->hasErrors()) {
-            return $this->getInvalidInputResponse($entity->getErrors());
+        try {
+            $entity = $this->getEntityInstance()::getCrudService()->update($this->request);
+        } catch (InvalidDataException $exception) {
+            return $this->getInvalidInputResponse($exception->getInvalidErrors());
         }
 
         return $this->getUpdateResponse($entity, $id);
