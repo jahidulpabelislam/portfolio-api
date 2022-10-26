@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1bdf258bb219f487c6f640ccbcc29ef3",
+    "content-hash": "80496b55d2736ddb95789a81a26d04ee",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -116,16 +116,16 @@
         },
         {
             "name": "jpi/orm",
-            "version": "dev-get-columns-method",
+            "version": "1.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "b1d52698499866daa21a348d659ab4f7c9ab4fdb"
+                "reference": "d6bce0f8e10a10b8f10b6edc3563b446b1845594"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/b1d52698499866daa21a348d659ab4f7c9ab4fdb",
-                "reference": "b1d52698499866daa21a348d659ab4f7c9ab4fdb",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/d6bce0f8e10a10b8f10b6edc3563b446b1845594",
+                "reference": "d6bce0f8e10a10b8f10b6edc3563b446b1845594",
                 "shasum": ""
             },
             "require": {
@@ -136,6 +136,7 @@
             "require-dev": {
                 "jpi/codestyles": "^1.0.1"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -164,9 +165,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
-                "source": "https://github.com/jahidulpabelislam/orm/tree/get-columns-method"
+                "source": "https://github.com/jahidulpabelislam/orm/tree/v1.1.2"
             },
-            "time": "2022-10-26T20:27:52+00:00"
+            "time": "2022-10-26T21:52:53+00:00"
         },
         {
             "name": "jpi/query",

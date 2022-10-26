@@ -6,7 +6,7 @@
         "jpi/utils": "0.x-dev",
         "jpi/database": "1.x-dev as 1",
         "jpi/query": "1.x-dev as 1",
-        "jpi/orm": "dev-get-columns-method",
+        "jpi/orm": "1.x-dev",
         "firebase/php-jwt": "^5.0"
     },
     "autoload": {
