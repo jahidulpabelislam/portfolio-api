@@ -18,7 +18,7 @@ trait Filterable {
         $where = [];
         $params = [];
         foreach (static::getFilterableColumns() as $column) {
-            if (!empty($filters[$column])) {
+            if (array_key_exists($column, $filters)) {
                 $where[] = "$column = :$column";
                 $params[$column] = $filters[$column];
             }
