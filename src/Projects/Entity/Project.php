@@ -26,7 +26,7 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
 
     public const PUBLIC_STATUS = "published";
 
-    protected static $table = "portfolio_project";
+    protected static $table = "projects";
 
     protected static $defaultColumns = [
         "name" => "",
