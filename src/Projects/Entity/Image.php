@@ -19,7 +19,7 @@ class Image extends AbstractAPIEntity {
 
     public static $displayName = "Project Image";
 
-    protected static $table = "portfolio_project_image";
+    protected static $table = "project_images";
 
     protected static $defaultColumns = [
         "project_id" => null,
