@@ -158,13 +158,10 @@ class ProjectCrudService extends BaseService {
             if (!empty($input["images"])) {
                 $project->loadImages();
 
-                $positions = [];
-                foreach ($input["images"] as $i => $image) {
-                    $positions[$image["id"]] = $i + 1;
-                }
+                $imagesData = $input["images"]->toArray();
 
                 foreach ($project->images as $image) {
-                    $newPosition = $positions[$image->getId()];
+                    $newPosition = array_search($image->getId(), $imagesData) + 1;
                     if ($image->position !== $newPosition) {
                         $image->position = $newPosition;
                         $image->save();
