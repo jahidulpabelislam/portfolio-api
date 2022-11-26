@@ -27,10 +27,7 @@ class Core extends App {
 
     public const VERSION = "4";
 
-    protected Config $config;
-
     protected function __construct() {
-        $this->initConfig();
         $this->initRoutes();
 
         $this->middlewares = [
@@ -38,22 +35,6 @@ class Core extends App {
             new CORSMiddleware(),
             new VersionCheckMiddleware(),
         ];
-    }
-
-    public function initConfig(): void {
-        $config = new Config();
-
-        include_once __DIR__ . "/../config.php";
-
-        if (file_exists(__DIR__ . "/../config.local.php")) {
-            include_once __DIR__ . "/../config.local.php";
-        }
-
-        $this->config = $config;
-    }
-
-    public function getConfig(): Config {
-        return $this->config;
     }
 
     private function initRoutes(): void {

@@ -1,13 +1,13 @@
 <?php
 
-$config->db_host = "overrideme";
-$config->db_name = "overrideme";
-$config->db_username = "overrideme";
-$config->db_password = "overrideme";
+$this->db_host = "overrideme";
+$this->db_name = "overrideme";
+$this->db_username = "overrideme";
+$this->db_password = "overrideme";
 
-$config->portfolio_admin_secret_key = "overrideme";
+$this->portfolio_admin_secret_key = "overrideme";
 
-$config->allowed_domains = [
+$this->allowed_domains = [
     "jahidulpabelislam.com",
     "cms.jahidulpabelislam.com",
 ];

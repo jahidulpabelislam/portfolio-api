@@ -10,7 +10,19 @@ namespace App;
 
 class Config {
 
+    use \JPI\Utils\Singleton;
+
     protected array $values = [];
+
+    protected function __construct() {
+        $config = $this;
+
+        include_once __DIR__ . "/../config.php";
+
+        if (file_exists(__DIR__ . "/../config.local.php")) {
+            include_once __DIR__ . "/../config.local.php";
+        }
+    }
 
     public function __set(string $key, $value): void {
         $this->values[$key] = $value;
