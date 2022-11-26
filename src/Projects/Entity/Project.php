@@ -33,7 +33,6 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
     protected static array $defaultColumns = [
         "name" => "",
         "date" => null,
-        "type" => "",
         "url" => "",
         "github_url" => "",
         "download_url" => "",
@@ -42,14 +41,15 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
         "colour" => "",
         "tags" => [],
         "status" => "draft",
+        "type_id" => null,
     ];
 
+    protected static array $intColumns = ["type_id"];
     protected static array $dateColumns = ["date"];
     protected static array $arrayColumns = ["tags"];
 
     protected static array $searchableColumns = [
         "name",
-        "type",
         "tags",
         "long_description",
         "short_description",
@@ -63,6 +63,8 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
 
     public ?EntityCollection $images = null;
 
+    public ?Type $type = null;
+
     /**
      * Helper function to get all Project Image Entities linked to this Project
      */
@@ -72,9 +74,21 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
         }
     }
 
+    /**
+     * Helper function to get the type entity
+     */
+    public function loadType(bool $reload = false): void {
+        if ($this->isLoaded() && !$this->isDeleted() && ($reload || is_null($this->type))) {
+            $this->type = Type::getById($this->type_id);
+        }
+    }
+
     public function reload(): void {
         parent::reload();
 
+        if (!is_null($this->type)) {
+            $this->loadType(true);
+        }
         if (!is_null($this->images)) {
             $this->loadImages(true);
         }
@@ -122,6 +136,12 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
 
     public function getAPIResponse(): array {
         $response = parent::getAPIResponse();
+
+        unset($response["type_id"]);
+
+        if ($this->type instanceof Type) {
+            $response["type"] = $this->type->name;
+        }
 
         if ($this->images instanceof EntityCollection) {
             $response["images"] = [];
