@@ -14,6 +14,7 @@ use App\HTTP\CORSMiddleware;
 use App\HTTP\VersionCheckMiddleware;
 use App\HTTP\Router;
 use App\Projects\Controller as ProjectsController;
+use App\Projects\TypeController as ProjectTypesController;
 use DateTime;
 use JPI\HTTP\App;
 use JPI\HTTP\Request;
@@ -71,7 +72,11 @@ class Core extends App {
         );
 
         $projectsController = ProjectsController::class;
+        $projectTypesController = ProjectTypesController::class;
         $authController = AuthController::class;
+
+        $this->addRoute("/project-types/{id}/", "GET", "$projectTypesController::read", "projectType");
+        $this->addRoute("/project-types/", "GET", "$projectTypesController::index");
 
         $this->addRoute("/projects/{projectId}/images/{id}/", "GET", "$projectsController::getImage", "projectImage");
         $this->addRoute("/projects/{projectId}/images/{id}/", "DELETE", "$projectsController::deleteImage");
