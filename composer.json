@@ -1,6 +1,6 @@
 {
     "require": {
-        "php": "^7.4",
+        "php": "^7.4 || ^8.0",
         "ext-fileinfo": "*",
         "ext-json": "*",
         "jpi/utils": "0.x-dev",

@@ -136,7 +136,7 @@ class Router {
                         return static::getNotAuthorisedResponse();
                     }
 
-                    return call_user_func_array([$controller, $route["function"]], $identifiers);
+                    return call_user_func_array([$controller, $route["function"]], array_values($identifiers));
                 }
 
                 if ($method === "OPTIONS") {
