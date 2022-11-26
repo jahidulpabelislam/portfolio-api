@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1ca792fcb3923b526c88b4013c4cff1d",
+    "content-hash": "150d5210feb1490fa2a7ccef34dbd4a7",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -116,16 +116,16 @@
         },
         {
             "name": "jpi/orm",
-            "version": "1.x-dev",
+            "version": "dev-php-8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "d6bce0f8e10a10b8f10b6edc3563b446b1845594"
+                "reference": "3dfc4a57d39c4e4465c26f32df61d25c898f5bf5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/d6bce0f8e10a10b8f10b6edc3563b446b1845594",
-                "reference": "d6bce0f8e10a10b8f10b6edc3563b446b1845594",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/3dfc4a57d39c4e4465c26f32df61d25c898f5bf5",
+                "reference": "3dfc4a57d39c4e4465c26f32df61d25c898f5bf5",
                 "shasum": ""
             },
             "require": {
@@ -136,7 +136,6 @@
             "require-dev": {
                 "jpi/codestyles": "^1.0.1"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -165,9 +164,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
-                "source": "https://github.com/jahidulpabelislam/orm/tree/v1.1.2"
+                "source": "https://github.com/jahidulpabelislam/orm/tree/php-8.1"
             },
-            "time": "2022-10-26T21:52:53+00:00"
+            "time": "2022-11-26T18:16:44+00:00"
         },
         {
             "name": "jpi/query",
@@ -223,16 +222,16 @@
         },
         {
             "name": "jpi/utils",
-            "version": "0.x-dev",
+            "version": "dev-php-8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/utils.git",
-                "reference": "d261abad0f0409e0f52ea78c46ea0637d5e65506"
+                "reference": "72e8d2065cb768a2a61304b02d137e4195f1a086"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/d261abad0f0409e0f52ea78c46ea0637d5e65506",
-                "reference": "d261abad0f0409e0f52ea78c46ea0637d5e65506",
+                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/72e8d2065cb768a2a61304b02d137e4195f1a086",
+                "reference": "72e8d2065cb768a2a61304b02d137e4195f1a086",
                 "shasum": ""
             },
             "require": {
@@ -241,7 +240,6 @@
             "require-dev": {
                 "jpi/codestyles": "^1.0.1"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -269,9 +267,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/utils/issues",
-                "source": "https://github.com/jahidulpabelislam/utils/tree/v0.4.0"
+                "source": "https://github.com/jahidulpabelislam/utils/tree/php-8.1"
             },
-            "time": "2022-10-24T22:03:29+00:00"
+            "time": "2022-11-26T18:33:06+00:00"
         }
     ],
     "packages-dev": [],
