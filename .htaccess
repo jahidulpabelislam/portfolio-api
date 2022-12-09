@@ -26,7 +26,6 @@ DirectoryIndex index.php index.html
 <IfModule mod_expires.c>
     ExpiresActive On
     ExpiresDefault "access plus 1 seconds"
-    ExpiresByType application/json "access plus 2678400 seconds"
     ExpiresByType text/plain "access 1 year"
     ExpiresByType image/gif "access 1 year"
     ExpiresByType image/jpeg "access 1 year"
