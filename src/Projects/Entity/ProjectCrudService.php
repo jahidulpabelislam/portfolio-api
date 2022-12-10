@@ -71,6 +71,13 @@ class ProjectCrudService extends BaseService {
         return $projects;
     }
 
+    public function create(Request $request): Project {
+        $project = parent::create($request);
+        $project->images = new EntityCollection([]);
+
+        return $project;
+    }
+
     public function read(Request $request): ?Project {
         $project = parent::read($request);
 
