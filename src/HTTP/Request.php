@@ -3,7 +3,7 @@
 namespace App\HTTP;
 
 use App\Core;
-use App\Utils\Collection;
+use JPI\Utils\Collection;
 use JPI\Utils\URL;
 
 class Request {

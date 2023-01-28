@@ -3,10 +3,10 @@
 namespace App\Entity;
 
 use App\Core;
-use App\Utils\Arrayable;
 use JPI\Database\Connection;
 use JPI\ORM\Entity as BaseEntity;
 use JPI\ORM\Entity\Collection;
+use JPI\Utils\Arrayable;
 
 abstract class AbstractEntity extends BaseEntity implements Arrayable {
 
