@@ -9,7 +9,7 @@ namespace App\HTTP;
 use App\Auth\GuardedControllerInterface;
 use App\Auth\Manager as AuthManager;
 use App\Core;
-use App\Utils\Collection;
+use JPI\Utils\Collection;
 use Exception;
 use JPI\Database\Exception as DBException;
 use JPI\Utils\URL;

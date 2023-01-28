@@ -2,7 +2,7 @@
 
 namespace App\HTTP;
 
-use App\Utils\Collection;
+use JPI\Utils\Collection;
 
 class Headers extends Collection {
 
