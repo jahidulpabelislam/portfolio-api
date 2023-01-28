@@ -3,15 +3,22 @@
         "php": "^7.4 || ^8.0",
         "ext-fileinfo": "*",
         "ext-json": "*",
-        "jpi/utils": "0.x-dev",
+        "jpi/utils": "0.x-dev as 0.5",
         "jpi/database": "1.x-dev as 1",
         "jpi/query": "1.x-dev as 1",
         "jpi/orm": "1.x-dev",
+        "jpi/http": "1.x-dev",
         "firebase/php-jwt": "^5.0"
     },
     "autoload": {
         "psr-4": {
             "App\\": "src/"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jahidulpabelislam/http"
+        }
+    ]
 }
