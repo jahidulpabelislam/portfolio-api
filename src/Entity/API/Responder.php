@@ -69,6 +69,8 @@ trait Responder {
 
         $content = $response->getContent();
 
+        $content = json_decode($content, true);
+
         unset($content["_links"]);
 
         $totalCount = $collection->getTotalCount();
@@ -114,7 +116,7 @@ trait Responder {
             $content["_links"]["next_page"] = (string)$url;
         }
 
-        return $response->withContent($content)
+        return $response->withContent(json_encode($content))
             ->withCacheHeaders(Core::getDefaultCacheHeaders())
         ;
     }

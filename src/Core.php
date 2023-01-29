@@ -149,7 +149,10 @@ class Core {
 
         $this->setCORSHeaders();
 
-        $sendPretty = Str::toBool($request->getParam("pretty"));
-        $this->response->send($sendPretty);
+        if (!is_null($this->response->getContent())) {
+            $this->response->addHeader("Content-Type", "application/json");
+        }
+
+        $this->response->send();
     }
 }
