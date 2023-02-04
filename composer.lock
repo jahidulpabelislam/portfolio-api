@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "26db777446e585105a6fecf76567dc3e",
+    "content-hash": "ef75df0fb1fb69d2ff15c0a79058328f",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -65,16 +65,16 @@
         },
         {
             "name": "jpi/database",
-            "version": "1.x-dev",
+            "version": "2.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/database.git",
-                "reference": "00343bcffc8a9a069cbd34d50202d1fccc5629a6"
+                "reference": "afb42d5dcd124b132ac5cf3527e75cb94ca65a7d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/database/zipball/00343bcffc8a9a069cbd34d50202d1fccc5629a6",
-                "reference": "00343bcffc8a9a069cbd34d50202d1fccc5629a6",
+                "url": "https://api.github.com/repos/jahidulpabelislam/database/zipball/afb42d5dcd124b132ac5cf3527e75cb94ca65a7d",
+                "reference": "afb42d5dcd124b132ac5cf3527e75cb94ca65a7d",
                 "shasum": ""
             },
             "require": {
@@ -84,11 +84,10 @@
             "require-dev": {
                 "jpi/codestyles": "^1.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "JPI\\Database\\": "src/"
+                    "JPI\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -101,7 +100,7 @@
                     "email": "me@jahidulpabelislam.com"
                 }
             ],
-            "description": "Simple library to make interactions with a database easier",
+            "description": "Simple extension to PDO",
             "keywords": [
                 "database",
                 "db",
@@ -110,9 +109,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/database/issues",
-                "source": "https://github.com/jahidulpabelislam/database/tree/v1.1.3"
+                "source": "https://github.com/jahidulpabelislam/database/tree/2.x"
             },
-            "time": "2022-10-23T20:16:18+00:00"
+            "time": "2023-02-04T16:25:51+00:00"
         },
         {
             "name": "jpi/http",
@@ -160,27 +159,26 @@
         },
         {
             "name": "jpi/orm",
-            "version": "1.x-dev",
+            "version": "2.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "88918dea6c0b4d1fa5bd489996845a39931eaf3c"
+                "reference": "b1af6d4ca2ca06986808a1689e5e6f4602ceb5fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/88918dea6c0b4d1fa5bd489996845a39931eaf3c",
-                "reference": "88918dea6c0b4d1fa5bd489996845a39931eaf3c",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/b1af6d4ca2ca06986808a1689e5e6f4602ceb5fd",
+                "reference": "b1af6d4ca2ca06986808a1689e5e6f4602ceb5fd",
                 "shasum": ""
             },
             "require": {
-                "jpi/database": "^1.0",
-                "jpi/query": "^1.0",
+                "jpi/database": "2.x-dev as 2.0",
+                "jpi/query": "2.x-dev as 2.0",
                 "php": "^7.1 || ^8.0"
             },
             "require-dev": {
                 "jpi/codestyles": "^1.0.1"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -209,32 +207,31 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
-                "source": "https://github.com/jahidulpabelislam/orm/tree/v1.1.3"
+                "source": "https://github.com/jahidulpabelislam/orm/tree/2.x"
             },
-            "time": "2022-11-26T18:40:14+00:00"
+            "time": "2023-02-04T20:08:40+00:00"
         },
         {
             "name": "jpi/query",
-            "version": "1.x-dev",
+            "version": "2.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/query.git",
-                "reference": "0fd9c68359bb26ec30f88583ccc49d1999aa8d0b"
+                "reference": "011d7d7a264a570f8ed3ea487999592a772cbeba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/query/zipball/0fd9c68359bb26ec30f88583ccc49d1999aa8d0b",
-                "reference": "0fd9c68359bb26ec30f88583ccc49d1999aa8d0b",
+                "url": "https://api.github.com/repos/jahidulpabelislam/query/zipball/011d7d7a264a570f8ed3ea487999592a772cbeba",
+                "reference": "011d7d7a264a570f8ed3ea487999592a772cbeba",
                 "shasum": ""
             },
             "require": {
-                "jpi/database": "^1.0",
+                "jpi/database": "2.x-dev as 2.0",
                 "php": "^7.1 || ^8.0"
             },
             "require-dev": {
                 "jpi/codestyles": "^1.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -261,9 +258,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/query/issues",
-                "source": "https://github.com/jahidulpabelislam/query/tree/1.x"
+                "source": "https://github.com/jahidulpabelislam/query/tree/2.x"
             },
-            "time": "2022-10-23T22:09:07+00:00"
+            "time": "2023-02-04T16:30:51+00:00"
         },
         {
             "name": "jpi/utils",
@@ -322,15 +319,21 @@
     "aliases": [
         {
             "package": "jpi/database",
-            "version": "1.9999999.9999999.9999999-dev",
-            "alias": "1",
-            "alias_normalized": "1.0.0.0"
+            "version": "2.9999999.9999999.9999999-dev",
+            "alias": "2",
+            "alias_normalized": "2.0.0.0"
+        },
+        {
+            "package": "jpi/orm",
+            "version": "2.9999999.9999999.9999999-dev",
+            "alias": "2",
+            "alias_normalized": "2.0.0.0"
         },
         {
             "package": "jpi/query",
-            "version": "1.9999999.9999999.9999999-dev",
-            "alias": "1",
-            "alias_normalized": "1.0.0.0"
+            "version": "2.9999999.9999999.9999999-dev",
+            "alias": "2",
+            "alias_normalized": "2.0.0.0"
         },
         {
             "package": "jpi/utils",
@@ -352,8 +355,9 @@
     "platform": {
         "php": "^7.4 || ^8.0",
         "ext-fileinfo": "*",
-        "ext-json": "*"
+        "ext-json": "*",
+        "ext-pdo": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }

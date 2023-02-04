@@ -3,27 +3,31 @@
 namespace App\Entity;
 
 use App\Core;
-use JPI\Database\Connection;
+use JPI\Database;
 use JPI\ORM\Entity as BaseEntity;
 use JPI\ORM\Entity\Collection;
 use JPI\Utils\Arrayable;
+use PDO;
 
 abstract class AbstractEntity extends BaseEntity implements Arrayable {
 
-    protected static $dbConnection = null;
+    protected static $database = null;
 
-    public static function getDatabaseConnection(): Connection {
-        if (!static::$dbConnection) {
+    public static function getDatabase(): Database {
+        if (!static::$database) {
             $config = Core::get()->getConfig();
-            static::$dbConnection = new Connection([
-                "host" => $config->db_host,
-                "database" => $config->db_name,
-                "username" => $config->db_username,
-                "password" => $config->db_password,
-            ]);
+
+            static::$database = new Database(
+                "mysql:host={$config->db_host};dbname={$config->db_name};charset-UTF-8",
+                $config->db_username,
+                $config->db_password,
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                ]
+            );
         }
 
-        return static::$dbConnection;
+        return static::$database;
     }
 
     /**
