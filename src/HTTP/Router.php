@@ -11,7 +11,6 @@ use App\Auth\Manager as AuthManager;
 use App\Core;
 use JPI\Utils\Collection;
 use Exception;
-use JPI\Database\Exception as DBException;
 use JPI\Utils\URL;
 
 class Router {
@@ -105,7 +104,6 @@ class Router {
      * Try and execute the requested action
      *
      * @return Response An appropriate response to request
-     * @throws DBException
      */
     private function executeAction(): Response {
         $uri = $this->request->uri;
@@ -198,13 +196,7 @@ class Router {
 
         // Only try to perform the action if API version check above returned okay
         if (is_null($response)) {
-            try {
-                $response = $this->executeAction();
-            }
-            catch (DBException $exception) {
-                error_log($exception->getMessage() . ". Full error: $exception");
-                $response = new Response();
-            }
+            $response = $this->executeAction();
         }
 
         return $response;
