@@ -9,6 +9,7 @@ use App\Utils\Str;
 use DateTime;
 use Exception;
 use JPI\ORM\Entity\Collection as EntityCollection;
+use JPI\ORM\Entity\PaginatedCollection as PaginatedEntityCollection;
 
 class CrudService {
 
@@ -82,7 +83,7 @@ class CrudService {
         // Handle where limit is 1
         if ($entities instanceof $this->entityClass) {
             $totalCount = $entity::getCount($where, $queryParams);
-            $entities = new EntityCollection([$entities], $totalCount, $limit, $page);
+            $entities = new PaginatedEntityCollection([$entities], $totalCount, $limit, $page);
         }
 
         return $entities;
