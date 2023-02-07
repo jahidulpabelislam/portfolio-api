@@ -6,6 +6,7 @@ use App\Auth\GuardedControllerInterface;
 use App\Entity\API\AbstractEntity as AbstractAPIEntity;
 use App\Entity\API\InvalidDataException;
 use App\Entity\API\Responder as EntityResponder;
+use JPI\ORM\Entity\PaginatedCollection;
 
 abstract class AbstractCrudController extends AbstractController implements GuardedControllerInterface {
 
@@ -31,7 +32,7 @@ abstract class AbstractCrudController extends AbstractController implements Guar
     public function index(): Response {
         $entities = $this->getEntityInstance()::getCrudService()->index($this->request);
 
-        if ($entities->getLimit()) {
+        if ($entities instanceof PaginatedCollection) {
             return $this->getPaginatedItemsResponse($entities);
         }
 

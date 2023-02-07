@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Core;
 use JPI\Database;
 use JPI\ORM\Entity as BaseEntity;
-use JPI\ORM\Entity\Collection;
 use JPI\Utils\Arrayable;
 use PDO;
 
@@ -28,30 +27,6 @@ abstract class AbstractEntity extends BaseEntity implements Arrayable {
         }
 
         return static::$database;
-    }
-
-    /**
-     * Always return a collection if multiple.
-     *
-     * @param string[]|string|int|null $where
-     * @param array|null $params
-     * @param int|string|null $limit
-     * @param int|string|null $page
-     * @return \JPI\ORM\Entity\Collection|static|null
-     */
-    public static function get($where = null, ?array $params = null, $limit = null, $page = null) {
-        $result = parent::get($where, $params, $limit, $page);
-
-        if (
-            $result instanceof Collection ||
-            $result === null ||
-            $limit == 1 ||
-            ($where && is_numeric($where))
-        ) {
-            return $result;
-        }
-
-        return new Collection($result);
     }
 
     public function toArray(): array {

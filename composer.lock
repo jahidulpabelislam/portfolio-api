@@ -163,17 +163,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "b1af6d4ca2ca06986808a1689e5e6f4602ceb5fd"
+                "reference": "646a6e4a2ad38f093ada7b8d319ef74ed58d0a7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/b1af6d4ca2ca06986808a1689e5e6f4602ceb5fd",
-                "reference": "b1af6d4ca2ca06986808a1689e5e6f4602ceb5fd",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/646a6e4a2ad38f093ada7b8d319ef74ed58d0a7f",
+                "reference": "646a6e4a2ad38f093ada7b8d319ef74ed58d0a7f",
                 "shasum": ""
             },
             "require": {
                 "jpi/database": "2.x-dev as 2.0",
                 "jpi/query": "2.x-dev as 2.0",
+                "jpi/utils": "0.x-dev as 0.6",
                 "php": "^7.1 || ^8.0"
             },
             "require-dev": {
@@ -209,7 +210,7 @@
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
                 "source": "https://github.com/jahidulpabelislam/orm/tree/2.x"
             },
-            "time": "2023-02-04T20:08:40+00:00"
+            "time": "2023-02-07T22:09:27+00:00"
         },
         {
             "name": "jpi/query",
@@ -217,16 +218,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/query.git",
-                "reference": "011d7d7a264a570f8ed3ea487999592a772cbeba"
+                "reference": "7a7045ce2c37876c3aae9b56bd93d7d4edaeb209"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/query/zipball/011d7d7a264a570f8ed3ea487999592a772cbeba",
-                "reference": "011d7d7a264a570f8ed3ea487999592a772cbeba",
+                "url": "https://api.github.com/repos/jahidulpabelislam/query/zipball/7a7045ce2c37876c3aae9b56bd93d7d4edaeb209",
+                "reference": "7a7045ce2c37876c3aae9b56bd93d7d4edaeb209",
                 "shasum": ""
             },
             "require": {
                 "jpi/database": "2.x-dev as 2.0",
+                "jpi/utils": "0.x-dev as 0.6",
                 "php": "^7.1 || ^8.0"
             },
             "require-dev": {
@@ -260,7 +262,7 @@
                 "issues": "https://github.com/jahidulpabelislam/query/issues",
                 "source": "https://github.com/jahidulpabelislam/query/tree/2.x"
             },
-            "time": "2023-02-04T16:30:51+00:00"
+            "time": "2023-02-07T22:06:21+00:00"
         },
         {
             "name": "jpi/utils",
@@ -268,12 +270,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/utils.git",
-                "reference": "f8845fa433e8f9be47a732c73fc418e73d8ce9fd"
+                "reference": "3d1794a8bfcd041413464a7da566278f282ff281"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/f8845fa433e8f9be47a732c73fc418e73d8ce9fd",
-                "reference": "f8845fa433e8f9be47a732c73fc418e73d8ce9fd",
+                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/3d1794a8bfcd041413464a7da566278f282ff281",
+                "reference": "3d1794a8bfcd041413464a7da566278f282ff281",
                 "shasum": ""
             },
             "require": {
@@ -310,9 +312,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/utils/issues",
-                "source": "https://github.com/jahidulpabelislam/utils/tree/v0.5.0"
+                "source": "https://github.com/jahidulpabelislam/utils/tree/v0.6.0"
             },
-            "time": "2023-01-28T23:15:45+00:00"
+            "time": "2023-02-07T22:00:50+00:00"
         }
     ],
     "packages-dev": [],
@@ -359,5 +361,5 @@
         "ext-pdo": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
