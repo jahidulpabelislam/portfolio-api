@@ -8,10 +8,10 @@ namespace App\Projects;
 
 use App\Core;
 use App\HTTP\AbstractCrudController;
-use App\HTTP\Response;
 use App\Projects\Entity\Image;
 use App\Projects\Entity\Project;
 use Exception;
+use JPI\HTTP\Response;
 
 class Controller extends AbstractCrudController {
 
@@ -53,7 +53,7 @@ class Controller extends AbstractCrudController {
      */
     private function uploadImage(Project $project, array $image): Response {
         if (strpos(mime_content_type($image["tmp_name"]), "image/") !== 0) {
-            return new Response(400, [
+            return Response::json(400, [
                 "error" => "File is not an image.",
             ]);
         }
@@ -81,7 +81,7 @@ class Controller extends AbstractCrudController {
             return $this->getInsertResponse($projectImage, new Image());
         }
 
-        return new Response(500, [
+        return Response::json(500, [
             "message" => "Sorry, there was an error uploading your image.",
         ]);
     }
@@ -129,7 +129,7 @@ class Controller extends AbstractCrudController {
                 return $this->getItemResponse($image, $imageId, new Image());
             }
 
-            $response = new Response(404, [
+            $response = Response::json(404, [
                 "message" => "No {$image::getDisplayName()} found identified by '$imageId' for Project: '$projectId'.",
             ]);
         }

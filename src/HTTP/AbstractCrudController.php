@@ -6,6 +6,7 @@ use App\Auth\GuardedControllerInterface;
 use App\Entity\API\AbstractEntity as AbstractAPIEntity;
 use App\Entity\API\InvalidDataException;
 use App\Entity\API\Responder as EntityResponder;
+use JPI\HTTP\Response;
 use JPI\ORM\Entity\PaginatedCollection;
 
 abstract class AbstractCrudController extends AbstractController implements GuardedControllerInterface {

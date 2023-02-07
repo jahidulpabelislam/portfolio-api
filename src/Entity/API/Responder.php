@@ -4,7 +4,7 @@ namespace App\Entity\API;
 
 use App\Core;
 use App\HTTP\Request;
-use App\HTTP\Response;
+use JPI\HTTP\Response;
 use JPI\ORM\Entity\Collection as EntityCollection;
 use JPI\ORM\Entity\PaginatedCollection as PaginatedEntityCollection;
 
@@ -46,7 +46,7 @@ trait Responder {
             $content["message"] = "No {$entityInstance::getPluralDisplayName()} found.";
         }
 
-        return (new Response(200, $content))
+        return (Response::json(200, $content))
             ->withCacheHeaders(Core::getDefaultCacheHeaders())
         ;
     }
@@ -68,7 +68,7 @@ trait Responder {
         // The items response is the base response, and the extra meta is added below
         $response = $this->getItemsResponse($collection, $entityInstance);
 
-        $content = $response->getContent();
+        $content = $response->getBody();
 
         $content = json_decode($content, true);
 
@@ -117,13 +117,13 @@ trait Responder {
             $content["_links"]["next_page"] = (string)$url;
         }
 
-        return $response->withContent(json_encode($content))
+        return $response->withJSON($content)
             ->withCacheHeaders(Core::getDefaultCacheHeaders())
         ;
     }
 
     private function getItemFoundResponse(AbstractEntity $entity): Response {
-        return new Response(200, [
+        return Response::json(200, [
             "data" => $entity->getAPIResponse(),
             "_links" => $entity->getAPILinks(),
         ]);
@@ -137,7 +137,7 @@ trait Responder {
     public function getItemNotFoundResponse($id, AbstractEntity $entityInstance = null): Response {
         $entityInstance = $entityInstance ?? $this->getEntityInstance();
 
-        return new Response(404, [
+        return Response::json(404, [
             "message" => "No {$entityInstance::getDisplayName()} identified by '$id' found.",
         ]);
     }
@@ -175,7 +175,7 @@ trait Responder {
             ;
         }
 
-        return new Response(500, [
+        return Response::json(500, [
             "message" => "Failed to insert the new {$entityInstance::getDisplayName()}.",
         ]);
     }
@@ -193,7 +193,7 @@ trait Responder {
             return $this->getItemFoundResponse($entity);
         }
 
-        return new Response(500, [
+        return Response::json(500, [
             "message" => "Failed to update the {$entityInstance::getDisplayName()} identified by '$id'.",
         ]);
     }
@@ -214,10 +214,10 @@ trait Responder {
         }
 
         if ($entity->isDeleted()) {
-            return new Response(204);
+            return Response::json(204);
         }
 
-        return new Response(500, [
+        return Response::json(500, [
             "message" => "Failed to delete the {$entityInstance::getDisplayName()} identified by '$id'.",
         ]);
     }

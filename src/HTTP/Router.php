@@ -12,6 +12,7 @@ use App\Core;
 use JPI\Utils\Collection;
 use Exception;
 use JPI\Utils\URL;
+use JPI\HTTP\Response;
 
 class Router {
 
@@ -138,16 +139,16 @@ class Router {
                 }
 
                 if ($method === "OPTIONS") {
-                    return new Response(200);
+                    return Response::json(200);
                 }
 
-                return new Response(405, [
+                return Response::json(405, [
                     "message" => "Method {$this->request->method} not allowed on " . $this->request->getURL() . ".",
                 ]);
             }
         }
 
-        return new Response(404, [
+        return Response::json(404, [
             "message" => "Unrecognised URI (" . $this->request->getURL() . ").",
         ]);
     }
@@ -181,7 +182,7 @@ class Router {
 
         $shouldBeURL = Core::get()->makeFullURL(implode("/", $shouldBeURIParts));
 
-        return new Response(404, [
+        return Response::json(404, [
             "message" => "Unrecognised API version. Current version is " . Core::VERSION . ", so please update requested URL to $shouldBeURL.",
         ]);
     }

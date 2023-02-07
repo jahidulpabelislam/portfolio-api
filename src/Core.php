@@ -8,11 +8,10 @@ namespace App;
 
 use App\Auth\Controller as AuthController;
 use App\HTTP\Request;
-use App\HTTP\Response;
 use App\HTTP\Router;
 use App\Projects\Controller as ProjectsController;
-use App\Utils\Str;
 use DateTime;
+use JPI\HTTP\Response;
 use JPI\Utils\Singleton;
 use JPI\Utils\URL;
 
@@ -141,15 +140,15 @@ class Core {
 
         $this->response = $this->getRouter()->performRequest();
 
-        if ($this->response->headers->get("ETag", "") === $request->headers->get("If-None-Match")) {
+        if ($this->response->getHeader("ETag") === $request->headers->get("If-None-Match")) {
             $this->response->withStatus(304)
-                ->withContent(null)
+                ->withBody(null)
             ;
         }
 
         $this->setCORSHeaders();
 
-        if (!is_null($this->response->getContent())) {
+        if (!is_null($this->response->getBody())) {
             $this->response->addHeader("Content-Type", "application/json");
         }
 
