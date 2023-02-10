@@ -3,7 +3,7 @@
 namespace App\Entity\API;
 
 use App\Core;
-use App\HTTP\Request;
+use JPI\HTTP\Request;
 use JPI\HTTP\Response;
 use JPI\ORM\Entity\Collection as EntityCollection;
 use JPI\ORM\Entity\PaginatedCollection as PaginatedEntityCollection;
@@ -63,7 +63,7 @@ trait Responder {
      * @return Response
      */
     public function getPaginatedItemsResponse(PaginatedEntityCollection $collection, AbstractEntity $entityInstance = null): Response {
-        $params = (clone $this->getRequest()->params)->toArray();
+        $params = $this->getRequest()->getQueryParams()->toArray();
 
         // The items response is the base response, and the extra meta is added below
         $response = $this->getItemsResponse($collection, $entityInstance);

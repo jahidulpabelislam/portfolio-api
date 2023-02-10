@@ -7,10 +7,10 @@
 namespace App;
 
 use App\Auth\Controller as AuthController;
-use App\HTTP\Request;
 use App\HTTP\Router;
 use App\Projects\Controller as ProjectsController;
 use DateTime;
+use JPI\HTTP\Request;
 use JPI\HTTP\Response;
 use JPI\Utils\Singleton;
 use JPI\Utils\URL;
@@ -52,7 +52,7 @@ class Core {
 
         $this->config = $config;
 
-        $this->request = new Request();
+        $this->request = Request::fromGlobals();
         $this->router = new Router($this->getRequest());
         $this->initRoutes();
     }
@@ -101,14 +101,14 @@ class Core {
         $request = $this->getRequest();
 
         return (new URL())
-            ->setScheme($request->server->get("HTTPS") === "on" ? "https" : "http")
-            ->setHost($request->server->get("SERVER_NAME"))
+            ->setScheme($request->getServerParams()->get("HTTPS") === "on" ? "https" : "http")
+            ->setHost($request->getServerParams()->get("SERVER_NAME"))
             ->setPath($uri)
         ;
     }
 
     private function setCORSHeaders(): void {
-        $origins = $this->getRequest()->headers->get("Origin");
+        $origins = $this->getRequest()->getHeader("Origin");
         $originURL = $origins[0] ?? "";
 
         // Strip the protocol from domain
@@ -140,7 +140,7 @@ class Core {
 
         $this->response = $this->getRouter()->performRequest();
 
-        if ($this->response->getHeader("ETag") === $request->headers->get("If-None-Match")) {
+        if ($this->response->getHeader("ETag") === $request->getHeader("If-None-Match")) {
             $this->response->withStatus(304)
                 ->withBody(null)
             ;

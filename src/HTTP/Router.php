@@ -154,7 +154,7 @@ class Router {
     }
 
     public function getMethodsForPath(): array {
-        $uri = $this->request->uri;
+        $uri = $this->request->getPath();
         foreach ($this->routes as $path => $routes) {
             $pathRegex = $this->pathToRegex($path);
             if (preg_match($pathRegex, $uri)) {
@@ -170,14 +170,14 @@ class Router {
      * else return appropriate response (array)
      */
     private function checkAPIVersion(): ?Response {
-        $version = $this->request->uriParts[0] ?? null;
+        $version = $this->request->getPathPart(0);
 
         $shouldBeVersionPart = "v" . Core::VERSION;
         if ($version === $shouldBeVersionPart) {
             return null;
         }
 
-        $shouldBeURIParts = $this->request->uriParts;
+        $shouldBeURIParts = $this->request->getPathParts();
         $shouldBeURIParts[0] = $shouldBeVersionPart;
 
         $shouldBeURL = Core::get()->makeFullURL(implode("/", $shouldBeURIParts));

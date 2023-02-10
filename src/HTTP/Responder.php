@@ -6,6 +6,7 @@
 
 namespace App\HTTP;
 
+use JPI\HTTP\Request;
 use JPI\HTTP\Response;
 
 trait Responder {
