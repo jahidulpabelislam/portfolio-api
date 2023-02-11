@@ -12,6 +12,7 @@ use App\Projects\Entity\Image;
 use App\Projects\Entity\Project;
 use Exception;
 use JPI\HTTP\Response;
+use JPI\HTTP\UploadedFile;
 
 class Controller extends AbstractCrudController {
 
@@ -47,18 +48,18 @@ class Controller extends AbstractCrudController {
      * Try and upload the added image
      *
      * @param $project Project The Project trying to upload image for
-     * @param $image array The uploaded image
+     * @param $file UploadedFile The uploaded file
      * @return Response
      * @throws Exception
      */
-    private function uploadImage(Project $project, array $image): Response {
-        if (strpos(mime_content_type($image["tmp_name"]), "image/") !== 0) {
+    private function uploadImage(Project $project, UploadedFile $file): Response {
+        if (strpos(mime_content_type($file->getTempName()), "image/") !== 0) {
             return Response::json(400, [
                 "error" => "File is not an image.",
             ]);
         }
 
-        $fileExt = pathinfo(basename($image["name"]), PATHINFO_EXTENSION);
+        $fileExt = pathinfo(basename($file->getFilename()), PATHINFO_EXTENSION);
 
         $parts = [
             preg_replace("/[^a-z0-9]+/", "-", strtolower($project->name)),
@@ -71,7 +72,7 @@ class Controller extends AbstractCrudController {
 
         $newPathFull = APP_ROOT . $newPath;
 
-        if (move_uploaded_file($image["tmp_name"], $newPathFull)) {
+        if ($file->saveTo($newPathFull)) {
             $projectImage = Image::insert([
                 "file" => $newPath,
                 "project_id" => $project->getId(),
@@ -94,7 +95,7 @@ class Controller extends AbstractCrudController {
      * @throws Exception
      */
     public function addImage($projectId): Response {
-        $files = $this->request->files;
+        $files = $this->request->getFiles();
         if (isset($files["image"])) {
             // Check the Project trying to add a Image for exists
             $project = $this->getEntityInstance()::getCrudService()->read($this->request);
