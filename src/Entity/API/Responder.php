@@ -6,6 +6,7 @@ use App\Core;
 use App\HTTP\Request;
 use App\HTTP\Response;
 use JPI\ORM\Entity\Collection as EntityCollection;
+use JPI\ORM\Entity\PaginatedCollection as PaginatedEntityCollection;
 
 trait Responder {
 
@@ -57,11 +58,11 @@ trait Responder {
      *
      * Use getItemsResponse function as the base response, then just adds additional meta data
      *
-     * @param $collection EntityCollection
+     * @param $collection PaginatedEntityCollection
      * @param $entityInstance AbstractEntity|null
      * @return Response
      */
-    public function getPaginatedItemsResponse(EntityCollection $collection, AbstractEntity $entityInstance = null): Response {
+    public function getPaginatedItemsResponse(PaginatedEntityCollection $collection, AbstractEntity $entityInstance = null): Response {
         $params = (clone $this->getRequest()->params)->toArray();
 
         // The items response is the base response, and the extra meta is added below
