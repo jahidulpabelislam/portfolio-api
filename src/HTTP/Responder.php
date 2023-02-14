@@ -6,20 +6,9 @@
 
 namespace App\HTTP;
 
-use JPI\HTTP\Request;
 use JPI\HTTP\Response;
 
 trait Responder {
-
-    protected $request;
-
-    public function __construct(Request $request) {
-        $this->request = $request;
-    }
-
-    public function getRequest(): Request {
-        return $this->request;
-    }
 
     /**
      * Response when user isn't logged in correctly

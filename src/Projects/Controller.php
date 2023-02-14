@@ -18,7 +18,7 @@ class Controller extends AbstractCrudController {
 
     protected $entityClass = Project::class;
 
-    protected $publicFunctions = [
+    protected $publicActions = [
         "index",
         "read",
         "getImages",
@@ -95,6 +95,10 @@ class Controller extends AbstractCrudController {
      * @throws Exception
      */
     public function addImage($projectId): Response {
+        if (!$this->getRequest()->getAttribute("is_authenticated")) {
+            return static::getNotAuthorisedResponse();
+        }
+
         $files = $this->request->getFiles();
         if (isset($files["image"])) {
             // Check the Project trying to add a Image for exists
@@ -149,6 +153,10 @@ class Controller extends AbstractCrudController {
      * @return Response
      */
     public function deleteImage($projectId, $imageId): Response {
+        if (!$this->getRequest()->getAttribute("is_authenticated")) {
+            return static::getNotAuthorisedResponse();
+        }
+
         // Check the Project of the Image trying to edit actually exists
         $project = $this->getEntityInstance()::getCrudService()->read($this->request);
         if (!$project) {

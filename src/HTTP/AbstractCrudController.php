@@ -9,16 +9,16 @@ use App\Entity\API\Responder as EntityResponder;
 use JPI\HTTP\Response;
 use JPI\ORM\Entity\PaginatedCollection;
 
-abstract class AbstractCrudController extends AbstractController implements GuardedControllerInterface {
+abstract class AbstractCrudController extends AbstractController {
 
     use EntityResponder;
 
-    protected $publicFunctions = [];
+    protected $publicActions = [];
 
     protected $entityClass = null;
 
-    public function getPublicFunctions(): array {
-        return $this->publicFunctions;
+    public function getPublicActions(): array {
+        return $this->publicActions;
     }
 
     public function getEntityInstance(): AbstractAPIEntity {
@@ -31,6 +31,13 @@ abstract class AbstractCrudController extends AbstractController implements Guar
      * @return Response
      */
     public function index(): Response {
+        if (
+            !in_array("index", $this->getPublicActions())
+            && !$this->getRequest()->getAttribute("is_authenticated")
+        ) {
+            return static::getNotAuthorisedResponse();
+        }
+
         $entities = $this->getEntityInstance()::getCrudService()->index($this->request);
 
         if ($entities instanceof PaginatedCollection) {
@@ -46,6 +53,13 @@ abstract class AbstractCrudController extends AbstractController implements Guar
      * @return Response
      */
     public function create(): Response {
+        if (
+            !in_array("create", $this->getPublicActions())
+            && !$this->getRequest()->getAttribute("is_authenticated")
+        ) {
+            return static::getNotAuthorisedResponse();
+        }
+
         try {
             $entity = $this->getEntityInstance()::getCrudService()->create($this->request);
         } catch (InvalidDataException $exception) {
@@ -62,6 +76,13 @@ abstract class AbstractCrudController extends AbstractController implements Guar
      * @return Response
      */
     public function read($id): Response {
+        if (
+            !in_array("read", $this->getPublicActions())
+            && !$this->getRequest()->getAttribute("is_authenticated")
+        ) {
+            return static::getNotAuthorisedResponse();
+        }
+
         $entity = $this->getEntityInstance()::getCrudService()->read($this->request);
         return $this->getItemResponse($entity, $id);
     }
@@ -73,6 +94,13 @@ abstract class AbstractCrudController extends AbstractController implements Guar
      * @return Response
      */
     public function update($id): Response {
+        if (
+            !in_array("update", $this->getPublicActions())
+            && !$this->getRequest()->getAttribute("is_authenticated")
+        ) {
+            return static::getNotAuthorisedResponse();
+        }
+
         try {
             $entity = $this->getEntityInstance()::getCrudService()->update($this->request);
         } catch (InvalidDataException $exception) {
@@ -89,6 +117,13 @@ abstract class AbstractCrudController extends AbstractController implements Guar
      * @return Response
      */
     public function delete($id): Response {
+        if (
+            !in_array("delete", $this->getPublicActions())
+            && !$this->getRequest()->getAttribute("is_authenticated")
+        ) {
+            return static::getNotAuthorisedResponse();
+        }
+
         $entity = $this->getEntityInstance()::getCrudService()->delete($this->request);
         return $this->getItemDeletedResponse($entity, $id);
     }
