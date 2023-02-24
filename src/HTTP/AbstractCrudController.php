@@ -31,14 +31,16 @@ abstract class AbstractCrudController extends AbstractController {
      * @return Response
      */
     public function index(): Response {
+        $request = $this->getRequest();
+
         if (
             !in_array("index", $this->getPublicActions())
-            && !$this->getRequest()->getAttribute("is_authenticated")
+            && !$request->getAttribute("is_authenticated")
         ) {
             return static::getNotAuthorisedResponse();
         }
 
-        $entities = $this->getEntityInstance()::getCrudService()->index($this->request);
+        $entities = $this->getEntityInstance()::getCrudService()->index($request);
 
         if ($entities instanceof PaginatedCollection) {
             return $this->getPaginatedItemsResponse($entities);
@@ -53,15 +55,17 @@ abstract class AbstractCrudController extends AbstractController {
      * @return Response
      */
     public function create(): Response {
+        $request = $this->getRequest();
+
         if (
             !in_array("create", $this->getPublicActions())
-            && !$this->getRequest()->getAttribute("is_authenticated")
+            && !$request->getAttribute("is_authenticated")
         ) {
             return static::getNotAuthorisedResponse();
         }
 
         try {
-            $entity = $this->getEntityInstance()::getCrudService()->create($this->request);
+            $entity = $this->getEntityInstance()::getCrudService()->create($request);
         } catch (InvalidDataException $exception) {
             return $this->getInvalidInputResponse($exception->getErrors());
         }
@@ -76,14 +80,16 @@ abstract class AbstractCrudController extends AbstractController {
      * @return Response
      */
     public function read($id): Response {
+        $request = $this->getRequest();
+
         if (
             !in_array("read", $this->getPublicActions())
-            && !$this->getRequest()->getAttribute("is_authenticated")
+            && !$request->getAttribute("is_authenticated")
         ) {
             return static::getNotAuthorisedResponse();
         }
 
-        $entity = $this->getEntityInstance()::getCrudService()->read($this->request);
+        $entity = $this->getEntityInstance()::getCrudService()->read($request);
         return $this->getItemResponse($entity, $id);
     }
 
@@ -94,15 +100,17 @@ abstract class AbstractCrudController extends AbstractController {
      * @return Response
      */
     public function update($id): Response {
+        $request = $this->getRequest();
+
         if (
             !in_array("update", $this->getPublicActions())
-            && !$this->getRequest()->getAttribute("is_authenticated")
+            && !$request->getAttribute("is_authenticated")
         ) {
             return static::getNotAuthorisedResponse();
         }
 
         try {
-            $entity = $this->getEntityInstance()::getCrudService()->update($this->request);
+            $entity = $this->getEntityInstance()::getCrudService()->update($request);
         } catch (InvalidDataException $exception) {
             return $this->getInvalidInputResponse($exception->getErrors());
         }
@@ -117,14 +125,16 @@ abstract class AbstractCrudController extends AbstractController {
      * @return Response
      */
     public function delete($id): Response {
+        $request = $this->getRequest();
+
         if (
             !in_array("delete", $this->getPublicActions())
-            && !$this->getRequest()->getAttribute("is_authenticated")
+            && !$request->getAttribute("is_authenticated")
         ) {
             return static::getNotAuthorisedResponse();
         }
 
-        $entity = $this->getEntityInstance()::getCrudService()->delete($this->request);
+        $entity = $this->getEntityInstance()::getCrudService()->delete($request);
         return $this->getItemDeletedResponse($entity, $id);
     }
 }

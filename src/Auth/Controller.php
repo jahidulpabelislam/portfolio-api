@@ -20,12 +20,12 @@ class Controller extends AbstractController {
      * @return Response
      */
     public function login(): Response {
-        $errors = AuthManager::getErrors($this->request);
+        $errors = AuthManager::getErrors($this->getRequest());
         if ($errors) {
             return $this->getInvalidInputResponse($errors);
         }
 
-        $jwt = AuthManager::login($this->request);
+        $jwt = AuthManager::login($this->getRequest());
         if ($jwt) {
             return Response::json(200, [
                 "data" => $jwt,
@@ -43,7 +43,7 @@ class Controller extends AbstractController {
      * @return Response
      */
     public function logout(): Response {
-        if (AuthManager::logout($this->request)) {
+        if (AuthManager::logout($this->getRequest())) {
             return Response::json(204, [
                 "message" => "Successfully logged out.",
             ]);
@@ -61,7 +61,7 @@ class Controller extends AbstractController {
      */
     public function status(): Response {
         return Response::json(200, [
-            "data" => AuthManager::isLoggedIn($this->request),
+            "data" => AuthManager::isLoggedIn($this->getRequest()),
         ]);
     }
 }

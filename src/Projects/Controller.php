@@ -33,7 +33,7 @@ class Controller extends AbstractCrudController {
      */
     public function getImages($projectId): Response {
         // Check the Project trying to get Images for exists
-        $project = $this->getEntityInstance()::getCrudService()->read($this->request);
+        $project = $this->getEntityInstance()::getCrudService()->read($this->getRequest());
         if ($project) {
             $project->loadImages();
             return $this->getItemsResponse($project->images, new Image());
@@ -95,14 +95,16 @@ class Controller extends AbstractCrudController {
      * @throws Exception
      */
     public function addImage($projectId): Response {
-        if (!$this->getRequest()->getAttribute("is_authenticated")) {
+        $request = $this->getRequest();
+
+        if (!$request->getAttribute("is_authenticated")) {
             return static::getNotAuthorisedResponse();
         }
 
-        $files = $this->request->getFiles();
+        $files = $request->getFiles();
         if (isset($files["image"])) {
             // Check the Project trying to add a Image for exists
-            $project = $this->getEntityInstance()::getCrudService()->read($this->request);
+            $project = $this->getEntityInstance()::getCrudService()->read($request);
             if ($project) {
                 return $this->uploadImage($project, $files["image"]);
             }
@@ -123,10 +125,12 @@ class Controller extends AbstractCrudController {
      * @return Response
      */
     public function getImage($projectId, $imageId): Response {
+        $request = $this->getRequest();
+
         // Check the Project trying to get Image for exists
-        $project = $this->getEntityInstance()::getCrudService()->read($this->request);
+        $project = $this->getEntityInstance()::getCrudService()->read($request);
         if ($project) {
-            $image = Image::getCrudService()->read($this->request);
+            $image = Image::getCrudService()->read($request);
 
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
@@ -153,17 +157,19 @@ class Controller extends AbstractCrudController {
      * @return Response
      */
     public function deleteImage($projectId, $imageId): Response {
-        if (!$this->getRequest()->getAttribute("is_authenticated")) {
+        $request = $this->getRequest();
+
+        if (!$request->getAttribute("is_authenticated")) {
             return static::getNotAuthorisedResponse();
         }
 
         // Check the Project of the Image trying to edit actually exists
-        $project = $this->getEntityInstance()::getCrudService()->read($this->request);
+        $project = $this->getEntityInstance()::getCrudService()->read($request);
         if (!$project) {
             return $this->getItemNotFoundResponse($projectId);
         }
 
-        $image = Image::getCrudService()->delete($this->request);
+        $image = Image::getCrudService()->delete($request);
         return $this->getItemDeletedResponse($image, $imageId, new Image());
     }
 }
