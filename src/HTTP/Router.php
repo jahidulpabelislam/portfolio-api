@@ -16,14 +16,16 @@ class Router extends PackageRouter {
     }
 
     public function getMethodsForPath(): array {
-        $path = $this->request->getPath();
-        foreach ($this->routes as $routePath => $routes) {
-            $pathRegex = $this->pathToRegex($routePath);
-            if (preg_match($pathRegex, $path)) {
-                return array_keys($routes);
+        $path = $this->getRequest()->getPath();
+
+        $methods = [];
+
+        foreach ($this->routes as $route) {
+            if (preg_match($route->getRegex(), $path)) {
+                $methods[$route->getMethod()] = true;
             }
         }
 
-        return [];
+        return array_keys($methods);
     }
 }
