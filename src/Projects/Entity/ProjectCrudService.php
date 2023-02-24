@@ -22,8 +22,8 @@ class ProjectCrudService extends BaseService {
     protected function getEntityFromRequest(Request $request): ?Project {
         $where = ["id = :id"];
 
-        $identifiers = $request->getAttribute("identifiers");
-        $id = $identifiers["projectId"] ?? $identifiers["id"];
+        $routeParams = $request->getAttribute("route_params");
+        $id = $routeParams["projectId"] ?? $routeParams["id"];
         $params = ["id" => $id];
         if (!AuthManager::isLoggedIn($request)) {
             $where[] = "status = :status";

@@ -29,7 +29,7 @@ class CrudService {
     }
 
     protected function getEntityFromRequest(Request $request): ?AbstractEntity  {
-        return $this->getEntityInstance()::getById($request->getAttribute("identifiers")["id"]);
+        return $this->getEntityInstance()::getById($request->getAttribute("route_params")["id"]);
     }
 
     public function index(Request $request): EntityCollection {
