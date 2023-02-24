@@ -32,14 +32,15 @@ class Controller extends AbstractCrudController {
      * @return Response
      */
     public function getImages($projectId): Response {
+        $request = $this->getRequest();
         // Check the Project trying to get Images for exists
-        $project = $this->getEntityInstance()::getCrudService()->read($this->getRequest());
+        $project = $this->getEntityInstance()::getCrudService()->read($request);
         if ($project) {
             $project->loadImages();
-            return $this->getItemsResponse($project->images, new Image());
+            return $this->getItemsResponse($request, $project->images, new Image());
         }
 
-        return $this->getItemNotFoundResponse($projectId)
+        return $this->getItemNotFoundResponse($request, $projectId)
             ->withCacheHeaders(Core::getDefaultCacheHeaders())
         ;
     }
@@ -79,7 +80,7 @@ class Controller extends AbstractCrudController {
                 "position" => 999, // High enough number
             ]);
             $projectImage->reload();
-            return $this->getInsertResponse($projectImage, new Image());
+            return $this->getInsertResponse($this->getRequest(), $projectImage, new Image());
         }
 
         return Response::json(500, [
@@ -109,7 +110,7 @@ class Controller extends AbstractCrudController {
                 return $this->uploadImage($project, $files["image"]);
             }
 
-            return $this->getItemNotFoundResponse($projectId);
+            return $this->getItemNotFoundResponse($request, $projectId);
         }
 
         return $this->getInvalidInputResponse([
@@ -135,7 +136,7 @@ class Controller extends AbstractCrudController {
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
             if (!$image || $image->project_id === $projectId) {
-                return $this->getItemResponse($image, $imageId, new Image());
+                return $this->getItemResponse($request, $image, $imageId, new Image());
             }
 
             $response = Response::json(404, [
@@ -143,7 +144,7 @@ class Controller extends AbstractCrudController {
             ]);
         }
         else {
-            $response = $this->getItemNotFoundResponse($projectId);
+            $response = $this->getItemNotFoundResponse($request, $projectId);
         }
 
         return $response->withCacheHeaders(Core::getDefaultCacheHeaders());
@@ -166,10 +167,10 @@ class Controller extends AbstractCrudController {
         // Check the Project of the Image trying to edit actually exists
         $project = $this->getEntityInstance()::getCrudService()->read($request);
         if (!$project) {
-            return $this->getItemNotFoundResponse($projectId);
+            return $this->getItemNotFoundResponse($request, $projectId);
         }
 
         $image = Image::getCrudService()->delete($request);
-        return $this->getItemDeletedResponse($image, $imageId, new Image());
+        return $this->getItemDeletedResponse($request, $image, $imageId, new Image());
     }
 }

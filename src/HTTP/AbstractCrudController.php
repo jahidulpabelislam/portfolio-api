@@ -2,7 +2,6 @@
 
 namespace App\HTTP;
 
-use App\Auth\GuardedControllerInterface;
 use App\Entity\API\AbstractEntity as AbstractAPIEntity;
 use App\Entity\API\InvalidDataException;
 use App\Entity\API\Responder as EntityResponder;
@@ -43,17 +42,12 @@ abstract class AbstractCrudController extends AbstractController {
         $entities = $this->getEntityInstance()::getCrudService()->index($request);
 
         if ($entities instanceof PaginatedCollection) {
-            return $this->getPaginatedItemsResponse($entities);
+            return $this->getPaginatedItemsResponse($request, $entities);
         }
 
-        return $this->getItemsResponse($entities);
+        return $this->getItemsResponse($request, $entities);
     }
 
-    /**
-     * Try and create/add a new entity.
-     *
-     * @return Response
-     */
     public function create(): Response {
         $request = $this->getRequest();
 
@@ -70,15 +64,9 @@ abstract class AbstractCrudController extends AbstractController {
             return $this->getInvalidInputResponse($exception->getErrors());
         }
 
-        return $this->getInsertResponse($entity);
+        return $this->getInsertResponse($request, $entity);
     }
 
-    /**
-     * Get a particular entity.
-     *
-     * @param $id int|string The Id of the entity to get
-     * @return Response
-     */
     public function read($id): Response {
         $request = $this->getRequest();
 
@@ -90,15 +78,9 @@ abstract class AbstractCrudController extends AbstractController {
         }
 
         $entity = $this->getEntityInstance()::getCrudService()->read($request);
-        return $this->getItemResponse($entity, $id);
+        return $this->getItemResponse($request, $entity, $id);
     }
 
-    /**
-     * Try to update the entity.
-     *
-     * @param $id int|string The Id of the entity to update
-     * @return Response
-     */
     public function update($id): Response {
         $request = $this->getRequest();
 
@@ -115,15 +97,9 @@ abstract class AbstractCrudController extends AbstractController {
             return $this->getInvalidInputResponse($exception->getErrors());
         }
 
-        return $this->getUpdateResponse($entity, $id);
+        return $this->getUpdateResponse($request, $entity, $id);
     }
 
-    /**
-     * Try to delete the entity.
-     *
-     * @param $id int|string The Id of the entity to delete
-     * @return Response
-     */
     public function delete($id): Response {
         $request = $this->getRequest();
 
@@ -135,6 +111,6 @@ abstract class AbstractCrudController extends AbstractController {
         }
 
         $entity = $this->getEntityInstance()::getCrudService()->delete($request);
-        return $this->getItemDeletedResponse($entity, $id);
+        return $this->getItemDeletedResponse($request, $entity, $id);
     }
 }

@@ -10,8 +10,6 @@ use JPI\ORM\Entity\PaginatedCollection as PaginatedEntityCollection;
 
 trait Responder {
 
-    abstract public function getRequest(): Request;
-
     abstract public function getEntityInstance(): AbstractEntity;
 
     /**
@@ -23,7 +21,11 @@ trait Responder {
      * @param $entityInstance AbstractEntity|null
      * @return Response
      */
-    public function getItemsResponse(EntityCollection $entities, AbstractEntity $entityInstance = null): Response {
+    public function getItemsResponse(
+        Request $request,
+        EntityCollection $entities,
+        AbstractEntity $entityInstance = null
+    ): Response {
         $entityInstance = $entityInstance ?? $this->getEntityInstance();
 
         $count = count($entities);
@@ -38,7 +40,7 @@ trait Responder {
         $content = [
             "data" => $data,
             "_links" => [
-                "self" => (string)$this->getRequest()->getURL(),
+                "self" => (string)$request->getURL(),
             ],
         ];
 
@@ -46,7 +48,7 @@ trait Responder {
             $content["message"] = "No {$entityInstance::getPluralDisplayName()} found.";
         }
 
-        return (Response::json(200, $content))
+        return Response::json(200, $content)
             ->withCacheHeaders(Core::getDefaultCacheHeaders())
         ;
     }
@@ -62,11 +64,15 @@ trait Responder {
      * @param $entityInstance AbstractEntity|null
      * @return Response
      */
-    public function getPaginatedItemsResponse(PaginatedEntityCollection $collection, AbstractEntity $entityInstance = null): Response {
-        $params = $this->getRequest()->getQueryParams()->toArray();
+    public function getPaginatedItemsResponse(
+        Request $request,
+        PaginatedEntityCollection $collection,
+        AbstractEntity $entityInstance = null
+    ): Response {
+        $params = $request->getQueryParams()->toArray();
 
         // The items response is the base response, and the extra meta is added below
-        $response = $this->getItemsResponse($collection, $entityInstance);
+        $response = $this->getItemsResponse($request, $collection, $entityInstance);
 
         $content = $response->getBody();
 
@@ -83,7 +89,7 @@ trait Responder {
         $lastPage = ceil($totalCount / $limit);
         $content["_total_pages"] = $lastPage;
 
-        $url = $this->getRequest()->getURL();
+        $url = $request->getURL();
 
         // Always update to the used value if param was passed (incase it was different)
         if (isset($params["limit"])) {
@@ -122,7 +128,7 @@ trait Responder {
         ;
     }
 
-    private function getItemFoundResponse(AbstractEntity $entity): Response {
+    private function getItemFoundResponse(Request $request, AbstractEntity $entity): Response {
         return Response::json(200, [
             "data" => $entity->getAPIResponse(),
             "_links" => $entity->getAPILinks(),
@@ -134,8 +140,14 @@ trait Responder {
      * @param $entityInstance AbstractEntity|null
      * @return Response
      */
-    public function getItemNotFoundResponse($id, AbstractEntity $entityInstance = null): Response {
+    public function getItemNotFoundResponse(
+        Request $request,
+        $id = null,
+        AbstractEntity $entityInstance = null
+    ): Response {
         $entityInstance = $entityInstance ?? $this->getEntityInstance();
+
+        $id = $id ?? $request->getAttribute("route_params")["id"];
 
         return Response::json(404, [
             "message" => "No {$entityInstance::getDisplayName()} identified by '$id' found.",
@@ -152,24 +164,35 @@ trait Responder {
      * @param $entityInstance AbstractEntity|null
      * @return Response
      */
-    public function getItemResponse(?AbstractEntity $entity, $id, AbstractEntity $entityInstance = null): Response {
+    public function getItemResponse(
+        Request $request,
+        ?AbstractEntity $entity,
+        $id = null,
+        AbstractEntity $entityInstance = null
+    ): Response {
         $entityInstance = $entityInstance ?? $this->getEntityInstance();
 
+        $id = $id ?? $request->getAttribute("route_params")["id"];
+
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
-            $response = $this->getItemFoundResponse($entity);
+            $response = $this->getItemFoundResponse($request, $entity);
         }
         else {
-            $response = $this->getItemNotFoundResponse($id, $entityInstance);
+            $response = $this->getItemNotFoundResponse($request, $id, $entityInstance);
         }
 
         return $response->withCacheHeaders(Core::getDefaultCacheHeaders());
     }
 
-    public function getInsertResponse(?AbstractEntity $entity, AbstractEntity $entityInstance = null): Response {
+    public function getInsertResponse(
+        Request $request,
+        ?AbstractEntity $entity,
+        AbstractEntity $entityInstance = null
+    ): Response {
         $entityInstance = $entityInstance ?? $this->getEntityInstance();
 
         if ($entity && $entity->isLoaded()) {
-            return $this->getItemFoundResponse($entity)
+            return $this->getItemFoundResponse($request, $entity)
                 ->withStatus(201)
                 ->withHeader("Location", (string)$entity->getAPIURL())
             ;
@@ -186,11 +209,18 @@ trait Responder {
      * @param $entityInstance AbstractEntity|null
      * @return Response
      */
-    public function getUpdateResponse(?AbstractEntity $entity, $id, AbstractEntity $entityInstance = null): Response {
+    public function getUpdateResponse(
+        Request $request,
+        ?AbstractEntity $entity,
+        $id = null,
+        AbstractEntity $entityInstance = null
+    ): Response {
         $entityInstance = $entityInstance ?? $this->getEntityInstance();
 
+        $id = $id ?? $request->getAttribute("route_params")["id"];
+
         if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
-            return $this->getItemFoundResponse($entity);
+            return $this->getItemFoundResponse($request, $entity);
         }
 
         return Response::json(500, [
@@ -206,11 +236,18 @@ trait Responder {
      * @param $entityInstance AbstractEntity|null
      * @return Response
      */
-    public function getItemDeletedResponse(?AbstractEntity $entity, $id, AbstractEntity $entityInstance = null): Response {
+    public function getItemDeletedResponse(
+        Request $request,
+        ?AbstractEntity $entity,
+        $id = null,
+        AbstractEntity $entityInstance = null
+    ): Response {
         $entityInstance = $entityInstance ?? $this->getEntityInstance();
 
+        $id = $id ?? $request->getAttribute("route_params")["id"];
+
         if (!$id || !$entity || !$entity->isLoaded() || $entity->getId() != $id) {
-            return $this->getItemNotFoundResponse($id, $entityInstance);
+            return $this->getItemNotFoundResponse($request, $id, $entityInstance);
         }
 
         if ($entity->isDeleted()) {
