@@ -2,19 +2,11 @@
 
 namespace App\HTTP;
 
-use JPI\HTTP\Request;
+use JPI\HTTP\RequestAwareTrait;
 
 abstract class AbstractController {
 
     use Responder;
 
-    protected $request;
-
-    public function __construct(Request $request) {
-        $this->request = $request;
-    }
-
-    public function getRequest(): Request {
-        return $this->request;
-    }
+    use RequestAwareTrait;
 }
