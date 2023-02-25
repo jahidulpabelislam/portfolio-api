@@ -36,6 +36,17 @@ class Core extends App {
     protected $router;
 
     protected function __construct() {
+        $this->initConfig();
+        $this->initRoutes();
+
+        $this->middlewares = [
+            new AuthMiddleware(),
+            new CORSMiddleware(),
+            new VersionCheckMiddleware(),
+        ];
+    }
+
+    public function initConfig(): void {
         $config = new Config();
 
         include_once __DIR__ . "/../config.php";
@@ -45,7 +56,13 @@ class Core extends App {
         }
 
         $this->config = $config;
+    }
 
+    public function getConfig(): Config {
+        return $this->config;
+    }
+
+    private function initRoutes(): void {
         $this->router = new Router(
             Request::fromGlobals(),
             function (Request $request) {
@@ -59,20 +76,7 @@ class Core extends App {
                 ]);
             }
         );
-        $this->initRoutes();
 
-        $this->middlewares = [
-            new AuthMiddleware(),
-            new CORSMiddleware(),
-            new VersionCheckMiddleware(),
-        ];
-    }
-
-    public function getConfig(): Config {
-        return $this->config;
-    }
-
-    private function initRoutes(): void {
         $projectsController = ProjectsController::class;
         $authController = AuthController::class;
 
