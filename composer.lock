@@ -119,15 +119,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/http.git",
-                "reference": "fa54e8ef6efb356af2b05ce7e3bcfcd39da1e80f"
+                "reference": "24b9e760a18f2715f75c77d2c9355c29260a458a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/http/zipball/fa54e8ef6efb356af2b05ce7e3bcfcd39da1e80f",
-                "reference": "fa54e8ef6efb356af2b05ce7e3bcfcd39da1e80f",
+                "url": "https://api.github.com/repos/jahidulpabelislam/http/zipball/24b9e760a18f2715f75c77d2c9355c29260a458a",
+                "reference": "24b9e760a18f2715f75c77d2c9355c29260a458a",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
                 "jpi/utils": "^0.6",
                 "php": "^7.4 || ^8.0"
             },
@@ -158,7 +159,7 @@
                 "source": "https://github.com/jahidulpabelislam/http/tree/1.x",
                 "issues": "https://github.com/jahidulpabelislam/http/issues"
             },
-            "time": "2023-02-25T17:59:33+00:00"
+            "time": "2023-02-25T22:25:42+00:00"
         },
         {
             "name": "jpi/orm",

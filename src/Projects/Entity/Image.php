@@ -56,7 +56,7 @@ class Image extends AbstractAPIEntity {
     }
 
     public function getAPIURL(): URL {
-        return Core::get()->getRouter()->makeUrl(
+        return Core::get()->getRouter()->getURLForRoute(
             "projectImage",
             [
                 "id" => $this->getId(),
@@ -68,7 +68,7 @@ class Image extends AbstractAPIEntity {
     public function getAPIResponse(): array {
         $response = parent::getAPIResponse();
 
-        $response["url"] = (string)Core::get()->makeFullURL($response["file"]);
+        $response["url"] = (string)Core::get()->getRequest()->makeURL($response["file"]);
         unset($response["file"]);
 
         return $response;

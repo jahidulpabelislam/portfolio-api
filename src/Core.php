@@ -102,14 +102,6 @@ class Core extends App {
         return $this->router;
     }
 
-    public function makeFullURL(string $path): URL {
-        $request = $this->getRequest();
-
-        $url = $request->getURL();
-        $url->setPath($path);
-        return $url;
-    }
-
     public static function getDefaultCacheHeaders(): array {
         $secondsToCache = 2678400; // 31 days
 
