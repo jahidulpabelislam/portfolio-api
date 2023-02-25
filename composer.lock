@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac5e09bd5c74d0d54ffc7e389084ef7c",
+    "content-hash": "b7c671bf305f4a6ea0ea4c31006fcf94",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -269,16 +269,16 @@
         },
         {
             "name": "jpi/utils",
-            "version": "dev-feature/collection-clone",
+            "version": "0.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/utils.git",
-                "reference": "e27d36d20b8963d3c4037c36a3b3a7fff963ce7d"
+                "reference": "e03f9d22fffdc78da6126953978d0b52431f287f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/e27d36d20b8963d3c4037c36a3b3a7fff963ce7d",
-                "reference": "e27d36d20b8963d3c4037c36a3b3a7fff963ce7d",
+                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/e03f9d22fffdc78da6126953978d0b52431f287f",
+                "reference": "e03f9d22fffdc78da6126953978d0b52431f287f",
                 "shasum": ""
             },
             "require": {
@@ -287,6 +287,7 @@
             "require-dev": {
                 "jpi/codestyles": "^1.0.1"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -314,9 +315,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/utils/issues",
-                "source": "https://github.com/jahidulpabelislam/utils/tree/feature/collection-clone"
+                "source": "https://github.com/jahidulpabelislam/utils/tree/v0.6.1"
             },
-            "time": "2023-02-24T23:44:09+00:00"
+            "time": "2023-02-25T21:18:30+00:00"
         }
     ],
     "packages-dev": [],
@@ -341,7 +342,7 @@
         },
         {
             "package": "jpi/utils",
-            "version": "dev-feature/collection-clone",
+            "version": "0.9999999.9999999.9999999-dev",
             "alias": "0.6",
             "alias_normalized": "0.6.0.0"
         }
