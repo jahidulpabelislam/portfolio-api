@@ -8,16 +8,17 @@ namespace App\Projects;
 
 use App\Core;
 use App\HTTP\AbstractCrudController;
-use App\HTTP\Response;
 use App\Projects\Entity\Image;
 use App\Projects\Entity\Project;
 use Exception;
+use JPI\HTTP\Response;
+use JPI\HTTP\UploadedFile;
 
 class Controller extends AbstractCrudController {
 
     protected $entityClass = Project::class;
 
-    protected $publicFunctions = [
+    protected $publicActions = [
         "index",
         "read",
         "getImages",
@@ -31,14 +32,15 @@ class Controller extends AbstractCrudController {
      * @return Response
      */
     public function getImages($projectId): Response {
+        $request = $this->getRequest();
         // Check the Project trying to get Images for exists
-        $project = $this->getEntityInstance()::getCrudService()->read($this->request);
+        $project = $this->getEntityInstance()::getCrudService()->read($request);
         if ($project) {
             $project->loadImages();
-            return $this->getItemsResponse($project->images, new Image());
+            return $this->getItemsResponse($request, $project->images, new Image());
         }
 
-        return $this->getItemNotFoundResponse($projectId)
+        return $this->getItemNotFoundResponse($request, $projectId)
             ->withCacheHeaders(Core::getDefaultCacheHeaders())
         ;
     }
@@ -47,18 +49,18 @@ class Controller extends AbstractCrudController {
      * Try and upload the added image
      *
      * @param $project Project The Project trying to upload image for
-     * @param $image array The uploaded image
+     * @param $file UploadedFile The uploaded file
      * @return Response
      * @throws Exception
      */
-    private function uploadImage(Project $project, array $image): Response {
-        if (strpos(mime_content_type($image["tmp_name"]), "image/") !== 0) {
-            return new Response(400, [
+    private function uploadImage(Project $project, UploadedFile $file): Response {
+        if (strpos(mime_content_type($file->getTempName()), "image/") !== 0) {
+            return Response::json(400, [
                 "error" => "File is not an image.",
             ]);
         }
 
-        $fileExt = pathinfo(basename($image["name"]), PATHINFO_EXTENSION);
+        $fileExt = pathinfo(basename($file->getFilename()), PATHINFO_EXTENSION);
 
         $parts = [
             preg_replace("/[^a-z0-9]+/", "-", strtolower($project->name)),
@@ -71,17 +73,17 @@ class Controller extends AbstractCrudController {
 
         $newPathFull = APP_ROOT . $newPath;
 
-        if (move_uploaded_file($image["tmp_name"], $newPathFull)) {
+        if ($file->saveTo($newPathFull)) {
             $projectImage = Image::insert([
                 "file" => $newPath,
                 "project_id" => $project->getId(),
                 "position" => 999, // High enough number
             ]);
             $projectImage->reload();
-            return $this->getInsertResponse($projectImage, new Image());
+            return $this->getInsertResponse($this->getRequest(), $projectImage, new Image());
         }
 
-        return new Response(500, [
+        return Response::json(500, [
             "message" => "Sorry, there was an error uploading your image.",
         ]);
     }
@@ -94,15 +96,21 @@ class Controller extends AbstractCrudController {
      * @throws Exception
      */
     public function addImage($projectId): Response {
-        $files = $this->request->files;
+        $request = $this->getRequest();
+
+        if (!$request->getAttribute("is_authenticated")) {
+            return static::getNotAuthorisedResponse();
+        }
+
+        $files = $request->getFiles();
         if (isset($files["image"])) {
             // Check the Project trying to add a Image for exists
-            $project = $this->getEntityInstance()::getCrudService()->read($this->request);
+            $project = $this->getEntityInstance()::getCrudService()->read($request);
             if ($project) {
                 return $this->uploadImage($project, $files["image"]);
             }
 
-            return $this->getItemNotFoundResponse($projectId);
+            return $this->getItemNotFoundResponse($request, $projectId);
         }
 
         return $this->getInvalidInputResponse([
@@ -118,23 +126,25 @@ class Controller extends AbstractCrudController {
      * @return Response
      */
     public function getImage($projectId, $imageId): Response {
+        $request = $this->getRequest();
+
         // Check the Project trying to get Image for exists
-        $project = $this->getEntityInstance()::getCrudService()->read($this->request);
+        $project = $this->getEntityInstance()::getCrudService()->read($request);
         if ($project) {
-            $image = Image::getCrudService()->read($this->request);
+            $image = Image::getCrudService()->read($request);
 
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
             if (!$image || $image->project_id === $projectId) {
-                return $this->getItemResponse($image, $imageId, new Image());
+                return $this->getItemResponse($request, $image, $imageId, new Image());
             }
 
-            $response = new Response(404, [
+            $response = Response::json(404, [
                 "message" => "No {$image::getDisplayName()} found identified by '$imageId' for Project: '$projectId'.",
             ]);
         }
         else {
-            $response = $this->getItemNotFoundResponse($projectId);
+            $response = $this->getItemNotFoundResponse($request, $projectId);
         }
 
         return $response->withCacheHeaders(Core::getDefaultCacheHeaders());
@@ -148,13 +158,19 @@ class Controller extends AbstractCrudController {
      * @return Response
      */
     public function deleteImage($projectId, $imageId): Response {
-        // Check the Project of the Image trying to edit actually exists
-        $project = $this->getEntityInstance()::getCrudService()->read($this->request);
-        if (!$project) {
-            return $this->getItemNotFoundResponse($projectId);
+        $request = $this->getRequest();
+
+        if (!$request->getAttribute("is_authenticated")) {
+            return static::getNotAuthorisedResponse();
         }
 
-        $image = Image::getCrudService()->delete($this->request);
-        return $this->getItemDeletedResponse($image, $imageId, new Image());
+        // Check the Project of the Image trying to edit actually exists
+        $project = $this->getEntityInstance()::getCrudService()->read($request);
+        if (!$project) {
+            return $this->getItemNotFoundResponse($request, $projectId);
+        }
+
+        $image = Image::getCrudService()->delete($request);
+        return $this->getItemDeletedResponse($request, $image, $imageId, new Image());
     }
 }

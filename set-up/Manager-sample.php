@@ -7,9 +7,9 @@
 namespace App\Auth;
 
 use App\Core;
-use App\HTTP\Request;
 use Exception;
 use Firebase\JWT\JWT;
+use JPI\HTTP\Request;
 
 class Manager extends AbstractManager {
 
@@ -51,8 +51,7 @@ class Manager extends AbstractManager {
         // SAMPLE!!
         // TODO: Actually do the check of logged in status (e.g check against stored cookie, session or database etc.)
 
-        $auth = $request->headers->get("Authorization", []);
-        [$jwt] = sscanf($auth[0] ?? "", "Bearer %s");
+        [$jwt] = sscanf($request->getHeaderString("Authorization"), "Bearer %s");
 
         if (!empty($jwt)) {
             try {

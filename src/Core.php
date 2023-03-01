@@ -7,16 +7,19 @@
 namespace App;
 
 use App\Auth\Controller as AuthController;
-use App\HTTP\Request;
-use App\HTTP\Response;
+use App\Auth\Middleware as AuthMiddleware;
+use App\HTTP\CORSMiddleware;
+use App\HTTP\VersionCheckMiddleware;
 use App\HTTP\Router;
 use App\Projects\Controller as ProjectsController;
-use App\Utils\Str;
 use DateTime;
+use JPI\HTTP\App;
+use JPI\HTTP\Request;
+use JPI\HTTP\Response;
 use JPI\Utils\Singleton;
 use JPI\Utils\URL;
 
-class Core {
+class Core extends App {
 
     use Singleton;
 
@@ -28,21 +31,22 @@ class Core {
     protected $config;
 
     /**
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * @var Response|null
-     */
-    protected $response = null;
-
-    /**
      * @var Router
      */
     protected $router;
 
     protected function __construct() {
+        $this->initConfig();
+        $this->initRoutes();
+
+        $this->middlewares = [
+            new AuthMiddleware(),
+            new CORSMiddleware(),
+            new VersionCheckMiddleware(),
+        ];
+    }
+
+    public function initConfig(): void {
         $config = new Config();
 
         include_once __DIR__ . "/../config.php";
@@ -52,77 +56,50 @@ class Core {
         }
 
         $this->config = $config;
-
-        $this->request = new Request();
-        $this->router = new Router($this->getRequest());
-        $this->initRoutes();
     }
 
     public function getConfig(): Config {
         return $this->config;
     }
 
-    public function getRequest(): Request {
-        return $this->request;
-    }
-
     private function initRoutes(): void {
-        $router = $this->router;
+        $this->router = new Router(
+            Request::fromGlobals(),
+            function (Request $request) {
+                return Response::json(404, [
+                    "message" => "Unrecognised URI ({$request->getPath()}).",
+                ]);
+            },
+            function (Request $request) {
+                return Response::json(405, [
+                    "message" => "Method {$request->getMethod()} not allowed on {$request->getPath()}.",
+                ]);
+            }
+        );
 
         $projectsController = ProjectsController::class;
         $authController = AuthController::class;
 
-        $router->addRoute("/projects/{projectId}/images/{id}/", "GET", [$projectsController, "getImage"], "projectImage");
-        $router->addRoute("/projects/{projectId}/images/{id}/", "DELETE", [$projectsController, "deleteImage"]);
+        $this->addRoute("/projects/{projectId}/images/{id}/", "GET", "$projectsController::getImage", "projectImage");
+        $this->addRoute("/projects/{projectId}/images/{id}/", "DELETE", "$projectsController::deleteImage");
 
-        $router->addRoute("/projects/{projectId}/images/", "GET", [$projectsController, "getImages"], "projectImages");
-        $router->addRoute("/projects/{projectId}/images/", "POST", [$projectsController, "addImage"]);
+        $this->addRoute("/projects/{projectId}/images/", "GET", "$projectsController::getImages", "projectImages");
+        $this->addRoute("/projects/{projectId}/images/", "POST", "$projectsController::addImage");
 
-        $router->addRoute("/projects/{id}/", "GET", [$projectsController, "read"], "project");
-        $router->addRoute("/projects/{id}/", "PUT", [$projectsController, "update"]);
-        $router->addRoute("/projects/{id}/", "DELETE", [$projectsController, "delete"]);
+        $this->addRoute("/projects/{id}/", "GET", "$projectsController::read", "project");
+        $this->addRoute("/projects/{id}/", "PUT", "$projectsController::update");
+        $this->addRoute("/projects/{id}/", "DELETE", "$projectsController::delete");
 
-        $router->addRoute("/projects/", "GET", [$projectsController, "index"]);
-        $router->addRoute("/projects/", "POST", [$projectsController, "create"]);
+        $this->addRoute("/projects/", "GET", "$projectsController::index");
+        $this->addRoute("/projects/", "POST", "$projectsController::create");
 
-        $router->addRoute("/auth/login/", "POST", [$authController, "login"]);
-        $router->addRoute("/auth/logout/", "DELETE", [$authController, "logout"]);
-        $router->addRoute("/auth/status/", "GET", [$authController, "status"]);
+        $this->addRoute("/auth/login/", "POST", "$authController::login");
+        $this->addRoute("/auth/logout/", "DELETE", "$authController::logout");
+        $this->addRoute("/auth/status/", "GET", "$authController::status");
     }
 
     public function getRouter(): Router {
         return $this->router;
-    }
-
-    /**
-     * @param $uri string
-     * @return URL
-     */
-    public function makeFullURL(string $uri): URL {
-        $request = $this->getRequest();
-
-        return (new URL())
-            ->setScheme($request->server->get("HTTPS") === "on" ? "https" : "http")
-            ->setHost($request->server->get("SERVER_NAME"))
-            ->setPath($uri)
-        ;
-    }
-
-    private function setCORSHeaders(): void {
-        $origins = $this->getRequest()->headers->get("Origin");
-        $originURL = $origins[0] ?? "";
-
-        // Strip the protocol from domain
-        $originDomain = str_replace(["https://", "http://"], "", $originURL);
-
-        // If the domain if allowed send correct header response back
-        if (in_array($originDomain, $this->getConfig()->allowed_domains)) {
-            $this->response->withHeader("Access-Control-Allow-Origin", $originURL)
-                ->withHeader("Access-Control-Allow-Methods", $this->getRouter()->getMethodsForPath())
-                ->withHeader("Access-Control-Allow-Headers", ["Authorization", "Content-Type", "Process-Data"])
-                ->withHeader("Vary", "Origin")
-            ;
-        }
     }
 
     public static function getDefaultCacheHeaders(): array {
@@ -134,25 +111,5 @@ class Core {
             "Pragma" => "cache",
             "ETag" => true,
         ];
-    }
-
-    public function handleRequest(): void {
-        $request = $this->getRequest();
-
-        $this->response = $this->getRouter()->performRequest();
-
-        if ($this->response->headers->get("ETag", "") === $request->headers->get("If-None-Match")) {
-            $this->response->withStatus(304)
-                ->withContent(null)
-            ;
-        }
-
-        $this->setCORSHeaders();
-
-        if (!is_null($this->response->getContent())) {
-            $this->response->addHeader("Content-Type", "application/json");
-        }
-
-        $this->response->send();
     }
 }

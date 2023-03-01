@@ -2,7 +2,7 @@
 
 namespace App\Auth;
 
-use App\HTTP\Request;
+use JPI\HTTP\Request;
 use App\Utils\Str;
 
 abstract class AbstractManager {
@@ -13,7 +13,7 @@ abstract class AbstractManager {
     ];
 
     public static function getErrors(Request $request): array {
-        $data = $request->data;
+        $data = $request->getArrayFromBody();
         $errors = [];
         foreach (static::$requiredColumns as $column) {
             if (empty($data[$column])) {

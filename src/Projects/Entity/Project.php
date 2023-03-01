@@ -119,12 +119,12 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
     }
 
     public function getAPIURL(): URL {
-        return Core::get()->getRouter()->makeUrl("project", ["id" => $this->getId()]);
+        return Core::get()->getRouter()->getURLForRoute("project", ["id" => $this->getId()]);
     }
 
     public function getAPILinks(): array {
         $links = parent::getAPILinks();
-        $links["images"] = (string)Core::get()->getRouter()->makeUrl("projectImages", ["projectId" => $this->getId()]);
+        $links["images"] = (string)Core::get()->getRouter()->getURLForRoute("projectImages", ["projectId" => $this->getId()]);
         return $links;
     }
 

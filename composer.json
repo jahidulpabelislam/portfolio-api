@@ -4,7 +4,7 @@
         "ext-fileinfo": "*",
         "ext-json": "*",
         "ext-pdo": "*",
-        "jpi/utils": "0.x-dev as 0.5",
+        "jpi/utils": "0.x-dev as 0.6",
         "jpi/database": "2.x-dev as 2",
         "jpi/query": "2.x-dev as 2",
         "jpi/orm": "2.x-dev as 2",

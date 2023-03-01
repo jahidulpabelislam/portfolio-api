@@ -8,5 +8,16 @@ require_once __DIR__ . "/bootstrap.php";
 
 use App\Core;
 
-$core = Core::get();
-$core->handleRequest();
+$app = Core::get();
+$response = $app->handle();
+
+if ($response->hasHeader("ETag") && $response->getHeaderString("ETag") === $app->getRequest()->getHeaderString("If-None-Match")) {
+    $response->withStatus(304)
+        ->withBody("")
+        ->removeHeader("Content-Type")
+    ;
+} else {
+    $response->setHeader("Content-Type", "application/json");
+}
+
+$response->send();

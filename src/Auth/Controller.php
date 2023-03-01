@@ -8,7 +8,7 @@ namespace App\Auth;
 
 use App\Auth\Manager as AuthManager;
 use App\HTTP\AbstractController;
-use App\HTTP\Response;
+use JPI\HTTP\Response;
 
 class Controller extends AbstractController {
 
@@ -20,19 +20,19 @@ class Controller extends AbstractController {
      * @return Response
      */
     public function login(): Response {
-        $errors = AuthManager::getErrors($this->request);
+        $errors = AuthManager::getErrors($this->getRequest());
         if ($errors) {
             return $this->getInvalidInputResponse($errors);
         }
 
-        $jwt = AuthManager::login($this->request);
+        $jwt = AuthManager::login($this->getRequest());
         if ($jwt) {
-            return new Response(200, [
+            return Response::json(200, [
                 "data" => $jwt,
             ]);
         }
 
-        return new Response(401, [
+        return Response::json(401, [
             "error" => "Wrong username and/or password.",
         ]);
     }
@@ -43,13 +43,13 @@ class Controller extends AbstractController {
      * @return Response
      */
     public function logout(): Response {
-        if (AuthManager::logout($this->request)) {
-            return new Response(204, [
+        if (AuthManager::logout($this->getRequest())) {
+            return Response::json(204, [
                 "message" => "Successfully logged out.",
             ]);
         }
 
-        return new Response(500, [
+        return Response::json(500, [
             "message" => "Couldn't successfully process your logout request!",
         ]);
     }
@@ -60,8 +60,8 @@ class Controller extends AbstractController {
      * @return Response
      */
     public function status(): Response {
-        return new Response(200, [
-            "data" => AuthManager::isLoggedIn($this->request),
+        return Response::json(200, [
+            "data" => AuthManager::isLoggedIn($this->getRequest()),
         ]);
     }
 }

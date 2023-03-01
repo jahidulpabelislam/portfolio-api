@@ -4,10 +4,10 @@ namespace App\Entity\API;
 
 use App\Entity\FilterableInterface;
 use App\Entity\SearchableInterface;
-use App\HTTP\Request;
 use App\Utils\Str;
 use DateTime;
 use Exception;
+use JPI\HTTP\Request;
 use JPI\ORM\Entity\Collection as EntityCollection;
 use JPI\ORM\Entity\PaginatedCollection as PaginatedEntityCollection;
 
@@ -29,7 +29,7 @@ class CrudService {
     }
 
     protected function getEntityFromRequest(Request $request): ?AbstractEntity  {
-        return $this->getEntityInstance()::getById($request->getIdentifier("id"));
+        return $this->getEntityInstance()::getById($request->getAttribute("route_params")["id"]);
     }
 
     public function index(Request $request): EntityCollection {
@@ -39,7 +39,7 @@ class CrudService {
         $entity = $this->getEntityInstance();
 
         if ($entity instanceof FilterableInterface) {
-            $filters = $request->getParam("filters");
+            $filters = $request->getQueryParam("filters");
             if ($filters) {
                 $query = $entity::buildQueryFromFilters($filters->toArray());
 
@@ -49,7 +49,7 @@ class CrudService {
         }
 
         if ($entity instanceof SearchableInterface) {
-            $search = $request->getParam("search");
+            $search = $request->getQueryParam("search");
             if ($search) {
                 $searchQuery = $entity::buildSearchQuery($search);
 
@@ -62,12 +62,12 @@ class CrudService {
             return $entity::get($where, $queryParams);
         }
 
-        $limit = (int)$request->getParam("limit");
+        $limit = (int)$request->getQueryParam("limit");
         if (!$limit) {
             $limit = $this->perPage;
         }
 
-        $page = $request->hasParam("page") ? $request->getParam("page") : 1;
+        $page = $request->hasQueryParam("page") ? $request->getQueryParam("page") : 1;
 
         if (is_numeric($page)) {
             $page = (int)$page;
@@ -107,7 +107,7 @@ class CrudService {
 
         $requiredColumns = static::$requiredColumns;
 
-        $data = $request->data->toArray();
+        $data = $request->getArrayFromBody()->toArray();
 
         // Make sure data submitted is all valid.
         foreach ($entity::getColumns() as $column) {

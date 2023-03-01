@@ -2,22 +2,22 @@
 
 namespace App\HTTP;
 
-use App\Auth\GuardedControllerInterface;
 use App\Entity\API\AbstractEntity as AbstractAPIEntity;
 use App\Entity\API\InvalidDataException;
 use App\Entity\API\Responder as EntityResponder;
+use JPI\HTTP\Response;
 use JPI\ORM\Entity\PaginatedCollection;
 
-abstract class AbstractCrudController extends AbstractController implements GuardedControllerInterface {
+abstract class AbstractCrudController extends AbstractController {
 
     use EntityResponder;
 
-    protected $publicFunctions = [];
+    protected $publicActions = [];
 
     protected $entityClass = null;
 
-    public function getPublicFunctions(): array {
-        return $this->publicFunctions;
+    public function getPublicActions(): array {
+        return $this->publicActions;
     }
 
     public function getEntityInstance(): AbstractAPIEntity {
@@ -30,65 +30,87 @@ abstract class AbstractCrudController extends AbstractController implements Guar
      * @return Response
      */
     public function index(): Response {
-        $entities = $this->getEntityInstance()::getCrudService()->index($this->request);
+        $request = $this->getRequest();
+
+        if (
+            !in_array("index", $this->getPublicActions())
+            && !$request->getAttribute("is_authenticated")
+        ) {
+            return static::getNotAuthorisedResponse();
+        }
+
+        $entities = $this->getEntityInstance()::getCrudService()->index($request);
 
         if ($entities instanceof PaginatedCollection) {
-            return $this->getPaginatedItemsResponse($entities);
+            return $this->getPaginatedItemsResponse($request, $entities);
         }
 
-        return $this->getItemsResponse($entities);
+        return $this->getItemsResponse($request, $entities);
     }
 
-    /**
-     * Try and create/add a new entity.
-     *
-     * @return Response
-     */
     public function create(): Response {
+        $request = $this->getRequest();
+
+        if (
+            !in_array("create", $this->getPublicActions())
+            && !$request->getAttribute("is_authenticated")
+        ) {
+            return static::getNotAuthorisedResponse();
+        }
+
         try {
-            $entity = $this->getEntityInstance()::getCrudService()->create($this->request);
+            $entity = $this->getEntityInstance()::getCrudService()->create($request);
         } catch (InvalidDataException $exception) {
             return $this->getInvalidInputResponse($exception->getErrors());
         }
 
-        return $this->getInsertResponse($entity);
+        return $this->getInsertResponse($request, $entity);
     }
 
-    /**
-     * Get a particular entity.
-     *
-     * @param $id int|string The Id of the entity to get
-     * @return Response
-     */
     public function read($id): Response {
-        $entity = $this->getEntityInstance()::getCrudService()->read($this->request);
-        return $this->getItemResponse($entity, $id);
+        $request = $this->getRequest();
+
+        if (
+            !in_array("read", $this->getPublicActions())
+            && !$request->getAttribute("is_authenticated")
+        ) {
+            return static::getNotAuthorisedResponse();
+        }
+
+        $entity = $this->getEntityInstance()::getCrudService()->read($request);
+        return $this->getItemResponse($request, $entity, $id);
     }
 
-    /**
-     * Try to update the entity.
-     *
-     * @param $id int|string The Id of the entity to update
-     * @return Response
-     */
     public function update($id): Response {
+        $request = $this->getRequest();
+
+        if (
+            !in_array("update", $this->getPublicActions())
+            && !$request->getAttribute("is_authenticated")
+        ) {
+            return static::getNotAuthorisedResponse();
+        }
+
         try {
-            $entity = $this->getEntityInstance()::getCrudService()->update($this->request);
+            $entity = $this->getEntityInstance()::getCrudService()->update($request);
         } catch (InvalidDataException $exception) {
             return $this->getInvalidInputResponse($exception->getErrors());
         }
 
-        return $this->getUpdateResponse($entity, $id);
+        return $this->getUpdateResponse($request, $entity, $id);
     }
 
-    /**
-     * Try to delete the entity.
-     *
-     * @param $id int|string The Id of the entity to delete
-     * @return Response
-     */
     public function delete($id): Response {
-        $entity = $this->getEntityInstance()::getCrudService()->delete($this->request);
-        return $this->getItemDeletedResponse($entity, $id);
+        $request = $this->getRequest();
+
+        if (
+            !in_array("delete", $this->getPublicActions())
+            && !$request->getAttribute("is_authenticated")
+        ) {
+            return static::getNotAuthorisedResponse();
+        }
+
+        $entity = $this->getEntityInstance()::getCrudService()->delete($request);
+        return $this->getItemDeletedResponse($request, $entity, $id);
     }
 }
