@@ -29,7 +29,7 @@ class Image extends AbstractAPIEntity {
 
     protected static $intColumns = ["project_id", "position"];
 
-    protected static $orderByColumn = "position";
+    public static $defaultOrderByColumn = "position";
 
     /**
      * @inheritDoc

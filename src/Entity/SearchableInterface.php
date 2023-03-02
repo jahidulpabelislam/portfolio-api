@@ -2,15 +2,11 @@
 
 namespace App\Entity;
 
+use JPI\ORM\Entity\QueryBuilder;
+
 interface SearchableInterface {
 
     public static function getSearchableColumns(): array;
 
-    /**
-     * Build where clause(s) for like searches on searchable columns
-     *
-     * @param $value string
-     * @return array
-     */
-    public static function buildSearchQuery(string $value): array;
+    public static function addSearchToQuery(QueryBuilder $query, string $value): void;
 }

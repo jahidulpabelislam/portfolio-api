@@ -2,38 +2,31 @@
 
 namespace App\Entity;
 
+use JPI\ORM\Entity\QueryBuilder;
+use JPI\Database\Query\Clause\Where\OrCondition as WhereOrCondition;
+
 trait Searchable {
 
     public static function getSearchableColumns(): array {
         return static::$searchableColumns ?? array_keys(static::$defaultColumns);
     }
 
-    /**
-     * Build where clause(s) for like searches on searchable columns
-     *
-     * @param $value string
-     * @return array
-     */
-    public static function buildSearchQuery(string $value): array {
+    public static function addSearchToQuery(QueryBuilder $query, string $value): void {
         $words = explode(" ", $value);
-        $wordsReversed = array_reverse($words);
 
-        $params = [
+        $query->params([
             "search" => "%" . implode("%", $words) . "%",
-            "searchReversed" => "%" . implode("%", $wordsReversed) . "%",
-        ];
+            "searchReversed" => "%" . implode("%", array_reverse($words)) . "%",
+        ]);
 
-        $where = [];
+        $where = new WhereOrCondition($query);
         foreach (static::getSearchableColumns() as $column) {
-            $where[] = "$column LIKE :search";
-            $where[] = "$column LIKE :searchReversed";
+            $where
+                ->where("$column LIKE :search")
+                ->where("$column LIKE :searchReversed")
+            ;
         }
 
-        $where = "\n\t\t" . implode(" OR\n\t\t", $where) . "\n\t";
-
-        return [
-            "where" => ["($where)"],
-            "params" => $params,
-        ];
+        $query->where((string) $where);
     }
 }

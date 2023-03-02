@@ -54,8 +54,8 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
         "status",
     ];
 
-    protected static $orderByColumn = "date";
-    protected static $orderByASC = false;
+    public static $defaultOrderByColumn = "date";
+    public static $defaultOrderByASC = false;
 
     protected static $crudService = ProjectCrudService::class;
 
@@ -69,7 +69,7 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
      */
     public function loadImages(bool $reload = false): void {
         if ($this->isLoaded() && !$this->isDeleted() && ($reload || is_null($this->images))) {
-            $this->images = Image::getByColumn("project_id", $this->getId());
+            $this->images = Image::newQuery()->where("project_id", "=", $this->getId())->select();
         }
     }
 
