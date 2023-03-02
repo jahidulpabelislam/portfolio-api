@@ -25,7 +25,7 @@ class ProjectCrudService extends BaseService {
         $routeParams = $request->getAttribute("route_params");
         $id = $routeParams["projectId"] ?? $routeParams["id"];
         $params = ["id" => $id];
-        if (!AuthManager::isLoggedIn($request)) {
+        if (!$request->getAttribute("is_authenticated")) {
             $where[] = "status = :status";
             $params["status"] = Project::PUBLIC_STATUS;
         }
@@ -37,7 +37,7 @@ class ProjectCrudService extends BaseService {
         $request = clone $request;
 
         // As the user isn't logged in, filter by status = public
-        if (!AuthManager::isLoggedIn($request)) {
+        if (!$request->getAttribute("is_authenticated")) {
             $params = $request->getQueryParams();
             if (!isset($params["filters"])) {
                 $params["filters"] = new Collection();

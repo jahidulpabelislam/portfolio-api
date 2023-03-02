@@ -61,7 +61,7 @@ class Controller extends AbstractController {
      */
     public function status(): Response {
         return Response::json(200, [
-            "data" => AuthManager::isLoggedIn($this->getRequest()),
+            "data" => $this->getRequest()->getAttribute("is_authenticated"),
         ]);
     }
 }
