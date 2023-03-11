@@ -17,7 +17,6 @@ use JPI\HTTP\App;
 use JPI\HTTP\Request;
 use JPI\HTTP\Response;
 use JPI\Utils\Singleton;
-use JPI\Utils\URL;
 
 class Core extends App {
 

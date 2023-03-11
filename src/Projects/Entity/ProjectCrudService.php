@@ -2,7 +2,6 @@
 
 namespace App\Projects\Entity;
 
-use App\Auth\Manager as AuthManager;
 use App\Entity\API\CrudService as BaseService;
 use JPI\HTTP\Request;
 use JPI\ORM\Entity\Collection as EntityCollection;
