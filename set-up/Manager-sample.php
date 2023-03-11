@@ -9,6 +9,7 @@ namespace App\Auth;
 use App\Core;
 use Exception;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key as JWTKey;
 use JPI\HTTP\Request;
 
 class Manager extends AbstractManager {
@@ -57,7 +58,7 @@ class Manager extends AbstractManager {
             try {
                 $secretKey = Core::get()->getConfig()->portfolio_admin_secret_key;
 
-                JWT::decode($jwt, $secretKey, [self::JWT_ALG]);
+                JWT::decode($jwt, new JWTKey($secretKey, self::JWT_ALG));
 
                 // An exception is thrown if auth bearer token provided isn't valid
                 // So assume all is valid here
