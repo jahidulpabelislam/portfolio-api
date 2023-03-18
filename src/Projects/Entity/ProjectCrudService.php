@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Projects\Entity;
 
 use App\Entity\API\CrudService as BaseService;

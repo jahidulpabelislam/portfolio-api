@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\API;
 
 use App\Entity\FilterableInterface;
@@ -32,7 +34,7 @@ class CrudService {
         }
 
         return $this->getEntityInstance()
-            ->getById($request->getAttribute("route_params")["id"])
+            ->getById((int)$request->getAttribute("route_params")["id"])
         ;
     }
 

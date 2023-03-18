@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\HTTP;
 
 use App\Entity\API\AbstractEntity as AbstractAPIEntity;

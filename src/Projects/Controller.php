@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * All the custom functions for the Projects part of the API that allow to perform all user requests.
  */
