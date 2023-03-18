@@ -7,7 +7,7 @@ use App\Utils\Str;
 
 abstract class AbstractManager {
 
-    protected static $requiredColumns = [
+    protected static array $requiredColumns = [
         "username",
         "password",
     ];
@@ -28,25 +28,16 @@ abstract class AbstractManager {
     /**
      * Authenticate a user trying to login
      * If successful store generate JWT and return, else return null
-     *
-     * @param $request Request
-     * @return string|null
      */
     abstract public static function login(Request $request): ?string;
 
     /**
      * Do the log out here (e.g removing cookie, session or database etc.)
-     *
-     * @param $request Request
-     * @return bool
      */
     abstract public static function logout(Request $request): bool;
 
     /**
      * Check whether the current user is logged in (e.g check against stored cookie, session or database etc.)
-     *
-     * @param $request Request
-     * @return bool
      */
     abstract public static function isLoggedIn(Request $request): bool;
 }

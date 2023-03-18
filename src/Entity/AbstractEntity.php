@@ -10,7 +10,7 @@ use PDO;
 
 abstract class AbstractEntity extends BaseEntity implements Arrayable {
 
-    protected static $database = null;
+    protected static ?Database $database = null;
 
     public static function getDatabase(): Database {
         if (!static::$database) {

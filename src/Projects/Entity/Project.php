@@ -26,9 +26,9 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
 
     public const PUBLIC_STATUS = "published";
 
-    protected static $table = "projects";
+    protected static string $table = "projects";
 
-    protected static $defaultColumns = [
+    protected static array $defaultColumns = [
         "name" => "",
         "date" => null,
         "type" => "",
@@ -42,10 +42,10 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
         "status" => "draft",
     ];
 
-    protected static $dateColumns = ["date"];
-    protected static $arrayColumns = ["tags"];
+    protected static array $dateColumns = ["date"];
+    protected static array $arrayColumns = ["tags"];
 
-    protected static $searchableColumns = [
+    protected static array $searchableColumns = [
         "name",
         "type",
         "tags",
@@ -54,15 +54,12 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
         "status",
     ];
 
-    public static $defaultOrderByColumn = "date";
-    public static $defaultOrderByASC = false;
+    public static string $defaultOrderByColumn = "date";
+    public static bool $defaultOrderByASC = false;
 
-    protected static $crudService = ProjectCrudService::class;
+    protected static string $crudService = ProjectCrudService::class;
 
-    /**
-     * @var EntityCollection|null
-     */
-    public $images = null;
+    public ?EntityCollection $images = null;
 
     /**
      * Helper function to get all Project Image Entities linked to this Project
@@ -73,9 +70,6 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     public function reload(): void {
         parent::reload();
 
@@ -85,11 +79,7 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
     }
 
     /**
-     * @inheritDoc
-     *
      * Add extra functionality as a Project is linked to many Project Images, so delete these also
-     *
-     * @return bool Whether or not deletion was successful
      */
     public function delete(): bool {
         $this->loadImages(); // Make sure images are loaded first so we can delete later

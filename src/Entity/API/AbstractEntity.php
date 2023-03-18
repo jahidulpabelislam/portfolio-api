@@ -8,7 +8,7 @@ use ReflectionClass;
 
 abstract class AbstractEntity extends BaseEntity {
 
-    protected static $crudService = CrudService::class;
+    protected static string $crudService = CrudService::class;
 
     public static function getDisplayName(): string {
         if (isset(static::$displayName)) {

@@ -17,28 +17,24 @@ class Image extends AbstractAPIEntity {
 
     use Timestamped;
 
-    public static $displayName = "Project Image";
+    public static string $displayName = "Project Image";
 
-    protected static $table = "project_images";
+    protected static string $table = "project_images";
 
-    protected static $defaultColumns = [
+    protected static array $defaultColumns = [
         "project_id" => null,
         "position" => 0,
         "file" => "",
     ];
 
-    protected static $intColumns = ["project_id", "position"];
+    protected static array $intColumns = ["project_id", "position"];
 
-    public static $defaultOrderByColumn = "position";
+    public static string $defaultOrderByColumn = "position";
 
     /**
-     * @inheritDoc
-     *
      * Add extra functionality on top of default delete function
      * As these Entities are linked to a file on the server
      * Here actually delete the file from the server
-     *
-     * @return bool Whether or not deletion was successful
      */
     public function delete(): bool {
         $isDeleted = parent::delete();

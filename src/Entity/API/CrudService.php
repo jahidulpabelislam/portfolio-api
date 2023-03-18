@@ -13,22 +13,19 @@ use JPI\ORM\Entity\PaginatedCollection as PaginatedEntityCollection;
 
 class CrudService {
 
-    protected $entityClass;
+    protected bool $paginated = true;
+    protected int $perPage = 10;
 
-    protected $paginated = true;
-    protected $perPage = 10;
+    protected static array $requiredColumns = [];
 
-    protected static $requiredColumns = [];
-
-    public function __construct(string $entityClass) {
-        $this->entityClass = $entityClass;
+    public function __construct(protected string $entityClass) {
     }
 
     public function getEntityInstance(): AbstractEntity {
         return new $this->entityClass();
     }
 
-    protected function getEntityFromRequest(Request $request): ?AbstractEntity  {
+    protected function getEntityFromRequest(Request $request): ?AbstractEntity {
         return $this->getEntityInstance()
             ->getById($request->getAttribute("route_params")["id"])
         ;
@@ -87,11 +84,6 @@ class CrudService {
 
     /**
      * Checks the data in the request + sets entity values from valid data.
-     *
-     * @param AbstractEntity $entity
-     * @param Request $request
-     * @return void
-     * @throws InvalidDataException If there are validation errors on data submitted or missing data.
      */
     protected function setValuesFromRequest(AbstractEntity $entity, Request $request): void {
         $errors = [];

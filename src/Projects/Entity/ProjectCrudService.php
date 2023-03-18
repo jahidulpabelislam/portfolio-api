@@ -9,7 +9,7 @@ use JPI\Utils\Collection;
 
 class ProjectCrudService extends BaseService {
 
-    protected static $requiredColumns = [
+    protected static array $requiredColumns = [
         "name",
         "date",
         "type",
