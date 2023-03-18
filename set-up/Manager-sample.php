@@ -48,7 +48,7 @@ class Manager extends AbstractManager {
         return true;
     }
 
-    public static function isLoggedIn(Request $request): bool {
+    public static function isAuthenticated(Request $request): bool {
         // SAMPLE!!
         // TODO: Actually do the check of logged in status (e.g check against stored cookie, session or database etc.)
 

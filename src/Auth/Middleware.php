@@ -16,7 +16,7 @@ class Middleware implements RequestMiddlewareInterface {
 
     public function run(RequestHandlerInterface $next): Response {
         $request = $this->getRequest();
-        $request->setAttribute("is_authenticated", AuthManager::isLoggedIn($request));
+        $request->setAttribute("is_authenticated", AuthManager::isAuthenticated($request));
 
         return $next->handle();
     }

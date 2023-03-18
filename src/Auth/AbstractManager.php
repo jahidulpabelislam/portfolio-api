@@ -41,5 +41,5 @@ abstract class AbstractManager {
     /**
      * Check whether the current user is logged in (e.g check against stored cookie, session or database etc.)
      */
-    abstract public static function isLoggedIn(Request $request): bool;
+    abstract public static function isAuthenticated(Request $request): bool;
 }
