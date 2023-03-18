@@ -13,7 +13,7 @@ The first two versions were developed within the [Portfolio repo](https://github
 ## Requirements
 
 -   Git
--   PHP 7.1+
+-   PHP 8.0+
 -   PHP PDO
 -   Composer
 -   MySQL 5+

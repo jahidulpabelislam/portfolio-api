@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Projects\Entity;
 
 use App\Entity\API\CrudService as BaseService;
@@ -9,7 +11,7 @@ use JPI\Utils\Collection;
 
 class ProjectCrudService extends BaseService {
 
-    protected static $requiredColumns = [
+    protected static array $requiredColumns = [
         "name",
         "date",
         "type",
@@ -19,17 +21,18 @@ class ProjectCrudService extends BaseService {
     ];
 
     protected function getEntityFromRequest(Request $request): ?Project {
-        $where = ["id = :id"];
-
         $routeParams = $request->getAttribute("route_params");
-        $id = $routeParams["projectId"] ?? $routeParams["id"];
-        $params = ["id" => $id];
+
+        $query = $this->getEntityInstance()::newQuery()
+            ->where("id", "=", $routeParams["projectId"] ?? $routeParams["id"])
+            ->limit(1)
+        ;
+
         if (!$request->getAttribute("is_authenticated")) {
-            $where[] = "status = :status";
-            $params["status"] = Project::PUBLIC_STATUS;
+            $query->where("status", "=", Project::PUBLIC_STATUS);
         }
 
-        return Project::get($where, $params, 1);
+        return $query->select();
     }
 
     public function index(Request $request): EntityCollection {
@@ -53,7 +56,7 @@ class ProjectCrudService extends BaseService {
                 $ids[] = $project->getId();
             }
 
-            $images = Image::getByColumn("project_id", $ids);
+            $images = Image::newQuery()->where("project_id", "IN", $ids)->select();
 
             $imagesGrouped = [];
             foreach ($images as $image) {

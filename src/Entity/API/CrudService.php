@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\API;
 
 use App\Entity\FilterableInterface;
@@ -13,53 +15,50 @@ use JPI\ORM\Entity\PaginatedCollection as PaginatedEntityCollection;
 
 class CrudService {
 
-    protected $entityClass;
+    protected bool $paginated = true;
+    protected int $perPage = 10;
 
-    protected $paginated = true;
-    protected $perPage = 10;
+    protected static array $requiredColumns = [];
 
-    protected static $requiredColumns = [];
-
-    public function __construct(string $entityClass) {
-        $this->entityClass = $entityClass;
+    public function __construct(protected string $entityClass) {
     }
 
     public function getEntityInstance(): AbstractEntity {
         return new $this->entityClass();
     }
 
-    protected function getEntityFromRequest(Request $request): ?AbstractEntity  {
-        return $this->getEntityInstance()::getById($request->getAttribute("route_params")["id"]);
+    protected function getEntityFromRequest(Request $request): ?AbstractEntity {
+        $id = $request->getAttribute("route_params")["id"];
+        if (!is_numeric($id)) {
+            return null;
+        }
+
+        return $this->getEntityInstance()
+            ->getById((int)$request->getAttribute("route_params")["id"])
+        ;
     }
 
     public function index(Request $request): EntityCollection {
-        $where = [];
-        $queryParams = [];
-
         $entity = $this->getEntityInstance();
+
+        $query = $this->getEntityInstance()::newQuery();
 
         if ($entity instanceof FilterableInterface) {
             $filters = $request->getQueryParam("filters");
             if ($filters) {
-                $query = $entity::buildQueryFromFilters($filters->toArray());
-
-                $where = $query["where"];
-                $queryParams = $query["params"];
+                $entity::addFiltersToQuery($query, $filters->toArray());
             }
         }
 
         if ($entity instanceof SearchableInterface) {
             $search = $request->getQueryParam("search");
             if ($search) {
-                $searchQuery = $entity::buildSearchQuery($search);
-
-                $where = array_merge($where, $searchQuery["where"]);
-                $queryParams = array_merge($queryParams, $searchQuery["params"]);
+                $entity::addSearchToQuery($query, $search);
             }
         }
 
         if (!$this->paginated) {
-            return $entity::get($where, $queryParams);
+            return $query->select();
         }
 
         $limit = (int)$request->getQueryParam("limit");
@@ -78,12 +77,13 @@ class CrudService {
             $page = 1;
         }
 
-        $entities = $entity::get($where, $queryParams, $limit, $page);
+        $query->limit($limit, $page);
+
+        $entities = $query->select();
 
         // Handle where limit is 1
         if ($entities instanceof $this->entityClass) {
-            $totalCount = $entity::getCount($where, $queryParams);
-            $entities = new PaginatedEntityCollection([$entities], $totalCount, $limit, $page);
+            $entities = new PaginatedEntityCollection([$entities], $query->count(), $limit, $page);
         }
 
         return $entities;
@@ -91,11 +91,6 @@ class CrudService {
 
     /**
      * Checks the data in the request + sets entity values from valid data.
-     *
-     * @param AbstractEntity $entity
-     * @param Request $request
-     * @return void
-     * @throws InvalidDataException If there are validation errors on data submitted or missing data.
      */
     protected function setValuesFromRequest(AbstractEntity $entity, Request $request): void {
         $errors = [];

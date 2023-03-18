@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * All the custom functions for the Projects part of the API that allow to perform all user requests.
  */
@@ -16,9 +18,9 @@ use JPI\HTTP\UploadedFile;
 
 class Controller extends AbstractCrudController {
 
-    protected $entityClass = Project::class;
+    protected string $entityClass = Project::class;
 
-    protected $publicActions = [
+    protected array $publicActions = [
         "index",
         "read",
         "getImages",
@@ -27,11 +29,8 @@ class Controller extends AbstractCrudController {
 
     /**
      * Get the Images attached to a Project
-     *
-     * @param $projectId int|string The Id of the Project
-     * @return Response
      */
-    public function getImages($projectId): Response {
+    public function getImages(string|int $projectId): Response {
         $request = $this->getRequest();
         // Check the Project trying to get Images for exists
         $project = $this->getEntityInstance()::getCrudService()->read($request);
@@ -47,11 +46,6 @@ class Controller extends AbstractCrudController {
 
     /**
      * Try and upload the added image
-     *
-     * @param $project Project The Project trying to upload image for
-     * @param $file UploadedFile The uploaded file
-     * @return Response
-     * @throws Exception
      */
     private function uploadImage(Project $project, UploadedFile $file): Response {
         if (strpos(mime_content_type($file->getTempName()), "image/") !== 0) {
@@ -65,7 +59,7 @@ class Controller extends AbstractCrudController {
         $parts = [
             preg_replace("/[^a-z0-9]+/", "-", strtolower($project->name)),
             date("Ymd-His"),
-            random_int(0, 99)
+            random_int(0, 99),
         ];
         $newFilename = implode("-", $parts) . ".$fileExt";
 
@@ -90,12 +84,8 @@ class Controller extends AbstractCrudController {
 
     /**
      * Try to upload a Image user has tried to add as a Project Image
-     *
-     * @param $projectId int|string The Project Id to add this Image for
-     * @return Response
-     * @throws Exception
      */
-    public function addImage($projectId): Response {
+    public function addImage(string|int $projectId): Response {
         $request = $this->getRequest();
 
         if (!$request->getAttribute("is_authenticated")) {
@@ -114,18 +104,14 @@ class Controller extends AbstractCrudController {
         }
 
         return $this->getInvalidInputResponse([
-            "image" => "Image is a required field."
+            "image" => "Image is a required field.",
         ]);
     }
 
     /**
      * Get a Project Image for a Project by Id
-     *
-     * @param $projectId int|string The Id of the Project trying to get Image for
-     * @param $imageId int|string The Id of the Project Image to get
-     * @return Response
      */
-    public function getImage($projectId, $imageId): Response {
+    public function getImage(string|int $projectId, string|int $imageId): Response {
         $request = $this->getRequest();
 
         // Check the Project trying to get Image for exists
@@ -152,12 +138,8 @@ class Controller extends AbstractCrudController {
 
     /**
      * Try to delete a Image linked to a Project
-     *
-     * @param $projectId int|string The Id of the Project trying to delete Image for
-     * @param $imageId int|string The Id of the Project Image to delete
-     * @return Response
      */
-    public function deleteImage($projectId, $imageId): Response {
+    public function deleteImage(string|int $projectId, string|int $imageId): Response {
         $request = $this->getRequest();
 
         if (!$request->getAttribute("is_authenticated")) {

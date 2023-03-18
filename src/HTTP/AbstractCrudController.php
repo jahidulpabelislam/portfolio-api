@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\HTTP;
 
 use App\Entity\API\AbstractEntity as AbstractAPIEntity;
@@ -12,9 +14,9 @@ abstract class AbstractCrudController extends AbstractController {
 
     use EntityResponder;
 
-    protected $publicActions = [];
+    protected array $publicActions = [];
 
-    protected $entityClass = null;
+    protected string $entityClass;
 
     public function getPublicActions(): array {
         return $this->publicActions;
@@ -26,8 +28,6 @@ abstract class AbstractCrudController extends AbstractController {
 
     /**
      * Gets all entities but paginated (also might include search & filters)
-     *
-     * @return Response
      */
     public function index(): Response {
         $request = $this->getRequest();

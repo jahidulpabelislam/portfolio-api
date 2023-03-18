@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Stores settings for the application.
  */
@@ -8,7 +10,7 @@ namespace App;
 
 class Config {
 
-    protected $values = [];
+    protected array $values = [];
 
     public function __set(string $key, $value): void {
         $this->values[$key] = $value;

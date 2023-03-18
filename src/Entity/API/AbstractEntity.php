@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\API;
 
 use App\Entity\AbstractEntity as BaseEntity;
@@ -8,7 +10,7 @@ use ReflectionClass;
 
 abstract class AbstractEntity extends BaseEntity {
 
-    protected static $crudService = CrudService::class;
+    protected static string $crudService = CrudService::class;
 
     public static function getDisplayName(): string {
         if (isset(static::$displayName)) {

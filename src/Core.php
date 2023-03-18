@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * The 'index' of the application/API.
  */
@@ -24,15 +26,7 @@ class Core extends App {
 
     public const VERSION = "4";
 
-    /**
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * @var Router
-     */
-    protected $router;
+    protected Config $config;
 
     protected function __construct() {
         $this->initConfig();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * The Project Entity object class (extends the base Entity class, where most of the ORM functionality lies).
  * Within this holds and methods where it overwrites or add extra custom functionality from the base Entity class.
@@ -26,9 +28,9 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
 
     public const PUBLIC_STATUS = "published";
 
-    protected static $table = "projects";
+    protected static string $table = "projects";
 
-    protected static $defaultColumns = [
+    protected static array $defaultColumns = [
         "name" => "",
         "date" => null,
         "type" => "",
@@ -42,10 +44,10 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
         "status" => "draft",
     ];
 
-    protected static $dateColumns = ["date"];
-    protected static $arrayColumns = ["tags"];
+    protected static array $dateColumns = ["date"];
+    protected static array $arrayColumns = ["tags"];
 
-    protected static $searchableColumns = [
+    protected static array $searchableColumns = [
         "name",
         "type",
         "tags",
@@ -54,28 +56,22 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
         "status",
     ];
 
-    protected static $orderByColumn = "date";
-    protected static $orderByASC = false;
+    public static string $defaultOrderByColumn = "date";
+    public static bool $defaultOrderByASC = false;
 
-    protected static $crudService = ProjectCrudService::class;
+    protected static string $crudService = ProjectCrudService::class;
 
-    /**
-     * @var EntityCollection|null
-     */
-    public $images = null;
+    public ?EntityCollection $images = null;
 
     /**
      * Helper function to get all Project Image Entities linked to this Project
      */
     public function loadImages(bool $reload = false): void {
         if ($this->isLoaded() && !$this->isDeleted() && ($reload || is_null($this->images))) {
-            $this->images = Image::getByColumn("project_id", $this->getId());
+            $this->images = Image::newQuery()->where("project_id", "=", $this->getId())->select();
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     public function reload(): void {
         parent::reload();
 
@@ -85,11 +81,7 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
     }
 
     /**
-     * @inheritDoc
-     *
      * Add extra functionality as a Project is linked to many Project Images, so delete these also
-     *
-     * @return bool Whether or not deletion was successful
      */
     public function delete(): bool {
         $this->loadImages(); // Make sure images are loaded first so we can delete later

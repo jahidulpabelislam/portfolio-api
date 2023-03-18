@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\API;
 
 use App\Core;
@@ -16,10 +18,6 @@ trait Responder {
      * Return a response when items were requested,
      * so check if some found return the items (with necessary meta)
      * else if not found return necessary meta
-     *
-     * @param $entities EntityCollection
-     * @param $entityInstance AbstractEntity|null
-     * @return Response
      */
     public function getItemsResponse(
         Request $request,
@@ -59,10 +57,6 @@ trait Responder {
      * else if not found return necessary meta
      *
      * Use getItemsResponse function as the base response, then just adds additional meta data
-     *
-     * @param $collection PaginatedEntityCollection
-     * @param $entityInstance AbstractEntity|null
-     * @return Response
      */
     public function getPaginatedItemsResponse(
         Request $request,
@@ -135,14 +129,9 @@ trait Responder {
         ]);
     }
 
-    /**
-     * @param $id int|string|null
-     * @param $entityInstance AbstractEntity|null
-     * @return Response
-     */
     public function getItemNotFoundResponse(
         Request $request,
-        $id = null,
+        string|int $id = null,
         AbstractEntity $entityInstance = null
     ): Response {
         $entityInstance = $entityInstance ?? $this->getEntityInstance();
@@ -158,16 +147,11 @@ trait Responder {
      * Return a response when a item was requested,
      * so check if found return the item (with necessary meta)
      * else if not found return necessary meta
-     *
-     * @param $entity AbstractEntity|null
-     * @param $id int|string|null
-     * @param $entityInstance AbstractEntity|null
-     * @return Response
      */
     public function getItemResponse(
         Request $request,
         ?AbstractEntity $entity,
-        $id = null,
+        string|int $id = null,
         AbstractEntity $entityInstance = null
     ): Response {
         $entityInstance = $entityInstance ?? $this->getEntityInstance();
@@ -203,16 +187,10 @@ trait Responder {
         ]);
     }
 
-    /**
-     * @param $entity AbstractEntity|null
-     * @param $id int|string|null
-     * @param $entityInstance AbstractEntity|null
-     * @return Response
-     */
     public function getUpdateResponse(
         Request $request,
         ?AbstractEntity $entity,
-        $id = null,
+        string|int $id = null,
         AbstractEntity $entityInstance = null
     ): Response {
         $entityInstance = $entityInstance ?? $this->getEntityInstance();
@@ -230,16 +208,11 @@ trait Responder {
 
     /**
      * Return the response when a item was attempted to be deleted
-     *
-     * @param $entity AbstractEntity|null
-     * @param $id int|string|null
-     * @param $entityInstance AbstractEntity|null
-     * @return Response
      */
     public function getItemDeletedResponse(
         Request $request,
         ?AbstractEntity $entity,
-        $id = null,
+        string|int $id = null,
         AbstractEntity $entityInstance = null
     ): Response {
         $entityInstance = $entityInstance ?? $this->getEntityInstance();
