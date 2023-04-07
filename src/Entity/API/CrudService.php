@@ -108,15 +108,21 @@ class CrudService {
         foreach ($entity::getColumns() as $column) {
             $label = Str::machineToDisplay($column);
 
-            if (empty($data[$column])) {
-                if (in_array($column, $requiredColumns)) {
-                    $errors[$column] = "$label is required.";
-                }
-
+            if (!isset($data[$column])) {
                 continue;
             }
 
             $value = $data[$column];
+
+            if (empty($value)) {
+                if (in_array($column, $requiredColumns)) {
+                    $errors[$column] = "$label is required.";
+                } else {
+                    $entity->$column = $value;
+                }
+
+                continue;
+            }
 
             if (in_array($column, $intColumns)) {
                 if (is_numeric($value) && $value == (int)$value) {
