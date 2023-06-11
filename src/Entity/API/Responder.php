@@ -93,7 +93,7 @@ trait Responder {
             $params["page"] = $page;
         }
 
-        $url->setParams($params);
+        $url->setQueryParams($params);
 
         $content["_links"] = [
             "self" => (string)$url,
@@ -102,10 +102,10 @@ trait Responder {
         $hasPreviousPage = ($page > 1) && ($lastPage >= ($page - 1));
         if ($hasPreviousPage) {
             if ($page > 2) {
-                $url->setParam("page", $page - 1);
+                $url->setQueryParam("page", $page - 1);
             }
             else {
-                $url->removeParam("page");
+                $url->removeQueryParam("page");
             }
 
             $content["_links"]["previous_page"] = (string)$url;
@@ -113,7 +113,7 @@ trait Responder {
 
         $hasNextPage = $page < $lastPage;
         if ($hasNextPage) {
-            $url->setParam("page", $page + 1);
+            $url->setQueryParam("page", $page + 1);
             $content["_links"]["next_page"] = (string)$url;
         }
 
