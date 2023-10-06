@@ -14,6 +14,7 @@ use App\HTTP\CORSMiddleware;
 use App\HTTP\VersionCheckMiddleware;
 use App\HTTP\Router;
 use App\Projects\Controller as ProjectsController;
+use App\Projects\TypeController as ProjectTypesController;
 use DateTime;
 use JPI\HTTP\App;
 use JPI\HTTP\Request;
@@ -26,10 +27,7 @@ class Core extends App {
 
     public const VERSION = "4";
 
-    protected Config $config;
-
     protected function __construct() {
-        $this->initConfig();
         $this->initRoutes();
 
         $this->middlewares = [
@@ -37,22 +35,6 @@ class Core extends App {
             new CORSMiddleware(),
             new VersionCheckMiddleware(),
         ];
-    }
-
-    public function initConfig(): void {
-        $config = new Config();
-
-        include_once __DIR__ . "/../config.php";
-
-        if (file_exists(__DIR__ . "/../config.local.php")) {
-            include_once __DIR__ . "/../config.local.php";
-        }
-
-        $this->config = $config;
-    }
-
-    public function getConfig(): Config {
-        return $this->config;
     }
 
     private function initRoutes(): void {
@@ -71,7 +53,11 @@ class Core extends App {
         );
 
         $projectsController = ProjectsController::class;
+        $projectTypesController = ProjectTypesController::class;
         $authController = AuthController::class;
+
+        $this->addRoute("/project-types/{id}/", "GET", "$projectTypesController::read", "projectType");
+        $this->addRoute("/project-types/", "GET", "$projectTypesController::index");
 
         $this->addRoute("/projects/{projectId}/images/{id}/", "GET", "$projectsController::getImage", "projectImage");
         $this->addRoute("/projects/{projectId}/images/{id}/", "DELETE", "$projectsController::deleteImage");

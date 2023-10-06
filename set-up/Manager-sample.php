@@ -6,6 +6,7 @@
 
 namespace App\Auth;
 
+use App\Config;
 use App\Core;
 use Exception;
 use Firebase\JWT\JWT;
@@ -37,7 +38,7 @@ class Manager extends AbstractManager {
             ],
         ];
 
-        $secretKey = Core::get()->getConfig()->portfolio_admin_secret_key;
+        $secretKey = Config::get()->portfolio_admin_secret_key;
 
         $jwt = JWT::encode($jwtData, $secretKey, self::JWT_ALG);
         return $jwt;
@@ -56,7 +57,7 @@ class Manager extends AbstractManager {
 
         if (!empty($jwt)) {
             try {
-                $secretKey = Core::get()->getConfig()->portfolio_admin_secret_key;
+                $secretKey = Config::get()->portfolio_admin_secret_key;
 
                 JWT::decode($jwt, new JWTKey($secretKey, self::JWT_ALG));
 

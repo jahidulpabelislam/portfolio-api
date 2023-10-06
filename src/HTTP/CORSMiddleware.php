@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\HTTP;
 
+use App\Config;
 use App\Core;
 use JPI\HTTP\RequestAwareTrait;
 use JPI\HTTP\RequestHandlerInterface;
@@ -24,7 +25,7 @@ class CORSMiddleware implements RequestMiddlewareInterface {
 
         // If the domain is allowed send set some headers for CORS
         $app = Core::get();
-        if (in_array($originDomain, $app->getConfig()->allowed_domains)) {
+        if (in_array($originDomain, Config::get()->allowed_domains)) {
             $response->withHeader("Access-Control-Allow-Origin", $originURL)
                 ->withHeader("Access-Control-Allow-Methods", $app->getRouter()->getMethodsForPath())
                 ->withHeader("Access-Control-Allow-Headers", ["Authorization", "Content-Type", "Process-Data"])

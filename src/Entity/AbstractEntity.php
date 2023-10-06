@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Core;
+use App\Config;
 use JPI\Database;
 use JPI\ORM\Entity as BaseEntity;
 use JPI\Utils\Arrayable;
@@ -16,7 +16,7 @@ abstract class AbstractEntity extends BaseEntity implements Arrayable {
 
     public static function getDatabase(): Database {
         if (!static::$database) {
-            $config = Core::get()->getConfig();
+            $config = Config::get();
 
             static::$database = new Database(
                 "mysql:host={$config->db_host};dbname={$config->db_name};charset-UTF-8",

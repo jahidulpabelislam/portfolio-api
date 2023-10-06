@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Projects\Entity;
 
+use App\Entity\API\AbstractEntity;
 use App\Entity\API\CrudService as BaseService;
+use App\Entity\API\InvalidDataException;
 use JPI\HTTP\Request;
 use JPI\ORM\Entity\Collection as EntityCollection;
 use JPI\Utils\Collection;
@@ -14,7 +16,6 @@ class ProjectCrudService extends BaseService {
     protected static array $requiredColumns = [
         "name",
         "date",
-        "type",
         "tags",
         "long_description",
         "short_description",
@@ -52,28 +53,70 @@ class ProjectCrudService extends BaseService {
 
         if (count($projects)) {
             $ids = [];
+            $typeIds = [];
             foreach ($projects as $project) {
                 $ids[] = $project->getId();
+                $typeIds[$project->type_id] = "";
             }
 
-            $images = Image::newQuery()->where("project_id", "IN", $ids)->select();
+            $images = Image::newQuery()
+                ->where("project_id", "IN", $ids)
+                ->select()
+            ;
 
             $imagesGrouped = [];
             foreach ($images as $image) {
                 $imagesGrouped[$image->project_id][] = $image;
             }
 
+            $types = Type::newQuery()
+                ->where("id", "IN", array_keys($typeIds))
+                ->select()
+            ;
+
+            $typesGrouped = [];
+            foreach ($types as $type) {
+                $typesGrouped[$type->getId()] = $type;
+            }
+
             foreach ($projects as $project) {
                 $project->images = new EntityCollection($imagesGrouped[$project->getId()] ?? []);
+                $project->type = $typesGrouped[$project->type_id] ?? null;
             }
         }
 
         return $projects;
     }
 
+    protected function setValuesFromRequest(AbstractEntity $entity, Request $request): void {
+        $errors = [];
+
+        try {
+            parent::setValuesFromRequest($entity, $request);
+        } catch (InvalidDataException $exception) {
+            $errors = $exception->getErrors();
+        }
+
+        $data = $request->data->toArray();
+
+        if (empty($data["type_id"]) && empty($data["type"])) {
+            $errors["type_id"] = "Type is required.";
+        } elseif (!array_key_exists("type_id", $data) && !empty($data["type"])) {
+            $type = Type::getByNameOrCreate($data["type"]);
+            $entity->type_id = $type->getId();
+        }
+
+        if ($errors) {
+            throw new InvalidDataException($errors);
+        }
+    }
+
     public function create(Request $request): Project {
         $project = parent::create($request);
+
         $project->images = new EntityCollection([]);
+
+        $project->loadType();
 
         return $project;
     }
@@ -82,6 +125,7 @@ class ProjectCrudService extends BaseService {
         $project = parent::read($request);
 
         if ($project) {
+            $project->loadType();
             $project->loadImages();
         }
 
@@ -93,24 +137,28 @@ class ProjectCrudService extends BaseService {
 
         $input = $request->getArrayFromBody();
 
-        // If images were passed update the sort order
-        if ($project && !empty($input["images"])) {
-            $project->loadImages();
+        if ($project) {
+            $project->loadType();
 
-            $positions = [];
-            foreach ($input["images"] as $i => $image) {
-                $positions[$image["id"]] = $i + 1;
-            }
+            // If images were passed update the sort order
+            if (!empty($input["images"])) {
+                $project->loadImages();
 
-            foreach ($project->images as $image) {
-                $newPosition = $positions[$image->getId()];
-                if ($image->position !== $newPosition) {
-                    $image->position = $newPosition;
-                    $image->save();
+                $positions = [];
+                foreach ($input["images"] as $i => $image) {
+                    $positions[$image["id"]] = $i + 1;
                 }
-            }
 
-            $project->loadImages(true); // Reload
+                foreach ($project->images as $image) {
+                    $newPosition = $positions[$image->getId()];
+                    if ($image->position !== $newPosition) {
+                        $image->position = $newPosition;
+                        $image->save();
+                    }
+                }
+
+                $project->loadImages(true); // Reload
+            }
         }
 
         return $project;
