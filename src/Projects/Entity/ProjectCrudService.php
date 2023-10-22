@@ -81,7 +81,7 @@ class ProjectCrudService extends BaseService {
 
             foreach ($projects as $project) {
                 $project->images = new EntityCollection($imagesGrouped[$project->getId()] ?? []);
-                $project->type = $typesGrouped[$project->type_id] ?? null;
+                $project->type = $typesGrouped[$project->type_id] ?? new Type();
             }
         }
 
