@@ -79,7 +79,12 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
      */
     public function loadType(bool $reload = false): void {
         if ($this->isLoaded() && !$this->isDeleted() && ($reload || is_null($this->type))) {
-            $this->type = Type::getById($this->type_id);
+            if ($this->type_id) {
+                $this->type = Type::getById($this->type_id);
+            }
+            else {
+                $this->type = new Type();
+            }
         }
     }
 
