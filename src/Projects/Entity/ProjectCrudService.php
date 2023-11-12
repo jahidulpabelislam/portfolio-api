@@ -97,7 +97,7 @@ class ProjectCrudService extends BaseService {
             $errors = $exception->getErrors();
         }
 
-        $data = $request->data->toArray();
+        $data = $request->getArrayFromBody()->toArray();
 
         if (empty($data["type_id"]) && empty($data["type"])) {
             $errors["type_id"] = "Type is required.";
