@@ -109,6 +109,9 @@ class CrudService {
             $label = Str::machineToDisplay($column);
 
             if (!isset($data[$column])) {
+                if (!$entity->isLoaded() && in_array($column, $requiredColumns)) {
+                    $errors[$column] = "$label is required.";
+                }
                 continue;
             }
 
@@ -116,7 +119,7 @@ class CrudService {
 
             if (empty($value)) {
                 if (in_array($column, $requiredColumns)) {
-                    $errors[$column] = "$label is required.";
+                    $errors[$column] = "$label cannot be empty.";
                 } else {
                     $entity->$column = $value;
                 }
