@@ -106,11 +106,9 @@ class CrudService {
 
         // Make sure data submitted is all valid.
         foreach ($entity::getColumns() as $column) {
-            $label = Str::machineToDisplay($column);
-
             if (!isset($data[$column])) {
                 if (!$entity->isLoaded() && in_array($column, $requiredColumns)) {
-                    $errors[$column] = "$label is required.";
+                    $errors[$column] = "`$column` is required.";
                 }
                 continue;
             }
@@ -119,7 +117,7 @@ class CrudService {
 
             if (empty($value)) {
                 if (in_array($column, $requiredColumns)) {
-                    $errors[$column] = "$label cannot be empty.";
+                    $errors[$column] = "`$column` cannot be empty.";
                 } else {
                     $entity->$column = $value;
                 }
@@ -132,7 +130,7 @@ class CrudService {
                     $value = (int)$value;
                 }
                 else {
-                    $errors[$column] = "$label must be a integer.";
+                    $errors[$column] = "`$column` must be a integer.";
                 }
             }
             else if (in_array($column, $dateColumns) || in_array($column, $dateTimeColumns)) {
@@ -140,11 +138,11 @@ class CrudService {
                     $value = new DateTime($value);
                 }
                 catch (Exception $exception) {
-                    $errors[$column] = "$label is a invalid date" . (in_array($column, $dateTimeColumns) ? " time" : "") . " format.";
+                    $errors[$column] = "`$column` is a invalid date" . (in_array($column, $dateTimeColumns) ? " time" : "") . " format.";
                 }
             }
             else if (in_array($column, $arrayColumns) && !is_array($value)) {
-                $errors[$column] = "$label must be an array.";
+                $errors[$column] = "`$column` must be an array.";
             }
 
             if (!array_key_exists($column, $errors)) {
