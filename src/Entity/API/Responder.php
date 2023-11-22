@@ -144,7 +144,7 @@ trait Responder {
     }
 
     /**
-     * Return a response when a item was requested,
+     * Return a response when an item was requested,
      * so check if found return the item (with necessary meta)
      * else if not found return necessary meta
      */
@@ -197,8 +197,14 @@ trait Responder {
 
         $id = $id ?? $request->getAttribute("route_params")["id"];
 
-        if ($id && $entity && $entity->isLoaded() && $entity->getId() == $id) {
-            return $this->getItemFoundResponse($request, $entity);
+        if ($id) {
+            if (!$entity) {
+                return $this->getItemNotFoundResponse($request, $id, $entityInstance);
+            }
+
+            if ($entity->isLoaded() && $entity->getId() == $id) {
+                return $this->getItemFoundResponse($request, $entity);
+            }
         }
 
         return Response::json(500, [
@@ -207,7 +213,7 @@ trait Responder {
     }
 
     /**
-     * Return the response when a item was attempted to be deleted
+     * Return the response when an item was attempted to be deleted
      */
     public function getItemDeletedResponse(
         Request $request,

@@ -19,8 +19,7 @@ abstract class AbstractManager {
         $errors = [];
         foreach (static::$requiredColumns as $column) {
             if (empty($data[$column])) {
-                $label = Str::machineToDisplay($column);
-                $errors[$column] = "$label is required.";
+                $errors[$column] = "`$column` is required.";
             }
         }
 

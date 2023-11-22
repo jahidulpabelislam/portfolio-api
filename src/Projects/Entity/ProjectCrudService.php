@@ -99,11 +99,25 @@ class ProjectCrudService extends BaseService {
 
         $data = $request->getArrayFromBody()->toArray();
 
-        if (empty($data["type_id"]) && empty($data["type"])) {
-            $errors["type_id"] = "Type is required.";
-        } elseif (!array_key_exists("type_id", $data) && !empty($data["type"])) {
-            $type = Type::getByNameOrCreate($data["type"]);
-            $entity->type_id = $type->getId();
+        if (array_key_exists("type", $data) && array_key_exists("type_id", $data)) {
+            $errors["type"] = "Only one of `type`, `type_id` can be submitted.";
+        }
+        else if (array_key_exists("type_id", $data)) {
+            if (empty($data["type_id"])) {
+                $errors["type_id"] = "`type_id` cannot be empty.";
+            }
+        }
+        else if (array_key_exists("type", $data)) {
+            if (empty($data["type"])) {
+                $errors["type"] = "`type` cannot be empty.";
+            }
+            else {
+                $type = Type::getByNameOrCreate($data["type"]);
+                $entity->type_id = $type->getId();
+            }
+        }
+        else if (!$entity->isLoaded()) {
+            $errors["type"] = "`type` is required.";
         }
 
         if ($errors) {
