@@ -78,7 +78,7 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
      * Helper function to get the type entity
      */
     public function loadType(bool $reload = false): void {
-        if ($this->isLoaded() && !$this->isDeleted() && ($reload || is_null($this->type))) {
+        if (!$this->isDeleted() && ($reload || is_null($this->type))) {
             if ($this->type_id) {
                 $this->type = Type::getById($this->type_id);
             }
