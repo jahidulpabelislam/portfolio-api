@@ -28,7 +28,7 @@ class CORSMiddleware implements RequestMiddlewareInterface {
         if (in_array($originDomain, Config::get()->allowed_domains)) {
             $response->withHeader("Access-Control-Allow-Origin", $originURL)
                 ->withHeader("Access-Control-Allow-Methods", $app->getRouter()->getMethodsForPath())
-                ->withHeader("Access-Control-Allow-Headers", ["Authorization", "Content-Type", "Process-Data"])
+                ->withHeader("Access-Control-Allow-Headers", ["Authorization", "Content-Type", "Process-Data", "Cache-Control"])
                 ->withHeader("Vary", "Origin")
             ;
         }
