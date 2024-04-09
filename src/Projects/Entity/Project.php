@@ -70,7 +70,7 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
      */
     public function loadImages(bool $reload = false): void {
         if ($this->isLoaded() && !$this->isDeleted() && ($reload || is_null($this->images))) {
-            $this->images = Image::newQuery()->where("project_id", "=", $this->getId())->select();
+            $this->images = Image::newQuery()->where("project_id", "=", $this)->select();
         }
     }
 
