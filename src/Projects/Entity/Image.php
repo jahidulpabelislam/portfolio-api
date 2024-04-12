@@ -23,13 +23,18 @@ class Image extends AbstractAPIEntity {
 
     protected static string $table = "project_images";
 
-    protected static array $defaultColumns = [
-        "project_id" => null,
-        "position" => 0,
-        "file" => "",
+    protected static array $dataMapping = [
+        "project" => [
+            "type" => "belongs_to",
+            "entity" => Project::class,
+        ],
+        "position" => [
+            "type" => "int",
+        ],
+        "file" => [
+            "type" => "string",
+        ],
     ];
-
-    protected static array $intColumns = ["project_id", "position"];
 
     public static string $defaultOrderByColumn = "position";
 
@@ -58,7 +63,7 @@ class Image extends AbstractAPIEntity {
             "projectImage",
             [
                 "id" => $this->getId(),
-                "projectId" => $this->project_id,
+                "projectId" => $this->project->getId(),
             ]
         );
     }

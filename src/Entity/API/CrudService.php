@@ -95,14 +95,11 @@ class CrudService {
     protected function setValuesFromRequest(AbstractEntity $entity, Request $request): void {
         $errors = [];
 
-        $intColumns = $entity::getIntColumns();
-        $arrayColumns = $entity::getArrayColumns();
-        $dateTimeColumns = $entity::getDateTimeColumns();
-        $dateColumns = $entity::getDateColumns();
-
         $requiredColumns = static::$requiredColumns;
 
         $data = $request->getArrayFromBody()->toArray();
+
+        $mapping = $entity::getDataMapping();
 
         // Make sure data submitted is all valid.
         foreach ($entity::getColumns() as $column) {
@@ -115,6 +112,8 @@ class CrudService {
 
             $value = $data[$column];
 
+            $type = $mapping[$column]["type"];
+
             if (empty($value)) {
                 if (in_array($column, $requiredColumns)) {
                     $errors[$column] = "`$column` cannot be empty.";
@@ -125,7 +124,7 @@ class CrudService {
                 continue;
             }
 
-            if (in_array($column, $intColumns)) {
+            if ($type === "int") {
                 if (is_numeric($value) && $value == (int)$value) {
                     $value = (int)$value;
                 }
@@ -133,15 +132,15 @@ class CrudService {
                     $errors[$column] = "`$column` must be a integer.";
                 }
             }
-            else if (in_array($column, $dateColumns) || in_array($column, $dateTimeColumns)) {
+            else if ($type === "date" || $type === "date_time") {
                 try {
                     $value = new DateTime($value);
                 }
                 catch (Exception $exception) {
-                    $errors[$column] = "`$column` is a invalid date" . (in_array($column, $dateTimeColumns) ? " time" : "") . " format.";
+                    $errors[$column] = "`$column` is a invalid date" . ($type === "date_time" ? " time" : "") . " format.";
                 }
             }
-            else if (in_array($column, $arrayColumns) && !is_array($value)) {
+            else if ($type === "array" && !is_array($value)) {
                 $errors[$column] = "`$column` must be an array.";
             }
 

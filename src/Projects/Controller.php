@@ -34,7 +34,6 @@ class Controller extends AbstractCrudController {
         // Check the Project trying to get Images for exists
         $project = $this->getEntityInstance()::getCrudService()->read($request);
         if ($project) {
-            $project->loadImages();
             return $this->getItemsResponse($request, $project->images, new Image());
         }
 
@@ -69,7 +68,7 @@ class Controller extends AbstractCrudController {
         if ($file->saveTo($newPathFull)) {
             $projectImage = Image::insert([
                 "file" => $newPath,
-                "project_id" => $project->getId(),
+                "project" => $project,
                 "position" => 999, // High enough number
             ]);
             $projectImage->reload();

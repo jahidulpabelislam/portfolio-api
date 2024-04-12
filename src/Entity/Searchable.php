@@ -10,7 +10,7 @@ use JPI\ORM\Entity\QueryBuilder;
 trait Searchable {
 
     public static function getSearchableColumns(): array {
-        return static::$searchableColumns ?? array_keys(static::$defaultColumns);
+        return static::$searchableColumns ?? static::getColumns();
     }
 
     public static function addSearchToQuery(QueryBuilder $query, string $value): void {

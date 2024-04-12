@@ -4,10 +4,10 @@
         "ext-fileinfo": "*",
         "ext-json": "*",
         "ext-pdo": "*",
-        "jpi/utils": "0.x-dev as 0.9.3",
+        "jpi/utils": "1.x-dev as 1.0",
         "jpi/database": "2.x-dev as 2",
         "jpi/query": "2.x-dev as 2",
-        "jpi/orm": "2.x-dev as 2",
+        "jpi/orm": "2.x-dev",
         "jpi/http": "1.x-dev",
         "firebase/php-jwt": "^6.0"
     },

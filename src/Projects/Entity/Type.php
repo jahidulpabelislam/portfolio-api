@@ -14,8 +14,10 @@ class Type extends AbstractAPIEntity {
 
     protected static string $table = "project_types";
 
-    protected static array $defaultColumns = [
-        "name" => "",
+    protected static array $dataMapping = [
+        "name" => [
+            "type" => "string",
+        ],
     ];
 
     protected static string $crudService = TypeCrudService::class;
