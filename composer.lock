@@ -75,12 +75,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/database.git",
-                "reference": "aa052b5c92682670ef948747f4a0159c811ef6d2"
+                "reference": "ddd169538486c8c3ff8d39d789beee3af465b8d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/database/zipball/aa052b5c92682670ef948747f4a0159c811ef6d2",
-                "reference": "aa052b5c92682670ef948747f4a0159c811ef6d2",
+                "url": "https://api.github.com/repos/jahidulpabelislam/database/zipball/ddd169538486c8c3ff8d39d789beee3af465b8d8",
+                "reference": "ddd169538486c8c3ff8d39d789beee3af465b8d8",
                 "shasum": ""
             },
             "require": {
@@ -118,7 +118,7 @@
                 "issues": "https://github.com/jahidulpabelislam/database/issues",
                 "source": "https://github.com/jahidulpabelislam/database/tree/2.x"
             },
-            "time": "2023-07-01T16:27:04+00:00"
+            "time": "2024-04-13T11:13:22+00:00"
         },
         {
             "name": "jpi/http",
@@ -163,7 +163,7 @@
                 "http"
             ],
             "support": {
-                "source": "https://github.com/jahidulpabelislam/http/tree/1.x",
+                "source": "https://github.com/jahidulpabelislam/http/tree/v1.0.0-beta.7",
                 "issues": "https://github.com/jahidulpabelislam/http/issues"
             },
             "time": "2024-02-16T23:31:47+00:00"
@@ -174,12 +174,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "25e5a333f5194a315e7557ea805b7f642ba1cdae"
+                "reference": "51c02c8c43ec5ce4d3bd4e05c26096978351816d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/25e5a333f5194a315e7557ea805b7f642ba1cdae",
-                "reference": "25e5a333f5194a315e7557ea805b7f642ba1cdae",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/51c02c8c43ec5ce4d3bd4e05c26096978351816d",
+                "reference": "51c02c8c43ec5ce4d3bd4e05c26096978351816d",
                 "shasum": ""
             },
             "require": {
@@ -221,7 +221,7 @@
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
                 "source": "https://github.com/jahidulpabelislam/orm/tree/2.x"
             },
-            "time": "2024-02-17T21:54:35+00:00"
+            "time": "2024-04-13T15:17:50+00:00"
         },
         {
             "name": "jpi/query",
@@ -229,12 +229,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/query.git",
-                "reference": "386486e1af5ef692d4685d80acb18a667d8094c5"
+                "reference": "9ee6a4b04ad855fcce1078a9c9246cd1c0e9a394"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/query/zipball/386486e1af5ef692d4685d80acb18a667d8094c5",
-                "reference": "386486e1af5ef692d4685d80acb18a667d8094c5",
+                "url": "https://api.github.com/repos/jahidulpabelislam/query/zipball/9ee6a4b04ad855fcce1078a9c9246cd1c0e9a394",
+                "reference": "9ee6a4b04ad855fcce1078a9c9246cd1c0e9a394",
                 "shasum": ""
             },
             "require": {
@@ -274,9 +274,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/query/issues",
-                "source": "https://github.com/jahidulpabelislam/query/tree/v2.0.0-beta.2"
+                "source": "https://github.com/jahidulpabelislam/query/tree/2.x"
             },
-            "time": "2023-10-10T22:09:47+00:00"
+            "time": "2024-04-13T11:13:56+00:00"
         },
         {
             "name": "jpi/utils",
