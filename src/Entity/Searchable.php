@@ -24,8 +24,8 @@ trait Searchable {
         $where = new WhereOrCondition($query);
         foreach (static::getSearchableColumns() as $column) {
             $where
-                ->where("$column LIKE :search")
-                ->where("$column LIKE :searchReversed")
+                ->where($column, "LIKE", ":search")
+                ->where($column, "LIKE", ":searchReversed")
             ;
         }
 
