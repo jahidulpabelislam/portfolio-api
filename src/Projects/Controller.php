@@ -12,7 +12,6 @@ use App\Core;
 use App\HTTP\AbstractCrudController;
 use App\Projects\Entity\Image;
 use App\Projects\Entity\Project;
-use Exception;
 use JPI\HTTP\Response;
 use JPI\HTTP\UploadedFile;
 

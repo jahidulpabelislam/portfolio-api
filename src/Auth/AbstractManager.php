@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Auth;
 
-use JPI\HTTP\Request;
 use App\Utils\Str;
+use JPI\HTTP\Request;
 
 abstract class AbstractManager {
 

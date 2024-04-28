@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use JPI\ORM\Entity\QueryBuilder;
 use JPI\Database\Query\Clause\Where\OrCondition as WhereOrCondition;
+use JPI\ORM\Entity\QueryBuilder;
 
 trait Searchable {
 
