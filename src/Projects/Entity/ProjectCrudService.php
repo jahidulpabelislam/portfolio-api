@@ -80,8 +80,13 @@ class ProjectCrudService extends BaseService {
             }
 
             foreach ($projects as $project) {
-                $project->images = new EntityCollection($imagesGrouped[$project->getId()] ?? []);
-                $project->type = $typesGrouped[$project->type_id] ?? new Type();
+                $project->setValues(
+                    [
+                        "images" => new EntityCollection($imagesGrouped[$project->getId()] ?? []),
+                        "type_id" => $typesGrouped[$project->type_id] ?? new Type(),
+                    ],
+                    true
+                );
             }
         }
 
@@ -113,7 +118,7 @@ class ProjectCrudService extends BaseService {
             }
             else {
                 $type = Type::getByNameOrCreate($data["type"]);
-                $entity->type_id = $type->getId();
+                $entity->type = $type;
             }
         }
         else if (!$entity->isLoaded()) {
@@ -130,8 +135,6 @@ class ProjectCrudService extends BaseService {
 
         $project->images = new EntityCollection([]);
 
-        $project->loadType();
-
         return $project;
     }
 
@@ -139,8 +142,9 @@ class ProjectCrudService extends BaseService {
         $project = parent::read($request);
 
         if ($project) {
-            $project->loadType();
-            $project->loadImages();
+            // Just load
+            $project->type;
+            $project->images;
         }
 
         return $project;
@@ -152,12 +156,10 @@ class ProjectCrudService extends BaseService {
         $input = $request->getArrayFromBody();
 
         if ($project) {
-            $project->loadType();
+            $project->type; // load
 
             // If images were passed update the sort order
             if (!empty($input["images"])) {
-                $project->loadImages();
-
                 $imagesData = $input["images"]->toArray();
 
                 foreach ($project->images as $image) {
@@ -168,7 +170,7 @@ class ProjectCrudService extends BaseService {
                     }
                 }
 
-                $project->loadImages(true); // Reload
+                $project->reloadImages();
             }
         }
 

@@ -7,10 +7,9 @@ namespace App\Entity;
 use App\Config;
 use JPI\Database;
 use JPI\ORM\Entity as BaseEntity;
-use JPI\Utils\Arrayable;
 use PDO;
 
-abstract class AbstractEntity extends BaseEntity implements Arrayable {
+abstract class AbstractEntity extends BaseEntity {
 
     protected static ?Database $database = null;
 
@@ -29,17 +28,5 @@ abstract class AbstractEntity extends BaseEntity implements Arrayable {
         }
 
         return static::$database;
-    }
-
-    public function toArray(): array {
-        $array = [
-            "id" => $this->getId(),
-        ];
-
-        foreach ($this->columns as $column => $value) {
-            $array[$column] = $value;
-        }
-
-        return $array;
     }
 }

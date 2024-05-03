@@ -17,7 +17,6 @@ use App\Entity\FilterableInterface;
 use App\Entity\Searchable;
 use App\Entity\SearchableInterface;
 use App\Entity\Timestamped;
-use JPI\ORM\Entity\Collection as EntityCollection;
 use JPI\Utils\URL;
 
 class Project extends AbstractAPIEntity implements FilterableInterface, SearchableInterface {
@@ -30,23 +29,48 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
 
     protected static string $table = "projects";
 
-    protected static array $defaultColumns = [
-        "name" => "",
-        "date" => null,
-        "url" => "",
-        "github_url" => "",
-        "download_url" => "",
-        "short_description" => "",
-        "long_description" => "",
-        "colour" => "",
-        "tags" => [],
-        "status" => "draft",
-        "type_id" => null,
+    protected static array $dataMapping = [
+        "name" => [
+            "type" => "string",
+        ],
+        "date" => [
+            "type" => "date",
+        ],
+        "url" => [
+            "type" => "string",
+        ],
+        "github_url" => [
+            "type" => "string",
+        ],
+        "download_url" => [
+            "type" => "string",
+        ],
+        "short_description" => [
+            "type" => "string",
+        ],
+        "long_description" => [
+            "type" => "string",
+        ],
+        "colour" => [
+            "type" => "string",
+        ],
+        "tags" => [
+            "type" => "array",
+        ],
+        "status" => [
+            "type" => "string",
+            "default_value" => "draft",
+        ],
+        "type" => [
+            "type" => "belongs_to",
+            "entity" => Type::class,
+        ],
+        "images" => [
+            "type" => "has_many",
+            "entity" => Image::class,
+            "column" => "project_id",
+        ],
     ];
-
-    protected static array $intColumns = ["type_id"];
-    protected static array $dateColumns = ["date"];
-    protected static array $arrayColumns = ["tags"];
 
     protected static array $searchableColumns = [
         "name",
@@ -61,41 +85,20 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
 
     protected static string $crudService = ProjectCrudService::class;
 
-    public ?EntityCollection $images = null;
-
-    public ?Type $type = null;
-
-    /**
-     * Helper function to get all Project Image Entities linked to this Project
-     */
-    public function loadImages(bool $reload = false): void {
-        if ($this->isLoaded() && !$this->isDeleted() && ($reload || is_null($this->images))) {
-            $this->images = Image::newQuery()->where("project_id", "=", $this)->select();
-        }
-    }
-
-    /**
-     * Helper function to get the type entity
-     */
-    public function loadType(bool $reload = false): void {
-        if (!$this->isDeleted() && ($reload || is_null($this->type))) {
-            if ($this->type_id) {
-                $this->type = Type::getById($this->type_id);
-            }
-            else {
-                $this->type = new Type();
-            }
-        }
+    public function reloadImages(): void {
+        unset($this->data["images"]["value"]);
+        $this->images;
     }
 
     public function reload(): void {
         parent::reload();
 
-        if (!is_null($this->type)) {
-            $this->loadType(true);
+        if (!is_null($this->data["type"])) {
+            unset($this->data["type"]["value"]);
+            $this->type;
         }
-        if (!is_null($this->images)) {
-            $this->loadImages(true);
+        if (!is_null($this->data["images"])) {
+            $this->reloadImages();
         }
     }
 
@@ -103,8 +106,6 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
      * Add extra functionality as a Project is linked to many Project Images, so delete these also
      */
     public function delete(): bool {
-        $this->loadImages(); // Make sure images are loaded first so we can delete later
-
         $isDeleted = parent::delete();
 
         if ($isDeleted) {
@@ -114,19 +115,6 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
         }
 
         return $isDeleted;
-    }
-
-    public function toArray(): array {
-        $array = parent::toArray();
-
-        if ($this->images instanceof EntityCollection) {
-            $array["images"] = [];
-            foreach ($this->images as $image) {
-                $array["images"][] = $image->toArray();
-            }
-        }
-
-        return $array;
     }
 
     public function getAPIURL(): URL {
@@ -142,19 +130,8 @@ class Project extends AbstractAPIEntity implements FilterableInterface, Searchab
     public function getAPIResponse(): array {
         $response = parent::getAPIResponse();
 
-        unset($response["type_id"]);
-
-        if ($this->type instanceof Type) {
-            $response["type"] = $this->type->name;
-        }
-
-        if ($this->images instanceof EntityCollection) {
-            $response["images"] = [];
-            foreach ($this->images as $image) {
-                $imageResponse = $image->getAPIResponse();
-                $imageResponse["_links"] = $image->getAPILinks();
-                $response["images"][] = $imageResponse;
-            }
+        if (!empty($response["type"])) {
+            $response["type"] = $response["type"]["name"];
         }
 
         return $response;

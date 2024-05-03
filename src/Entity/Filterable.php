@@ -9,7 +9,7 @@ use JPI\ORM\Entity\QueryBuilder;
 trait Filterable {
 
     public static function getFilterableColumns(): array {
-        return static::$filterableColumns ?? array_keys(static::$defaultColumns);
+        return static::$filterableColumns ?? static::getColumns();
     }
 
     public static function addFiltersToQuery(QueryBuilder $query, array $filters): void {
