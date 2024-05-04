@@ -11,7 +11,7 @@ use JPI\HTTP\RequestHandlerInterface;
 use JPI\HTTP\RequestMiddlewareInterface;
 use JPI\HTTP\Response;
 
-class CORSMiddleware implements RequestMiddlewareInterface {
+final class CORSMiddleware implements RequestMiddlewareInterface {
 
     use RequestAwareTrait;
 

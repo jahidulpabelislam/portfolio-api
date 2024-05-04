@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "38af14ea160fc2c96007caea08e59578",
+    "content-hash": "4664e297faa02b8442ed900aa1fc058e",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -68,6 +68,59 @@
                 "source": "https://github.com/firebase/php-jwt/tree/v6.10.0"
             },
             "time": "2023-12-01T16:26:39+00:00"
+        },
+        {
+            "name": "jpi/crud-api",
+            "version": "1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jahidulpabelislam/crud-api.git",
+                "reference": "089170cac585380a3286c2c79faab80022962705"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jahidulpabelislam/crud-api/zipball/089170cac585380a3286c2c79faab80022962705",
+                "reference": "089170cac585380a3286c2c79faab80022962705",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "jpi/http": "^1.0",
+                "jpi/orm": "^2.0",
+                "jpi/utils": "^1.0",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "jpi/codestyles": "^1.0.1"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "JPI\\CRUD\\API\\": "src/"
+                }
+            },
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Jahidul Pabel Islam",
+                    "email": "me@jahidulpabelislam.com"
+                }
+            ],
+            "description": "CRUD API Framework",
+            "keywords": [
+                "api",
+                "crud",
+                "entity",
+                "model"
+            ],
+            "support": {
+                "source": "https://github.com/jahidulpabelislam/crud-api/tree/v1.0.0-beta.1",
+                "issues": "https://github.com/jahidulpabelislam/crud-api/issues"
+            },
+            "time": "2024-05-04T16:28:23+00:00"
         },
         {
             "name": "jpi/database",
@@ -163,7 +216,7 @@
                 "http"
             ],
             "support": {
-                "source": "https://github.com/jahidulpabelislam/http/tree/1.x",
+                "source": "https://github.com/jahidulpabelislam/http/tree/v1.0.1",
                 "issues": "https://github.com/jahidulpabelislam/http/issues"
             },
             "time": "2024-05-03T23:05:42+00:00"
@@ -220,13 +273,13 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
-                "source": "https://github.com/jahidulpabelislam/orm/tree/2.x"
+                "source": "https://github.com/jahidulpabelislam/orm/tree/v2.0.0-beta.2"
             },
             "time": "2024-05-03T23:01:01+00:00"
         },
         {
             "name": "jpi/query",
-            "version": "2.x-dev",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/query.git",
@@ -247,7 +300,6 @@
                 "jpi/codestyles": "^1.0",
                 "phpunit/phpunit": "^9.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -341,12 +393,6 @@
             "alias_normalized": "2.0.0.0"
         },
         {
-            "package": "jpi/query",
-            "version": "2.9999999.9999999.9999999-dev",
-            "alias": "2",
-            "alias_normalized": "2.0.0.0"
-        },
-        {
             "package": "jpi/utils",
             "version": "1.9999999.9999999.9999999-dev",
             "alias": "1.0",
@@ -357,9 +403,9 @@
     "stability-flags": {
         "jpi/utils": 20,
         "jpi/database": 20,
-        "jpi/query": 20,
         "jpi/orm": 20,
-        "jpi/http": 20
+        "jpi/http": 20,
+        "jpi/crud-api": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

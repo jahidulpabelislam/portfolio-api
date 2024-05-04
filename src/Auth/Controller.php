@@ -9,10 +9,28 @@ declare(strict_types=1);
 namespace App\Auth;
 
 use App\Auth\Manager as AuthManager;
-use App\HTTP\AbstractController;
+use JPI\HTTP\RequestAwareTrait;
 use JPI\HTTP\Response;
 
-class Controller extends AbstractController {
+final class Controller {
+
+    use RequestAwareTrait;
+
+    /**
+     * Response when user isn't logged in correctly
+     */
+    public static function getNotAuthorisedResponse(): Response {
+        return Response::json(401, [
+            "message" => "You need to be logged in!",
+        ]);
+    }
+
+    public function getInvalidInputResponse(array $errors): Response {
+        return Response::json(400, [
+            "message" => "The necessary data was not provided and/or invalid.",
+            "errors" => $errors,
+        ]);
+    }
 
     /**
      * Call to authenticate a user.

@@ -10,7 +10,7 @@ use JPI\HTTP\RequestHandlerInterface;
 use JPI\HTTP\RequestMiddlewareInterface;
 use JPI\HTTP\Response;
 
-class Middleware implements RequestMiddlewareInterface {
+final class Middleware implements RequestMiddlewareInterface {
 
     use RequestAwareTrait;
 

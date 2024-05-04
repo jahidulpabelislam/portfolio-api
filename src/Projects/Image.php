@@ -8,14 +8,14 @@ declare(strict_types=1);
  * Also holds any method only custom to Project Image entities.
  */
 
-namespace App\Projects\Entity;
+namespace App\Projects;
 
+use App\AbstractEntity as AbstractAPIEntity;
 use App\Core;
-use App\Entity\API\AbstractEntity as AbstractAPIEntity;
 use App\Entity\Timestamped;
 use JPI\Utils\URL;
 
-class Image extends AbstractAPIEntity {
+final class Image extends AbstractAPIEntity {
 
     use Timestamped;
 

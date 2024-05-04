@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App;
 
-class Config {
+final class Config {
 
     use \JPI\Utils\Singleton;
 

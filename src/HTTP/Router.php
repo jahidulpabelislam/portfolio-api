@@ -9,9 +9,9 @@ declare(strict_types=1);
 namespace App\HTTP;
 
 use App\Core;
-use JPI\HTTP\Router as PackageRouter;
+use JPI\CRUD\API\Router as PackageRouter;
 
-class Router extends PackageRouter {
+final class Router extends PackageRouter {
 
     public function addRoute(string $pattern, string $method, $callback, string $name = null): void {
         parent::addRoute("/v" . Core::VERSION . $pattern, $method, $callback, $name);

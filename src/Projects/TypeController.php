@@ -2,10 +2,9 @@
 
 namespace App\Projects;
 
-use App\HTTP\AbstractCrudController;
-use App\Projects\Entity\Type;
+use App\HTTP\AbstractCRUDController;
 
-class TypeController extends AbstractCrudController {
+final class TypeController extends AbstractCRUDController {
 
     protected string $entityClass = Type::class;
 
