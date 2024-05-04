@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace App;
 
-use App\Config;
+use JPI\CRUD\API\AbstractEntity as BaseEntity;
 use JPI\Database;
-use JPI\ORM\Entity as BaseEntity;
 use PDO;
 
 abstract class AbstractEntity extends BaseEntity {

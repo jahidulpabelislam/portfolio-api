@@ -18,10 +18,9 @@ use App\Projects\TypeController as ProjectTypesController;
 use DateTime;
 use JPI\HTTP\App;
 use JPI\HTTP\Request;
-use JPI\HTTP\Response;
 use JPI\Utils\Singleton;
 
-class Core extends App {
+final class Core extends App {
 
     use Singleton;
 
@@ -38,19 +37,7 @@ class Core extends App {
     }
 
     private function initRoutes(): void {
-        $this->router = new Router(
-            Request::fromGlobals(),
-            function (Request $request) {
-                return Response::json(404, [
-                    "message" => "Unrecognised URI ({$request->getPath()}).",
-                ]);
-            },
-            function (Request $request) {
-                return Response::json(405, [
-                    "message" => "Method {$request->getMethod()} not allowed on {$request->getPath()}.",
-                ]);
-            }
-        );
+        $this->router = new Router(Request::fromGlobals());
 
         $projectsController = ProjectsController::class;
         $projectTypesController = ProjectTypesController::class;

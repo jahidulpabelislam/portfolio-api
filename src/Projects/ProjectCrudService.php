@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Projects\Entity;
+namespace App\Projects;
 
-use App\Entity\API\AbstractEntity;
-use App\Entity\API\CrudService as BaseService;
-use App\Entity\API\InvalidDataException;
+use JPI\CRUD\API\AbstractEntity;
+use JPI\CRUD\API\CrudService as BaseService;
+use JPI\CRUD\API\Entity\InvalidDataException;
 use JPI\HTTP\Request;
 use JPI\ORM\Entity\Collection as EntityCollection;
 use JPI\Utils\Collection;
 
-class ProjectCrudService extends BaseService {
+final class ProjectCrudService extends BaseService {
 
     protected static array $requiredColumns = [
         "name",

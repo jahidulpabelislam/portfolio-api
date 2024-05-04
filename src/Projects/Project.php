@@ -8,18 +8,18 @@ declare(strict_types=1);
  * Also holds any method only custom to Project entities.
  */
 
-namespace App\Projects\Entity;
+namespace App\Projects;
 
+use App\AbstractEntity as AbstractAPIEntity;
 use App\Core;
-use App\Entity\API\AbstractEntity as AbstractAPIEntity;
-use App\Entity\Filterable;
-use App\Entity\FilterableInterface;
-use App\Entity\Searchable;
-use App\Entity\SearchableInterface;
 use App\Entity\Timestamped;
+use JPI\CRUD\API\Entity\Filterable;
+use JPI\CRUD\API\Entity\FilterableInterface;
+use JPI\CRUD\API\Entity\Searchable;
+use JPI\CRUD\API\Entity\SearchableInterface;
 use JPI\Utils\URL;
 
-class Project extends AbstractAPIEntity implements FilterableInterface, SearchableInterface {
+final class Project extends AbstractAPIEntity implements FilterableInterface, SearchableInterface {
 
     use Filterable;
     use Searchable;

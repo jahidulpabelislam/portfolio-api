@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Projects\Entity;
+namespace App\Projects;
 
+use App\AbstractEntity as AbstractAPIEntity;
 use App\Core;
-use App\Entity\API\AbstractEntity as AbstractAPIEntity;
 use App\Entity\Timestamped;
+use JPI\Utils\URL;
 
-class Type extends AbstractAPIEntity {
+final class Type extends AbstractAPIEntity {
 
     use Timestamped;
 
@@ -36,7 +37,7 @@ class Type extends AbstractAPIEntity {
         return static::insert(["name" => $name]);
     }
 
-    public function getAPIURL(): string {
+    public function getAPIURL(): URL {
         return Core::get()->getRouter()->getURLForRoute(
             "projectType",
             [

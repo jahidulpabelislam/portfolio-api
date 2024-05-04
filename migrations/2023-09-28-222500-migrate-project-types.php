@@ -1,7 +1,7 @@
 <?php
 
-use App\Projects\Entity\Project;
-use App\Projects\Entity\Type;
+use App\Projects\Project;
+use App\Projects\Type;
 use JPI\Database\Query;
 
 require_once __DIR__ . "/../bootstrap.php";

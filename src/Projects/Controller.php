@@ -9,13 +9,11 @@ declare(strict_types=1);
 namespace App\Projects;
 
 use App\Core;
-use App\HTTP\AbstractCrudController;
-use App\Projects\Entity\Image;
-use App\Projects\Entity\Project;
+use App\HTTP\AbstractCRUDController;
 use JPI\HTTP\Response;
 use JPI\HTTP\UploadedFile;
 
-class Controller extends AbstractCrudController {
+final class Controller extends AbstractCRUDController {
 
     protected string $entityClass = Project::class;
 
