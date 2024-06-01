@@ -30,7 +30,7 @@ final class Controller extends AbstractCRUDController {
     public function getImages(string|int $projectId): Response {
         $request = $this->getRequest();
         // Check the Project trying to get Images for exists
-        $project = $this->getEntityInstance()::getCrudService()->read($request);
+        $project = $this->getEntityInstance()::getCrudService()->getEntityFromRequest($request);
         if ($project) {
             return $this->getItemsResponse($request, $project->images, new Image());
         }
@@ -91,7 +91,7 @@ final class Controller extends AbstractCRUDController {
         $files = $request->getFiles();
         if (isset($files["image"])) {
             // Check the Project trying to add a Image for exists
-            $project = $this->getEntityInstance()::getCrudService()->read($request);
+            $project = $this->getEntityInstance()::getCrudService()->getEntityFromRequest($request);
             if ($project) {
                 return $this->uploadImage($project, $files["image"]);
             }
@@ -111,7 +111,7 @@ final class Controller extends AbstractCRUDController {
         $request = $this->getRequest();
 
         // Check the Project trying to get Image for exists
-        $project = $this->getEntityInstance()::getCrudService()->read($request);
+        $project = $this->getEntityInstance()::getCrudService()->getEntityFromRequest($request);
         if ($project) {
             $image = Image::getCrudService()->read($request);
 
@@ -143,7 +143,7 @@ final class Controller extends AbstractCRUDController {
         }
 
         // Check the Project of the Image trying to edit actually exists
-        $project = $this->getEntityInstance()::getCrudService()->read($request);
+        $project = $this->getEntityInstance()::getCrudService()->getEntityFromRequest($request);
         if (!$project) {
             return $this->getItemNotFoundResponse($request, $projectId);
         }

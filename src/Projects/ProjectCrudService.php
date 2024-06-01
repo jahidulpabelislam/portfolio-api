@@ -21,7 +21,7 @@ final class ProjectCrudService extends BaseService {
         "short_description",
     ];
 
-    protected function getEntityFromRequest(Request $request): ?Project {
+    public function getEntityFromRequest(Request $request): ?Project {
         $routeParams = $request->getAttribute("route_params");
 
         $query = $this->getEntityInstance()::newQuery()

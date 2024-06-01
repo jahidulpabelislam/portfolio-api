@@ -13,6 +13,7 @@ namespace App\Projects;
 use App\AbstractEntity as AbstractAPIEntity;
 use App\Core;
 use App\Entity\Timestamped;
+use JPI\CRUD\API\AbstractEntity;
 use JPI\Utils\URL;
 
 final class Image extends AbstractAPIEntity {
@@ -68,8 +69,12 @@ final class Image extends AbstractAPIEntity {
         );
     }
 
-    public function getAPIResponse(): array {
-        $response = parent::getAPIResponse();
+    public function getAPIResponse(int $depth = 1, ?AbstractEntity $parentEntity = null): array {
+        $response = parent::getAPIResponse($depth, $parentEntity);
+
+        if ($depth === 1) {
+            unset($response["project"]);
+        }
 
         $response["url"] = (string)Core::get()->getRequest()->makeURL($response["file"]);
         unset($response["file"]);
