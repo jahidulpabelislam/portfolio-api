@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4664e297faa02b8442ed900aa1fc058e",
+    "content-hash": "18de875d39c1c891f85b18a7777f2b33",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -223,16 +223,16 @@
         },
         {
             "name": "jpi/orm",
-            "version": "2.x-dev",
+            "version": "dev-value-validation",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "6c2dceabbb61f870937e6ed7607d4b542526d65d"
+                "reference": "5dfd2e62ef3b09dc4f2f74294e5264f754b711ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/6c2dceabbb61f870937e6ed7607d4b542526d65d",
-                "reference": "6c2dceabbb61f870937e6ed7607d4b542526d65d",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/5dfd2e62ef3b09dc4f2f74294e5264f754b711ab",
+                "reference": "5dfd2e62ef3b09dc4f2f74294e5264f754b711ab",
                 "shasum": ""
             },
             "require": {
@@ -244,7 +244,6 @@
             "require-dev": {
                 "jpi/codestyles": "^1.0.1"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -273,9 +272,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
-                "source": "https://github.com/jahidulpabelislam/orm/tree/2.x"
+                "source": "https://github.com/jahidulpabelislam/orm/tree/value-validation"
             },
-            "time": "2024-06-01T00:01:49+00:00"
+            "time": "2024-05-31T21:27:09+00:00"
         },
         {
             "name": "jpi/query",
@@ -390,6 +389,12 @@
             "package": "jpi/database",
             "version": "2.9999999.9999999.9999999-dev",
             "alias": "2",
+            "alias_normalized": "2.0.0.0"
+        },
+        {
+            "package": "jpi/orm",
+            "version": "dev-value-validation",
+            "alias": "2.0",
             "alias_normalized": "2.0.0.0"
         },
         {
