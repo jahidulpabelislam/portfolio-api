@@ -13,6 +13,7 @@ namespace App\Projects;
 use App\AbstractEntity as AbstractAPIEntity;
 use App\Core;
 use App\Entity\Timestamped;
+use JPI\CRUD\API\AbstractEntity;
 use JPI\CRUD\API\Entity\Filterable;
 use JPI\CRUD\API\Entity\FilterableInterface;
 use JPI\CRUD\API\Entity\Searchable;
@@ -68,7 +69,7 @@ final class Project extends AbstractAPIEntity implements FilterableInterface, Se
         "images" => [
             "type" => "has_many",
             "entity" => Image::class,
-            "column" => "project_id",
+            "column" => "project",
         ],
     ];
 
@@ -127,8 +128,8 @@ final class Project extends AbstractAPIEntity implements FilterableInterface, Se
         return $links;
     }
 
-    public function getAPIResponse(): array {
-        $response = parent::getAPIResponse();
+    public function getAPIResponse(int $depth = 1, ?AbstractEntity $parentEntity = null): array {
+        $response = parent::getAPIResponse($depth, $parentEntity);
 
         if (!empty($response["type"])) {
             $response["type"] = $response["type"]["name"];
