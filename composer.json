@@ -6,7 +6,7 @@
         "ext-pdo": "*",
         "jpi/utils": "1.x-dev as 1.0",
         "jpi/database": "2.x-dev as 2",
-        "jpi/orm": "2.x-dev",
+        "jpi/orm": "2.x-dev as 2.0",
         "jpi/http": "1.x-dev",
         "jpi/crud-api": "1.x-dev",
         "firebase/php-jwt": "^6.0"
