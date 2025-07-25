@@ -9,6 +9,7 @@
         "jpi/orm": "2.x-dev as 2.0",
         "jpi/http": "1.x-dev",
         "jpi/crud-api": "1.x-dev",
+        "jpi/personal-core": "1.x-dev",
         "firebase/php-jwt": "^6.0"
     },
     "autoload": {
@@ -24,6 +25,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/jahidulpabelislam/crud-api"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/jahidulpabelislam/personal-core"
         }
     ]
 }
