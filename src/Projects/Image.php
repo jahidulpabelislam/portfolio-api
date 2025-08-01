@@ -50,7 +50,7 @@ final class Image extends AbstractAPIEntity {
         // Check if the deletion was ok
         if ($isDeleted && !empty($this->file)) {
             // Makes sure there is a leading slash
-            $filePath = APP_ROOT . URL::addLeadingSlash($this->file);
+            $filePath = PUBLIC_ROOT . URL::addLeadingSlash($this->file);
             if (file_exists($filePath)) {
                 unlink($filePath);
             }

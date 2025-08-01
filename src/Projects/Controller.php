@@ -61,7 +61,7 @@ final class Controller extends AbstractCRUDController {
 
         $newPath = "/project-images/$newFilename";
 
-        $newPathFull = APP_ROOT . $newPath;
+        $newPathFull = PUBLIC_ROOT . $newPath;
 
         if ($file->saveTo($newPathFull)) {
             $projectImage = Image::insert([
