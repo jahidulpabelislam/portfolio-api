@@ -16,7 +16,8 @@ if ($response->hasHeader("ETag") && $response->getHeaderString("ETag") === $app-
         ->withBody("")
         ->removeHeader("Content-Type")
     ;
-} else {
+}
+else {
     $response->setHeader("Content-Type", "application/json");
 }
 
