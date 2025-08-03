@@ -1,6 +1,5 @@
 <?php
 
-define("APP_ROOT", __DIR__);
-define("PUBLIC_ROOT", __DIR__ . "/public");
+declare(strict_types=1);
 
 require_once __DIR__ . "/vendor/autoload.php";

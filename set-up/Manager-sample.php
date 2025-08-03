@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * The functions for the handling of authentication for this API.
  */
 
 namespace App\Auth;
 
-use App\Config;
-use App\Core;
 use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key as JWTKey;
+use JPI\Config;
 use JPI\HTTP\Request;
 
 class Manager extends AbstractManager {
