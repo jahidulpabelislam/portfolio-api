@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use JPI\Config;
 use JPI\CRUD\API\AbstractEntity as BaseEntity;
 use JPI\Database;
 use PDO;
