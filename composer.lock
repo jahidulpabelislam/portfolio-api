@@ -283,12 +283,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/personal-core.git",
-                "reference": "8d4ff5d15d0b8b941467c68247769085b2c5d299"
+                "reference": "367d0a97d10c879aeb4523a353b5e3008ec1f845"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/personal-core/zipball/8d4ff5d15d0b8b941467c68247769085b2c5d299",
-                "reference": "8d4ff5d15d0b8b941467c68247769085b2c5d299",
+                "url": "https://api.github.com/repos/jahidulpabelislam/personal-core/zipball/367d0a97d10c879aeb4523a353b5e3008ec1f845",
+                "reference": "367d0a97d10c879aeb4523a353b5e3008ec1f845",
                 "shasum": ""
             },
             "require": {
@@ -305,10 +305,10 @@
             },
             "description": "Personal library with reusable bits for my sites.",
             "support": {
-                "source": "https://github.com/jahidulpabelislam/personal-core/tree/1.x",
+                "source": "https://github.com/jahidulpabelislam/personal-core/tree/v1.7.0",
                 "issues": "https://github.com/jahidulpabelislam/personal-core/issues"
             },
-            "time": "2025-07-24T21:54:26+00:00"
+            "time": "2025-08-03T15:15:05+00:00"
         },
         {
             "name": "jpi/query",

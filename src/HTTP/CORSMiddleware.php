@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\HTTP;
 
-use App\Config;
 use App\Core;
+use JPI\Config;
 use JPI\HTTP\RequestAwareTrait;
 use JPI\HTTP\RequestHandlerInterface;
 use JPI\HTTP\RequestMiddlewareInterface;
