@@ -20,7 +20,7 @@ abstract class AbstractCRUDController extends AbstractController {
     public function getItemsResponse(
         Request $request,
         EntityCollection $entities,
-        AbstractEntity $entityInstance = null
+        ?AbstractEntity $entityInstance = null
     ): Response {
         return parent::getItemsResponse($request, $entities, $entityInstance)
             ->withCacheHeaders(Core::getDefaultCacheHeaders())
@@ -30,7 +30,7 @@ abstract class AbstractCRUDController extends AbstractController {
     public function getPaginatedItemsResponse(
         Request $request,
         PaginatedEntityCollection $collection,
-        AbstractEntity $entityInstance = null
+        ?AbstractEntity $entityInstance = null
     ): Response {
         return parent::getPaginatedItemsResponse($request, $collection, $entityInstance)
             ->withCacheHeaders(Core::getDefaultCacheHeaders())
@@ -40,8 +40,8 @@ abstract class AbstractCRUDController extends AbstractController {
     public function getItemResponse(
         Request $request,
         ?AbstractEntity $entity,
-        string|int $id = null,
-        AbstractEntity $entityInstance = null
+        string|int|null $id = null,
+        ?AbstractEntity $entityInstance = null
     ): Response {
         return parent::getItemResponse($request, $entity, $id, $entityInstance)
             ->withCacheHeaders(Core::getDefaultCacheHeaders())

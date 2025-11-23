@@ -13,7 +13,7 @@ use JPI\CRUD\API\Router as PackageRouter;
 
 final class Router extends PackageRouter {
 
-    public function addRoute(string $pattern, string $method, $callback, string $name = null): void {
+    public function addRoute(string $pattern, string $method, $callback, ?string $name = null): void {
         parent::addRoute("/v" . Core::VERSION . $pattern, $method, $callback, $name);
     }
 
