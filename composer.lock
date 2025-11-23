@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bfb252b7cf9fce3508b41b9c28fee74f",
+    "content-hash": "ef292cb782696f817fc1c23072f4545e",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -75,12 +75,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/crud-api.git",
-                "reference": "bf4804f5f8759975cf203f3d6caee9c935e8a357"
+                "reference": "7c4e569a78858ba8461571e3bd8cb84deac503fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/crud-api/zipball/bf4804f5f8759975cf203f3d6caee9c935e8a357",
-                "reference": "bf4804f5f8759975cf203f3d6caee9c935e8a357",
+                "url": "https://api.github.com/repos/jahidulpabelislam/crud-api/zipball/7c4e569a78858ba8461571e3bd8cb84deac503fc",
+                "reference": "7c4e569a78858ba8461571e3bd8cb84deac503fc",
                 "shasum": ""
             },
             "require": {
@@ -117,10 +117,10 @@
                 "model"
             ],
             "support": {
-                "source": "https://github.com/jahidulpabelislam/crud-api/tree/1.x",
+                "source": "https://github.com/jahidulpabelislam/crud-api/tree/v1.0.0-beta.6",
                 "issues": "https://github.com/jahidulpabelislam/crud-api/issues"
             },
-            "time": "2024-09-06T23:13:12+00:00"
+            "time": "2025-11-23T00:49:48+00:00"
         },
         {
             "name": "jpi/database",
@@ -128,12 +128,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/database.git",
-                "reference": "7779424f463302539153b0069282ec8fbdf54f31"
+                "reference": "50b947c9391bb30c2a1645571503f9145726d7ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/database/zipball/7779424f463302539153b0069282ec8fbdf54f31",
-                "reference": "7779424f463302539153b0069282ec8fbdf54f31",
+                "url": "https://api.github.com/repos/jahidulpabelislam/database/zipball/50b947c9391bb30c2a1645571503f9145726d7ec",
+                "reference": "50b947c9391bb30c2a1645571503f9145726d7ec",
                 "shasum": ""
             },
             "require": {
@@ -171,7 +171,7 @@
                 "issues": "https://github.com/jahidulpabelislam/database/issues",
                 "source": "https://github.com/jahidulpabelislam/database/tree/2.x"
             },
-            "time": "2024-09-06T23:06:33+00:00"
+            "time": "2025-11-23T00:14:28+00:00"
         },
         {
             "name": "jpi/http",
@@ -179,12 +179,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/http.git",
-                "reference": "97d645ba04483137e26c365b46b191b92bb2542f"
+                "reference": "9cde7d565a3ebf7549ca3fe4c401c08160add028"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/http/zipball/97d645ba04483137e26c365b46b191b92bb2542f",
-                "reference": "97d645ba04483137e26c365b46b191b92bb2542f",
+                "url": "https://api.github.com/repos/jahidulpabelislam/http/zipball/9cde7d565a3ebf7549ca3fe4c401c08160add028",
+                "reference": "9cde7d565a3ebf7549ca3fe4c401c08160add028",
                 "shasum": ""
             },
             "require": {
@@ -216,10 +216,10 @@
                 "http"
             ],
             "support": {
-                "source": "https://github.com/jahidulpabelislam/http/tree/1.x",
+                "source": "https://github.com/jahidulpabelislam/http/tree/v1.0.3",
                 "issues": "https://github.com/jahidulpabelislam/http/issues"
             },
-            "time": "2024-09-06T23:12:52+00:00"
+            "time": "2025-11-23T00:44:45+00:00"
         },
         {
             "name": "jpi/orm",
@@ -227,17 +227,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "c5932f5110c564c1b1fd0bd670a8dc14aa69035d"
+                "reference": "af66f73a23f7d059afa3d8fa05828822bfa617c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/c5932f5110c564c1b1fd0bd670a8dc14aa69035d",
-                "reference": "c5932f5110c564c1b1fd0bd670a8dc14aa69035d",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/af66f73a23f7d059afa3d8fa05828822bfa617c0",
+                "reference": "af66f73a23f7d059afa3d8fa05828822bfa617c0",
                 "shasum": ""
             },
             "require": {
                 "jpi/database": "^2.0",
-                "jpi/query": "^2.0",
+                "jpi/query": "^2.1.1",
                 "jpi/utils": "^1.0",
                 "php": "^8.0"
             },
@@ -275,7 +275,7 @@
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
                 "source": "https://github.com/jahidulpabelislam/orm/tree/2.x"
             },
-            "time": "2024-09-06T23:09:50+00:00"
+            "time": "2025-11-23T00:45:27+00:00"
         },
         {
             "name": "jpi/personal-core",
@@ -283,12 +283,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/personal-core.git",
-                "reference": "367d0a97d10c879aeb4523a353b5e3008ec1f845"
+                "reference": "89c77668d1ad3122fd7f405c914fb3cfe047886c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/personal-core/zipball/367d0a97d10c879aeb4523a353b5e3008ec1f845",
-                "reference": "367d0a97d10c879aeb4523a353b5e3008ec1f845",
+                "url": "https://api.github.com/repos/jahidulpabelislam/personal-core/zipball/89c77668d1ad3122fd7f405c914fb3cfe047886c",
+                "reference": "89c77668d1ad3122fd7f405c914fb3cfe047886c",
                 "shasum": ""
             },
             "require": {
@@ -305,23 +305,23 @@
             },
             "description": "Personal library with reusable bits for my sites.",
             "support": {
-                "source": "https://github.com/jahidulpabelislam/personal-core/tree/v1.7.0",
+                "source": "https://github.com/jahidulpabelislam/personal-core/tree/1.x",
                 "issues": "https://github.com/jahidulpabelislam/personal-core/issues"
             },
-            "time": "2025-08-03T15:15:05+00:00"
+            "time": "2025-08-03T20:47:16+00:00"
         },
         {
             "name": "jpi/query",
-            "version": "v2.1.0",
+            "version": "v2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/query.git",
-                "reference": "60cd1172d374a12289a2e29cf74f739fcbc14a18"
+                "reference": "99265e9f5424418eb84e99fdfa75f8bcfc87b99c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/query/zipball/60cd1172d374a12289a2e29cf74f739fcbc14a18",
-                "reference": "60cd1172d374a12289a2e29cf74f739fcbc14a18",
+                "url": "https://api.github.com/repos/jahidulpabelislam/query/zipball/99265e9f5424418eb84e99fdfa75f8bcfc87b99c",
+                "reference": "99265e9f5424418eb84e99fdfa75f8bcfc87b99c",
                 "shasum": ""
             },
             "require": {
@@ -331,7 +331,7 @@
             },
             "require-dev": {
                 "jpi/codestyles": "^1.0",
-                "phpunit/phpunit": "^9.0"
+                "phpunit/phpunit": "^12.0"
             },
             "type": "library",
             "autoload": {
@@ -359,9 +359,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/query/issues",
-                "source": "https://github.com/jahidulpabelislam/query/tree/v2.1.0"
+                "source": "https://github.com/jahidulpabelislam/query/tree/v2.1.1"
             },
-            "time": "2024-06-01T10:13:32+00:00"
+            "time": "2025-11-23T00:09:22+00:00"
         },
         {
             "name": "jpi/utils",
@@ -369,12 +369,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/utils.git",
-                "reference": "0f961140f08a0b3b2ec1e7780b7543c1f3622029"
+                "reference": "cdc95bde44efcd8cf86b24c7b4dc0cd42f042259"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/0f961140f08a0b3b2ec1e7780b7543c1f3622029",
-                "reference": "0f961140f08a0b3b2ec1e7780b7543c1f3622029",
+                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/cdc95bde44efcd8cf86b24c7b4dc0cd42f042259",
+                "reference": "cdc95bde44efcd8cf86b24c7b4dc0cd42f042259",
                 "shasum": ""
             },
             "require": {
@@ -382,7 +382,7 @@
             },
             "require-dev": {
                 "jpi/codestyles": "^1.0.1",
-                "phpunit/phpunit": "^9.0"
+                "phpunit/phpunit": "^12.0"
             },
             "default-branch": true,
             "type": "library",
@@ -414,30 +414,11 @@
                 "issues": "https://github.com/jahidulpabelislam/utils/issues",
                 "source": "https://github.com/jahidulpabelislam/utils/tree/1.x"
             },
-            "time": "2024-09-06T23:12:02+00:00"
+            "time": "2025-11-23T00:05:48+00:00"
         }
     ],
     "packages-dev": [],
-    "aliases": [
-        {
-            "package": "jpi/database",
-            "version": "2.9999999.9999999.9999999-dev",
-            "alias": "2",
-            "alias_normalized": "2.0.0.0"
-        },
-        {
-            "package": "jpi/orm",
-            "version": "2.9999999.9999999.9999999-dev",
-            "alias": "2.0",
-            "alias_normalized": "2.0.0.0"
-        },
-        {
-            "package": "jpi/utils",
-            "version": "1.9999999.9999999.9999999-dev",
-            "alias": "1.0",
-            "alias_normalized": "1.0.0.0"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
         "jpi/crud-api": 20,
