@@ -74,7 +74,6 @@ final class Core extends App {
         return [
             "Cache-Control" => ["max-age=$secondsToCache", "public"],
             "Expires" => new DateTime("+$secondsToCache seconds"),
-            "Pragma" => "cache",
             "ETag" => true,
         ];
     }
