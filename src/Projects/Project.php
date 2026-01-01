@@ -91,18 +91,6 @@ final class Project extends AbstractAPIEntity implements FilterableInterface, Se
         $this->images;
     }
 
-    public function reload(): void {
-        parent::reload();
-
-        if (!is_null($this->data["type"])) {
-            unset($this->data["type"]["value"]);
-            $this->type;
-        }
-        if (!is_null($this->data["images"])) {
-            $this->reloadImages();
-        }
-    }
-
     /**
      * Add extra functionality as a Project is linked to many Project Images, so delete these also
      */
