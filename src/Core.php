@@ -15,7 +15,6 @@ use App\HTTP\Router;
 use App\HTTP\VersionCheckMiddleware;
 use App\Projects\Controller as ProjectsController;
 use App\Projects\TypeController as ProjectTypesController;
-use DateTime;
 use JPI\HTTP\App;
 use JPI\HTTP\Request;
 use JPI\Utils\Singleton;
