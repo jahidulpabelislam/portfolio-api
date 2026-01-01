@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * The base endpoint for all requests for this API.
  */

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Projects\Project;
 use App\Projects\Type;
 use JPI\Database\Query;
