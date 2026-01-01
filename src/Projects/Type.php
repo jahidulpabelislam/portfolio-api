@@ -13,7 +13,7 @@ final class Type extends AbstractAPIEntity {
 
     use Timestamped;
 
-    public static $displayName = "Project Type";
+    public static string $displayName = "Project Type";
 
     protected static string $table = "project_types";
 
