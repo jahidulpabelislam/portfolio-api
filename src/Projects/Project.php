@@ -70,6 +70,7 @@ final class Project extends AbstractAPIEntity implements FilterableInterface, Se
             "type" => "has_many",
             "entity" => Image::class,
             "column" => "project",
+            "cascade_delete" => true,
         ],
     ];
 
@@ -89,21 +90,6 @@ final class Project extends AbstractAPIEntity implements FilterableInterface, Se
     public function reloadImages(): void {
         unset($this->data["images"]["value"]);
         $this->images;
-    }
-
-    /**
-     * Add extra functionality as a Project is linked to many Project Images, so delete these also
-     */
-    public function delete(): bool {
-        $isDeleted = parent::delete();
-
-        if ($isDeleted) {
-            foreach ($this->images as $image) {
-                $image->delete();
-            }
-        }
-
-        return $isDeleted;
     }
 
     public function getAPIURL(): URL {
