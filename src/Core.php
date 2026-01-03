@@ -11,7 +11,7 @@ use App\HTTP\Router;
 use App\HTTP\VersionCheckMiddleware;
 use App\Projects\Controller as ProjectsController;
 use App\Projects\TypeController as ProjectTypesController;
-use JPI\HTTP\App;
+use JPI\CRUD\API\App;
 use JPI\HTTP\Request;
 use JPI\Utils\Singleton;
 
@@ -50,12 +50,7 @@ final class Core extends App {
         $this->addRoute("/projects/{projectId}/images/", "GET", "$projectsController::getImages", "projectImages");
         $this->addRoute("/projects/{projectId}/images/", "POST", "$projectsController::addImage");
 
-        $this->addRoute("/projects/{id}/", "GET", "$projectsController::read", "project");
-        $this->addRoute("/projects/{id}/", "PUT", "$projectsController::update");
-        $this->addRoute("/projects/{id}/", "DELETE", "$projectsController::delete");
-
-        $this->addRoute("/projects/", "GET", "$projectsController::index");
-        $this->addRoute("/projects/", "POST", "$projectsController::create");
+        $this->addCRUDRoutes("/projects/", $projectsController, "project");
 
         $this->addRoute("/auth/login/", "POST", "$authController::login");
         $this->addRoute("/auth/logout/", "DELETE", "$authController::logout");
