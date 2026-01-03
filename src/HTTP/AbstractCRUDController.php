@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\HTTP;
 
-use JPI\CRUD\API\AbstractEntity;
 use App\Core;
 use JPI\CRUD\API\AbstractController;
+use JPI\CRUD\API\AbstractEntity;
 use JPI\HTTP\Request;
 use JPI\HTTP\Response;
 use JPI\ORM\Entity\Collection as EntityCollection;
