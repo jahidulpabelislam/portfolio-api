@@ -2,12 +2,6 @@
 
 declare(strict_types=1);
 
-/**
- * The Project Image Entity object class (extends the base Entity class, where most of the ORM functionality lies).
- * Within this holds and methods where it overwrites or add extra custom functionality from the base Entity class.
- * Also holds any method only custom to Project Image entities.
- */
-
 namespace App\Projects;
 
 use App\AbstractEntity as AbstractAPIEntity;
@@ -16,6 +10,9 @@ use App\Entity\Timestamped;
 use JPI\CRUD\API\AbstractEntity;
 use JPI\Utils\URL;
 
+/**
+ * The Project Image Entity object class.
+ */
 final class Image extends AbstractAPIEntity {
 
     use Timestamped;

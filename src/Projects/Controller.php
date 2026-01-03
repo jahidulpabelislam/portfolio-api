@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-/**
- * All the custom functions for the Projects part of the API that allow to perform all user requests.
- */
-
 namespace App\Projects;
 
 use App\Core;
@@ -13,6 +9,9 @@ use App\HTTP\AbstractCRUDController;
 use JPI\HTTP\Response;
 use JPI\HTTP\UploadedFile;
 
+/**
+ * All the custom functions for the Projects part of the API that allow to perform all user requests.
+ */
 final class Controller extends AbstractCRUDController {
 
     protected string $entityClass = Project::class;

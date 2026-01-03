@@ -2,16 +2,15 @@
 
 declare(strict_types=1);
 
-/**
- * The controller for this API's authentication.
- */
-
 namespace App\Auth;
 
 use App\Auth\Manager as AuthManager;
 use JPI\HTTP\RequestAwareTrait;
 use JPI\HTTP\Response;
 
+/**
+ * The controller for this API's authentication.
+ */
 final class Controller {
 
     use RequestAwareTrait;

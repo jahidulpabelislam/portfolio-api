@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-/**
- * The 'index' of the application/API.
- */
-
 namespace App;
 
 use App\Auth\Controller as AuthController;
@@ -19,6 +15,9 @@ use JPI\HTTP\App;
 use JPI\HTTP\Request;
 use JPI\Utils\Singleton;
 
+/**
+ * The 'index' of the application/API.
+ */
 final class Core extends App {
 
     use Singleton;

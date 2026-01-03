@@ -2,12 +2,6 @@
 
 declare(strict_types=1);
 
-/**
- * The Project Entity object class (extends the base Entity class, where most of the ORM functionality lies).
- * Within this holds and methods where it overwrites or add extra custom functionality from the base Entity class.
- * Also holds any method only custom to Project entities.
- */
-
 namespace App\Projects;
 
 use App\AbstractEntity as AbstractAPIEntity;
@@ -20,6 +14,9 @@ use JPI\CRUD\API\Entity\Searchable;
 use JPI\CRUD\API\Entity\SearchableInterface;
 use JPI\Utils\URL;
 
+/**
+ * The Project Entity object class.
+ */
 final class Project extends AbstractAPIEntity implements FilterableInterface, SearchableInterface {
 
     use Filterable;
