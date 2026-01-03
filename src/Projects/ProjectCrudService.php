@@ -7,9 +7,9 @@ namespace App\Projects;
 use JPI\CRUD\API\AbstractEntity;
 use JPI\CRUD\API\CrudService as BaseService;
 use JPI\CRUD\API\Entity\InvalidDataException;
+use JPI\HTTP\Input;
 use JPI\HTTP\Request;
 use JPI\ORM\Entity\Collection as EntityCollection;
-use JPI\Utils\Collection;
 
 final class ProjectCrudService extends BaseService {
 
@@ -43,7 +43,7 @@ final class ProjectCrudService extends BaseService {
         if (!$request->getAttribute("is_authenticated")) {
             $params = $request->getQueryParams();
             if (!isset($params["filters"])) {
-                $params["filters"] = new Collection();
+                $params["filters"] = new Input([]);
             }
             $params["filters"]["status"] = Project::PUBLIC_STATUS;
             $request->setQueryParams($params);
