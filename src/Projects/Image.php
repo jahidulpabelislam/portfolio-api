@@ -73,7 +73,7 @@ final class Image extends AbstractAPIEntity {
             unset($response["project"]);
         }
 
-        $response["url"] = (string)Core::get()->getRequest()->makeURL($response["file"]);
+        $response["url"] = Core::get()->getRequest()->makeURL($response["file"]);
         unset($response["file"]);
 
         return $response;

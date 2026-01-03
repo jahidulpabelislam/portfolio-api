@@ -95,7 +95,7 @@ final class Project extends AbstractAPIEntity implements FilterableInterface, Se
 
     public function getAPILinks(): array {
         $links = parent::getAPILinks();
-        $links["images"] = (string)Core::get()->getRouter()->getURLForRoute("projectImages", ["projectId" => $this->getId()]);
+        $links["images"] = Core::get()->getRouter()->getURLForRoute("projectImages", ["projectId" => $this->getId()]);
         return $links;
     }
 
