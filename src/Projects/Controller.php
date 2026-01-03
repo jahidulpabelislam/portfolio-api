@@ -31,10 +31,10 @@ final class Controller extends AbstractCRUDController {
         // Check the Project trying to get Images for exists
         $project = $this->getEntityInstance()::getCrudService()->getEntityFromRequest($request);
         if ($project) {
-            return $this->getItemsResponse($request, $project->images, new Image());
+            return $this->getEntitiesResponse($request, $project->images, new Image());
         }
 
-        return $this->getItemNotFoundResponse($request, $projectId)
+        return $this->getEntityNotFoundResponse($request, $projectId)
             ->withCacheHeaders(Core::getDefaultCacheHeaders())
         ;
     }
@@ -69,7 +69,7 @@ final class Controller extends AbstractCRUDController {
                 "position" => 999, // High enough number
             ]);
             $projectImage->reload();
-            return $this->getInsertResponse($this->getRequest(), $projectImage, new Image());
+            return $this->getEntityCreateResponse($this->getRequest(), $projectImage, new Image());
         }
 
         return Response::json(500, [
@@ -95,7 +95,7 @@ final class Controller extends AbstractCRUDController {
                 return $this->uploadImage($project, $files["image"]);
             }
 
-            return $this->getItemNotFoundResponse($request, $projectId);
+            return $this->getEntityNotFoundResponse($request, $projectId);
         }
 
         return $this->getInvalidInputResponse([
@@ -117,7 +117,7 @@ final class Controller extends AbstractCRUDController {
             // Even though a Project Image may have been found with $imageId, this may not be for project $projectId
             $projectId = (int)$projectId;
             if (!$image || $image->project_id === $projectId) {
-                return $this->getItemResponse($request, $image, $imageId, new Image());
+                return $this->getEntityResponse($request, $image, $imageId, new Image());
             }
 
             $response = Response::json(404, [
@@ -125,7 +125,7 @@ final class Controller extends AbstractCRUDController {
             ]);
         }
         else {
-            $response = $this->getItemNotFoundResponse($request, $projectId);
+            $response = $this->getEntityNotFoundResponse($request, $projectId);
         }
 
         return $response->withCacheHeaders(Core::getDefaultCacheHeaders());

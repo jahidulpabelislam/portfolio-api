@@ -17,33 +17,33 @@ use JPI\ORM\Entity\PaginatedCollection as PaginatedEntityCollection;
  */
 abstract class AbstractCRUDController extends AbstractController {
 
-    public function getItemsResponse(
+    public function getEntitiesResponse(
         Request $request,
         EntityCollection $entities,
         ?AbstractEntity $entityInstance = null
     ): Response {
-        return parent::getItemsResponse($request, $entities, $entityInstance)
+        return parent::getEntitiesResponse($request, $entities, $entityInstance)
             ->withCacheHeaders(Core::getDefaultCacheHeaders())
         ;
     }
 
-    public function getPaginatedItemsResponse(
+    public function getPaginatedEntitiesResponse(
         Request $request,
         PaginatedEntityCollection $collection,
         ?AbstractEntity $entityInstance = null
     ): Response {
-        return parent::getPaginatedItemsResponse($request, $collection, $entityInstance)
+        return parent::getPaginatedEntitiesResponse($request, $collection, $entityInstance)
             ->withCacheHeaders(Core::getDefaultCacheHeaders())
         ;
     }
 
-    public function getItemResponse(
+    public function getEntityResponse(
         Request $request,
         ?AbstractEntity $entity,
         string|int|null $id = null,
         ?AbstractEntity $entityInstance = null
     ): Response {
-        return parent::getItemResponse($request, $entity, $id, $entityInstance)
+        return parent::getEntityResponse($request, $entity, $id, $entityInstance)
             ->withCacheHeaders(Core::getDefaultCacheHeaders())
         ;
     }

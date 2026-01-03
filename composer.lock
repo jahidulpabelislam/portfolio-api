@@ -75,12 +75,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/crud-api.git",
-                "reference": "27851b5bf00ce7590b0ba9bafb8af6e8f7942ec3"
+                "reference": "1d961fc5673872cbb11a012ebb62ca3185b09062"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/crud-api/zipball/27851b5bf00ce7590b0ba9bafb8af6e8f7942ec3",
-                "reference": "27851b5bf00ce7590b0ba9bafb8af6e8f7942ec3",
+                "url": "https://api.github.com/repos/jahidulpabelislam/crud-api/zipball/1d961fc5673872cbb11a012ebb62ca3185b09062",
+                "reference": "1d961fc5673872cbb11a012ebb62ca3185b09062",
                 "shasum": ""
             },
             "require": {
@@ -117,10 +117,10 @@
                 "model"
             ],
             "support": {
-                "source": "https://github.com/jahidulpabelislam/crud-api/tree/v1.0.0-beta.10",
+                "source": "https://github.com/jahidulpabelislam/crud-api/tree/1.x",
                 "issues": "https://github.com/jahidulpabelislam/crud-api/issues"
             },
-            "time": "2026-01-03T16:00:40+00:00"
+            "time": "2026-01-03T21:37:12+00:00"
         },
         {
             "name": "jpi/database",
