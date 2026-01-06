@@ -12,15 +12,21 @@ use JPI\CRUD\API\Entity\Filterable;
 use JPI\CRUD\API\Entity\FilterableInterface;
 use JPI\CRUD\API\Entity\Searchable;
 use JPI\CRUD\API\Entity\SearchableInterface;
+use JPI\CRUD\API\Entity\Sortable;
+use JPI\CRUD\API\Entity\SortableInterface;
 use JPI\Utils\URL;
 
 /**
  * The Project Entity object class.
  */
-final class Project extends AbstractAPIEntity implements FilterableInterface, SearchableInterface {
-
+final class Project extends AbstractAPIEntity implements
+    FilterableInterface,
+    SearchableInterface,
+    SortableInterface
+{
     use Filterable;
     use Searchable;
+    use Sortable;
     use Timestamped;
 
     public const PUBLIC_STATUS = "published";
