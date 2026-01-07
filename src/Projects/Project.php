@@ -105,8 +105,8 @@ final class Project extends AbstractAPIEntity implements
         return $links;
     }
 
-    public function getAPIResponse(int $depth = 1, ?AbstractEntity $parentEntity = null): array {
-        $response = parent::getAPIResponse($depth, $parentEntity);
+    public function getAPIResponse(?AbstractEntity $parentEntity = null): array {
+        $response = parent::getAPIResponse($parentEntity);
 
         if (!empty($response["type"])) {
             $response["type"] = $response["type"]["name"];

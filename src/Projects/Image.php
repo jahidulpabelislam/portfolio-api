@@ -66,10 +66,10 @@ final class Image extends AbstractAPIEntity {
         );
     }
 
-    public function getAPIResponse(int $depth = 1, ?AbstractEntity $parentEntity = null): array {
-        $response = parent::getAPIResponse($depth, $parentEntity);
+    public function getAPIResponse(?AbstractEntity $parentEntity = null): array {
+        $response = parent::getAPIResponse($parentEntity);
 
-        if ($depth === 1) {
+        if (!$parentEntity) {
             unset($response["project"]);
         }
 
