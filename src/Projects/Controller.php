@@ -144,10 +144,10 @@ final class Controller extends AbstractCRUDController {
         // Check the Project of the Image trying to edit actually exists
         $project = $this->getEntityInstance()::getCrudService()->getEntityFromRequest($request);
         if (!$project) {
-            return $this->getItemNotFoundResponse($request, $projectId);
+            return $this->getEntityNotFoundResponse($request, $projectId);
         }
 
         $image = Image::getCrudService()->delete($request);
-        return $this->getItemDeletedResponse($request, $image, $imageId, new Image());
+        return $this->getEntityDeleteResponse($request, $image, $imageId, new Image());
     }
 }
