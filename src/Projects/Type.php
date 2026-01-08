@@ -7,6 +7,7 @@ namespace App\Projects;
 use App\AbstractEntity as AbstractAPIEntity;
 use App\Core;
 use App\Entity\Timestamped;
+use JPI\HTTP\Request;
 use JPI\Utils\URL;
 
 final class Type extends AbstractAPIEntity {
@@ -39,7 +40,7 @@ final class Type extends AbstractAPIEntity {
         return static::insert(["name" => $name]);
     }
 
-    public function getAPIURL(): URL {
+    public function getAPIURL(?Request $request = null): URL {
         return Core::get()->getRouter()->getURLForRoute(
             "projectType",
             [

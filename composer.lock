@@ -75,12 +75,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/crud-api.git",
-                "reference": "02fe9fd25c5a8ff87be0e080e2eb8fdd1c69b08d"
+                "reference": "a8b00f93e9fb884c6cb1acabfd6034db968602e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/crud-api/zipball/02fe9fd25c5a8ff87be0e080e2eb8fdd1c69b08d",
-                "reference": "02fe9fd25c5a8ff87be0e080e2eb8fdd1c69b08d",
+                "url": "https://api.github.com/repos/jahidulpabelislam/crud-api/zipball/a8b00f93e9fb884c6cb1acabfd6034db968602e9",
+                "reference": "a8b00f93e9fb884c6cb1acabfd6034db968602e9",
                 "shasum": ""
             },
             "require": {
@@ -117,10 +117,10 @@
                 "model"
             ],
             "support": {
-                "source": "https://github.com/jahidulpabelislam/crud-api/tree/v1.0.0-beta.15",
+                "source": "https://github.com/jahidulpabelislam/crud-api/tree/1.x",
                 "issues": "https://github.com/jahidulpabelislam/crud-api/issues"
             },
-            "time": "2026-01-07T00:20:43+00:00"
+            "time": "2026-01-08T21:09:26+00:00"
         },
         {
             "name": "jpi/database",
@@ -227,12 +227,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "1a937cabd07385548cc1966cb1d100c417e4c077"
+                "reference": "bca1e58485dbc8d6aa17d6367f0fac81614122d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/1a937cabd07385548cc1966cb1d100c417e4c077",
-                "reference": "1a937cabd07385548cc1966cb1d100c417e4c077",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/bca1e58485dbc8d6aa17d6367f0fac81614122d2",
+                "reference": "bca1e58485dbc8d6aa17d6367f0fac81614122d2",
                 "shasum": ""
             },
             "require": {
@@ -278,7 +278,7 @@
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
                 "source": "https://github.com/jahidulpabelislam/orm/tree/2.x"
             },
-            "time": "2026-01-05T00:14:14+00:00"
+            "time": "2026-01-08T20:59:37+00:00"
         },
         {
             "name": "jpi/personal-core",

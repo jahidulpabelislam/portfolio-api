@@ -14,6 +14,7 @@ use JPI\CRUD\API\Entity\Searchable;
 use JPI\CRUD\API\Entity\SearchableInterface;
 use JPI\CRUD\API\Entity\Sortable;
 use JPI\CRUD\API\Entity\SortableInterface;
+use JPI\HTTP\Request;
 use JPI\Utils\URL;
 
 /**
@@ -95,18 +96,18 @@ final class Project extends AbstractAPIEntity implements
         $this->images;
     }
 
-    public function getAPIURL(): URL {
+    public function getAPIURL(?Request $request = null): URL {
         return Core::get()->getRouter()->getURLForRoute("project", ["id" => $this->getId()]);
     }
 
-    public function getAPILinks(): array {
-        $links = parent::getAPILinks();
+    public function getAPILinks(Request $request): array {
+        $links = parent::getAPILinks($request);
         $links["images"] = Core::get()->getRouter()->getURLForRoute("projectImages", ["projectId" => $this->getId()]);
         return $links;
     }
 
-    public function getAPIResponse(?AbstractEntity $parentEntity = null): array {
-        $response = parent::getAPIResponse($parentEntity);
+    public function getAPIResponse(Request $request, ?AbstractEntity $parentEntity = null): array {
+        $response = parent::getAPIResponse($request, $parentEntity);
 
         if (!empty($response["type"])) {
             $response["type"] = $response["type"]["name"];

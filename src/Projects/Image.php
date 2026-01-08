@@ -8,6 +8,7 @@ use App\AbstractEntity as AbstractAPIEntity;
 use App\Core;
 use App\Entity\Timestamped;
 use JPI\CRUD\API\AbstractEntity;
+use JPI\HTTP\Request;
 use JPI\Utils\URL;
 
 /**
@@ -56,7 +57,7 @@ final class Image extends AbstractAPIEntity {
         return $isDeleted;
     }
 
-    public function getAPIURL(): URL {
+    public function getAPIURL(?Request $request = null): URL {
         return Core::get()->getRouter()->getURLForRoute(
             "projectImage",
             [
@@ -66,8 +67,8 @@ final class Image extends AbstractAPIEntity {
         );
     }
 
-    public function getAPIResponse(?AbstractEntity $parentEntity = null): array {
-        $response = parent::getAPIResponse($parentEntity);
+    public function getAPIResponse(Request $request, ?AbstractEntity $parentEntity = null): array {
+        $response = parent::getAPIResponse($request, $parentEntity);
 
         if (!$parentEntity) {
             unset($response["project"]);
