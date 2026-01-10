@@ -19,16 +19,16 @@
     },
     "repositories": [
         {
-            "type": "vcs",
-            "url": "https://github.com/jahidulpabelislam/http"
+            "type": "git",
+            "url": "https://github.com/jahidulpabelislam/http.git"
         },
         {
-            "type": "vcs",
-            "url": "https://github.com/jahidulpabelislam/crud-api"
+            "type": "git",
+            "url": "https://github.com/jahidulpabelislam/crud-api.git"
         },
         {
-            "type": "vcs",
-            "url": "https://github.com/jahidulpabelislam/personal-core"
+            "type": "git",
+            "url": "https://github.com/jahidulpabelislam/personal-core.git"
         }
     ]
 }

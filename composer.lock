@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ef292cb782696f817fc1c23072f4545e",
+    "content-hash": "9bfd08ec780ea8d6e0185fe416947337",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -75,13 +75,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/crud-api.git",
-                "reference": "a8b00f93e9fb884c6cb1acabfd6034db968602e9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/crud-api/zipball/a8b00f93e9fb884c6cb1acabfd6034db968602e9",
-                "reference": "a8b00f93e9fb884c6cb1acabfd6034db968602e9",
-                "shasum": ""
+                "reference": "c446bcbe498a222a419b10b608ad9c1e210af0db"
             },
             "require": {
                 "ext-json": "*",
@@ -116,11 +110,7 @@
                 "entity",
                 "model"
             ],
-            "support": {
-                "source": "https://github.com/jahidulpabelislam/crud-api/tree/1.x",
-                "issues": "https://github.com/jahidulpabelislam/crud-api/issues"
-            },
-            "time": "2026-01-08T21:09:26+00:00"
+            "time": "2026-01-10T12:29:14+00:00"
         },
         {
             "name": "jpi/database",
@@ -181,12 +171,6 @@
                 "url": "https://github.com/jahidulpabelislam/http.git",
                 "reference": "7c399b323fd507c463e94852f3817ed2c7993a4f"
             },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/http/zipball/7c399b323fd507c463e94852f3817ed2c7993a4f",
-                "reference": "7c399b323fd507c463e94852f3817ed2c7993a4f",
-                "shasum": ""
-            },
             "require": {
                 "ext-json": "*",
                 "jpi/utils": "^1.0",
@@ -215,10 +199,6 @@
             "keywords": [
                 "http"
             ],
-            "support": {
-                "source": "https://github.com/jahidulpabelislam/http/tree/1.x",
-                "issues": "https://github.com/jahidulpabelislam/http/issues"
-            },
             "time": "2026-01-04T13:36:40+00:00"
         },
         {
@@ -227,12 +207,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "bca1e58485dbc8d6aa17d6367f0fac81614122d2"
+                "reference": "51cb498a36bf5848c112ff52662ea0a7e949544c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/bca1e58485dbc8d6aa17d6367f0fac81614122d2",
-                "reference": "bca1e58485dbc8d6aa17d6367f0fac81614122d2",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/51cb498a36bf5848c112ff52662ea0a7e949544c",
+                "reference": "51cb498a36bf5848c112ff52662ea0a7e949544c",
                 "shasum": ""
             },
             "require": {
@@ -278,7 +258,7 @@
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
                 "source": "https://github.com/jahidulpabelislam/orm/tree/2.x"
             },
-            "time": "2026-01-08T20:59:37+00:00"
+            "time": "2026-01-09T18:14:57+00:00"
         },
         {
             "name": "jpi/personal-core",
@@ -287,12 +267,6 @@
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/personal-core.git",
                 "reference": "797aa4bf234660387daebf045e4f2e372e494a83"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/personal-core/zipball/797aa4bf234660387daebf045e4f2e372e494a83",
-                "reference": "797aa4bf234660387daebf045e4f2e372e494a83",
-                "shasum": ""
             },
             "require": {
                 "ext-json": "*",
@@ -307,10 +281,6 @@
                 }
             },
             "description": "Personal library with reusable bits for my sites.",
-            "support": {
-                "source": "https://github.com/jahidulpabelislam/personal-core/tree/v1.7.1",
-                "issues": "https://github.com/jahidulpabelislam/personal-core/issues"
-            },
             "time": "2026-01-04T13:43:58+00:00"
         },
         {
