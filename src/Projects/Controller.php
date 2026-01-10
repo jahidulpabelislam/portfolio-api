@@ -84,7 +84,7 @@ final class Controller extends AbstractCRUDController {
         $request = $this->getRequest();
 
         if (!$request->getAttribute("is_authenticated")) {
-            return static::getNotAuthorisedResponse();
+            return $this->getNotAuthorisedResponse();
         }
 
         $files = $request->getFiles();
@@ -138,7 +138,7 @@ final class Controller extends AbstractCRUDController {
         $request = $this->getRequest();
 
         if (!$request->getAttribute("is_authenticated")) {
-            return static::getNotAuthorisedResponse();
+            return $this->getNotAuthorisedResponse();
         }
 
         // Check the Project of the Image trying to edit actually exists
