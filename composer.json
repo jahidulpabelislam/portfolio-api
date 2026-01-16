@@ -9,7 +9,7 @@
         "jpi/orm": "2.x-dev",
         "jpi/http": "1.x-dev",
         "jpi/crud-api": "1.x-dev",
-        "jpi/personal-core": "1.x-dev",
+        "jpi/personal-core": "dev-config-rework",
         "firebase/php-jwt": "^6.0"
     },
     "autoload": {

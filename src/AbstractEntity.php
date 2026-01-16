@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
-use JPI\Config;
+use JPI\App;
 use JPI\CRUD\API\AbstractEntity as BaseEntity;
 use JPI\Database;
 use PDO;
@@ -15,12 +15,12 @@ abstract class AbstractEntity extends BaseEntity {
 
     public static function getDatabase(): Database {
         if (!static::$database) {
-            $config = Config::get();
+            $config = App::get()->config()->db;
 
             static::$database = new Database(
-                "mysql:host={$config->db_host};dbname={$config->db_name};charset-UTF-8",
-                $config->db_username,
-                $config->db_password,
+                "mysql:host={$config->host};dbname={$config->name};charset-UTF-8",
+                $config->username,
+                $config->password,
                 [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 ]
