@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "678e7c6f18f64d1934cb685e99ac6b50",
+    "content-hash": "b5c233e313f5f95717c0309b72e4f8fe",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -214,16 +214,16 @@
         },
         {
             "name": "jpi/orm",
-            "version": "2.x-dev",
+            "version": "dev-copilot/support-eager-loading-entities",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "6248b0e73e1f7157bc984686a5c620544d40af46"
+                "reference": "cd9d2caa5ec0538d2b35082841994d0b77933d11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/6248b0e73e1f7157bc984686a5c620544d40af46",
-                "reference": "6248b0e73e1f7157bc984686a5c620544d40af46",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/cd9d2caa5ec0538d2b35082841994d0b77933d11",
+                "reference": "cd9d2caa5ec0538d2b35082841994d0b77933d11",
                 "shasum": ""
             },
             "require": {
@@ -236,7 +236,6 @@
                 "jpi/codestyles": "^1.0.1",
                 "phpunit/phpunit": "^12.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -268,9 +267,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
-                "source": "https://github.com/jahidulpabelislam/orm/tree/2.x"
+                "source": "https://github.com/jahidulpabelislam/orm/tree/copilot/support-eager-loading-entities"
             },
-            "time": "2026-01-15T23:50:29+00:00"
+            "time": "2026-01-16T23:42:14+00:00"
         },
         {
             "name": "jpi/personal-core",
@@ -402,7 +401,14 @@
         }
     ],
     "packages-dev": [],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "jpi/orm",
+            "version": "dev-copilot/support-eager-loading-entities",
+            "alias": "2.1",
+            "alias_normalized": "2.1.0.0"
+        }
+    ],
     "minimum-stability": "stable",
     "stability-flags": {
         "jpi/crud-api": 20,

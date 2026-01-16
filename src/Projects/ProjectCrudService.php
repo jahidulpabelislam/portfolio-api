@@ -51,44 +51,7 @@ final class ProjectCrudService extends BaseService {
 
         $projects = parent::index($request);
 
-        if (count($projects)) {
-            $ids = [];
-            $typeIds = [];
-            foreach ($projects as $project) {
-                $ids[] = $project->getId();
-                $typeIds[$project->type_id] = "";
-            }
-
-            $images = Image::newQuery()
-                ->where("project_id", "IN", $ids)
-                ->select()
-            ;
-
-            $imagesGrouped = [];
-            foreach ($images as $image) {
-                $imagesGrouped[$image->project_id][] = $image;
-            }
-
-            $types = Type::newQuery()
-                ->where("id", "IN", array_keys($typeIds))
-                ->select()
-            ;
-
-            $typesGrouped = [];
-            foreach ($types as $type) {
-                $typesGrouped[$type->getId()] = $type;
-            }
-
-            foreach ($projects as $project) {
-                $project->setValues(
-                    [
-                        "images" => new EntityCollection($imagesGrouped[$project->getId()] ?? []),
-                        "type_id" => $typesGrouped[$project->type_id] ?? new Type(),
-                    ],
-                    true
-                );
-            }
-        }
+        $projects->load("type", "images");
 
         return $projects;
     }
