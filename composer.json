@@ -9,7 +9,7 @@
         "jpi/orm": "dev-copilot/support-eager-loading-entities as 2.1",
         "jpi/http": "1.x-dev",
         "jpi/crud-api": "1.x-dev",
-        "jpi/personal-core": "dev-config-rework",
+        "jpi/personal-core": "^1.8",
         "firebase/php-jwt": "^6.0"
     },
     "autoload": {

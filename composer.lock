@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b5c233e313f5f95717c0309b72e4f8fe",
+    "content-hash": "eb1e6b99059af79107799d7226a2b396",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -75,7 +75,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/crud-api.git",
-                "reference": "7aa0f8e064f8063f6ba05cfab95a5de4203f5ecf"
+                "reference": "682c6f9e13a3a8f7a3a6d117c76cd543e568559b"
             },
             "require": {
                 "ext-json": "*",
@@ -121,7 +121,7 @@
                 "entity",
                 "model"
             ],
-            "time": "2026-01-15T23:52:06+00:00"
+            "time": "2026-01-18T14:16:08+00:00"
         },
         {
             "name": "jpi/database",
@@ -218,12 +218,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "cd9d2caa5ec0538d2b35082841994d0b77933d11"
+                "reference": "79e66fdfab29ffd1fbaf57d3e982c6c2d607ab1e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/cd9d2caa5ec0538d2b35082841994d0b77933d11",
-                "reference": "cd9d2caa5ec0538d2b35082841994d0b77933d11",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/79e66fdfab29ffd1fbaf57d3e982c6c2d607ab1e",
+                "reference": "79e66fdfab29ffd1fbaf57d3e982c6c2d607ab1e",
                 "shasum": ""
             },
             "require": {
@@ -269,15 +269,15 @@
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
                 "source": "https://github.com/jahidulpabelislam/orm/tree/copilot/support-eager-loading-entities"
             },
-            "time": "2026-01-16T23:42:14+00:00"
+            "time": "2026-01-28T00:02:07+00:00"
         },
         {
             "name": "jpi/personal-core",
-            "version": "dev-config-rework",
+            "version": "v1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/personal-core.git",
-                "reference": "1a6d1f9668e57b6e3d89f2ee8302986b0bc43980"
+                "reference": "ee25fd9117b696b7ac80237c010fe85b5a8fbf20"
             },
             "require": {
                 "ext-json": "*",
@@ -291,7 +291,7 @@
                 }
             },
             "description": "Personal library with reusable bits for my sites.",
-            "time": "2026-01-16T00:01:30+00:00"
+            "time": "2026-02-14T16:27:20+00:00"
         },
         {
             "name": "jpi/query",
@@ -415,7 +415,6 @@
         "jpi/database": 20,
         "jpi/http": 20,
         "jpi/orm": 20,
-        "jpi/personal-core": 20,
         "jpi/utils": 20
     },
     "prefer-stable": false,
