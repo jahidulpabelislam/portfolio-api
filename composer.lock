@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eb1e6b99059af79107799d7226a2b396",
+    "content-hash": "a9c66853563b5bedde9dbee98b2d1866",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -71,16 +71,16 @@
         },
         {
             "name": "jpi/crud-api",
-            "version": "1.x-dev",
+            "version": "dev-copilot/include-relationships-in-api-responses",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/crud-api.git",
-                "reference": "682c6f9e13a3a8f7a3a6d117c76cd543e568559b"
+                "reference": "aebd9c33cb8e3b24766b7eb74546b118961a918b"
             },
             "require": {
                 "ext-json": "*",
                 "jpi/http": "^1.0",
-                "jpi/orm": "^2.1",
+                "jpi/orm": "dev-copilot/support-eager-loading-entities",
                 "jpi/utils": "^1.0",
                 "php": "^8.0"
             },
@@ -88,7 +88,6 @@
                 "jpi/codestyles": "^1.0.1",
                 "phpunit/phpunit": "^12.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -121,7 +120,7 @@
                 "entity",
                 "model"
             ],
-            "time": "2026-01-18T14:16:08+00:00"
+            "time": "2026-01-27T23:41:41+00:00"
         },
         {
             "name": "jpi/database",
@@ -402,6 +401,12 @@
     ],
     "packages-dev": [],
     "aliases": [
+        {
+            "package": "jpi/crud-api",
+            "version": "dev-copilot/include-relationships-in-api-responses",
+            "alias": "1.0",
+            "alias_normalized": "1.0.0.0"
+        },
         {
             "package": "jpi/orm",
             "version": "dev-copilot/support-eager-loading-entities",

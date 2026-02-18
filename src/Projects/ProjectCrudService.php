@@ -22,18 +22,13 @@ final class ProjectCrudService extends BaseService {
     ];
 
     public function getEntityFromRequest(Request $request): ?Project {
-        $routeParams = $request->getAttribute("route_params");
+        $project = parent::getEntityFromRequest($request);
 
-        $query = $this->getEntityInstance()::newQuery()
-            ->where("id", "=", $routeParams["projectId"] ?? $routeParams["id"])
-            ->limit(1)
-        ;
-
-        if (!$request->getAttribute("is_authenticated")) {
-            $query->where("status", "=", Project::PUBLIC_STATUS);
+        if ($project instanceof Project && !$request->getAttribute("is_authenticated") && $project->status !== Project::PUBLIC_STATUS) {
+            return null;
         }
 
-        return $query->select();
+        return $project;
     }
 
     public function index(Request $request): EntityCollection {
@@ -49,11 +44,7 @@ final class ProjectCrudService extends BaseService {
             $request->setQueryParams($params);
         }
 
-        $projects = parent::index($request);
-
-        $projects->load("type", "images");
-
-        return $projects;
+        return parent::index($request);
     }
 
     protected function setValuesFromRequest(AbstractEntity $entity, Request $request): void {
