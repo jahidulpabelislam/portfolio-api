@@ -180,7 +180,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/http.git",
-                "reference": "e7de2e1055648ad769017011b7f6cb6ae414dcf5"
+                "reference": "3f7123aa848fbe8dc3819381b7f6c69c311b393e"
             },
             "require": {
                 "ext-json": "*",
@@ -210,7 +210,7 @@
             "keywords": [
                 "http"
             ],
-            "time": "2026-01-10T21:54:43+00:00"
+            "time": "2026-02-14T21:50:30+00:00"
         },
         {
             "name": "jpi/orm",
@@ -218,12 +218,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "79e66fdfab29ffd1fbaf57d3e982c6c2d607ab1e"
+                "reference": "7ba736552fb676a8352a2b5f8d4df87590f0787a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/79e66fdfab29ffd1fbaf57d3e982c6c2d607ab1e",
-                "reference": "79e66fdfab29ffd1fbaf57d3e982c6c2d607ab1e",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/7ba736552fb676a8352a2b5f8d4df87590f0787a",
+                "reference": "7ba736552fb676a8352a2b5f8d4df87590f0787a",
                 "shasum": ""
             },
             "require": {
@@ -269,7 +269,7 @@
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
                 "source": "https://github.com/jahidulpabelislam/orm/tree/copilot/support-eager-loading-entities"
             },
-            "time": "2026-01-28T00:02:07+00:00"
+            "time": "2026-02-15T19:55:00+00:00"
         },
         {
             "name": "jpi/personal-core",
@@ -352,12 +352,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/utils.git",
-                "reference": "8990de7eac538e994733896d63fa0887a1138fd9"
+                "reference": "7670fe48e8543ee569f8f415032c0f18b0b540e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/8990de7eac538e994733896d63fa0887a1138fd9",
-                "reference": "8990de7eac538e994733896d63fa0887a1138fd9",
+                "url": "https://api.github.com/repos/jahidulpabelislam/utils/zipball/7670fe48e8543ee569f8f415032c0f18b0b540e4",
+                "reference": "7670fe48e8543ee569f8f415032c0f18b0b540e4",
                 "shasum": ""
             },
             "require": {
@@ -397,7 +397,7 @@
                 "issues": "https://github.com/jahidulpabelislam/utils/issues",
                 "source": "https://github.com/jahidulpabelislam/utils/tree/1.x"
             },
-            "time": "2026-01-14T21:48:17+00:00"
+            "time": "2026-02-15T16:09:46+00:00"
         }
     ],
     "packages-dev": [],
