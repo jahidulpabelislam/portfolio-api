@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eb1e6b99059af79107799d7226a2b396",
+    "content-hash": "9e535aa73aea6dcb7adf9b3c5515a78b",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -75,12 +75,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/crud-api.git",
-                "reference": "682c6f9e13a3a8f7a3a6d117c76cd543e568559b"
+                "reference": "905d80cf11957aa8524c30e6de9d9c579297accf"
             },
             "require": {
                 "ext-json": "*",
                 "jpi/http": "^1.0",
-                "jpi/orm": "^2.1",
+                "jpi/orm": "^2.5",
                 "jpi/utils": "^1.0",
                 "php": "^8.0"
             },
@@ -121,7 +121,7 @@
                 "entity",
                 "model"
             ],
-            "time": "2026-01-18T14:16:08+00:00"
+            "time": "2026-02-24T22:03:02+00:00"
         },
         {
             "name": "jpi/database",
@@ -214,16 +214,16 @@
         },
         {
             "name": "jpi/orm",
-            "version": "dev-copilot/support-eager-loading-entities",
+            "version": "v2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jahidulpabelislam/orm.git",
-                "reference": "7ba736552fb676a8352a2b5f8d4df87590f0787a"
+                "reference": "270f258bacbe26e7c7c97ab905b5746e3bd81fb9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/7ba736552fb676a8352a2b5f8d4df87590f0787a",
-                "reference": "7ba736552fb676a8352a2b5f8d4df87590f0787a",
+                "url": "https://api.github.com/repos/jahidulpabelislam/orm/zipball/270f258bacbe26e7c7c97ab905b5746e3bd81fb9",
+                "reference": "270f258bacbe26e7c7c97ab905b5746e3bd81fb9",
                 "shasum": ""
             },
             "require": {
@@ -267,9 +267,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jahidulpabelislam/orm/issues",
-                "source": "https://github.com/jahidulpabelislam/orm/tree/copilot/support-eager-loading-entities"
+                "source": "https://github.com/jahidulpabelislam/orm/tree/v2.5.0"
             },
-            "time": "2026-02-15T19:55:00+00:00"
+            "time": "2026-02-18T23:36:07+00:00"
         },
         {
             "name": "jpi/personal-core",
@@ -401,20 +401,12 @@
         }
     ],
     "packages-dev": [],
-    "aliases": [
-        {
-            "package": "jpi/orm",
-            "version": "dev-copilot/support-eager-loading-entities",
-            "alias": "2.1",
-            "alias_normalized": "2.1.0.0"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
         "jpi/crud-api": 20,
         "jpi/database": 20,
         "jpi/http": 20,
-        "jpi/orm": 20,
         "jpi/utils": 20
     },
     "prefer-stable": false,
