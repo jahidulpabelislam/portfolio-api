@@ -22,6 +22,13 @@ final class ProjectCrudService extends BaseService {
     ];
 
     public function getEntityFromRequest(Request $request): ?Project {
+        $routeParams = $request->getAttribute("route_params");
+
+        if (isset($routeParams["projectId"])) {
+            $request = clone $request;
+            $request->setAttribute("route_params", ["id" => $routeParams["projectId"]]);
+        }
+
         $project = parent::getEntityFromRequest($request);
 
         if ($project instanceof Project && !$request->getAttribute("is_authenticated") && $project->status !== Project::PUBLIC_STATUS) {
