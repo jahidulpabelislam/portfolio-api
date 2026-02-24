@@ -8,7 +8,7 @@
         "jpi/database": "2.x-dev",
         "jpi/orm": "^2.5",
         "jpi/http": "1.x-dev",
-        "jpi/crud-api": "dev-copilot/include-relationships-in-api-responses as 1.0",
+        "jpi/crud-api": "1.x-dev",
         "jpi/personal-core": "^1.8",
         "firebase/php-jwt": "^6.0"
     },
