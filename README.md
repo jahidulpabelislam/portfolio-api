@@ -43,15 +43,15 @@ The first two versions were developed within the portfolio. However, from v3, I 
 
 | URI                                                                                                    |                 Description                 |  `GET`   |  `POST`  |  `PUT`   | `DELETE` |
 |--------------------------------------------------------------------------------------------------------|:-------------------------------------------:|:--------:|:--------:|:--------:|:--------:|
-| [/projects/](https://api.jahidulpabelislam.com/v4/projects/)                                           |                All projects                 | &#10004; | &#10004; | &#10006; | &#10006; |
-| [/projects/{projectId}/](https://api.jahidulpabelislam.com/v4/projects/13/)                            |              A single project               | &#10004; | &#10006; | &#10004; | &#10004; |
-| [/projects/{projectId}/images/](https://api.jahidulpabelislam.com/v4/projects/13/images/)              |     Images attached to a single project     | &#10004; | &#10004; | &#10006; | &#10006; |
-| [/projects/{projectId}/images/{imageId}/](https://api.jahidulpabelislam.com/v4/projects/13/images/72/) | A single image attached to a single project | &#10004; | &#10006; | &#10006; | &#10004; |
+| [/projects/](https://api.jahidulpabelislam.com/projects/)                                              |                All projects                 | &#10004; | &#10004; | &#10006; | &#10006; |
+| [/projects/{projectId}/](https://api.jahidulpabelislam.com/projects/13/)                            |              A single project               | &#10004; | &#10006; | &#10004; | &#10004; |
+| [/projects/{projectId}/images/](https://api.jahidulpabelislam.com/projects/13/images/)              |     Images attached to a single project     | &#10004; | &#10004; | &#10006; | &#10006; |
+| [/projects/{projectId}/images/{imageId}/](https://api.jahidulpabelislam.com/projects/13/images/72/) | A single image attached to a single project | &#10004; | &#10006; | &#10006; | &#10004; |
 
 #### Auth
 
 | URI                                                                |       Description       |  `GET`   |  `POST`  |  `PUT`   | `DELETE` |
 |--------------------------------------------------------------------|:-----------------------:|:--------:|:--------:|:--------:|:--------:|
-| [/auth/login/](https://api.jahidulpabelislam.com/v4/auth/login/)   |         Log in          | &#10006; | &#10004; | &#10006; | &#10006; |
-| [/auth/logout/](https://api.jahidulpabelislam.com/v4/auth/logout/) |         Log out         | &#10006; | &#10006; | &#10006; | &#10004; |
-| [/auth/status/](https://api.jahidulpabelislam.com/v4/auth/status/) | Get current auth status | &#10004; | &#10006; | &#10006; | &#10006; |
+| [/auth/login/](https://api.jahidulpabelislam.com/auth/login/)   |         Log in          | &#10006; | &#10004; | &#10006; | &#10006; |
+| [/auth/logout/](https://api.jahidulpabelislam.com/auth/logout/) |         Log out         | &#10006; | &#10006; | &#10006; | &#10004; |
+| [/auth/status/](https://api.jahidulpabelislam.com/auth/status/) | Get current auth status | &#10004; | &#10006; | &#10006; | &#10006; |

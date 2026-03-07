@@ -8,7 +8,6 @@ use App\Auth\Controller as AuthController;
 use App\Auth\Middleware as AuthMiddleware;
 use App\HTTP\CORSMiddleware;
 use App\HTTP\Router;
-use App\HTTP\VersionCheckMiddleware;
 use App\Projects\Controller as ProjectsController;
 use App\Projects\TypeController as ProjectTypesController;
 use JPI\CRUD\API\App;
@@ -30,7 +29,6 @@ final class Core extends App {
         $this->middlewares = [
             new AuthMiddleware(),
             new CORSMiddleware(),
-            new VersionCheckMiddleware(),
         ];
     }
 
