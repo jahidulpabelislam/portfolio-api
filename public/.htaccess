@@ -3,9 +3,9 @@ RewriteEngine On
 # All API requests are routed via one PHP router file
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.+)/$ /index.php/$2
+RewriteRule ^(.+)/$ /index.php/$1
 
 # Force trailing slash
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.+)$ /v$1/$2/ [R=301,L]
+RewriteRule ^(.+)$ /$1/ [R=301,L]
